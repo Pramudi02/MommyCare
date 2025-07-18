@@ -1,14 +1,23 @@
-export default function App() {
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AdminRoutes from './admin/routes/AdminRoutes';
+import MomRoutes from './mom/routes/MomRoutes';
+import MidwifeRoutes from './midwife/routes/MidwifeRoutes';
+import DoctorRoutes from './doctor/routes/DoctorRoutes';
+import SPRoutes from './service_provider/routes/SPRoutes';
+
+function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-        <h1 className="text-4xl font-bold text-purple-800 mb-4">
-          MommyCare
-        </h1>
-        <p className="text-gray-600">
-          Tailwind CSS is working! 🎉
-        </p>
-      </div>
-    </div>
-  )
+    <Router>
+      <Routes>
+        {AdminRoutes}
+        {MomRoutes}
+        {MidwifeRoutes}
+        {DoctorRoutes}
+        {SPRoutes}
+      </Routes>
+    </Router>
+  );
 }
+
+export default App;
