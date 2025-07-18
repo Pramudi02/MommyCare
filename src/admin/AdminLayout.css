@@ -1,0 +1,29 @@
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f9fafb;
+}
+
+.admin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 320px; /* Width of expanded sidebar */
+  transition: margin-left 0.3s ease;
+}
+
+.admin-main-content.sidebar-collapsed {
+  margin-left: 64px; /* Width of collapsed sidebar */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .admin-main-content {
+    margin-left: 0;
+  }
+  
+  .admin-main-content.sidebar-collapsed {
+    margin-left: 0;
+  }
+} 
