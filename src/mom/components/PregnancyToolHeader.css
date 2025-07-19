@@ -1,0 +1,73 @@
+/* Pregnancy Tools Section */
+.pregnancy-tools-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .tools-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tools-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.tool-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tool-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.tool-orange { background: #fed7aa; }
+.tool-emerald { background: #a7f3d0; }
+.tool-blue { background: #bfdbfe; }
+.tool-yellow { background: #fef3c7; }
+.tool-pink { background: #fce7f3; }
+.tool-green { background: #bbf7d0; }
+
+.tool-emoji {
+  font-size: 1.5rem;
+}
+
+.tool-title {
+  font-size: 0.875rem;
+  text-align: center;
+  color: #374151;
+  line-height: 1.2;
+}

@@ -1,0 +1,703 @@
+/* PregnancyCalculator.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.pregnancy-calculator {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header Styles */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  background: white;
+  padding: 40px 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.header .icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  color: #4a5568;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.header p {
+  color: #718096;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Calculator Section */
+.calculator-section {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.calculator-icon {
+  font-size: 1.5rem;
+}
+
+.section-header h2 {
+  color: #4a5568;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f7fafc;
+  padding: 4px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #718096;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.tab.active {
+  background: #4299e1;
+  color: white;
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+}
+
+.tab:hover:not(.active) {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+/* Form Styles */
+.calculator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #4a5568;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.input-with-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #4a5568;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.input-with-unit input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.input-with-unit input::placeholder {
+  color: #a0aec0;
+}
+
+.unit {
+  position: absolute;
+  right: 16px;
+  color: #718096;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Height Inputs */
+.height-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.height-inputs .input-with-unit {
+  flex: 1;
+}
+
+/* Select Dropdown */
+.week-select {
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #4a5568;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.week-select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* Checkbox */
+.checkbox-group {
+  margin: 10px 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  background: #4299e1;
+  border-color: #4299e1;
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Calculate Button */
+.calculate-btn {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+}
+
+.calculate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+}
+
+.calculate-btn:active {
+  transform: translateY(0);
+}
+
+/* Results Section */
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Weight Summary Card */
+.weight-summary {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(66, 153, 225, 0.3);
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.summary-icon {
+  font-size: 1.2rem;
+}
+
+.weight-gain {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.gain-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.gain-label {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rec-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.rec-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.rec-value {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Weeks Pregnant Card */
+.weeks-pregnant {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.weeks-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #4299e1;
+  margin-bottom: 8px;
+}
+
+.weeks-label {
+  color: #718096;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* BMI Analysis Card */
+.bmi-analysis {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.bmi-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.bmi-icon {
+  font-size: 1.2rem;
+}
+
+.bmi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4299e1;
+  margin-bottom: 10px;
+}
+
+.bmi-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #48bb78;
+  font-weight: 600;
+}
+
+.check-icon {
+  color: #48bb78;
+  font-size: 1.2rem;
+}
+
+/* Progress Tracking Card */
+.progress-tracking {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #4a5568;
+}
+
+.progress-header span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.progress-icon {
+  font-size: 1.2rem;
+}
+
+.progress-percentage {
+  color: #48bb78;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.progress-label {
+  color: #718096;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #48bb78, #38a169);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-note {
+  color: #48bb78;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Weekly Tips Card */
+.weekly-tips {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.tips-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.tips-icon {
+  font-size: 1.2rem;
+}
+
+.tips-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tips-list li {
+  padding: 12px 16px;
+  background: #f7fafc;
+  border-radius: 10px;
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  position: relative;
+  padding-left: 40px;
+}
+
+.tips-list li::before {
+  content: '💡';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tips-list li:nth-child(2)::before {
+  content: '💧';
+}
+
+.tips-list li:nth-child(3)::before {
+  content: '💊';
+}
+
+.tips-list li:nth-child(4)::before {
+  content: '🚶‍♀️';
+}
+
+.tips-list li:nth-child(5)::before {
+  content: '😴';
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .results-section {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  
+  .header {
+    padding: 30px 20px;
+    margin-bottom: 30px;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+  
+  .calculator-section {
+    padding: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .height-inputs {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .tabs {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .tab {
+    border-radius: 8px;
+  }
+  
+  .results-section {
+    gap: 15px;
+  }
+  
+  .weight-summary, .weeks-pregnant, .bmi-analysis, 
+  .progress-tracking, .weekly-tips {
+    padding: 20px;
+  }
+  
+  .gain-value {
+    font-size: 2rem;
+  }
+  
+  .weeks-number {
+    font-size: 2.5rem;
+  }
+  
+  .bmi-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pregnancy-calculator {
+    padding: 10px 0;
+  }
+  
+  .header {
+    padding: 20px 15px;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .calculator-section {
+    padding: 15px;
+  }
+  
+  .input-with-unit input, .week-select {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+  
+  .calculate-btn {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+  
+  .weight-summary, .weeks-pregnant, .bmi-analysis, 
+  .progress-tracking, .weekly-tips {
+    padding: 15px;
+  }
+  
+  .tips-list li {
+    padding: 10px 12px;
+    padding-left: 35px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calculator-section, .results-section > * {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.results-section > *:nth-child(1) { animation-delay: 0.1s; }
+.results-section > *:nth-child(2) { animation-delay: 0.2s; }
+.results-section > *:nth-child(3) { animation-delay: 0.3s; }
+.results-section > *:nth-child(4) { animation-delay: 0.4s; }
+.results-section > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* Focus Styles for Accessibility */
+.tab:focus,
+.calculate-btn:focus,
+input:focus,
+select:focus {
+  outline: 3px solid rgba(66, 153, 225, 0.5);
+  outline-offset: 2px;
+}
+
+/* Hover Effects */
+.weight-summary:hover,
+.weeks-pregnant:hover,
+.bmi-analysis:hover,
+.progress-tracking:hover,
+.weekly-tips:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Loading State */
+.calculate-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.calculate-btn.loading::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 10px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

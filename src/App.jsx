@@ -5,6 +5,7 @@ import MomRoutes from './mom/routes/MomRoutes';
 import MidwifeRoutes from './midwife/routes/MidwifeRoutes';
 import DoctorRoutes from './doctor/routes/DoctorRoutes';
 import SPRoutes from './service_provider/routes/SPRoutes';
+import MomPregnacyRoutes from './mom/routes/MomPregnacyRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import HeroSection from './components/HeroSection/HeroSection';
 
@@ -19,6 +20,9 @@ function App() {
         {MidwifeRoutes}
         {DoctorRoutes}
         {SPRoutes}
+        {MomPregnacyRoutes}
+        {/* Add more routes as needed */}
+
       </Routes>
     </Router>
   );
