@@ -8,12 +8,14 @@ import SPRoutes from './service_provider/routes/SPRoutes';
 import MomPregnacyRoutes from './mom/routes/MomPregnacyRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import HeroSection from './components/HeroSection/HeroSection';
+import HomeSection from './components/HomeSection/HomeSection';
 
 function App() {
   return (
     <Router>
       <MainNavbar />
       <HeroSection />
+      <HomeSection/>
       <Routes>
         {AdminRoutes}
         {MomRoutes}
