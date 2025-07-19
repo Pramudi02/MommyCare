@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Heart } from 'lucide-react';
 
-const Navigation = () => {
+const Navigation = ({ onSignUpClick, onLoginClick }) => {
   return (
     <nav className="bg-gradient-to-r from-blue-50 to-pink-50 shadow-lg border-b border-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +15,7 @@ const Navigation = () => {
               MommyCare
             </span>
           </div>
-
+          
           {/* Search Bar */}
           <div className="flex flex-1 max-w-md mx-4 sm:mx-8">
             <div className="relative w-full">
@@ -29,19 +29,23 @@ const Navigation = () => {
               />
             </div>
           </div>
-
+          
           {/* Auth Buttons */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <button className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:bg-blue-100 rounded-full text-sm sm:text-base">
+            <button 
+              className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:bg-blue-100 rounded-full text-sm sm:text-base"
+              onClick={onLoginClick}
+            >
               Login
             </button>
-            <button className="px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-500 to-pink-500 text-white font-medium rounded-full hover:from-blue-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+            <button 
+              className="px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-500 to-pink-500 text-white font-medium rounded-full hover:from-blue-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base"
+              onClick={onSignUpClick}
+            >
               Sign Up
             </button>
           </div>
         </div>
-
-
       </div>
     </nav>
   );
