@@ -6,11 +6,13 @@ import MidwifeRoutes from './midwife/routes/MidwifeRoutes';
 import DoctorRoutes from './doctor/routes/DoctorRoutes';
 import SPRoutes from './service_provider/routes/SPRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
+import HeroSection from './components/HeroSection/HeroSection';
 
 function App() {
   return (
     <Router>
       <MainNavbar />
+      <HeroSection />
       <Routes>
         {AdminRoutes}
         {MomRoutes}
