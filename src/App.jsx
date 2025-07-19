@@ -9,10 +9,12 @@ import MomPregnacyRoutes from './mom/routes/MomPregnacyRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import HeroSection from './components/HeroSection/HeroSection';
 import HomeSection from './components/HomeSection/HomeSection';
+import MomNavbar from './mom/components/MomNavbar';
 
 function App() {
   return (
     <Router>
+      <MomNavbar/>
       <MainNavbar />
       <HeroSection />
       <HomeSection/>
