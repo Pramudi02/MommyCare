@@ -7,12 +7,14 @@ import DoctorRoutes from './doctor/routes/DoctorRoutes';
 import SPRoutes from './service_provider/routes/SPRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import HeroSection from './components/HeroSection/HeroSection';
+import HomeSection from './components/HomeSection/HomeSection';
 
 function App() {
   return (
     <Router>
       <MainNavbar />
       <HeroSection />
+      <HomeSection/>
       <Routes>
         {AdminRoutes}
         {MomRoutes}
