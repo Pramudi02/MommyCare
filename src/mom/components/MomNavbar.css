@@ -1,0 +1,216 @@
+/* Navigation Bar Styles */
+.navbar {
+  background: linear-gradient(to right, #eff6ff, #fdf2f8);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #dbeafe;
+}
+
+.navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .navbar-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .navbar-container {
+    padding: 0 2rem;
+  }
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+  width: 100%;
+  min-width: 0; /* Allow flex items to shrink */
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+  min-width: fit-content;
+}
+
+.logo-icon {
+  background: linear-gradient(to bottom right, #60a5fa, #f472b6);
+  padding: 0.5rem;
+  border-radius: 9999px;
+  color: white;
+}
+
+.heart-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #2563eb, #db2777);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Search Section */
+.search-container {
+  display: flex;
+  flex: 1;
+  max-width: 28rem;
+  margin: 0 1rem;
+  min-width: 200px; /* Ensure minimum width */
+}
+
+@media (min-width: 640px) {
+  .search-container {
+    margin: 0 2rem;
+  }
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding-left: 0.75rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.search-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: #60a5fa;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  outline: none;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+@media (min-width: 640px) {
+  .search-input {
+    font-size: 1rem;
+  }
+}
+
+.search-input::placeholder {
+  color: #60a5fa;
+}
+
+.search-input:focus {
+  ring: 2px;
+  ring-color: #93c5fd;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #93c5fd;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  min-width: fit-content;
+}
+
+@media (min-width: 640px) {
+  .auth-buttons {
+    gap: 0.75rem;
+  }
+}
+
+.login-btn {
+  padding: 0.5rem 0.75rem;
+  color: #2563eb;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border-radius: 9999px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .login-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+.login-btn:hover {
+  color: #1d4ed8;
+  background-color: #dbeafe;
+}
+
+.signup-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to right, #3b82f6, #ec4899);
+  color: white;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .signup-btn {
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.signup-btn:hover {
+  background: linear-gradient(to right, #2563eb, #db2777);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .navbar-content {
+    gap: 0.5rem;
+    flex-wrap: nowrap; /* Prevent wrapping */
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .search-container {
+    margin: 0 0.5rem;
+    min-width: 150px; /* Smaller minimum on mobile */
+  }
+  
+  .auth-buttons {
+    gap: 0.25rem; /* Smaller gap on mobile */
+  }
+}
