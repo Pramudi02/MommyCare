@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Users, 
   Baby, 
@@ -35,18 +36,20 @@ import {
 import './AdminSidebar.css';
 
 const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
+  const location = useLocation();
+
   const navigationSections = [
     {
       title: 'Main',
       items: [
-        { name: 'Dashboard', icon: Home, path: '/admin/dashboard', active: true },
+        { name: 'Dashboard', icon: Home, path: '/admin/dashboard', active: location.pathname === '/admin' || location.pathname === '/admin/dashboard' },
         { name: 'Analytics', icon: BarChart3, path: '/admin/analytics' }
       ]
     },
     {
       title: 'User Management',
       items: [
-        { name: 'All Users', icon: Users, path: '/admin/users' },
+        { name: 'All Users', icon: Users, path: '/admin/users', active: location.pathname === '/admin/users', badge: '456' },
         { name: 'Mothers', icon: Heart, path: '/admin/users/mothers', badge: '456' },
         { name: 'Healthcare Providers', icon: Stethoscope, path: '/admin/users/providers' },
         { name: 'Roles & Access', icon: Shield, path: '/admin/users/roles' }
@@ -134,9 +137,9 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
               )}
               <div className="nav-items">
                 {section.items.map((item, itemIndex) => (
-                  <a
+                  <Link
                     key={itemIndex}
-                    href={item.path}
+                    to={item.path}
                     className={`nav-item ${item.active ? 'active' : ''}`}
                   >
                     <item.icon className="nav-item-icon" />
@@ -150,7 +153,7 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
                         )}
                       </>
                     )}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
