@@ -60,19 +60,23 @@
   
   .baby-tool-card:hover {
     transform: translateY(-4px);
+    background-color: #e1ecff86;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: #5e9cff65;
+  }
+  
+  .baby-tool-card.active {
+    transform: translateY(-4px);
+    background-color: #c8ddffa2;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     border-color: #3b82f6;
   }
   
-  .baby-tool-card:active {
-    transform: translateY(-2px);
-  }
-  
   .tool-icon {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+    background: rgb(255, 255, 255);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,14 +84,13 @@
     transition: all 0.3s ease;
   }
   
-  .baby-tool-card:hover .tool-icon {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  .baby-tool-card:hover .tool-icon:hover {
     transform: scale(1.1);
   }
   
   .tool-icon img {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border-radius: 50%;
     transition: all 0.3s ease;
