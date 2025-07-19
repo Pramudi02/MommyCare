@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Bell, FileText, BarChart3, Syringe, Shield, Clock, MapPin, User, Hash } from 'lucide-react';
+import './Vaccination.css';
+
 
 const VaccinationTracker = () => {
   const [notifications, setNotifications] = useState(2);
