@@ -1,3 +1,4 @@
+//MomLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MomNavbar from './components/MomNavbar';
@@ -7,7 +8,6 @@ import BabyToolsHeader from './components/BabyToolsHeader';
 const MomLayout = () => (
   <div>
     <MomNavbar />
-    <BabyToolsHeader/>
     <Outlet />
     <Footer />
   </div>
