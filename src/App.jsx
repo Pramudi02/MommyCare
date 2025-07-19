@@ -8,10 +8,12 @@ import SPRoutes from './service_provider/routes/SPRoutes';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import HeroSection from './components/HeroSection/HeroSection';
 import HomeSection from './components/HomeSection/HomeSection';
+import MomNavbar from './mom/components/MomNavbar';
 
 function App() {
   return (
     <Router>
+      <MomNavbar/>
       <MainNavbar />
       <HeroSection />
       <HomeSection/>
