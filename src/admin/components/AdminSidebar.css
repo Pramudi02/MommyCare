@@ -96,13 +96,13 @@
 }
 
 .nav-item:hover {
-  background-color: #f9fafb;
-  color: #111827;
+  background-color: #e2efff;
+  color: #005184;
 }
 
 .nav-item.active {
   background-color: #eff6ff;
-  color: #2563eb;
+  color: #007fe0;
   border-right: 2px solid #2563eb;
 }
 
