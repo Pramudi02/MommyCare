@@ -5,10 +5,12 @@ import MomRoutes from './mom/routes/MomRoutes';
 import MidwifeRoutes from './midwife/routes/MidwifeRoutes';
 import DoctorRoutes from './doctor/routes/DoctorRoutes';
 import SPRoutes from './service_provider/routes/SPRoutes';
+import MainNavbar from './components/MainNavbar/MainNavbar';
 
 function App() {
   return (
     <Router>
+      <MainNavbar />
       <Routes>
         {AdminRoutes}
         {MomRoutes}
