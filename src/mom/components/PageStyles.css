@@ -1,0 +1,91 @@
+/* Global Page Styles for Mom Pages */
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .page-header p {
+    font-size: 1.125rem;
+    color: #64748b;
+    margin: 0;
+  }
+  
+  .page-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+  }
+  
+  .feature-card h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-card p {
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1.5rem 1rem;
+    }
+  
+    .page-header h1 {
+      font-size: 2rem;
+    }
+  
+    .page-header p {
+      font-size: 1rem;
+    }
+  
+    .page-content {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  
+    .feature-card {
+      padding: 1.5rem;
+    }
+  
+    .feature-card h2 {
+      font-size: 1.25rem;
+    }
+  }
