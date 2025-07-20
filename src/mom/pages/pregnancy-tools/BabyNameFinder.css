@@ -1,14 +1,42 @@
+/* BabyNameFinder.css - Glass Morphism Design */
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 /* Main App Container */
 .app-container {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border: 1.5px solid rgba(255,255,255,0.25);
   min-height: 100vh;
-  background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 50%, #eff6ff 100%);
 }
 
 /* Header Styles */
 .header {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .header-content {
@@ -30,7 +58,7 @@
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1f2937;
+  color: white;
 }
 
 .nav {
@@ -45,13 +73,13 @@
 }
 
 .nav-link {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .nav-link:hover {
-  color: #1f2937;
+  color: white;
 }
 
 .header-right {
@@ -61,7 +89,7 @@
 }
 
 .help-btn {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   background: none;
   border: none;
   cursor: pointer;
@@ -69,21 +97,23 @@
 }
 
 .help-btn:hover {
-  color: #1f2937;
+  color: white;
 }
 
 .signin-btn {
-  background: #2563eb;
+  background: rgba(37, 99, 235, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: none;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .signin-btn:hover {
-  background: #1d4ed8;
+  background: rgba(37, 99, 235, 0.5);
 }
 
 /* Main Container */
@@ -107,12 +137,21 @@
 
 /* Name Finder Card */
 .name-finder-card {
-  background: linear-gradient(135deg, #e9d5ff 0%, #fdf2f8 50%, #dbeafe 100%);
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.2), rgba(253, 242, 248, 0.1), rgba(219, 234, 254, 0.1));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
-  border: 1px solid #c084fc;
+  transition: all 0.3s ease;
+}
+
+.name-finder-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.3), rgba(253, 242, 248, 0.2), rgba(219, 234, 254, 0.2));
 }
 
 .name-finder-header {
@@ -139,12 +178,13 @@
 .main-title {
   font-size: 1.875rem;
   font-weight: bold;
-  color: #6b46c1;
+  color: white;
   margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .main-subtitle {
-  color: #7c3aed;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Search Container */
@@ -163,7 +203,7 @@
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #2563eb;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .search-input {
@@ -171,17 +211,25 @@
   padding: 1rem 1rem 1rem 3rem;
   padding-right: 4rem;
   border-radius: 9999px;
-  border: 2px solid #93c5fd;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   font-size: 1.125rem;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   outline: none;
+  color: white;
+  transition: all 0.3s ease;
 }
 
 .search-input:focus {
-  ring: 2px;
-  ring-color: #2563eb;
-  border-color: #2563eb;
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .search-btn {
@@ -189,18 +237,20 @@
   right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  background: #2563eb;
+  background: rgba(37, 99, 235, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   padding: 0.625rem;
   border-radius: 9999px;
-  border: none;
   cursor: pointer;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s;
 }
 
 .search-btn:hover {
-  background: #1d4ed8;
+  background: rgba(37, 99, 235, 0.5);
 }
 
 .search-hint {
@@ -210,7 +260,7 @@
 
 .search-hint p {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Filter Buttons */
@@ -227,20 +277,24 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .filter-btn:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .filter-btn-active {
-  background: #2563eb;
+  background: rgba(37, 99, 235, 0.3);
   color: white;
+  border-color: rgba(37, 99, 235, 0.5);
 }
 
 /* Selectors */
@@ -268,23 +322,32 @@
 .selector-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: white;
   margin-bottom: 0.5rem;
 }
 
 .selector {
   padding: 0.75rem 1.5rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 0.5rem;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   min-width: 10rem;
   outline: none;
+  color: white;
+  transition: all 0.3s ease;
 }
 
 .selector:focus {
-  ring: 2px;
-  ring-color: #2563eb;
-  border-color: #2563eb;
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.selector option {
+  background: #2d3748;
+  color: white;
 }
 
 .results-info {
@@ -292,7 +355,7 @@
 }
 
 .results-info p {
-  color: #2563eb;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -318,17 +381,20 @@
 }
 
 .name-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .name-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-0.25rem);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .name-card-header {
@@ -341,7 +407,7 @@
 .name-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1f2937;
+  color: white;
 }
 
 .name-actions {
@@ -351,7 +417,7 @@
 }
 
 .action-btn {
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.6);
   background: none;
   border: none;
   cursor: pointer;
@@ -363,11 +429,11 @@
 }
 
 .action-btn:hover:last-child {
-  color: #2563eb;
+  color: rgba(37, 99, 235, 0.8);
 }
 
 .name-meaning {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
   line-height: 1.5;
@@ -392,7 +458,7 @@
 }
 
 .star-empty {
-  color: #e5e7eb;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .likes {
@@ -402,12 +468,12 @@
 }
 
 .heart-icon {
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .likes-count {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Discover More Button */
@@ -416,22 +482,74 @@
 }
 
 .discover-btn {
-  background: linear-gradient(to right, #7c3aed, #2563eb);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(37, 99, 235, 0.3));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   padding: 1rem 2rem;
   border-radius: 9999px;
   font-weight: 600;
-  border: none;
   cursor: pointer;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 0 auto;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .discover-btn:hover {
-  background: linear-gradient(to right, #6d28d9, #1d4ed8);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.5), rgba(37, 99, 235, 0.5));
   transform: scale(1.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .names-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .selectors-container {
+    flex-direction: column;
+  }
+  
+  .main-title {
+    font-size: 1.5rem;
+  }
+  
+  .search-input {
+    font-size: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Focus Styles for Accessibility */
+.search-input:focus,
+.selector:focus,
+.filter-btn:focus,
+.discover-btn:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }

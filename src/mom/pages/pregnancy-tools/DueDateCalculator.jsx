@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './PregnancyCalculator.css';
+import './DueDateCalculator.css';
 
-const PregnancyCalculator = () => {
+const DueDateCalculator = () => {
   const [lastPeriod, setLastPeriod] = useState('');
   const [cycleLength, setCycleLength] = useState(28);
   const [calculationMethod, setCalculationMethod] = useState('last-period');
@@ -291,5 +291,4 @@ const PregnancyCalculator = () => {
     </div>
   );
 };
-
-export default PregnancyCalculator;
+export default DueDateCalculator; 

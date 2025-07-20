@@ -1,3 +1,12 @@
 import React from 'react';
-const Home = () => <div>Mom Home</div>;
+import HeroSection from '../../components/HeroSection/HeroSection';
+import HomeSection from '../../components/HomeSection/HomeSection';
+
+const Home = () => (
+  <div>
+    <HeroSection />
+    <HomeSection />
+  </div>
+);
+
 export default Home; 

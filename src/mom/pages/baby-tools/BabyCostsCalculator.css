@@ -1,11 +1,23 @@
+/* Base styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .container {
-  margin: 25px;
   background: white;
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -15,9 +27,9 @@
 
 .header {
   background: linear-gradient(135deg, #9aebff 0%, #cffcfe 50%, #fecfef 100%);
-  padding: 30px;
+ 
   text-align: center;
-  color: #2c3e50;
+  color: #afbac6;
 }
 
 .header h1 {
@@ -33,7 +45,7 @@
 .header-icon {
   width: 40px;
   height: 40px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .header p {
@@ -45,6 +57,7 @@
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 0;
+  border-radius: 20px;
   background: linear-gradient(135deg, #ddf8ff67 0%, #e0fdff76 50%, #ffdef575 100%);
   min-height: 600px;
 }
@@ -66,7 +79,7 @@
 
 .age-tab {
   padding: 12px 20px;
-  background: #f8f9fa;
+  background: #f8f9fa75;
   border: 2px solid #e9ecef;
   border-radius: 25px;
   cursor: pointer;
@@ -76,8 +89,8 @@
 }
 
 .age-tab.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #c5d0ff6d 0%, #cb97ff58 100%);
+  color: rgb(235, 254, 255);
   border-color: #667eea;
   transform: translateY(-2px);
 }
@@ -89,7 +102,7 @@
 }
 
 .category-card {
-  background: #ffffff;
+  background: #ffffff95;
   border-radius: 15px;
   padding: 20px;
   border-left: 5px solid;
