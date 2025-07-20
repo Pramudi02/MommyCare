@@ -7,6 +7,7 @@ import Mothers from '../pages/Mothers';
 import HealthcareProviders from '../pages/HealthcareProviders';
 import RoleAccessManagement from '../pages/RoleAccessManagement';
 import Settings from '../pages/Settings';
+import AiDashboard from '../pages/AiDashboard';
 
 export default (
   <Route path="/admin" element={<AdminLayout />}>
@@ -17,5 +18,7 @@ export default (
     <Route path="users/providers" element={<HealthcareProviders />} />
     <Route path="users/roles" element={<RoleAccessManagement />} />
     <Route path="settings" element={<Settings />} />
+    <Route path="ai" element={<AiDashboard />} />
+
   </Route>
 ); 
