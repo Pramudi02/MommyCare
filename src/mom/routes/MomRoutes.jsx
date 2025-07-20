@@ -2,12 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import MomLayout from '../MomLayout';
 import Home from '../pages/Home';
-import Profile from '../pages/Profile';
-
-import BabyCostsCalculator from '../pages/BabyCostsCalculator';
-import BabyNameFinder from '../pages/PregnancyTrackerBabyNameFinder';
-import MyAppointments from '../pages/appointments/MyAppointments';
-
+import AppointmentsDashboard from '../pages/appointments/MyAppointments';
 import Vaccinations from '../pages/Vaccinations';
 import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';
@@ -35,12 +30,6 @@ export default (
   
   <Route path="/mom" element={<MomLayout />}>
     <Route index element={<Home />} />
-
-    <Route path="baby-costs-calculator" element={<BabyCostsCalculator />} />
-    <Route path="profile" element={<Profile />} />
-    <Route path="babynamefinder" element={<BabyNameFinder />} />
-    <Route path="myappointments" element={<MyAppointments />} />
-
     
     {/* Pregnancy Tracker Section */}
     <Route path="pregnancy-tracker">
@@ -66,12 +55,11 @@ export default (
     {/* Other Sections */}
     <Route path="vaccinations" element={<Vaccinations />} />
     <Route path="vaccinationschedule" element={<VaccinationSchedule />} />
-    <Route path="appointments" element={<Appointments />} />
+    <Route path="appointments" element={<AppointmentsDashboard />} />
     <Route path="medical-reports" element={<MedicalReports />} />
     <Route path="predictions" element={<Predictions />} />
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
-    <Route path="profile" element={<Profile />} />
 
   </Route>
 ); 
