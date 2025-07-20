@@ -12,6 +12,7 @@ import HomeSection from './components/HomeSection/HomeSection';
 import MomNavbar from './mom/components/MomNavbar';
 import SignUp from './components/Authentication/SignUp/SignUp';
 import Login from './components/Authentication/Login/Login';
+import Footer from './components/Footer/footer';
 
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -34,13 +35,14 @@ function App() {
 
   return (
     <Router>
-    
+    <div className="app-container">
       <MomNavbar
         onSignUpClick={handleSignUpOpen}
         onLoginClick={handleLoginOpen}
       />
 
       <MainNavbar/>
+      
       <HeroSection />
       <HomeSection />
       <Routes>
@@ -53,10 +55,11 @@ function App() {
         {/* Add more routes as needed */}
 
       </Routes>
-      
+      <Footer/>
       {/* Modals */}
       <SignUp isOpen={showSignUp} onClose={handleCloseModals} />
       <Login isOpen={showLogin} onClose={handleCloseModals} />
+    </div>
     </Router>
   );
 }
