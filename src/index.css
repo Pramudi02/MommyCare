@@ -1,7 +1,7 @@
+@import url('./mom/components/PageStyles.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('./src/mom/components/PageStyles.css');
 
 /* Custom scrollbar for overflow containers */
 ::-webkit-scrollbar {

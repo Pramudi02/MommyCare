@@ -1,0 +1,310 @@
+/* Home Section Styles */
+.home-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 60px 0;
+  }
+  
+  /* Pregnancy Week Tracker */
+  .pregnancy-tracker {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    margin-bottom: 80px;
+  }
+  
+  .tracker-title {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 40px;
+  }
+  
+  .weeks-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 20px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .week-card {
+    min-width: 90px;
+    height: 140px;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .week-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .week-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #4a90e2;
+    margin-bottom: -5px;
+  }
+  
+  .week-label {
+    font-size: 0.75rem;
+    color: #666;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  
+  .week-icon {
+    font-size: 2rem;
+    margin-top: auto;
+  }
+  
+  /* Testimonials Section */
+  .testimonials-section {
+    width: 97.5%;
+    padding: 0;
+  }
+  
+  .testimonials-background {
+    width: 100%;
+    min-height: 500px;
+    background-image: url('https://images.pexels.com/photos/2839411/pexels-photo-2839411.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+    margin: 0 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .testimonials-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(32, 32, 33, 0.8) 0%, rgba(60, 60, 60, 0.7) 50%, rgba(30, 31, 30, 0.6) 100%);
+    z-index: 1;
+  }
+  
+  .testimonials-content {
+    display: flex;
+    min-height: 500px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .testimonials-text {
+    flex: 1;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 50%;
+  }
+  
+  .testimonials-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 40px;
+    line-height: 1.2;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .testimonials-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .testimonial-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+  }
+  
+  .testimonial-card:hover {
+    transform: translateX(5px);
+  }
+  
+  .testimonial-text {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-style: italic;
+  }
+  
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .author-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+  }
+  
+  .avatar-icon {
+    color: white;
+    font-size: 18px;
+  }
+  
+  .author-info {
+    flex: 1;
+  }
+  
+  .author-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+  }
+  
+  .author-role {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .testimonials-image {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    max-width: 50%;
+  }
+  
+  .mother-child-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .testimonials-background {
+      margin: 0 10px;
+    }
+    
+    .testimonials-text {
+      padding: 40px 30px;
+    }
+    
+    .testimonials-title {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .weeks-container {
+      justify-content: flex-start;
+      padding-left: 10px;
+    }
+    
+    .week-card {
+      min-width: 100px;
+      height: 120px;
+      padding: 12px 8px;
+    }
+    
+    .week-number {
+      font-size: 1.5rem;
+    }
+    
+    .week-label {
+      font-size: 0.7rem;
+    }
+    
+    .week-icon {
+      font-size: 1.5rem;
+    }
+    
+    .tracker-title {
+      font-size: 1.8rem;
+    }
+    
+    .testimonials-content {
+      flex-direction: column;
+    }
+    
+    .testimonials-text {
+      max-width: 100%;
+      padding: 30px 20px;
+    }
+    
+    .testimonials-image {
+      max-width: 100%;
+      min-height: 300px;
+    }
+    
+    .testimonials-title {
+      font-size: 1.8rem;
+      text-align: center;
+    }
+    
+    .testimonials-background {
+      margin: 0 10px;
+      border-radius: 15px;
+    }
+    
+    .testimonial-card {
+      padding: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .weeks-container {
+      gap: 10px;
+    }
+    
+    .week-card {
+      min-width: 85px;
+      height: 100px;
+      padding: 10px 6px;
+    }
+    
+    .testimonials-text {
+      padding: 25px 15px;
+    }
+    
+    .testimonial-card {
+      padding: 15px;
+    }
+    
+    .testimonial-text {
+      font-size: 0.9rem;
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .testimonials-title {
+      font-size: 1.6rem;
+    }
+  }
