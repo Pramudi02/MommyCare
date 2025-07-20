@@ -7,8 +7,7 @@ import BabyToolsHeader from './components/BabyToolsHeader';
 
 const MomLayout = () => (
   <div>
-    <MomNavbar />
-    <BabyToolsHeader/>
+
     <Outlet />
     <Footer />
   </div>

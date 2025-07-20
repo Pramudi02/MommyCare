@@ -35,30 +35,38 @@ function App() {
 
   return (
     <Router>
-    <div className="app-container">
-      <MomNavbar
-        onSignUpClick={handleSignUpOpen}
-        onLoginClick={handleLoginOpen}
-      />
+      <div className="app-container">
+        <MomNavbar
+          onSignUpClick={handleSignUpOpen}
+          onLoginClick={handleLoginOpen}
+        />
 
-      <MainNavbar/>
-      <HeroSection />
-      <HomeSection />
-      <Routes>
-        {AdminRoutes}
-        {MomRoutes}
-        {MidwifeRoutes}
-        {DoctorRoutes}
-        {SPRoutes}
-        {MomPregnacyRoutes}
-        {/* Add more routes as needed */}
+        <MainNavbar />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <HeroSection />
+                <HomeSection />
+              </>
+            }
+          />
 
-      </Routes>
-      <Footer/>
-      {/* Modals */}
-      <SignUp isOpen={showSignUp} onClose={handleCloseModals} />
-      <Login isOpen={showLogin} onClose={handleCloseModals} />
-    </div>
+          {AdminRoutes}
+          {MomRoutes}
+          {MidwifeRoutes}
+          {DoctorRoutes}
+          {SPRoutes}
+          {MomPregnacyRoutes}
+          {/* Add more routes as needed */}
+
+        </Routes>
+        <Footer />
+        {/* Modals */}
+        <SignUp isOpen={showSignUp} onClose={handleCloseModals} />
+        <Login isOpen={showLogin} onClose={handleCloseModals} />
+      </div>
     </Router>
   );
 }

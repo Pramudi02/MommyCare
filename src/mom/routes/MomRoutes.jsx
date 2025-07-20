@@ -6,7 +6,7 @@ import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import BabyCostsCalculator from '../pages/BabyCostsCalculator';
 import BabyNameFinder from '../pages/PregnancyTrackerBabyNameFinder';
-import MyAppointments from '../pages/Appointments/MyAppointments';
+import MyAppointments from '../pages/appointments/MyAppointments';
 
 export default (
   <Route path="/mom" element={<MomLayout />}>
@@ -15,7 +15,6 @@ export default (
     <Route path="profile" element={<Profile />} />
     <Route path="babynamefinder" element={<BabyNameFinder />} />
     <Route path="myappointments" element={<MyAppointments />} />
-   
   </Route>
    
 ); 

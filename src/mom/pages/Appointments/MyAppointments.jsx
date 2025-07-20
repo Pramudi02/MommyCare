@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import './MyAppointments.css';
 
 const AppointmentsDashboard = () => {
-  const [currentMonth, setCurrentMonth] = useState('June 2025');
+  const [currentMonth, setCurrentMonth] = useState('July 2025');
   
   const statsData = [
     { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500' },
-    { number: 1, label: 'Missed Appointments', color: 'text-red-500' },
-    { number: 12, label: 'Completed This Month', color: 'text-green-500' }
+    { number: 2, label: 'Missed Appointments', color: 'text-red-500' },
+    { number: 8, label: 'Completed This Month', color: 'text-green-500' }
   ];
 
   const clinicServices = [
@@ -29,45 +29,44 @@ const AppointmentsDashboard = () => {
     { icon: '🚨', name: 'Emergency' }
   ];
 
-  // Calendar data
+  // Calendar data for July 2025
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const calendarDays = [
-    [null, null, null, null, null, null, 1],
-    [2, 3, 4, 5, 6, 7, 8],
-    [9, 10, 11, 12, 13, 14, 15],
-    [16, 17, 18, 19, 20, 21, 22],
-    [23, 24, 25, 26, 27, 28, 29],
-    [30, null, null, null, null, null, null]
+    [null, null, 1, 2, 3, 4, 5],
+    [6, 7, 8, 9, 10, 11, 12],
+    [13, 14, 15, 16, 17, 18, 19],
+    [20, 21, 22, 23, 24, 25, 26],
+    [27, 28, 29, 30, 31, null, null]
   ];
 
-  // Appointment dates
+  // Appointment dates - consistent with upcoming and missed appointments
   const appointmentDates = {
-    9: 'missed', // Pink for missed
-    12: 'upcoming', // Blue for upcoming
-    15: 'upcoming',
-    20: 'upcoming',
-    25: 'upcoming'
+    10: 'missed', // July 10 - missed
+    15: 'missed', // July 15 - missed
+    22: 'upcoming', // July 22 - upcoming
+    25: 'upcoming', // July 25 - upcoming
+    28: 'upcoming'  // July 28 - upcoming
   };
 
   const upcomingAppointments = [
     {
       id: 1,
       type: 'Gynecologist Checkup',
-      date: 'Tomorrow, 10:00 AM',
+      date: 'July 22, 10:00 AM',
       icon: '👩‍⚕️',
       color: 'bg-pink-100'
     },
     {
       id: 2,
       type: 'Baby Weight Check',
-      date: 'June 15, 2:30 PM',
+      date: 'July 25, 2:30 PM',
       icon: '👶',
       color: 'bg-yellow-100'
     },
     {
       id: 3,
       type: 'Ultrasound Scan',
-      date: 'June 20, 9:00 AM',
+      date: 'July 28, 9:00 AM',
       icon: '🔍',
       color: 'bg-purple-100'
     }
@@ -77,14 +76,14 @@ const AppointmentsDashboard = () => {
     {
       id: 1,
       type: 'Baby Vaccination',
-      date: 'June 5, 3:00 PM',
+      date: 'July 10, 3:00 PM',
       icon: '💉',
       action: 'Click to reschedule'
     },
     {
       id: 2,
       type: 'Blood Test',
-      date: 'May 28, 11:00 AM',
+      date: 'July 15, 11:00 AM',
       icon: '🩸',
       action: 'Click to reschedule'
     }
@@ -161,7 +160,7 @@ const AppointmentsDashboard = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               {clinicServices.map((service, index) => (
-                <div key={index} className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                <div key={index} className="service-item flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent">
                   <div className="text-2xl mb-2">{service.icon}</div>
                   <span className="text-sm text-gray-700 text-center">{service.name}</span>
                 </div>
@@ -187,7 +186,7 @@ const AppointmentsDashboard = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               {doctorServices.map((service, index) => (
-                <div key={index} className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                <div key={index} className="service-item flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent">
                   <div className="text-2xl mb-2">{service.icon}</div>
                   <span className="text-sm text-gray-700 text-center">{service.name}</span>
                 </div>
@@ -249,8 +248,11 @@ const AppointmentsDashboard = () => {
                     const appointmentType = appointmentDates[day];
                     let dayClass = "p-2 text-center text-sm hover:bg-gray-50 rounded cursor-pointer transition-colors";
                     
-                    if (appointmentType === 'missed') {
-                      dayClass += " bg-pink-400 text-white font-medium";
+                    // Today is July 20, 2025 - highlight in pink
+                    if (day === 20) {
+                      dayClass += " bg-pink-400 text-white font-bold";
+                    } else if (appointmentType === 'missed') {
+                      dayClass += " bg-red-100 text-red-600 font-medium";
                     } else if (appointmentType === 'upcoming') {
                       dayClass += " border-2 border-blue-400 text-blue-600 font-medium";
                     }
