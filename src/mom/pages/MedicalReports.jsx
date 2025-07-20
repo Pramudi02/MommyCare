@@ -77,9 +77,9 @@ const MedicalReports = () => {
     <div className="medical-reports-container">
       <div className="medical-reports-content">
         {/* Header */}
-        <div className="header">
-          <h1 className="header-title">Medical Reports</h1>
-          <p className="header-description">View and manage all your medical records and test results</p>
+        <div className="headerMedical">
+          <h1 className="headerMedical-title">Medical Reports</h1>
+          <p className="headerMedical-description">View and manage all your medical records and test results</p>
         </div>
 
         <div className="main-grid">
@@ -133,11 +133,11 @@ const MedicalReports = () => {
                   </div>
 
                   <div className="report-actions">
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primaryM">
                       <Eye className="w-4 h-4" />
                       <span>{report.type === 'ULTRASOUND' ? 'View Images' : 'View Report'}</span>
                     </button>
-                    <button className="btn btn-secondary">
+                    <button className="btn btn-secondaryM">
                       <Download className="w-4 h-4" />
                       <span>Download</span>
                     </button>

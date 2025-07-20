@@ -10,23 +10,23 @@
   padding: 1.5rem;
 }
 
-/* Header */
-.header {
+/* Header 
+.headerMedical {
   text-align: center;
   margin-bottom: 2rem;
 }
 
-.header-title {
+.headerMedical-title {
   font-size: 1.875rem;
   font-weight: 700;
   color: #1f2937 !important;
   margin-bottom: 0.5rem;
 }
 
-.header-description {
+.headerMedical-description {
   color: #4b5563 !important;
   font-weight: 500;
-}
+}*/
 
 /* Layout Grid */
 .main-grid {
@@ -186,21 +186,21 @@
   border: none;
 }
 
-.btn-primary {
+.btn-primaryM {
   background-color: #ec4899;
   color: white;
 }
 
-.btn-primary:hover {
+.btn-primaryM:hover {
   background-color: #be185d;
 }
 
-.btn-secondary {
+.btn-secondaryM {
   background-color: #f3f4f6;
   color: #374151;
 }
 
-.btn-secondary:hover {
+.btn-secondaryM:hover {
   background-color: #e5e7eb;
 }
 
@@ -339,4 +339,100 @@
 
 .btn-upload:hover {
   background-color: #be185d;
+}
+
+/* Enhanced Header with Gradient Background */
+.headerMedical {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 3rem 2rem;
+  background-image: url('/images/medical.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+}
+
+/* Add subtle pattern overlay */
+.headerMedical::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* Dark overlay for text readability */
+  pointer-events: none;
+}
+
+.headerMedical::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+  pointer-events: none;
+}
+
+.headerMedical-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white !important;
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.headerMedical-description {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Add an icon to the header */
+.headerMedical-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.headerMedical-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .headerMedical {
+    padding: 2rem 1.5rem;
+  }
+  
+  .headerMedical-title {
+    font-size: 1.875rem;
+  }
+  
+  .headerMedical-description {
+    font-size: 1rem;
+  }
 }
