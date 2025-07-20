@@ -26,6 +26,7 @@ import FeedingSolutions from '../pages/baby-tools/FeedingSolutions';
 import DoctorVisitsGuide from '../pages/baby-tools/DoctorVisitsGuide';
 
 export default (
+  
   <Route path="/mom" element={<MomLayout />}>
     <Route index element={<Home />} />
     

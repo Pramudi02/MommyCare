@@ -138,7 +138,7 @@ const Predictions = () => {
         {/* Header */}
         <div className="predictions-header">
           <div className="header-card">
-            <h1 className="main-title">🤖 MaternityCare+ AI Predictions</h1>
+            <h1 className="main-title">AI Predictions</h1>
             <p className="subtitle">Advanced AI-powered health predictions for maternal care</p>
           </div>
           
