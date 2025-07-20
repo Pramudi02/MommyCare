@@ -73,9 +73,9 @@
   }
   
   .tool-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border-radius: 5%;
     background: rgb(255, 255, 255);
     display: flex;
     align-items: center;
@@ -89,10 +89,8 @@
   }
   
   .tool-icon img {
-    width: 80px;
-    height: 80px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 25px;
     transition: all 0.3s ease;
   }
   

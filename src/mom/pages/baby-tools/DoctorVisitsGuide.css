@@ -1,5 +1,16 @@
 /* DoctorVisitsGuide.css - Glass Morphism Design */
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%);
+  min-height: 100vh;
+}
 /* Base styles */
 .doctor-visits-guide {
     margin: 0 auto;

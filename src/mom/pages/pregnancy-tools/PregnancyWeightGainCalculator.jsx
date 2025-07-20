@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './PregnancyWeightGainCalculator.css';
+import './PregnancyWeightGaincalculator.css';
 
 const PregnancyWeightGainCalculator = () => {
   const [activeTab, setActiveTab] = useState('first');

@@ -248,7 +248,7 @@ function FeedingSolutions() {
       {/* Baby Meal Plans Tab */}
       {activeTab === 'meals' && (
         <div className="section meal-plans">
-          <h2 className="section-title">🥄 Baby Meal Plans by Age</h2>
+          <h2 className="section-title">🍽️ Baby Meal Plans by Age</h2>
           <div className="cards-grid">
             {mealPlans.map((card, idx) => (
               <div
@@ -256,7 +256,6 @@ function FeedingSolutions() {
                 key={card.title}
                 onClick={() => toggleMealCard(idx)}
               >
-                <div className="age-badge">{card.age}</div>
                 <div className="card-header">
                   <div className="card-emoji">{card.emoji}</div>
                   <div className="card-title">{card.title}</div>
@@ -264,7 +263,7 @@ function FeedingSolutions() {
                 </div>
                 <div className="card-description">{card.description}</div>
                 <div className={`dropdown-content${mealCards[idx] ? ' open' : ''}`}>
-                  {card.details}
+                  {card.details && card.details}
                 </div>
               </div>
             ))}
@@ -275,4 +274,4 @@ function FeedingSolutions() {
   );
 }
 
-export default FeedingSolutions;
+export default FeedingSolutions; 
