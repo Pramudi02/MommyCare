@@ -10,76 +10,162 @@ body {
   padding: 0;
 }
 
-/* Pregnancy Tools Section */
-.pregnancy-tools-section {
-  margin-bottom: 3rem;
+.pregnancy-tools-header {
+  background: linear-gradient(135deg, #e8fffad1 0%, #e2e8f09c 100%);
+  padding: 2rem 1rem;
+  margin: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.section-title {
-  font-size: 1.25rem;
+.pregnancy-tools-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pregnancy-tools-title {
+  font-size: 2rem;
   font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
 }
 
-.tools-grid {
+.pregnancy-tools-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 2px;
+}
+
+.pregnancy-tools-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: center;
+  justify-items: center;
 }
 
-@media (min-width: 768px) {
-  .tools-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .tools-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-.tool-card {
+.pregnancy-tool-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 2px solid transparent;
+  width: 100%;
+  max-width: 220px;
+  min-height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: box-shadow 0.2s;
+  justify-content: center;
 }
 
-.tool-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+.pregnancy-tool-card:hover {
+  transform: translateY(-4px);
+  background-color: #e1ecff86;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border-color: #5e9cff65;
+}
+
+.pregnancy-tool-card.active {
+  transform: translateY(-4px);
+  background-color: #c8ddffa2;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border-color: #3b82f6;
 }
 
 .tool-icon {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 0.75rem;
+  width: 120px;
+  height: 120px;
+  border-radius: 5%;
+  background: rgb(255, 255, 255);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 
-.tool-orange { background: #fed7aa; }
-.tool-emerald { background: #a7f3d0; }
-.tool-blue { background: #bfdbfe; }
-.tool-yellow { background: #fef3c7; }
-.tool-pink { background: #fce7f3; }
-.tool-green { background: #bbf7d0; }
+.pregnancy-tool-card:hover .tool-icon {
+  transform: scale(1.1);
+}
 
 .tool-emoji {
-  font-size: 1.5rem;
+  font-size: 3rem;
+  transition: all 0.3s ease;
+}
+
+.pregnancy-tool-card:hover .tool-emoji {
+  transform: scale(1.1);
 }
 
 .tool-title {
   font-size: 0.875rem;
-  text-align: center;
+  font-weight: 500;
   color: #374151;
-  line-height: 1.2;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.pregnancy-tool-card:hover .tool-title {
+  color: #1e40af;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pregnancy-tools-header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pregnancy-tools-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pregnancy-tools-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .pregnancy-tool-card {
+    padding: 1rem;
+    min-height: 140px;
+    max-width: 180px;
+  }
+
+  .tool-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .tool-emoji {
+    font-size: 2rem;
+  }
+
+  .tool-title {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pregnancy-tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pregnancy-tool-card {
+    max-width: none;
+  }
 }

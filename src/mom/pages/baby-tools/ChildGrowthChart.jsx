@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Scatter } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calculator, TrendingUp, Activity, AlertCircle, BarChart3 } from 'lucide-react';
 import './ChildGrowthChart.css';
 
@@ -31,7 +31,6 @@ const ChildGrowthChart = () => {
   });
 
   const [results, setResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('weight');
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
   const calculateAge = (birthDate, measurementDate) => {
@@ -103,7 +102,7 @@ const ChildGrowthChart = () => {
     <div className="child-growth-chart">
       <div className="glass-header">
         <h1>
-          <BarChart3 className="header-icon" style={"margin-right: 15px;"} />
+          <BarChart3 className="header-icon" style={{marginRight: "15px"}} />
           Baby Growth Chart & Percentile Calculator
         </h1>
         <p>Track your baby's growth with our comprehensive percentile calculator and interactive charts</p>
@@ -112,7 +111,7 @@ const ChildGrowthChart = () => {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <div className="feature-card">
           <div className="flex items-center mb-4">
-            <TrendingUp className="w-8 h-8 text-white mr-3" />
+            <TrendingUp className="w-8 h-8 text-black mr-3" />
             <h3>Growth Tracking</h3>
           </div>
           <p>Monitor your baby's height, weight and head circumference against WHO standards to ensure healthy development patterns.</p>
@@ -120,7 +119,7 @@ const ChildGrowthChart = () => {
 
         <div className="feature-card">
           <div className="flex items-center mb-4">
-            <Calculator className="w-8 h-8 text-white mr-3" />
+            <Calculator className="w-8 h-8 text-black mr-3" />
             <h3>Percentile Analysis</h3>
           </div>
           <p>Understand where your baby stands compared to peers of the same age and gender with detailed percentile calculations.</p>
@@ -128,7 +127,7 @@ const ChildGrowthChart = () => {
 
         <div className="feature-card">
           <div className="flex items-center mb-4">
-            <Activity className="w-8 h-8 text-white mr-3" />
+            <Activity className="w-8 h-8 text-black mr-3" />
             <h3>Medical Guidance</h3>
           </div>
           <p>Get best-practice regular pediatric guidance for comprehensive growth monitoring and milestone tracking.</p>
@@ -155,7 +154,7 @@ const ChildGrowthChart = () => {
               </div>
 
               <div>
-                <label className="glass-label">Date</label>
+                <label className="glass-label">Birth Date</label>
                 <input 
                   type="date"
                   value={babyData.birthDate}
@@ -175,48 +174,25 @@ const ChildGrowthChart = () => {
               </div>
 
               <div>
-                <label className="glass-label">Weight</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="number"
-                    step="0.1"
-                    placeholder="Enter weight"
-                    value={babyData.weight}
-                    onChange={(e) => setBabyData({...babyData, weight: e.target.value})}
-                    className="glass-input flex-1"
-                  />
-                  <select className="glass-select">
-                    <option>Pounds</option>
-                    <option>Ounces</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="glass-label">Height/Length (inches)</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="number"
-                    step="0.1"
-                    placeholder="Enter height in inches"
-                    value={babyData.height}
-                    onChange={(e) => setBabyData({...babyData, height: e.target.value})}
-                    className="glass-input flex-1"
-                  />
-                  <select className="glass-select">
-                    <option>Feet and Inches</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="glass-label">Head Circumference (cm)</label>
+                <label className="glass-label">Weight (lbs)</label>
                 <input 
                   type="number"
                   step="0.1"
-                  placeholder="Enter head circumference in cm"
-                  value={babyData.headCircumference}
-                  onChange={(e) => setBabyData({...babyData, headCircumference: e.target.value})}
+                  placeholder="Enter weight"
+                  value={babyData.weight}
+                  onChange={(e) => setBabyData({...babyData, weight: e.target.value})}
+                  className="glass-input"
+                />
+              </div>
+
+              <div>
+                <label className="glass-label">Height (inches)</label>
+                <input 
+                  type="number"
+                  step="0.1"
+                  placeholder="Enter height in inches"
+                  value={babyData.height}
+                  onChange={(e) => setBabyData({...babyData, height: e.target.value})}
                   className="glass-input"
                 />
               </div>
@@ -249,10 +225,24 @@ const ChildGrowthChart = () => {
             <h2>Growth Chart</h2>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={growthData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="age" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
+                <XAxis 
+                  dataKey="age" 
+                  stroke="rgba(255,255,255,0.8)"
+                  tick={{ fill: 'rgba(255,255,255,0.8)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.8)"
+                  tick={{ fill: 'rgba(255,255,255,0.8)' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '8px',
+                    color: 'white'
+                  }}
+                />
                 <Line type="monotone" dataKey="p3" stroke="#ff6b6b" strokeWidth={2} />
                 <Line type="monotone" dataKey="p10" stroke="#ffa726" strokeWidth={2} />
                 <Line type="monotone" dataKey="p25" stroke="#ffeb3b" strokeWidth={2} />

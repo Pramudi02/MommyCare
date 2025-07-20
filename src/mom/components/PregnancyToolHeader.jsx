@@ -4,46 +4,46 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './PregnancyToolHeader.css';
 
-const PregnancyTools = () => {
+const PregnancyToolHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const pregnancyTools = [
     { 
-      emoji: '📅', 
+      id: 'due-date-calculator',
       title: 'Due Date Calculator', 
-      color: 'tool-orange',
-      path: '/mom/pregnancy-tracker/due-date-calculator'
+      path: '/mom/pregnancy-tracker/due-date-calculator',
+      icon: '📅'
     },
     { 
-      emoji: '👶', 
+      id: 'baby-name-finder',
       title: 'Baby Names Finder', 
-      color: 'tool-emerald',
-      path: '/mom/pregnancy-tracker/baby-name-finder'
+      path: '/mom/pregnancy-tracker/baby-name-finder',
+      icon: '👶'
     },
     { 
-      emoji: '📈', 
+      id: 'weight-gain-calculator',
       title: 'Pregnancy Weight Gain Calculator', 
-      color: 'tool-blue',
-      path: '/mom/pregnancy-tracker/weight-gain-calculator'
+      path: '/mom/pregnancy-tracker/weight-gain-calculator',
+      icon: '📈'
     },
     { 
-      emoji: '📝', 
+      id: 'birth-plan-worksheet',
       title: 'Birth Plan Worksheet', 
-      color: 'tool-yellow',
-      path: '/mom/pregnancy-tracker/birth-plan-worksheet'
+      path: '/mom/pregnancy-tracker/birth-plan-worksheet',
+      icon: '📝'
     },
     { 
-      emoji: '🔮', 
+      id: 'chinese-gender-predictor',
       title: 'Chinese Gender Predictor', 
-      color: 'tool-pink',
-      path: '/mom/pregnancy-tracker/chinese-gender-predictor'
+      path: '/mom/pregnancy-tracker/chinese-gender-predictor',
+      icon: '🔮'
     },
     { 
-      emoji: '🎁', 
+      id: 'registry',
       title: 'Registry', 
-      color: 'tool-green',
-      path: '/mom/pregnancy-tracker/registry'
+      path: '/mom/pregnancy-tracker/registry',
+      icon: '🎁'
     }
   ];
 
@@ -56,25 +56,26 @@ const PregnancyTools = () => {
   };
 
   return (
-    <div className="pregnancy-tools-section">
-      <h2 className="section-title">Pregnancy tools</h2>
-      <div className="tools-grid">
-        {pregnancyTools.map((tool, index) => (
-          <div 
-            key={index} 
-            className={`tool-card ${isActive(tool.path) ? 'active' : ''}`}
-            onClick={() => handleToolClick(tool)}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className={`tool-icon ${tool.color}`}>
-              <span className="tool-emoji">{tool.emoji}</span>
+    <div className="pregnancy-tools-header">
+      <div className="pregnancy-tools-container">
+        <h2 className="pregnancy-tools-title">Pregnancy tools</h2>
+        <div className="pregnancy-tools-grid">
+          {pregnancyTools.map((tool) => (
+            <div
+              key={tool.id}
+              className={`pregnancy-tool-card ${isActive(tool.path) ? 'active' : ''}`}
+              onClick={() => handleToolClick(tool)}
+            >
+              <div className="tool-icon">
+                <span className="tool-emoji">{tool.icon}</span>
+              </div>
+              <h3 className="tool-title">{tool.title}</h3>
             </div>
-            <span className="tool-title">{tool.title}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default PregnancyTools;
+export default PregnancyToolHeader;
