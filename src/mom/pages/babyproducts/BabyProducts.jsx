@@ -1,8 +1,8 @@
 import React from 'react';
 import { Search, ShoppingBag, Users, Headphones } from 'lucide-react';
-import './BabyProduct.css';
+import './BabyProducts.css';
 
-const BabyProduct = () => {
+const BabyProducts = () => {
   const categories = ['All Products', 'Feeding', 'Comfort', 'Travel', 'Clothing', 'Safety'];
   
   const stats = [
@@ -160,4 +160,4 @@ const BabyProduct = () => {
   );
 };
 
-export default BabyProduct;
+export default BabyProducts;

@@ -1,4 +1,3 @@
-// MommyCare/src/mom/MomLayout.jsx
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import MomNavbar from './components/MomNavbar';

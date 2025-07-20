@@ -182,8 +182,8 @@ const BabyCostsCalculator = () => {
         <p>Plan your baby's expenses with our comprehensive cost tracker</p>
       </div>
 
-      <div className="main-content">
-        <div className="calculator-section">
+      <div className="main-contentp">
+        <div className="calculator">
           <div className="age-selector">
             <div className="age-tabs">
               {ageTabs.map(tab => (

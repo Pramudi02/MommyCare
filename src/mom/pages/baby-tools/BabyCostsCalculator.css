@@ -53,17 +53,19 @@ body {
   opacity: 0.8;
 }
 
-.main-content {
+.main-contentp {
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 0;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #ddf8ff67 0%, #e0fdff76 50%, #ffdef575 100%);
   min-height: 600px;
 }
 
-.calculator-section {
-  padding: 30px;
+.calculator {
+  padding: 30px; 
+  margin: 0px;
+  border-radius: 25px 0px 0px 25px; 
+  background: linear-gradient(135deg, #64717d54 0%, #7e8a9666 100%);
+  border: #2c3e50 2.5px solid;
 }
 
 .age-selector {

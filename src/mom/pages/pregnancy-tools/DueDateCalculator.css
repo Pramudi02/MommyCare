@@ -36,7 +36,6 @@ body {
 /* Calculator Section */
 .calculator-section {
   flex: 0 0 300px;
-  margin-left: 25px;
   min-width: 280px;
 }
 
@@ -153,7 +152,7 @@ body {
 .timeline-section {
   flex: 1;
   min-width: 600px;
-  margin-right: 25;
+  margin-right: 25px;
 }
 
 .timeline-card {

@@ -1,4 +1,3 @@
-// MommyCare/src/mom/routes/MomRoutes.jsx
 import React from 'react';
 import { Route } from 'react-router-dom';
 import MomLayout from '../MomLayout';
@@ -14,6 +13,7 @@ import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';
 import BabyProduct from '../pages/BabyProduct';
 import Communication from '../pages/Communication';
+import VaccinationSchedule from '../pages/vaccinationschedule/VaccinationSchedule';
 
 // Pregnancy Tracker Tools
 import DueDateCalculator from '../pages/pregnancy-tools/DueDateCalculator';
@@ -32,6 +32,7 @@ import DoctorVisitsGuide from '../pages/baby-tools/DoctorVisitsGuide';
 
 
 export default (
+  
   <Route path="/mom" element={<MomLayout />}>
     <Route index element={<Home />} />
 
@@ -64,6 +65,7 @@ export default (
 
     {/* Other Sections */}
     <Route path="vaccinations" element={<Vaccinations />} />
+    <Route path="vaccinationschedule" element={<VaccinationSchedule />} />
     <Route path="appointments" element={<Appointments />} />
     <Route path="medical-reports" element={<MedicalReports />} />
     <Route path="predictions" element={<Predictions />} />
