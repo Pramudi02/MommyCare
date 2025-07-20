@@ -1,9 +1,15 @@
 /* PregnancyCalculator.css */
 
-* {
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 .pregnancy-calculator {

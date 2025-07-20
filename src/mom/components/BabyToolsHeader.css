@@ -1,7 +1,19 @@
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 .baby-tools-header {
     background: linear-gradient(135deg, #e8fffad1 0%, #e2e8f09c 100%);
     padding: 2rem 1rem;
-    margin-bottom: 2rem;
+    margin: 1.5rem  ;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
