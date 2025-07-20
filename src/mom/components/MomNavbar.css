@@ -101,4 +101,9 @@ body {
       padding: 7px 10px;
       min-width: 90px;
   }
+
+  .mx-4 {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }

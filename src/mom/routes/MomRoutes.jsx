@@ -1,3 +1,4 @@
+//MomRoutes.jsx
 import React from 'react';
 import { Route } from 'react-router-dom';
 import MomLayout from '../MomLayout';
@@ -59,5 +60,9 @@ export default (
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
     <Route path="profile" element={<Profile />} />
+    <Route path="vaccination" element={<Vaccination />} /> 
+    <Route path="babyproducts" element={<BabyProducts />} />  
+    <Route path="vaccinationschedule" element={<VaccinationSchedule />} />  
+
   </Route>
 ); 
