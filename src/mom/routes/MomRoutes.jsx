@@ -1,3 +1,4 @@
+// MommyCare/src/mom/routes/MomRoutes.jsx
 import React from 'react';
 import { Route } from 'react-router-dom';
 import MomLayout from '../MomLayout';
@@ -14,7 +15,7 @@ export default (
     <Route path="profile" element={<Profile />} />
     <Route path="babynamefinder" element={<BabyNameFinder />} />
     <Route path="myappointments" element={<MyAppointments />} />
-    {/* Add more routes as needed */}
+   
   </Route>
    
 ); 

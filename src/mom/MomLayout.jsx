@@ -1,3 +1,4 @@
+// MommyCare/src/mom/MomLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MomNavbar from './components/MomNavbar';

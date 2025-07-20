@@ -42,7 +42,6 @@ function App() {
       />
 
       <MainNavbar/>
-      
       <HeroSection />
       <HomeSection />
       <Routes>
