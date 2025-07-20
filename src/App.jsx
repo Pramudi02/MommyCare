@@ -35,21 +35,43 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <MainNavbar
-          onSignUpClick={handleSignUpOpen}
+
+        <MomNavbar
+  onSignUpClick={handleSignUpOpen}
           onLoginClick={handleLoginOpen}
         />
+     
 
         
+
+
+        <MainNavbar />
         <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <HeroSection />
+                <HomeSection />
+              </>
+            }
+          />
+
+
+        
+
           {AdminRoutes}
           {MomRoutes}
           {MidwifeRoutes}
           {DoctorRoutes}
           {SPRoutes}
+          {MomPregnacyRoutes}
           {/* Add more routes as needed */}
+
         </Routes>
-        <Footer/>
+        <Footer />
+
+
         {/* Modals */}
         <SignUp isOpen={showSignUp} onClose={handleCloseModals} />
         <Login isOpen={showLogin} onClose={handleCloseModals} />

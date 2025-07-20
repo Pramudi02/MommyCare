@@ -1,10 +1,13 @@
-//MomRoutes.jsx
 import React from 'react';
 import { Route } from 'react-router-dom';
 import MomLayout from '../MomLayout';
 import Home from '../pages/Home';
-import Appointments from '../pages/Appointments';
 import Profile from '../pages/Profile';
+
+import BabyCostsCalculator from '../pages/BabyCostsCalculator';
+import BabyNameFinder from '../pages/PregnancyTrackerBabyNameFinder';
+import MyAppointments from '../pages/appointments/MyAppointments';
+
 import Vaccinations from '../pages/Vaccinations';
 import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';
@@ -27,10 +30,17 @@ import ChildGrowthChart from '../pages/baby-tools/ChildGrowthChart';
 import FeedingSolutions from '../pages/baby-tools/FeedingSolutions';
 import DoctorVisitsGuide from '../pages/baby-tools/DoctorVisitsGuide';
 
+
 export default (
   
   <Route path="/mom" element={<MomLayout />}>
     <Route index element={<Home />} />
+
+    <Route path="baby-costs-calculator" element={<BabyCostsCalculator />} />
+    <Route path="profile" element={<Profile />} />
+    <Route path="babynamefinder" element={<BabyNameFinder />} />
+    <Route path="myappointments" element={<MyAppointments />} />
+
     
     {/* Pregnancy Tracker Section */}
     <Route path="pregnancy-tracker">
@@ -62,5 +72,6 @@ export default (
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
     <Route path="profile" element={<Profile />} />
+
   </Route>
 ); 
