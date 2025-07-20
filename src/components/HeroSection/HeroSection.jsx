@@ -12,7 +12,7 @@ const HeroSection = () => {
               <h1>Your Journey to Motherhood,Beautifully Guided</h1>
               <p>Track your pregnancy, manage appointments, monitor vaccinations, and connect with healthcare providers - all in one caring platform designed forexpecting mothers.</p>
               <div className="hero-buttons">
-                <button className="btn-primary">MORE</button>
+                <button className="btnn-primary">MORE</button>
               </div>
             </div>
           </div>
