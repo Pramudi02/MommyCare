@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Link } from 'react-router-dom';
 import MomLayout from '../MomLayout';
 import Home from '../pages/Home';
 import Appointments from '../pages/Appointments';
@@ -9,6 +9,7 @@ import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';
 import BabyProduct from '../pages/BabyProduct';
 import Communication from '../pages/Communication';
+import Cardiology from "../components/FindDocter/Cardiology";
 
 // Pregnancy Tracker Tools
 import DueDateCalculator from '../pages/pregnancy-tools/DueDateCalculator';
@@ -58,5 +59,6 @@ export default (
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
     <Route path="profile" element={<Profile />} />
+    <Route path="/mom/find-doctor/cardiology" element={<Cardiology />} />
   </Route>
 ); 
