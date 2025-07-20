@@ -252,7 +252,7 @@ const VaccinationDashboard = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Health Dashboard</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Vaccinations - Detailed Dashboard</h1>
           <div className="flex items-center gap-2">
             <Bell size={20} className="text-gray-600" />
           </div>
