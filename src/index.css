@@ -1,7 +1,7 @@
+@import url('./mom/components/PageStyles.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('./src/mom/components/PageStyles.css');
 
 /* Custom scrollbar for overflow containers */
 ::-webkit-scrollbar {
@@ -22,4 +22,24 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(107, 114, 128, 0.8);
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%);
+  min-height: 100vh;
 }

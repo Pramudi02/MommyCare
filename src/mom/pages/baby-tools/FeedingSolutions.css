@@ -1,0 +1,416 @@
+/* FeedingSolutions.css - Glass Morphism Design */
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1rem
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    min-height: 100%;
+}
+
+.header-line {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header-line h1 {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.header-icon {
+    color: white;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+}
+
+.header-line p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Tab navigation */
+.glass-tab-navigation {
+    display: flex;
+    background: rgba(156, 156, 156, 0.02);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 4px;
+    margin: 0px 30px 30px 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.tab-button.active {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.section {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: rgba(181, 181, 181, 0.049);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.card-emoji {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, rgba(255, 139, 167, 0.8), rgba(255, 195, 160, 0.8));
+    padding: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.card-title {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.card-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.dropdown-content {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 15px;
+    border-left: 4px solid rgba(255, 139, 167, 0.8);
+    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-content.open {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-content h4 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.dropdown-content ul {
+    list-style: none;
+    space-y: 10px;
+}
+
+.dropdown-content li {
+    color: rgba(255, 255, 255);
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.dropdown-content li:before {
+    content: "•";
+    color: rgba(255, 139, 167, 0.8);
+    font-size: 1.2rem;
+    position: absolute;
+    left: 0;
+}
+
+.expand-icon {
+    font-size: 1.2rem;
+    color: rgba(255, 139, 167, 0.8);
+    transition: transform 0.3s ease;
+}
+
+.card.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.feeding-problems {
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.meal-plans {
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.meal-plans .card-emoji {
+    background: linear-gradient(135deg, rgba(168, 237, 234, 0.8), rgba(254, 214, 227, 0.8));
+}
+
+.meal-plans .dropdown-content {
+    border-left-color: rgba(168, 237, 234, 0.8);
+}
+
+.meal-plans .dropdown-content li:before {
+    color: rgba(168, 237, 234, 0.8);
+}
+
+.meal-plans .expand-icon {
+    color: rgba(168, 237, 234, 0.8);
+}
+
+.meal-plans .card:hover {
+    border-color: rgba(168, 237, 234, 0.4);
+}
+
+.age-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 74, 0.8));
+    color: #2d3748;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.meal-sample {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 3px solid rgba(168, 237, 234, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.meal-sample h5 {
+    color: white;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.meal-sample p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-line h1 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .header-icon {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    .feeding-problems,
+    .meal-plans {
+        padding: 20px;
+    }
+    
+    .glass-tab-navigation {
+        flex-direction: column;
+        gap: 4px;
+        margin: 0px 15px 30px 15px;
+    }
+    
+    .tab-button {
+        text-align: center;
+        font-size: 0.875rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.4s ease;
+}
+
+/* Focus states for accessibility */
+.card:focus-visible,
+.tab-button:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .container {
+        border-width: 2px;
+    }
+    
+    .card {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .dropdown-content,
+    .expand-icon {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

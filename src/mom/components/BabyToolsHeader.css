@@ -1,7 +1,19 @@
+html {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 .baby-tools-header {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #e8fffad1 0%, #e2e8f09c 100%);
     padding: 2rem 1rem;
-    margin-bottom: 2rem;
+    margin: 1.5rem  ;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
@@ -73,9 +85,9 @@
   }
   
   .tool-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border-radius: 5%;
     background: rgb(255, 255, 255);
     display: flex;
     align-items: center;
@@ -89,10 +101,8 @@
   }
   
   .tool-icon img {
-    width: 80px;
-    height: 80px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 25px;
     transition: all 0.3s ease;
   }
   
