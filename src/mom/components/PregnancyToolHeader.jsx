@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './PregnancyToolHeader.css';
@@ -13,37 +11,37 @@ const PregnancyToolHeader = () => {
       id: 'due-date-calculator',
       title: 'Due Date Calculator', 
       path: '/mom/pregnancy-tracker/due-date-calculator',
-      icon: '📅'
+      icon: '/images/6.png'
     },
     { 
       id: 'baby-name-finder',
       title: 'Baby Names Finder', 
       path: '/mom/pregnancy-tracker/baby-name-finder',
-      icon: '👶'
+      icon:'/images/7.png'
     },
     { 
       id: 'weight-gain-calculator',
       title: 'Pregnancy Weight Gain Calculator', 
       path: '/mom/pregnancy-tracker/weight-gain-calculator',
-      icon: '📈'
+      icon: '/images/8.png'
     },
     { 
       id: 'birth-plan-worksheet',
       title: 'Birth Plan Worksheet', 
       path: '/mom/pregnancy-tracker/birth-plan-worksheet',
-      icon: '📝'
+      icon:'/images/9.png'
     },
     { 
       id: 'chinese-gender-predictor',
       title: 'Chinese Gender Predictor', 
       path: '/mom/pregnancy-tracker/chinese-gender-predictor',
-      icon: '🔮'
+      icon: '/images/10.png'
     },
     { 
       id: 'registry',
       title: 'Registry', 
       path: '/mom/pregnancy-tracker/registry',
-      icon: '🎁'
+      icon: '/images/11.png'
     }
   ];
 
@@ -67,7 +65,11 @@ const PregnancyToolHeader = () => {
               onClick={() => handleToolClick(tool)}
             >
               <div className="tool-icon">
-                <span className="tool-emoji">{tool.icon}</span>
+                {tool.icon.startsWith('/images') ? (
+                  <img src={tool.icon} alt={tool.title} className="tool-image" />
+                ) : (
+                  <span className="tool-emoji">{tool.icon}</span>
+                )}
               </div>
               <h3 className="tool-title">{tool.title}</h3>
             </div>

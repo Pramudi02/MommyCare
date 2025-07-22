@@ -57,24 +57,24 @@ ${birthPlan.specialRequests}
   };
 
   return (
-    <div className="birth-plan-worksheet">
-      <div className="container">
-        <header className="header">
-          <div className="icon">📋</div>
+    <div className="bp-worksheet-wrapper">
+      <div className="bp-worksheet-container">
+        <header className="bp-main-header">
+          <div className="bp-header-icon">📋</div>
           <h1>Birth Plan Worksheet</h1>
           <p>Create and customize your birth plan with our interactive worksheet to ensure your preferences are communicated clearly</p>
         </header>
 
-        <div className="main-content">
-          <div className="worksheet-section">
-            <div className="section-header">
-              <span className="worksheet-icon">📝</span>
+        <div className="bp-content-grid">
+          <div className="bp-worksheet-main">
+            <div className="bp-section-title">
+              <span className="bp-title-icon">📝</span>
               <h2>Your Birth Plan</h2>
             </div>
 
-            <div className="action-buttons">
+            <div className="bp-control-buttons">
               <button 
-                className={`action-btn ${isEditing ? 'active' : ''}`}
+                className={`bp-control-btn ${isEditing ? 'active' : ''}`}
                 onClick={() => setIsEditing(!isEditing)}
               >
                 <Edit3 size={16} />
@@ -82,23 +82,23 @@ ${birthPlan.specialRequests}
               </button>
               
               {isEditing && (
-                <button className="action-btn save-btn" onClick={handleSave}>
+                <button className="bp-control-btn bp-save-button" onClick={handleSave}>
                   <Save size={16} />
                   Save Plan
                 </button>
               )}
               
-              <button className="action-btn download-btn" onClick={handleDownload}>
+              <button className="bp-control-btn bp-download-button" onClick={handleDownload}>
                 <Download size={16} />
                 Download Plan
               </button>
             </div>
 
-            <div className="plan-sections">
-              <div className="plan-section">
+            <div className="bp-form-sections">
+              <div className="bp-form-group">
                 <h3>Labor Preferences</h3>
                 <textarea
-                  className="plan-input"
+                  className="bp-form-textarea"
                   placeholder="Describe your preferences for labor environment, positions, and support..."
                   value={birthPlan.laborPreferences}
                   onChange={(e) => handleInputChange('laborPreferences', e.target.value)}
@@ -106,10 +106,10 @@ ${birthPlan.specialRequests}
                 />
               </div>
 
-              <div className="plan-section">
+              <div className="bp-form-group">
                 <h3>Pain Management</h3>
                 <textarea
-                  className="plan-input"
+                  className="bp-form-textarea"
                   placeholder="What pain management options would you prefer? (epidural, natural methods, etc.)"
                   value={birthPlan.painManagement}
                   onChange={(e) => handleInputChange('painManagement', e.target.value)}
@@ -117,10 +117,10 @@ ${birthPlan.specialRequests}
                 />
               </div>
 
-              <div className="plan-section">
+              <div className="bp-form-group">
                 <h3>Delivery Preferences</h3>
                 <textarea
-                  className="plan-input"
+                  className="bp-form-textarea"
                   placeholder="Any specific preferences for the delivery process..."
                   value={birthPlan.deliveryPreferences}
                   onChange={(e) => handleInputChange('deliveryPreferences', e.target.value)}
@@ -128,10 +128,10 @@ ${birthPlan.specialRequests}
                 />
               </div>
 
-              <div className="plan-section">
+              <div className="bp-form-group">
                 <h3>Postpartum Preferences</h3>
                 <textarea
-                  className="plan-input"
+                  className="bp-form-textarea"
                   placeholder="Your preferences for immediate postpartum care..."
                   value={birthPlan.postpartumPreferences}
                   onChange={(e) => handleInputChange('postpartumPreferences', e.target.value)}
@@ -139,10 +139,10 @@ ${birthPlan.specialRequests}
                 />
               </div>
 
-              <div className="plan-section">
+              <div className="bp-form-group">
                 <h3>Special Requests</h3>
                 <textarea
-                  className="plan-input"
+                  className="bp-form-textarea"
                   placeholder="Any special requests or considerations..."
                   value={birthPlan.specialRequests}
                   onChange={(e) => handleInputChange('specialRequests', e.target.value)}
@@ -152,10 +152,10 @@ ${birthPlan.specialRequests}
             </div>
           </div>
 
-          <div className="tips-section">
-            <div className="tips-card">
+          <div className="bp-sidebar-section">
+            <div className="bp-tips-panel">
               <h3>Birth Plan Tips</h3>
-              <ul className="tips-list">
+              <ul className="bp-tips-listing">
                 <li>Keep your plan flexible - birth can be unpredictable</li>
                 <li>Discuss your plan with your healthcare provider</li>
                 <li>Include your partner's role and preferences</li>
@@ -164,22 +164,22 @@ ${birthPlan.specialRequests}
               </ul>
             </div>
 
-            <div className="checklist-card">
+            <div className="bp-checklist-panel">
               <h3>Birth Plan Checklist</h3>
-              <div className="checklist">
-                <label className="checklist-item">
+              <div className="bp-checklist-items">
+                <label className="bp-checklist-option">
                   <input type="checkbox" />
                   <span>Discuss with healthcare provider</span>
                 </label>
-                <label className="checklist-item">
+                <label className="bp-checklist-option">
                   <input type="checkbox" />
                   <span>Share with birth partner</span>
                 </label>
-                <label className="checklist-item">
+                <label className="bp-checklist-option">
                   <input type="checkbox" />
                   <span>Pack multiple copies</span>
                 </label>
-                <label className="checklist-item">
+                <label className="bp-checklist-option">
                   <input type="checkbox" />
                   <span>Review and update regularly</span>
                 </label>
@@ -192,4 +192,4 @@ ${birthPlan.specialRequests}
   );
 };
 
-export default BirthPlanWorksheet; 
+export default BirthPlanWorksheet;

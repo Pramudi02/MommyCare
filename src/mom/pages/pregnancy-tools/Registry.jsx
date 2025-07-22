@@ -87,21 +87,21 @@ const Registry = () => {
   const totalCount = registryItems.length;
 
   return (
-    <div className="registry">
-      <div className="container">
-        <header className="header">
-          <div className="icon">🎁</div>
+    <div className="baby-registry-main-container">
+      <div className="baby-registry-content-wrapper">
+        <header className="baby-registry-header-section">
+          <div className="baby-registry-header-icon">🎁</div>
           <h1>Baby Registry</h1>
           <p>Create and manage your baby registry to help friends and family know exactly what you need</p>
         </header>
 
-        <div className="main-content">
-          <div className="registry-section">
-            <div className="section-header">
-              <span className="registry-icon">📋</span>
+        <div className="baby-registry-main-content-grid">
+          <div className="baby-registry-items-section">
+            <div className="baby-registry-section-header">
+              <span className="baby-registry-icon-emoji">📋</span>
               <h2>Registry Items</h2>
               <button 
-                className="add-btn"
+                className="baby-registry-add-item-btn"
                 onClick={() => setIsAddingItem(!isAddingItem)}
               >
                 <Plus size={16} />
@@ -111,25 +111,25 @@ const Registry = () => {
 
             {/* Add New Item Form */}
             {isAddingItem && (
-              <div className="add-item-form">
+              <div className="baby-registry-add-form-container">
                 <h3>Add New Item</h3>
-                <div className="form-row">
-                  <div className="form-group">
+                <div className="baby-registry-form-row-container">
+                  <div className="baby-registry-form-group-wrapper">
                     <label>Item Name</label>
                     <input
                       type="text"
                       placeholder="Enter item name"
                       value={newItem.name}
                       onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      className="form-input"
+                      className="baby-registry-form-input-field"
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="baby-registry-form-group-wrapper">
                     <label>Category</label>
                     <select
                       value={newItem.category}
                       onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                      className="form-select"
+                      className="baby-registry-form-select-field"
                     >
                       <option value="">Select category</option>
                       {categories.map(category => (
@@ -138,13 +138,13 @@ const Registry = () => {
                     </select>
                   </div>
                 </div>
-                <div className="form-group">
+                <div className="baby-registry-form-group-wrapper">
                   <label>Priority</label>
-                  <div className="priority-buttons">
+                  <div className="baby-registry-priority-buttons-container">
                     {priorities.map(priority => (
                       <button
                         key={priority.value}
-                        className={`priority-btn ${newItem.priority === priority.value ? 'active' : ''}`}
+                        className={`baby-registry-priority-btn ${newItem.priority === priority.value ? 'baby-registry-priority-active' : ''}`}
                         onClick={() => setNewItem({...newItem, priority: priority.value})}
                         style={{ '--priority-color': priority.color }}
                       >
@@ -153,12 +153,12 @@ const Registry = () => {
                     ))}
                   </div>
                 </div>
-                <div className="form-actions">
-                  <button className="save-btn" onClick={addItem}>
+                <div className="baby-registry-form-actions-container">
+                  <button className="baby-registry-save-btn" onClick={addItem}>
                     <Save size={16} />
                     Add Item
                   </button>
-                  <button className="cancel-btn" onClick={() => setIsAddingItem(false)}>
+                  <button className="baby-registry-cancel-btn" onClick={() => setIsAddingItem(false)}>
                     Cancel
                   </button>
                 </div>
@@ -166,31 +166,31 @@ const Registry = () => {
             )}
 
             {/* Registry Items List */}
-            <div className="registry-items">
-              <div className="items-header">
+            <div className="baby-registry-items-list-container">
+              <div className="baby-registry-items-header-section">
                 <h3>Your Registry ({purchasedCount}/{totalCount} purchased)</h3>
-                <div className="progress-bar">
+                <div className="baby-registry-progress-bar-container">
                   <div 
-                    className="progress-fill" 
+                    className="baby-registry-progress-fill-bar" 
                     style={{ width: `${(purchasedCount / totalCount) * 100}%` }}
                   ></div>
                 </div>
               </div>
 
-              <div className="items-grid">
+              <div className="baby-registry-items-grid-layout">
                 {registryItems.map(item => (
-                  <div key={item.id} className={`registry-item ${item.purchased ? 'purchased' : ''}`}>
-                    <div className="item-header">
+                  <div key={item.id} className={`baby-registry-item-card ${item.purchased ? 'baby-registry-item-purchased' : ''}`}>
+                    <div className="baby-registry-item-header-section">
                       <h4>{item.name}</h4>
-                      <div className="item-actions">
+                      <div className="baby-registry-item-actions-container">
                         <button 
-                          className="action-btn edit-btn"
+                          className="baby-registry-action-btn baby-registry-edit-btn"
                           onClick={() => startEditing(item)}
                         >
                           <Edit3 size={14} />
                         </button>
                         <button 
-                          className="action-btn delete-btn"
+                          className="baby-registry-action-btn baby-registry-delete-btn"
                           onClick={() => deleteItem(item.id)}
                         >
                           <Trash2 size={14} />
@@ -198,10 +198,10 @@ const Registry = () => {
                       </div>
                     </div>
                     
-                    <div className="item-details">
-                      <span className="category-badge">{item.category}</span>
+                    <div className="baby-registry-item-details-section">
+                      <span className="baby-registry-category-badge">{item.category}</span>
                       <span 
-                        className="priority-badge"
+                        className="baby-registry-priority-badge"
                         style={{ backgroundColor: getPriorityColor(item.priority) }}
                       >
                         {item.priority}
@@ -209,7 +209,7 @@ const Registry = () => {
                     </div>
                     
                     <button
-                      className={`purchase-btn ${item.purchased ? 'purchased' : ''}`}
+                      className={`baby-registry-purchase-btn ${item.purchased ? 'baby-registry-purchase-completed' : ''}`}
                       onClick={() => togglePurchased(item.id)}
                     >
                       {item.purchased ? '✓ Purchased' : 'Mark as Purchased'}
@@ -221,24 +221,24 @@ const Registry = () => {
 
             {/* Edit Item Form */}
             {editingItem && (
-              <div className="edit-item-form">
+              <div className="baby-registry-edit-form-container">
                 <h3>Edit Item</h3>
-                <div className="form-row">
-                  <div className="form-group">
+                <div className="baby-registry-form-row-container">
+                  <div className="baby-registry-form-group-wrapper">
                     <label>Item Name</label>
                     <input
                       type="text"
                       value={newItem.name}
                       onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      className="form-input"
+                      className="baby-registry-form-input-field"
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="baby-registry-form-group-wrapper">
                     <label>Category</label>
                     <select
                       value={newItem.category}
                       onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                      className="form-select"
+                      className="baby-registry-form-select-field"
                     >
                       {categories.map(category => (
                         <option key={category} value={category}>{category}</option>
@@ -246,13 +246,13 @@ const Registry = () => {
                     </select>
                   </div>
                 </div>
-                <div className="form-group">
+                <div className="baby-registry-form-group-wrapper">
                   <label>Priority</label>
-                  <div className="priority-buttons">
+                  <div className="baby-registry-priority-buttons-container">
                     {priorities.map(priority => (
                       <button
                         key={priority.value}
-                        className={`priority-btn ${newItem.priority === priority.value ? 'active' : ''}`}
+                        className={`baby-registry-priority-btn ${newItem.priority === priority.value ? 'baby-registry-priority-active' : ''}`}
                         onClick={() => setNewItem({...newItem, priority: priority.value})}
                         style={{ '--priority-color': priority.color }}
                       >
@@ -261,12 +261,12 @@ const Registry = () => {
                     ))}
                   </div>
                 </div>
-                <div className="form-actions">
-                  <button className="save-btn" onClick={saveEdit}>
+                <div className="baby-registry-form-actions-container">
+                  <button className="baby-registry-save-btn" onClick={saveEdit}>
                     <Save size={16} />
                     Save Changes
                   </button>
-                  <button className="cancel-btn" onClick={cancelEdit}>
+                  <button className="baby-registry-cancel-btn" onClick={cancelEdit}>
                     Cancel
                   </button>
                 </div>
@@ -274,28 +274,28 @@ const Registry = () => {
             )}
           </div>
 
-          <div className="info-section">
-            <div className="stats-card">
+          <div className="baby-registry-info-sidebar">
+            <div className="baby-registry-stats-card">
               <h3>Registry Statistics</h3>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <div className="stat-number">{totalCount}</div>
-                  <div className="stat-label">Total Items</div>
+              <div className="baby-registry-stats-grid-layout">
+                <div className="baby-registry-stat-item-box">
+                  <div className="baby-registry-stat-number">{totalCount}</div>
+                  <div className="baby-registry-stat-label">Total Items</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-number">{purchasedCount}</div>
-                  <div className="stat-label">Purchased</div>
+                <div className="baby-registry-stat-item-box">
+                  <div className="baby-registry-stat-number">{purchasedCount}</div>
+                  <div className="baby-registry-stat-label">Purchased</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-number">{totalCount - purchasedCount}</div>
-                  <div className="stat-label">Remaining</div>
+                <div className="baby-registry-stat-item-box">
+                  <div className="baby-registry-stat-number">{totalCount - purchasedCount}</div>
+                  <div className="baby-registry-stat-label">Remaining</div>
                 </div>
               </div>
             </div>
 
-            <div className="tips-card">
+            <div className="baby-registry-tips-card">
               <h3>Registry Tips</h3>
-              <ul className="tips-list">
+              <ul className="baby-registry-tips-list">
                 <li>Include items in different price ranges</li>
                 <li>Add both essential and nice-to-have items</li>
                 <li>Consider your lifestyle and space</li>
@@ -304,11 +304,11 @@ const Registry = () => {
               </ul>
             </div>
 
-            <div className="categories-card">
+            <div className="baby-registry-categories-card">
               <h3>Popular Categories</h3>
-              <div className="categories-grid">
+              <div className="baby-registry-categories-grid-layout">
                 {categories.map(category => (
-                  <div key={category} className="category-item">
+                  <div key={category} className="baby-registry-category-item-box">
                     {category}
                   </div>
                 ))}
@@ -321,4 +321,4 @@ const Registry = () => {
   );
 };
 
-export default Registry; 
+export default Registry;

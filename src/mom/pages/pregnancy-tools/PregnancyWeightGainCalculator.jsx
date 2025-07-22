@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './PregnancyWeightGaincalculator.css';
 
-const PregnancyWeightGainCalculator = () => {
+const PregnancyCalculator = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [formData, setFormData] = useState({
     preWeight: '',
@@ -264,4 +264,4 @@ const PregnancyWeightGainCalculator = () => {
   );
 };
 
-export default PregnancyWeightGainCalculator;
+export default PregnancyCalculator;

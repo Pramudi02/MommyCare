@@ -61,44 +61,44 @@ const ChineseGenderPredictor = () => {
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
   return (
-    <div className="chinese-gender-predictor">
-      <div className="container">
-        <header className="header">
-          <div className="icon">🔮</div>
+    <div className="gender-predictor-primary">
+      <div className="main-container-v1">
+        <header className="app-header-v1">
+          <div className="header-icon-v1">🔮</div>
           <h1>Chinese Gender Predictor</h1>
           <p>Discover your baby's predicted gender using the ancient Chinese gender prediction method based on lunar calendar calculations</p>
         </header>
 
-        <div className="main-content">
-          <div className="predictor-section">
-            <div className="section-header">
-              <span className="predictor-icon">🔮</span>
+        <div className="content-wrapper-v1">
+          <div className="calculator-section-v1">
+            <div className="section-title-v1">
+              <span className="calculator-icon-v1">🔮</span>
               <h2>Gender Prediction Calculator</h2>
             </div>
 
-            <div className="prediction-form">
-              <div className="form-group">
+            <div className="input-form-v1">
+              <div className="field-group-v1">
                 <label>Mother's Age at Conception</label>
-                <div className="input-with-unit">
+                <div className="input-container-v1">
                   <input
                     type="number"
                     placeholder="Enter your age"
                     value={formData.motherAge}
                     onChange={(e) => handleInputChange('motherAge', e.target.value)}
-                    className="form-input"
+                    className="number-input-v1"
                     min="18"
                     max="50"
                   />
-                  <span className="unit">years</span>
+                  <span className="input-unit-v1">years</span>
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="field-group-v1">
                 <label>Month of Conception</label>
                 <select
                   value={formData.conceptionMonth}
                   onChange={(e) => handleInputChange('conceptionMonth', e.target.value)}
-                  className="form-select"
+                  className="dropdown-select-v1"
                 >
                   <option value="">Select month</option>
                   {months.map(month => (
@@ -109,12 +109,12 @@ const ChineseGenderPredictor = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="field-group-v1">
                 <label>Year of Conception</label>
                 <select
                   value={formData.conceptionYear}
                   onChange={(e) => handleInputChange('conceptionYear', e.target.value)}
-                  className="form-select"
+                  className="dropdown-select-v1"
                 >
                   <option value="">Select year</option>
                   {years.map(year => (
@@ -126,7 +126,7 @@ const ChineseGenderPredictor = () => {
               </div>
 
               <button
-                className="predict-btn"
+                className="calculate-btn-v1"
                 onClick={calculatePrediction}
                 disabled={!formData.motherAge || !formData.conceptionMonth || !formData.conceptionYear}
               >
@@ -136,41 +136,41 @@ const ChineseGenderPredictor = () => {
             </div>
 
             {prediction && (
-              <div className="prediction-result">
-                <div className="result-header">
+              <div className="result-display-v1">
+                <div className="result-title-v1">
                   <h3>Prediction Result</h3>
-                  <div className={`gender-badge ${prediction.gender.toLowerCase()}`}>
+                  <div className={`gender-tag-v1 ${prediction.gender.toLowerCase()}`}>
                     {prediction.gender === 'Boy' ? '👶' : '👧'} {prediction.gender}
                   </div>
                 </div>
                 
-                <div className="accuracy-meter">
-                  <div className="accuracy-label">Prediction Accuracy</div>
-                  <div className="accuracy-bar">
+                <div className="accuracy-display-v1">
+                  <div className="accuracy-text-v1">Prediction Accuracy</div>
+                  <div className="progress-bar-v1">
                     <div 
-                      className="accuracy-fill" 
+                      className="progress-fill-v1" 
                       style={{ width: `${prediction.accuracy}%` }}
                     ></div>
                   </div>
-                  <div className="accuracy-value">{prediction.accuracy}%</div>
+                  <div className="accuracy-percent-v1">{prediction.accuracy}%</div>
                 </div>
 
-                <div className="explanation">
+                <div className="result-explanation-v1">
                   <p>{prediction.explanation}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="info-section">
-            <div className="info-card">
+          <div className="information-section-v1">
+            <div className="info-card-v1">
               <h3>About Chinese Gender Prediction</h3>
               <p>The Chinese gender prediction method is based on ancient lunar calendar calculations that consider the mother's age and the month of conception. While this method has been used for centuries, it's important to note that it's for entertainment purposes only.</p>
             </div>
 
-            <div className="tips-card">
+            <div className="notes-card-v1">
               <h3>Important Notes</h3>
-              <ul className="tips-list">
+              <ul className="notes-list-v1">
                 <li>This is for entertainment purposes only</li>
                 <li>Scientific accuracy is not guaranteed</li>
                 <li>Ultrasound is the most reliable method</li>
@@ -178,7 +178,7 @@ const ChineseGenderPredictor = () => {
               </ul>
             </div>
 
-            <div className="history-card">
+            <div className="background-card-v1">
               <h3>Historical Background</h3>
               <p>The Chinese gender prediction method dates back to ancient China and was traditionally used to predict the gender of unborn children. The method combines the mother's age at conception with the lunar month of conception to determine the predicted gender.</p>
             </div>
@@ -189,4 +189,4 @@ const ChineseGenderPredictor = () => {
   );
 };
 
-export default ChineseGenderPredictor; 
+export default ChineseGenderPredictor;

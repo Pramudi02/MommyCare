@@ -60,9 +60,9 @@ export default (
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
     <Route path="profile" element={<Profile />} />
-    <Route path="vaccination" element={<Vaccination />} /> 
-    <Route path="babyproducts" element={<BabyProducts />} />  
-    <Route path="vaccinationschedule" element={<VaccinationSchedule />} />  
+    <Route path="vaccination" element={<Vaccinations />} /> 
+    <Route path="babyproducts" element={<BabyProduct />} />  
+   
 
   </Route>
 ); 
