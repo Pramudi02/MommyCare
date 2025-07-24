@@ -1,25 +1,5 @@
 // MommyCare/src/mom/pages/Appointments/MyAppointments.jsx
 import React, { useState } from 'react';
-import {
-  Calendar,
-  Stethoscope,
-  Baby,
-  Activity,
-  Syringe,
-  HeartPulse,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Bell,
-  Weight,
-  Hospital,
-  ClipboardList,
-  ArrowLeft,
-  ArrowRight,
-  Plus,
-  UserCheck
-} from 'lucide-react';
-import './MyAppointments.css';
 import { 
   Calendar, 
   Scale, 
@@ -44,6 +24,7 @@ import {
   Bell,
   Clock
 } from 'lucide-react';
+import './MyAppointments.css';
 
 const AppointmentsDashboard = () => {
   const [currentMonth, setCurrentMonth] = useState('July 2025');
