@@ -83,9 +83,9 @@ const MedicalReports = () => {
     <div className="medical-reports-container">
       <div className="medical-reports-content">
         {/* Header */}
-        <div className="header flex items-center gap-3">
-          <FileText size={32} className="text-blue-500" />
-          <h1 className="header-title">Medical Reports</h1>
+        <div className="headerMedical">
+          <h1 className="headerMedical-title">Medical Reports</h1>
+          <p className="headerMedical-description">View and manage all your medical records and test results</p>
         </div>
         <p className="header-description">View and manage all your medical records and test results</p>
         <div className="main-grid">
@@ -127,12 +127,13 @@ const MedicalReports = () => {
                   <div className="report-findings">
                     <p><strong>Key Findings:</strong> {report.findings}</p>
                   </div>
-                  <div className="report-actions flex gap-2">
-                    <button className="btn btn-primary flex items-center gap-1">
+
+                  <div className="report-actions">
+                    <button className="btn btn-primaryM">
                       <Eye className="w-4 h-4" />
                       <span>{report.type === 'ULTRASOUND' ? 'View Images' : 'View Report'}</span>
                     </button>
-                    <button className="btn btn-secondary flex items-center gap-1">
+                    <button className="btn btn-secondaryM">
                       <Download className="w-4 h-4" />
                       <span>Download</span>
                     </button>
