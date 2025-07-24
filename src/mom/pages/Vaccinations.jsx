@@ -187,10 +187,10 @@ const Vaccinations= () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-5">
-      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen  p-5">
+      <div className="w-full mx-auto bg-white-200 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-8 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-300 to-purple-200 text-grey-800 p-8 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-48 h-48 opacity-10">
             <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -201,7 +201,7 @@ const Vaccinations= () => {
           
           <div className="relative z-10">
             <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-              <Syringe className="text-white" size={32} />
+              <Syringe className="text-grey-800" size={32} />
               Vaccination an Immunization Tracker
             </h1>
             <p className="text-lg opacity-90 mb-5">
