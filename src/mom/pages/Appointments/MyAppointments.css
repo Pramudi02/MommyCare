@@ -395,21 +395,25 @@ button:focus,
 .stat-number-appointments {
   font-size: 3rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  margin-bottom: 0;
   line-height: 1;
 }
 
 .stat-label-appointments {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: inherit;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .stat-subtitle-appointments {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: rgba(0, 0, 0, 0.6);
   font-weight: 500;
+  margin-top: 0.25rem;
 }
 
 /* Responsive adjustments */
@@ -439,4 +443,24 @@ button:focus,
   .stat-number-appointments {
     font-size: 2.5rem;
   }
+}
+
+.stat-card-appointments,
+.stat-card-upcoming,
+.stat-card-missed,
+.stat-card-completed {
+  padding-left: 3rem;
+  padding-right: 2rem;
+}
+
+.stat-number-appointments.text-blue-600,
+.stat-number-appointments.text-red-600,
+.stat-number-appointments.text-green-600 {
+  padding-right: 0.75rem;
+}
+
+.stat-card-upcoming,
+.stat-card-missed,
+.stat-card-completed {
+  font-size: 1.15rem;
 }

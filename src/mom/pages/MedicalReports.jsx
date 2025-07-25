@@ -74,12 +74,17 @@ const MedicalReports = () => {
   };
 
   return (
-    <div className="medical-reports-container">
-      <div className="medical-reports-content">
+    <div className="medical-reports-container bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="headerMedical">
+          <div className="headerMedical-icon">
+            <Stethoscope className="w-6 h-6" />
+          </div>
           <h1 className="headerMedical-title">Medical Reports</h1>
-          <p className="headerMedical-description">View and manage all your medical records and test results</p>
+          <p className="headerMedical-description">
+            Easily view, organize, and share all your medical records and test results for better health management and peace of mind.
+          </p>
         </div>
 
         <div className="main-grid">

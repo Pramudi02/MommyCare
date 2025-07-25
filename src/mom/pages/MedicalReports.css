@@ -1,7 +1,7 @@
 /* Medical Reports Styles */
 .medical-reports-container {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: #f3f4f6;
 }
 
 .medical-reports-content {
@@ -344,6 +344,7 @@
 /* Enhanced Header with Gradient Background */
 .headerMedical {
   text-align: center;
+  margin-top: 0.25rem;
   margin-bottom: 2rem;
   padding: 3rem 2rem;
   background-image: url('/images/medical.jpg');
@@ -434,5 +435,8 @@
   
   .headerMedical-description {
     font-size: 1rem;
+  }
+  .medical-reports-content {
+    padding: 1.5rem;
   }
 }

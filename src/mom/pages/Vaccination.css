@@ -112,3 +112,53 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+.vaccination-content {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+@media (max-width: 768px) {
+  .vaccination-content {
+    padding: 1.5rem;
+  }
+}
+
+.vaccination-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 3rem 2rem;
+  background-image: url('https://domf5oio6qrcr.cloudfront.net/medialibrary/9139/iStock-496382742.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+}
+
+.vaccination-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* Dark overlay for text readability */
+  pointer-events: none;
+}
+
+.vaccination-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+  pointer-events: none;
+}
+.vaccination-header, .vaccination-header * {
+  color: #fff !important;
+}
