@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Baby, Stethoscope, AlertTriangle, BarChart3, CheckCircle, Loader2 } from 'lucide-react';
 import './Predictions.css';
 
 const Predictions = () => {
@@ -32,20 +33,20 @@ const Predictions = () => {
         (Math.random() - 0.5) * 200
       );
 
-      let category, emoji, advice, riskLevel;
+      let category, icon, advice, riskLevel;
       if (predictedWeight < 2500) {
         category = "Low Birth Weight";
-        emoji = "⚠️";
+        icon = <AlertTriangle size={32} className="text-yellow-500" />;
         advice = "Consider discussing nutrition and monitoring with your doctor.";
         riskLevel = "low";
       } else if (predictedWeight > 4000) {
         category = "High Birth Weight";
-        emoji = "📏";
+        icon = <BarChart3 size={32} className="text-purple-500" />;
         advice = "Monitor glucose levels and discuss delivery plans with your healthcare provider.";
         riskLevel = "medium";
       } else {
         category = "Normal Birth Weight";
-        emoji = "✅";
+        icon = <CheckCircle size={32} className="text-green-500" />;
         advice = "Predicted weight is within normal range. Continue regular check-ups.";
         riskLevel = "normal";
       }
@@ -53,7 +54,7 @@ const Predictions = () => {
       setBabyWeightResult({
         weight: Math.round(predictedWeight),
         category,
-        emoji,
+        icon,
         advice,
         riskLevel
       });
@@ -106,26 +107,26 @@ const Predictions = () => {
       riskScore += (Math.random() - 0.5) * 10;
       riskScore = Math.max(0, Math.min(100, riskScore));
 
-      let riskLevel, emoji, advice;
+      let riskLevel, icon, advice;
       
       if (riskScore <= 30) {
         riskLevel = "Low Risk";
-        emoji = "💚";
+        icon = <CheckCircle size={32} className="text-green-500" />;
         advice = "Your risk appears low. Continue healthy eating and regular exercise. Monitor with routine check-ups.";
       } else if (riskScore <= 60) {
         riskLevel = "Moderate Risk";
-        emoji = "🟡";
+        icon = <BarChart3 size={32} className="text-yellow-500" />;
         advice = "You may have moderate risk. Consider more frequent glucose monitoring and dietary consultation.";
       } else {
         riskLevel = "High Risk";
-        emoji = "🔴";
+        icon = <AlertTriangle size={32} className="text-red-500" />;
         advice = "You may be at higher risk. Please consult your healthcare provider immediately for proper testing and monitoring.";
       }
 
       setDiabetesResult({
         riskLevel,
         riskScore: Math.round(riskScore),
-        emoji,
+        icon,
         advice
       });
       setIsLoading(false);
@@ -153,7 +154,6 @@ const Predictions = () => {
             </div>
           </div>
         </div>
-
         {/* Tab Navigation */}
         <div className="tab-navigationp">
           <div className="tab-container">
@@ -161,28 +161,26 @@ const Predictions = () => {
               className={`tab-button ${activeTab === 'babyWeight' ? 'active' : ''}`}
               onClick={() => setActiveTab('babyWeight')}
             >
-              👶 Baby Weight Prediction
+              <Baby size={20} className="inline mr-2" /> Baby Weight Prediction
             </button>
             <button 
               className={`tab-button ${activeTab === 'diabetes' ? 'active' : ''}`}
               onClick={() => setActiveTab('diabetes')}
             >
-              🩺 Gestational Diabetes Risk
+              <Stethoscope size={20} className="inline mr-2" /> Gestational Diabetes Risk
             </button>
           </div>
         </div>
-
         {/* Baby Weight Prediction Tab */}
         {activeTab === 'babyWeight' && (
           <div className="tab-content">
             <div className="content-grid">
               {/* Input Form */}
               <div className="prediction-card">
-                <div className="card-header">
-                  <span className="card-icon">👶</span>
+                <div className="card-header flex items-center gap-2">
+                  <Baby size={28} className="text-blue-400" />
                   <h2 className="card-title">Baby Weight Prediction</h2>
                 </div>
-                
                 <form onSubmit={handleBabyWeightSubmit} className="prediction-form">
                   <div className="input-group">
                     <input 
@@ -255,18 +253,16 @@ const Predictions = () => {
                   </div>
                   
                   <button type="submit" className="predict-btn" disabled={isLoading}>
-                    {isLoading ? '🔮 Predicting...' : '🔮 Predict Baby Weight'}
+                    {isLoading ? <Loader2 className="animate-spin inline mr-2" size={18} /> : <BarChart3 className="inline mr-2" size={18} />} Predict Baby Weight
                   </button>
                 </form>
               </div>
-
               {/* Results */}
               <div className="prediction-card">
-                <div className="card-header">
-                  <span className="card-icon">📊</span>
+                <div className="card-header flex items-center gap-2">
+                  <BarChart3 size={28} className="text-purple-400" />
                   <h3 className="card-title">Prediction Results</h3>
                 </div>
-                
                 <div className="results-container">
                   {!babyWeightResult ? (
                     <div className="empty-result">
@@ -274,8 +270,8 @@ const Predictions = () => {
                     </div>
                   ) : (
                     <div className={`result-card ${babyWeightResult.riskLevel}`}>
-                      <div className="result-header">
-                        <span className="result-emoji">{babyWeightResult.emoji}</span>
+                      <div className="result-header flex items-center justify-center mb-2">
+                        {babyWeightResult.icon}
                       </div>
                       <div className="result-content">
                         <div className="result-item">
@@ -301,18 +297,16 @@ const Predictions = () => {
             </div>
           </div>
         )}
-
         {/* Gestational Diabetes Tab */}
         {activeTab === 'diabetes' && (
           <div className="tab-content">
             <div className="content-grid">
               {/* Input Form */}
               <div className="prediction-card">
-                <div className="card-header">
-                  <span className="card-icon">🩺</span>
+                <div className="card-header flex items-center gap-2">
+                  <Stethoscope size={28} className="text-blue-400" />
                   <h2 className="card-title">Gestational Diabetes Risk Assessment</h2>
                 </div>
-                
                 <form onSubmit={handleDiabetesSubmit} className="prediction-form">
                   <div className="input-group">
                     <input 
@@ -378,27 +372,25 @@ const Predictions = () => {
                   </div>
                   
                   <button type="submit" className="predict-btn" disabled={isLoading}>
-                    {isLoading ? '🔍 Assessing...' : '🔍 Assess Diabetes Risk'}
+                    {isLoading ? <Loader2 className="animate-spin inline mr-2" size={18} /> : <BarChart3 className="inline mr-2" size={18} />} Assess Diabetes Risk
                   </button>
                 </form>
               </div>
-
               {/* Results */}
               <div className="prediction-card">
-                <div className="card-header">
-                  <span className="card-icon">📈</span>
+                <div className="card-header flex items-center gap-2">
+                  <BarChart3 size={28} className="text-purple-400" />
                   <h3 className="card-title">Risk Assessment</h3>
                 </div>
-                
                 <div className="results-container">
                   {!diabetesResult ? (
                     <div className="empty-result">
                       <p className="empty-text">Complete the assessment to view your diabetes risk</p>
                     </div>
                   ) : (
-                    <div className={`result-card ${diabetesResult.riskLevel.toLowerCase().replace(' ', '-')}`}>
-                      <div className="result-header">
-                        <span className="result-emoji">{diabetesResult.emoji}</span>
+                    <div className={`result-card ${diabetesResult.riskLevel.toLowerCase().replace(' ', '-')}`}> 
+                      <div className="result-header flex items-center justify-center mb-2">
+                        {diabetesResult.icon}
                       </div>
                       <div className="result-content">
                         <div className="result-item">

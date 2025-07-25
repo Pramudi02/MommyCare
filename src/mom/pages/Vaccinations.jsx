@@ -201,7 +201,7 @@ const Vaccinations= () => {
           
           <div className="relative z-10">
             <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-              <Syringe className="text-white" size={32} />
+              <Syringe className="text-grey-800" size={32} />
               Vaccination an Immunization Tracker
             </h1>
             <p className="text-lg opacity-90 mb-5">

@@ -1,6 +1,5 @@
 // MommyCare/src/mom/pages/Appointments/MyAppointments.jsx
 import React, { useState } from 'react';
-import './MyAppointments.css';
 import { 
   Calendar, 
   Scale, 
@@ -25,16 +24,16 @@ import {
   Bell,
   Clock
 } from 'lucide-react';
+import './MyAppointments.css';
 
 const AppointmentsDashboard = () => {
   const [currentMonth, setCurrentMonth] = useState('July 2025');
 
   const statsData = [
-    { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500' },
-    { number: 2, label: 'Missed Appointments', color: 'text-red-500' },
-    { number: 8, label: 'Completed This Month', color: 'text-green-500' }
+    { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500', icon: <Calendar size={28} className="text-blue-400 mb-1" /> },
+    { number: 2, label: 'Missed Appointments', color: 'text-red-500', icon: <X size={28} className="text-red-400 mb-1" /> },
+    { number: 8, label: 'Completed This Month', color: 'text-green-500', icon: <CheckCircle size={28} className="text-green-400 mb-1" /> }
   ];
-
   const clinicServices = [
     { icon: Scale, name: 'Mom Weight Check' },
     { icon: Baby, name: 'Baby Weight Check' },
@@ -43,7 +42,6 @@ const AppointmentsDashboard = () => {
     { icon: Syringe, name: 'Vaccinations' },
     { icon: Stethoscope, name: 'General Checkup' }
   ];
-
   const doctorServices = [
     { icon: UserCheck, name: 'Gynecologist' },
     { icon: User, name: 'Pediatrician' },
@@ -65,13 +63,12 @@ const AppointmentsDashboard = () => {
 
   // Appointment dates - consistent with upcoming and missed appointments
   const appointmentDates = {
-    10: 'missed', // July 10 - missed
-    15: 'missed', // July 15 - missed
-    22: 'upcoming', // July 22 - upcoming
-    25: 'upcoming', // July 25 - upcoming
-    28: 'upcoming'  // July 28 - upcoming
+    10: 'missed',
+    15: 'missed',
+    22: 'upcoming',
+    25: 'upcoming',
+    28: 'upcoming'
   };
-
   const upcomingAppointments = [
     {
       id: 1,
@@ -95,7 +92,6 @@ const AppointmentsDashboard = () => {
       color: 'bg-purple-100'
     }
   ];
-
   const missedAppointments = [
     {
       id: 1,
@@ -112,7 +108,6 @@ const AppointmentsDashboard = () => {
       action: 'Click to reschedule'
     }
   ];
-
   const healthReminders = [
     {
       id: 1,
@@ -143,14 +138,12 @@ const AppointmentsDashboard = () => {
       color: 'bg-cyan-100'
     }
   ];
-
   const navigateMonth = (direction) => {
     // Month navigation logic would go here
     console.log(`Navigate ${direction}`);
   };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="headerAppointments">
@@ -181,18 +174,16 @@ const AppointmentsDashboard = () => {
             <div className="stat-subtitle-appointments">This Month</div>
           </div>
         </div>
-
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-pink-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
                 <Building2 className="text-pink-500 w-6 h-6" />
               </div>
               <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
             </div>
-
             <div className="grid grid-cols-2 gap-4 mb-6">
               {clinicServices.map((service, index) => {
                 const IconComponent = service.icon;
@@ -206,24 +197,21 @@ const AppointmentsDashboard = () => {
                 );
               })}
             </div>
-
             <button className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-3 rounded-full transition-colors">
-              Request Clinic Visit
+              <Plus className="inline-block mr-2" size={18} /> Request Clinic Visit
             </button>
             <p className="text-xs text-gray-500 text-center mt-2">
               Hospital will confirm your appointment
             </p>
           </div>
-
           {/* Doctor Consultations Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-pink-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mr-3">
                 <Stethoscope className="text-cyan-500 w-6 h-6" />
               </div>
               <h2 className="text-xl font-semibold text-gray-800">Doctor Consultations</h2>
             </div>
-
             <div className="grid grid-cols-2 gap-4 mb-6">
               {doctorServices.map((service, index) => {
                 const IconComponent = service.icon;
@@ -237,17 +225,15 @@ const AppointmentsDashboard = () => {
                 );
               })}
             </div>
-
             <button className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-3 rounded-full transition-colors">
-              Request Doctor Visit
+              <Plus className="inline-block mr-2" size={18} /> Request Doctor Visit
             </button>
             <p className="text-xs text-gray-500 text-center mt-2">
               Doctor will confirm your appointment
             </p>
           </div>
-
           {/* Calendar Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <Calendar className="text-blue-500 w-6 h-6 mr-2" />
@@ -271,19 +257,23 @@ const AppointmentsDashboard = () => {
                 </button>
               </div>
             </div>
-
             {/* Calendar Header */}
             <div className="grid grid-cols-7 gap-1 mb-2">
-              {daysOfWeek.map((day) => (
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                 <div key={day} className="text-center text-xs font-medium text-gray-500 p-2 bg-gray-50 rounded">
                   {day}
                 </div>
               ))}
             </div>
-
             {/* Calendar Days */}
             <div className="space-y-1">
-              {calendarDays.map((week, weekIndex) => (
+              {[
+                [null, null, 1, 2, 3, 4, 5],
+                [6, 7, 8, 9, 10, 11, 12],
+                [13, 14, 15, 16, 17, 18, 19],
+                [20, 21, 22, 23, 24, 25, 26],
+                [27, 28, 29, 30, 31, null, null]
+              ].map((week, weekIndex) => (
                 <div key={weekIndex} className="grid grid-cols-7 gap-1">
                   {week.map((day, dayIndex) => {
                     if (day === null) {
@@ -313,11 +303,10 @@ const AppointmentsDashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Appointments and Reminders Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Appointments */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
               <Zap className="text-yellow-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Upcoming Appointments</h3>
@@ -339,9 +328,8 @@ const AppointmentsDashboard = () => {
               })}
             </div>
           </div>
-
           {/* Missed Appointments */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
               <X className="text-red-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Missed Appointments</h3>
@@ -372,9 +360,8 @@ const AppointmentsDashboard = () => {
               </div>
             </div>
           </div>
-
           {/* Health Reminders */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
               <Bell className="text-blue-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Health Reminders</h3>

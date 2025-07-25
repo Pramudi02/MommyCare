@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Upload, Download, Eye, FileText, Activity, Stethoscope, X } from 'lucide-react';
+import { Calendar, Upload, Download, Eye, FileText, Activity, Stethoscope, X, FolderOpen, Layers, Plus, ClipboardList, AlertTriangle } from 'lucide-react';
 import './MedicalReports.css';
 
 const MedicalReports = () => {
@@ -10,7 +10,13 @@ const MedicalReports = () => {
   const [doctorLab, setDoctorLab] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
 
-  const tabs = ['All Reports', 'Blood Tests', 'Ultrasounds', 'X-Rays', 'Other'];
+  const tabs = [
+    { label: 'All Reports', icon: <FolderOpen size={16} className="mr-1" /> },
+    { label: 'Blood Tests', icon: <Activity size={16} className="mr-1" /> },
+    { label: 'Ultrasounds', icon: <Stethoscope size={16} className="mr-1" /> },
+    { label: 'X-Rays', icon: <Layers size={16} className="mr-1" /> },
+    { label: 'Other', icon: <ClipboardList size={16} className="mr-1" /> }
+  ];
 
   const reports = [
     {
@@ -54,13 +60,13 @@ const MedicalReports = () => {
   const getIconForType = (type) => {
     switch (type) {
       case 'BLOOD TEST':
-        return <Activity className="w-4 h-4" />;
+        return <Activity className="w-4 h-4 text-pink-500" />;
       case 'ULTRASOUND':
-        return <Stethoscope className="w-4 h-4" />;
+        return <Stethoscope className="w-4 h-4 text-purple-500" />;
       case 'LAB RESULTS':
-        return <FileText className="w-4 h-4" />;
+        return <FileText className="w-4 h-4 text-blue-500" />;
       default:
-        return <FileText className="w-4 h-4" />;
+        return <FileText className="w-4 h-4 text-gray-400" />;
     }
   };
 
@@ -86,7 +92,7 @@ const MedicalReports = () => {
             Easily view, organize, and share all your medical records and test results for better health management and peace of mind.
           </p>
         </div>
-
+        <p className="header-description">View and manage all your medical records and test results</p>
         <div className="main-grid">
           {/* Left Column - Reports List */}
           <div>
@@ -96,43 +102,33 @@ const MedicalReports = () => {
                 <nav className="tabs-nav">
                   {tabs.map((tab) => (
                     <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`tab-button ${
-                        activeTab === tab ? 'active' : 'inactive'
-                      }`}
+                      key={tab.label}
+                      onClick={() => setActiveTab(tab.label)}
+                      className={`tab-button flex items-center ${activeTab === tab.label ? 'active' : 'inactive'}`}
                     >
-                      {tab}
+                      {tab.icon}{tab.label}
                     </button>
                   ))}
                 </nav>
               </div>
             </div>
-
             {/* Reports List */}
             <div className="reports-list">
               {reports.map((report) => (
-                <div key={report.id} className="report-card">
-                  <div className="report-header">
-                    <div className="report-badges">
-                      <span className="badge badge-type">
-                        {getIconForType(report.type)}
-                        <span>{report.type}</span>
-                      </span>
-                      <span className={`badge ${report.statusColor}`}>
-                        {report.status}
-                      </span>
-                    </div>
+                <div key={report.id} className="report-card glass-effect">
+                  <div className="report-header flex items-center gap-2">
+                    <span className="badge badge-type flex items-center gap-1">
+                      {getIconForType(report.type)}
+                      <span>{report.type}</span>
+                    </span>
+                    <span className={`badge ${report.statusColor}`}>{report.status}</span>
                   </div>
-
                   <h3 className="report-title">{report.title}</h3>
-                  
                   <div className="report-details">
                     <p><strong>Date:</strong> {report.date} | <strong>Time:</strong> {report.time}</p>
                     <p><strong>{report.doctor}</strong></p>
                     <p>{report.department}</p>
                   </div>
-
                   <div className="report-findings">
                     <p><strong>Key Findings:</strong> {report.findings}</p>
                   </div>
@@ -151,18 +147,16 @@ const MedicalReports = () => {
               ))}
             </div>
           </div>
-
           {/* Right Column - Upload External Reports */}
           <div>
-            <div className="upload-section">
-              <h2 className="upload-title">Upload External Reports</h2>
-              
-              <div className="upload-note">
+            <div className="upload-section glass-effect">
+              <h2 className="upload-title flex items-center gap-2"><Upload size={20} className="text-blue-400" />Upload External Reports</h2>
+              <div className="upload-note flex items-center gap-2">
+                <AlertTriangle size={18} className="text-yellow-400" />
                 <p>
                   <strong>Note:</strong> Upload your external medical reports here for doctor reference during consultations. Please categorize reports accurately for better organization.
                 </p>
               </div>
-
               <div>
                 <div className="form-group">
                   <label className="form-label">
@@ -181,7 +175,6 @@ const MedicalReports = () => {
                     <option value="other">Other</option>
                   </select>
                 </div>
-
                 <div className="form-group">
                   <label className="form-label">
                     Report Title <span className="required">*</span>
@@ -194,7 +187,6 @@ const MedicalReports = () => {
                     className="form-input"
                   />
                 </div>
-
                 <div className="form-group">
                   <label className="form-label">
                     Date of Test/Report <span className="required">*</span>
@@ -206,7 +198,6 @@ const MedicalReports = () => {
                     className="form-input"
                   />
                 </div>
-
                 <div className="form-group">
                   <label className="form-label">
                     External Doctor/Lab (Optional)
@@ -219,19 +210,17 @@ const MedicalReports = () => {
                     className="form-input"
                   />
                 </div>
-
                 {/* Upload File Section */}
                 <div className="form-group">
                   <label className="form-label">
                     Upload File <span className="required">*</span>
                   </label>
-                  <div className="upload-area">
-                    <Upload className="upload-icon" />
+                  <div className="upload-area flex flex-col items-center justify-center">
+                    <Upload className="upload-icon text-blue-400" size={32} />
                     <p className="upload-text">Click to upload file</p>
                     <p className="upload-subtext">Supported: PDF, JPG, PNG (Max 10MB)</p>
                   </div>
                 </div>
-
                 <div className="form-group">
                   <label className="form-label">
                     Additional Notes (Optional)
@@ -244,13 +233,12 @@ const MedicalReports = () => {
                     className="form-textarea"
                   />
                 </div>
-
                 <button
                   type="button"
                   onClick={handleUpload}
-                  className="btn-upload"
+                  className="btn-upload flex items-center gap-2"
                 >
-                  Upload Report
+                  <Plus size={16} /> Upload Report
                 </button>
               </div>
             </div>
