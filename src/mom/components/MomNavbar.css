@@ -64,7 +64,7 @@ body {
 
 .main-navbar__item:hover {
   color: #fffdfd;
-  background: linear-gradient(90deg, #73777c 0%, #8d9298 100%);
+  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
   box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
   
 }

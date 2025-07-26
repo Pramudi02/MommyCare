@@ -7,13 +7,8 @@ const MainNavbar = ({ onSignUpClick, onLoginClick }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-br from-blue-400 to-pink-400 p-2 rounded-full">
-              <Heart className="h-6 w-6 text-white" fill="currentColor" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">
-              MommyCare
-            </span>
+          <div className=" items-center">
+            <img src="/mommy.png" alt="MommyCare Logo" className="h-8 w-8 logo" />
           </div>
           
           {/* Search Bar */}
