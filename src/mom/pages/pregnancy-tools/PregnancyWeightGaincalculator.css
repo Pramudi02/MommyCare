@@ -1,781 +1,506 @@
-/* PregnancyWeightGainCalculator.css - Updated to match Vaccination page styling with centered content */
-/* Base styles */
+/* Pregnancy Calculator Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 100%) !important;
-  min-height: 100vh;
-}
-
 body {
-  background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 100%) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1e293b;
 }
 
-.pregnancy-calculator {
-  background: transparent;
+.pregnancy-calc-container {
   min-height: 100vh;
   padding: 20px;
-  color: #2d3748;
-  display: flex;
+  background: linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%);
+}
+
+.pregnancy-calc-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.pregnancy-calc-header {
+  background: linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%);
+  padding: 40px 30px;
+  text-align: center;
+  color: #1e293b;
+}
+
+.pregnancy-calc-header-icon {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  color: #4f46e5;
 }
 
-.container {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
+.pregnancy-calc-title {
+  font-size: 2.25rem; /* Updated from 28px to match baby name finder main title */
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #4f46e5;
 }
 
-/* Header Styles */
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 40px 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
-  pointer-events: none;
-}
-
-.header .icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
-  color: white;
-  position: relative;
-  z-index: 1;
-}
-
-.header h1 {
-  color: white;
-  font-size: 2.2rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 1;
-}
-
-.header p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+.pregnancy-calc-subtitle {
+  font-size: 1.125rem; /* Updated from 16px to match baby name finder subtitle */
+  color: #64748b;
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
-  position: relative;
-  z-index: 1;
 }
 
-/* Main Content Layout */
-.main-content {
+/* Main Layout */
+.pregnancy-calc-main-layout {
   display: grid;
   grid-template-columns: 1fr 400px;
-  gap: 30px;
-  align-items: start;
-  padding: 40px;
-  background: white;
+  gap: 0;
+  min-height: 600px;
 }
 
-/* Calculator Section */
-.calculator-section {
-  background: white;
-  border-radius: 1rem;
+/* Form Panel */
+.pregnancy-calc-form-panel {
   padding: 30px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e2e8f0;
+  background: #ffffff;
 }
 
-.section-header {
+.pregnancy-calc-form-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 25px;
-}
-
-.calculator-icon {
-  font-size: 1.5rem;
-  color: #6366f1;
-}
-
-.section-header h2 {
+  margin-bottom: 24px;
   color: #1e293b;
-  font-size: 1.4rem;
+}
+
+.pregnancy-calc-form-header h2 {
+  font-size: 1.125rem; /* Updated from 18px to match baby name finder subtitle */
   font-weight: 600;
+  margin: 0;
 }
 
 /* Tabs */
-.tabs {
+.pregnancy-calc-tabs {
   display: flex;
-  margin-bottom: 30px;
-  border-radius: 0.75rem;
-  background: #f8fafc;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: #f1f5f9;
+  border-radius: 8px;
   padding: 4px;
-  border: 1px solid #e2e8f0;
 }
 
-.tab {
+.pregnancy-calc-tab {
   flex: 1;
-  padding: 12px 16px;
+  padding: 8px 12px;
   border: none;
   background: transparent;
   color: #64748b;
-  font-size: 0.9rem;
+  font-size: 0.875rem; /* Updated from 12px to match baby name finder filter buttons */
   font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 0.5rem;
-  text-align: center;
 }
 
-.tab.active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+.pregnancy-calc-tab.active {
+  background: #4f46e5;
   color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.tab:hover:not(.active) {
-  background: #f1f5f9;
-  color: #475569;
+.pregnancy-calc-tab:hover:not(.active) {
+  background: rgba(79, 70, 229, 0.1);
 }
 
-/* Form Styles */
-.calculator-form {
+/* Form */
+.pregnancy-calc-form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
-.form-group {
+.pregnancy-calc-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pregnancy-calc-form-group {
   display: flex;
   flex-direction: column;
 }
 
-.form-group label {
-  color: #475569;
+.pregnancy-calc-form-group label {
+  font-size: 0.875rem; /* Updated from 14px to match baby name finder selector label */
   font-weight: 500;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.input-with-unit {
+.pregnancy-calc-input-group {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-with-unit input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  color: #1e293b;
+.pregnancy-calc-input-group input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem; /* Updated from 14px to match baby name finder smaller text */
   transition: all 0.2s ease;
-  background: white;
 }
 
-.input-with-unit input:focus {
+.pregnancy-calc-input-group input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.input-with-unit input::placeholder {
-  color: #94a3b8;
-}
-
-.unit {
+.pregnancy-calc-unit {
   position: absolute;
-  right: 16px;
-  color: #64748b;
+  right: 12px;
+  font-size: 0.875rem; /* Updated from 14px */
+  color: #6b7280;
   font-weight: 500;
-  pointer-events: none;
-  font-size: 0.9rem;
 }
 
-/* Height Inputs */
-.height-inputs {
+.pregnancy-calc-height-input {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
-.height-inputs .input-with-unit {
+.pregnancy-calc-height-input input {
   flex: 1;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem; /* Updated from 14px */
 }
 
-/* Select Dropdown */
-.week-select {
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  color: #1e293b;
+.pregnancy-calc-unit-select {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem; /* Updated from 14px */
   background: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  min-width: 60px;
 }
 
-.week-select:focus {
+.pregnancy-calc-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem; /* Updated from 14px */
+  background: white;
+  color: #6b7280;
+}
+
+.pregnancy-calc-select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.week-select option {
-  background: white;
-  color: #1e293b;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 /* Checkbox */
-.checkbox-group {
-  margin: 10px 0;
+.pregnancy-calc-checkbox-group {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
-.checkbox-label {
+.pregnancy-calc-checkbox {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  color: #475569;
-  font-size: 0.9rem;
-  padding: 8px 0;
+  font-size: 0.875rem; /* Updated from 14px */
+  color: #374151;
 }
 
-.checkbox-label input[type="checkbox"] {
-  appearance: none;
+.pregnancy-calc-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.pregnancy-calc-checkmark {
   width: 18px;
   height: 18px;
-  border: 2px solid #cbd5e0;
-  border-radius: 0.25rem;
-  position: relative;
-  cursor: pointer;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
-  background: white;
 }
 
-.checkbox-label input[type="checkbox"]:checked {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border-color: #6366f1;
+.pregnancy-calc-checkbox input[type="checkbox"]:checked + .pregnancy-calc-checkmark {
+  background: #4f46e5;
+  border-color: #4f46e5;
 }
 
-.checkbox-label input[type="checkbox"]:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.pregnancy-calc-checkbox input[type="checkbox"]:checked + .pregnancy-calc-checkmark::after {
+  content: "✓";
   color: white;
   font-size: 12px;
   font-weight: bold;
 }
 
 /* Calculate Button */
-.calculate-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border: none;
+.pregnancy-calc-calculate-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: #4f46e5;
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem; /* Updated from 14px to match baby name finder discover text */
   font-weight: 600;
-  padding: 14px 24px;
-  border-radius: 0.5rem;
-  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
-.calculate-btn:hover {
-  background: linear-gradient(135deg, #5855eb 0%, #7c3aed 100%);
+.pregnancy-calc-calculate-btn:hover {
+  background: #4338ca;
   transform: translateY(-1px);
-  box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-.calculate-btn:active {
-  transform: translateY(0);
-}
-
-/* Results Section */
-.results-section {
+/* Result Panel */
+.pregnancy-calc-result-panel {
+  background: #f8fafc;
+  padding: 30px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
-/* Weight Summary Card */
-.weight-summary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 25px;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+.pregnancy-calc-result-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
 }
 
-.summary-header {
+.pregnancy-calc-result-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pregnancy-calc-card-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
-  font-weight: 600;
+  font-size: 0.875rem; /* Updated from 14px */
+  font-weight: 500;
+  color: #4f46e5;
+  margin-bottom: 16px;
+}
+
+/* Summary Card */
+.pregnancy-calc-summary-card {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: white;
+  border: none;
 }
 
-.summary-icon {
-  font-size: 1.2rem;
+.pregnancy-calc-summary-card .pregnancy-calc-card-header {
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.weight-gain {
+.pregnancy-calc-weight-display {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
-.gain-value {
+.pregnancy-calc-weight-value {
   display: block;
-  font-size: 2.5rem;
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 5px;
-  color: white;
+  margin-bottom: 4px;
 }
 
-.gain-label {
-  font-size: 0.9rem;
+.pregnancy-calc-weight-label {
+  font-size: 0.875rem; /* Updated from 14px */
   opacity: 0.9;
-  color: rgba(255, 255, 255, 0.8);
 }
 
-.recommendations {
+.pregnancy-calc-range-info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-.rec-item {
+.pregnancy-calc-range-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  color: white;
+  font-size: 0.875rem; /* Updated from 14px */
 }
 
-.rec-label {
-  font-size: 0.9rem;
+.pregnancy-calc-range-label {
   opacity: 0.9;
 }
 
-.rec-value {
+.pregnancy-calc-range-value {
   font-weight: 600;
-  font-size: 1rem;
 }
 
-/* Weeks Pregnant Card */
-.weeks-pregnant {
-  background: white;
-  padding: 25px;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+/* Weeks Card */
+.pregnancy-calc-weeks-card {
   text-align: center;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 
-.weeks-number {
-  font-size: 3rem;
+.pregnancy-calc-weeks-number {
+  font-size: 40px;
   font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 8px;
+  color: #4f46e5;
+  margin-bottom: 4px;
 }
 
-.weeks-label {
-  color: #64748b;
-  font-size: 0.9rem;
+.pregnancy-calc-weeks-label {
+  font-size: 0.875rem; /* Updated from 14px */
+  color: #6b7280;
   font-weight: 500;
 }
 
-/* BMI Analysis Card */
-.bmi-analysis {
-  background: white;
-  padding: 25px;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.bmi-header {
+/* BMI Card */
+.pregnancy-calc-bmi-value {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  color: #1e293b;
-  font-weight: 600;
+  gap: 12px;
 }
 
-.bmi-icon {
-  font-size: 1.2rem;
-  color: #6366f1;
-}
-
-.bmi-value {
-  font-size: 2rem;
+.pregnancy-calc-bmi-number {
+  font-size: 1.5rem; /* Updated from 24px to use rem unit */
   font-weight: 700;
-  color: #6366f1;
-  margin-bottom: 10px;
-}
-
-.bmi-status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #10b981;
-  font-weight: 600;
-}
-
-.check-icon {
-  color: #10b981;
-  font-size: 1.2rem;
-}
-
-/* Progress Tracking Card */
-.progress-tracking {
-  background: white;
-  padding: 25px;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.progress-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
   color: #1e293b;
 }
 
-.progress-header span:first-child {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
+.pregnancy-calc-bmi-label {
+  font-size: 0.875rem; /* Updated from 14px */
+  color: #6b7280;
+  flex: 1;
 }
 
-.progress-icon {
-  font-size: 1.2rem;
-  color: #6366f1;
-}
-
-.progress-percentage {
+.pregnancy-calc-bmi-check {
   color: #10b981;
-  font-weight: 700;
-  font-size: 1.1rem;
 }
 
-.progress-label {
-  color: #64748b;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: #f1f5f9;
-  border-radius: 0.25rem;
-  overflow: hidden;
+/* Progress Card */
+.pregnancy-calc-progress-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
 }
 
-.progress-fill {
+.pregnancy-calc-progress-label {
+  font-size: 0.875rem; /* Updated from 14px */
+  color: #6b7280;
+}
+
+.pregnancy-calc-progress-percentage {
+  font-size: 0.875rem; /* Updated from 14px */
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.pregnancy-calc-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.pregnancy-calc-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981, #059669);
-  border-radius: 0.25rem;
+  border-radius: 4px;
   transition: width 0.3s ease;
 }
 
-.progress-note {
-  color: #10b981;
-  font-size: 0.85rem;
-  font-weight: 500;
+.pregnancy-calc-progress-note {
+  font-size: 0.75rem; /* Updated from 12px to use rem unit */
+  color: #6b7280;
+  text-align: center;
 }
 
-/* Weekly Tips Card */
-.weekly-tips {
-  background: white;
-  padding: 25px;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.tips-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.tips-icon {
-  font-size: 1.2rem;
-  color: #6366f1;
-}
-
-.tips-list {
+/* Tips Card */
+.pregnancy-calc-tips-list {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding: 0;
 }
 
-.tips-list li {
-  padding: 12px 16px;
-  background: #f8fafc;
-  border-radius: 0.5rem;
+.pregnancy-calc-tips-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
   color: #475569;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.875rem; /* Updated from 14px */
   position: relative;
-  padding-left: 40px;
-  border: 1px solid #e2e8f0;
+  padding-left: 20px;
 }
 
-.tips-list li::before {
-  content: '💡';
+.pregnancy-calc-tips-list li:before {
+  content: "•";
+  color: #4f46e5;
   position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 0;
+  font-weight: bold;
 }
 
-.tips-list li:nth-child(2)::before {
-  content: '💧';
-}
-
-.tips-list li:nth-child(3)::before {
-  content: '💊';
-}
-
-.tips-list li:nth-child(4)::before {
-  content: '🚶‍♀️';
-}
-
-.tips-list li:nth-child(5)::before {
-  content: '😴';
+.pregnancy-calc-tips-list li:last-child {
+  border-bottom: none;
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .main-content {
+@media (max-width: 968px) {
+  .pregnancy-calc-main-layout {
     grid-template-columns: 1fr;
-    gap: 30px;
   }
   
-  .results-section {
-    order: -1;
-  }
-}
-
-@media (max-width: 768px) {
-  .pregnancy-calculator {
-    padding: 10px;
+  .pregnancy-calc-form-row {
+    grid-template-columns: 1fr;
   }
   
-  .container {
-    margin: 0;
-    border-radius: 0;
+  .pregnancy-calc-container {
+    padding: 12px;
   }
   
-  .main-content {
-    padding: 20px;
-  }
-  
-  .header {
+  .pregnancy-calc-header {
     padding: 30px 20px;
-    margin-bottom: 30px;
   }
   
-  .header h1 {
-    font-size: 1.8rem;
+  .pregnancy-calc-title {
+    font-size: 1.875rem; /* Updated from 24px to match baby name finder responsive title */
   }
   
-  .header p {
-    font-size: 0.9rem;
-  }
-  
-  .calculator-section {
+  .pregnancy-calc-form-panel,
+  .pregnancy-calc-result-panel {
     padding: 20px;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .height-inputs {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .tabs {
+  .pregnancy-calc-tabs {
     flex-direction: column;
     gap: 2px;
   }
   
-  .tab {
-    border-radius: 0.5rem;
+  .pregnancy-calc-tab {
+    text-align: center;
   }
-  
-  .results-section {
-    gap: 15px;
-  }
-  
-  .weight-summary, .weeks-pregnant, .bmi-analysis, 
-  .progress-tracking, .weekly-tips {
-    padding: 20px;
-  }
-  
-  .gain-value {
-    font-size: 2rem;
-  }
-  
-  .weeks-number {
-    font-size: 2.5rem;
-  }
-  
-  .bmi-value {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .pregnancy-calculator {
-    padding: 5px;
-  }
-  
-  .header {
-    padding: 20px 15px;
-  }
-  
-  .header h1 {
-    font-size: 1.6rem;
-  }
-  
-  .main-content {
-    padding: 15px;
-  }
-  
-  .calculator-section {
-    padding: 15px;
-  }
-  
-  .input-with-unit input, .week-select {
-    padding: 10px 14px;
-    font-size: 0.9rem;
-  }
-  
-  .calculate-btn {
-    padding: 12px 20px;
-    font-size: 0.95rem;
-  }
-  
-  .weight-summary, .weeks-pregnant, .bmi-analysis, 
-  .progress-tracking, .weekly-tips {
-    padding: 15px;
-  }
-  
-  .tips-list li {
-    padding: 10px 12px;
-    padding-left: 35px;
-    font-size: 0.85rem;
-  }
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.calculator-section, .results-section > * {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.results-section > *:nth-child(1) { animation-delay: 0.1s; }
-.results-section > *:nth-child(2) { animation-delay: 0.2s; }
-.results-section > *:nth-child(3) { animation-delay: 0.3s; }
-.results-section > *:nth-child(4) { animation-delay: 0.4s; }
-.results-section > *:nth-child(5) { animation-delay: 0.5s; }
-
-/* Focus Styles for Accessibility */
-.tab:focus,
-.calculate-btn:focus,
-input:focus,
-select:focus {
-  outline: 3px solid rgba(99, 102, 241, 0.5);
-  outline-offset: 2px;
-}
-
-/* Hover Effects */
-.weight-summary:hover,
-.weeks-pregnant:hover,
-.bmi-analysis:hover,
-.progress-tracking:hover,
-.weekly-tips:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-}
-
-/* Loading State */
-.calculate-btn.loading {
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.calculate-btn.loading::after {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-left: 10px;
-  border: 2px solid #ffffff;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }

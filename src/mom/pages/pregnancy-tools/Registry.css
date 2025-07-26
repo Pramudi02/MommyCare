@@ -1,4 +1,4 @@
-/* Modern Registry Styles */
+/* Baby Registry Styles with Unique Classes */
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +12,7 @@ body {
   line-height: 1.6;
 }
 
-.modern-registry-container {
+.baby-registry-unique-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
@@ -20,7 +20,7 @@ body {
   min-height: 100vh;
 }
 
-.modern-registry-header {
+.baby-registry-unique-header {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -29,7 +29,7 @@ body {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.modern-registry-header-icon {
+.baby-registry-unique-header-icon {
   width: 40px;
   height: 40px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -41,39 +41,39 @@ body {
   color: white;
 }
 
-.modern-registry-title {
+.baby-registry-unique-title {
   font-size: 28px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
-.modern-registry-main-layout {
+.baby-registry-unique-main-layout {
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 32px;
   align-items: start;
 }
 
-.modern-registry-items-section {
+.baby-registry-unique-items-section {
   background: #ffffff;
 }
 
-.modern-registry-section-header {
+.baby-registry-unique-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
 }
 
-.modern-registry-section-title {
+.baby-registry-unique-section-title {
   font-size: 18px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
-.modern-registry-add-btn {
+.baby-registry-unique-add-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -88,13 +88,13 @@ body {
   font-size: 14px;
 }
 
-.modern-registry-add-btn:hover {
+.baby-registry-unique-add-btn:hover {
   background: #5b5bf6;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.modern-registry-form-card {
+.baby-registry-unique-form-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -103,34 +103,34 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.modern-registry-form-title {
+.baby-registry-unique-form-title {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 20px;
 }
 
-.modern-registry-form-row {
+.baby-registry-unique-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
 }
 
-.modern-registry-form-group {
+.baby-registry-unique-form-group {
   display: flex;
   flex-direction: column;
 }
 
-.modern-registry-form-label {
+.baby-registry-unique-form-label {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
   margin-bottom: 6px;
 }
 
-.modern-registry-form-input,
-.modern-registry-form-select {
+.baby-registry-unique-form-input,
+.baby-registry-unique-form-select {
   padding: 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -139,29 +139,29 @@ body {
   background: #ffffff;
 }
 
-.modern-registry-form-input:focus,
-.modern-registry-form-select:focus {
+.baby-registry-unique-form-input:focus,
+.baby-registry-unique-form-select:focus {
   outline: none;
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.modern-registry-form-input::placeholder {
+.baby-registry-unique-form-input::placeholder {
   color: #9ca3af;
 }
 
-.modern-registry-form-select option {
+.baby-registry-unique-form-select option {
   background: #ffffff;
   color: #1e293b;
 }
 
-.modern-registry-priority-buttons {
+.baby-registry-unique-priority-buttons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.modern-registry-priority-btn {
+.baby-registry-unique-priority-btn {
   padding: 8px 14px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -173,23 +173,23 @@ body {
   transition: all 0.2s ease;
 }
 
-.modern-registry-priority-btn:hover {
+.baby-registry-unique-priority-btn:hover {
   border-color: #9ca3af;
 }
 
-.modern-registry-priority-btn.active {
+.baby-registry-unique-priority-btn.active {
   border-color: var(--priority-color);
   background: var(--priority-color);
   color: white;
 }
 
-.modern-registry-form-actions {
+.baby-registry-unique-form-actions {
   display: flex;
   gap: 12px;
   margin-top: 20px;
 }
 
-.modern-registry-save-btn {
+.baby-registry-unique-save-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -204,11 +204,11 @@ body {
   font-size: 14px;
 }
 
-.modern-registry-save-btn:hover {
+.baby-registry-unique-save-btn:hover {
   background: #059669;
 }
 
-.modern-registry-cancel-btn {
+.baby-registry-unique-cancel-btn {
   padding: 10px 16px;
   background: #ffffff;
   color: #6b7280;
@@ -220,22 +220,22 @@ body {
   font-size: 14px;
 }
 
-.modern-registry-cancel-btn:hover {
+.baby-registry-unique-cancel-btn:hover {
   background: #f9fafb;
 }
 
-.modern-registry-progress-section {
+.baby-registry-unique-progress-section {
   margin-bottom: 24px;
 }
 
-.modern-registry-progress-title {
+.baby-registry-unique-progress-title {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 12px;
 }
 
-.modern-registry-progress-bar {
+.baby-registry-unique-progress-bar {
   width: 100%;
   height: 8px;
   background: #e5e7eb;
@@ -243,20 +243,20 @@ body {
   overflow: hidden;
 }
 
-.modern-registry-progress-fill {
+.baby-registry-unique-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981, #059669);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
 
-.modern-registry-items-list {
+.baby-registry-unique-items-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.modern-registry-item-card {
+.baby-registry-unique-item-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -266,36 +266,36 @@ body {
   border-left: 4px solid var(--priority-color, #6b7280);
 }
 
-.modern-registry-item-card:hover {
+.baby-registry-unique-item-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
-.modern-registry-item-card.purchased {
+.baby-registry-unique-item-card.purchased {
   opacity: 0.6;
   background: #f8fafc;
 }
 
-.modern-registry-item-header {
+.baby-registry-unique-item-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 12px;
 }
 
-.modern-registry-item-title {
+.baby-registry-unique-item-title {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
-.modern-registry-item-actions {
+.baby-registry-unique-item-actions {
   display: flex;
   gap: 8px;
 }
 
-.modern-registry-action-btn {
+.baby-registry-unique-action-btn {
   padding: 6px;
   border: none;
   border-radius: 6px;
@@ -305,28 +305,28 @@ body {
   color: #6b7280;
 }
 
-.modern-registry-action-btn:hover {
+.baby-registry-unique-action-btn:hover {
   background: #f3f4f6;
 }
 
-.modern-registry-edit-btn:hover {
+.baby-registry-unique-edit-btn:hover {
   color: #6366f1;
   background: #eef2ff;
 }
 
-.modern-registry-delete-btn:hover {
+.baby-registry-unique-delete-btn:hover {
   color: #ef4444;
   background: #fef2f2;
 }
 
-.modern-registry-item-details {
+.baby-registry-unique-item-details {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
-.modern-registry-category-badge {
+.baby-registry-unique-category-badge {
   padding: 4px 10px;
   background: #f1f5f9;
   color: #475569;
@@ -335,7 +335,7 @@ body {
   font-weight: 500;
 }
 
-.modern-registry-priority-badge {
+.baby-registry-unique-priority-badge {
   padding: 4px 10px;
   color: white;
   border-radius: 12px;
@@ -344,7 +344,7 @@ body {
   background: var(--priority-color);
 }
 
-.modern-registry-purchase-btn {
+.baby-registry-unique-purchase-btn {
   width: 100%;
   padding: 10px 16px;
   border: 1px solid #d1d5db;
@@ -357,25 +357,25 @@ body {
   font-size: 14px;
 }
 
-.modern-registry-purchase-btn:hover {
+.baby-registry-unique-purchase-btn:hover {
   background: #f9fafb;
   border-color: #10b981;
   color: #10b981;
 }
 
-.modern-registry-purchase-btn.completed {
+.baby-registry-unique-purchase-btn.completed {
   background: #10b981;
   color: white;
   border-color: #10b981;
 }
 
-.modern-registry-sidebar {
+.baby-registry-unique-sidebar {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.modern-registry-sidebar-card {
+.baby-registry-unique-sidebar-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -383,45 +383,45 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.modern-registry-sidebar-title {
+.baby-registry-unique-sidebar-title {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 16px;
 }
 
-.modern-registry-stats-grid {
+.baby-registry-unique-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
-.modern-registry-stat-item {
+.baby-registry-unique-stat-item {
   text-align: center;
   padding: 12px 8px;
   background: #f8fafc;
   border-radius: 8px;
 }
 
-.modern-registry-stat-number {
+.baby-registry-unique-stat-number {
   font-size: 20px;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 4px;
 }
 
-.modern-registry-stat-label {
+.baby-registry-unique-stat-label {
   font-size: 12px;
   color: #64748b;
   font-weight: 500;
 }
 
-.modern-registry-tips-list {
+.baby-registry-unique-tips-list {
   list-style: none;
   padding: 0;
 }
 
-.modern-registry-tips-list li {
+.baby-registry-unique-tips-list li {
   padding: 8px 0;
   border-bottom: 1px solid #f1f5f9;
   color: #475569;
@@ -430,7 +430,7 @@ body {
   padding-left: 20px;
 }
 
-.modern-registry-tips-list li:before {
+.baby-registry-unique-tips-list li:before {
   content: "•";
   color: #6366f1;
   position: absolute;
@@ -438,17 +438,17 @@ body {
   font-weight: bold;
 }
 
-.modern-registry-tips-list li:last-child {
+.baby-registry-unique-tips-list li:last-child {
   border-bottom: none;
 }
 
-.modern-registry-categories-grid {
+.baby-registry-unique-categories-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
-.modern-registry-category-item {
+.baby-registry-unique-category-item {
   padding: 8px 12px;
   background: #f8fafc;
   border-radius: 6px;
@@ -460,36 +460,36 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modern-registry-main-layout {
+  .baby-registry-unique-main-layout {
     grid-template-columns: 1fr;
     gap: 24px;
   }
   
-  .modern-registry-form-row {
+  .baby-registry-unique-form-row {
     grid-template-columns: 1fr;
   }
   
-  .modern-registry-stats-grid {
+  .baby-registry-unique-stats-grid {
     grid-template-columns: 1fr;
   }
   
-  .modern-registry-categories-grid {
+  .baby-registry-unique-categories-grid {
     grid-template-columns: 1fr;
   }
   
-  .modern-registry-container {
+  .baby-registry-unique-container {
     padding: 16px;
   }
   
-  .modern-registry-title {
+  .baby-registry-unique-title {
     font-size: 24px;
   }
   
-  .modern-registry-priority-buttons {
+  .baby-registry-unique-priority-buttons {
     flex-direction: column;
   }
   
-  .modern-registry-priority-btn {
+  .baby-registry-unique-priority-btn {
     text-align: center;
   }
 }
