@@ -176,20 +176,20 @@ const BabyCostsCalculator = () => {
   const { totalCost, categoryTotals } = calculateTotals();
 
   return (
-    <div className="container">
-      <div className="header">
+    <div className="babycosts-page-wrapper">
+      <div className="header-babycosts">
         <h1><Baby className="header-icon" /> Baby Cost Calculator</h1>
         <p>Plan your baby's expenses with our comprehensive cost tracker</p>
       </div>
 
-      <div className="main-contentp">
-        <div className="calculator">
+      <div className="main-content-babycosts">
+        <div className="babycosts-card-calculator">
           <div className="age-selector">
-            <div className="age-tabs">
+            <div className="tabnav-babycosts">
               {ageTabs.map(tab => (
                 <div
                   key={tab.id}
-                  className={`age-tab ${currentAge === tab.id ? 'active' : ''}`}
+                  className={`tab-babycosts ${currentAge === tab.id ? 'active' : ''}`}
                   onClick={() => handleAgeChange(tab.id)}
                 >
                   {tab.label}
@@ -198,12 +198,12 @@ const BabyCostsCalculator = () => {
             </div>
           </div>
 
-          <div className="categories-grid">
+          <div className="categories-grid-babycosts">
             {Object.keys(babyCostData[currentAge]).map(categoryKey => {
               const category = babyCostData[currentAge][categoryKey];
               const IconComponent = categoryIcons[categoryKey];
               return (
-                <div key={categoryKey} className={`category-card ${categoryKey}`}>
+                <div key={categoryKey} className={`babycosts-card ${categoryKey}`}>
                   <div className="category-header">
                     <div className="category-icon">
                       <IconComponent className="category-icon-svg" />
@@ -246,7 +246,7 @@ const BabyCostsCalculator = () => {
           </div>
         </div>
 
-        <div className="summary-panel">
+        <div className="babycosts-summary-panel">
           <h3 className="summary-title"><DollarSign className="summary-icon" /> Cost Summary</h3>
           
           <div className="total-cost">
@@ -266,7 +266,7 @@ const BabyCostsCalculator = () => {
             </div>
           </div>
 
-          <div className="savings-plan">
+          <div className="babycosts-savings-plan">
             <h4 className="savings-title"><Lightbulb className="savings-icon" /> Budget Planning</h4>
             <div className="monthly-savings">
               <div style={{ fontSize: '1.1rem', color: '#96ceb4', marginBottom: '10px' }}>
