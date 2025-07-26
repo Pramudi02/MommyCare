@@ -186,7 +186,7 @@ function FeedingSolutions() {
 
   return (
     <div className="container">
-      <div className="header header-line">
+      <div className="header-feeding">
         <h1>
           <Baby className="header-icon" />
           Baby Feeding Solutions & Meal Plans
@@ -198,13 +198,13 @@ function FeedingSolutions() {
       <div className="glass-tab-navigation">
         <button
           onClick={() => setActiveTab('problems')}
-          className={`tab-button ${activeTab === 'problems' ? 'active' : ''}`}
+          className={`tab-button-solution ${activeTab === 'problems' ? 'active' : ''}`}
         >
           Baby Feeding Problems
         </button>
         <button
           onClick={() => setActiveTab('meals')}
-          className={`tab-button ${activeTab === 'meals' ? 'active' : ''}`}
+          className={`tab-button-solution ${activeTab === 'meals' ? 'active' : ''}`}
         >
           Baby Meal Plans by Age
         </button>

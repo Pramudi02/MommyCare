@@ -8,54 +8,75 @@
 }
 
 html {
-      background-color: #dedede
-!important;
+      background-color: #dedede !important;
   min-height: 100vh;
 }
 
 body {
-      background-color: #dedede
-!important;
+      background-color: #dedede !important;
   min-height: 100vh;
   margin: 0;
-  padding: 1rem
+  padding: 1rem;
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.045);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    min-height: 100%;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  min-height: 100%;
 }
 
+.header-feeding {
+  background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%);
+  text-align: center;
+  color: #1f2937;
+  padding: 40px 0 20px 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 4px 24px 0 rgba(190,24,93,0.07);
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-feeding h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #1f2937;
+  text-align: center;
+}
+
+.header-feeding p {
+  font-size: 1.1rem;
+  color: #374151;
+  opacity: 1;
+  text-align: center;
+}
+
+/* Remove or override the old .header-line styles if needed */
 .header-line {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.header-line h1 {
-    color: white;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
 }
 
 .header-icon {
-    color: white;
+    color: #3b82f6;
     width: 2.5rem;
     height: 2.5rem;
     flex-shrink: 0;
 }
 
 .header-line p {
-    color: rgba(255, 255, 255, 0.9);
+    color: #374151;
     font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -64,40 +85,36 @@ body {
 /* Tab navigation */
 .glass-tab-navigation {
     display: flex;
-    background: rgba(156, 156, 156, 0.02);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 4px;
     margin: 0px 30px 30px 30px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-.tab-button {
+.tab-button-solution {
     flex: 1;
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: #1f2937;
     padding: 12px 20px;
     font-size: 0.875rem;
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
-.tab-button.active {
-    background: rgba(255, 255, 255, 0.3);
-    color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.tab-button-solution.active {
+    background: #b5d1ff;
+    color: rgb(27, 27, 27);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.10);
 }
 
-.tab-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+.tab-button-solution:hover {
+    background: #e0e7ef;
+    color: #1f2937;
 }
 
 .section {
@@ -105,14 +122,14 @@ body {
 }
 
 .section-title {
-    color: white;
+    color: #1f2937;
     font-size: 1.8rem;
     margin-bottom: 25px;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 10px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: none;
 }
 
 .cards-grid {
@@ -122,24 +139,23 @@ body {
 }
 
 .card {
-    background: rgba(181, 181, 181, 0.049);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #ecf5ff;
+    border: 1px solid #e5e7eb;
     border-radius: 20px;
     padding: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    color: #1f2937;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    background: #fff;
+    border-color: #3b82f6;
 }
 
 .card-header {
@@ -151,40 +167,37 @@ body {
 
 .card-emoji {
     font-size: 2.5rem;
-    background: linear-gradient(135deg, rgba(255, 139, 167, 0.8), rgba(255, 195, 160, 0.8));
+    background: #f3f4f6;
     padding: 15px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .card-title {
-    color: white;
+    color: #1f2937;
     font-size: 1.3rem;
     font-weight: 600;
     flex: 1;
 }
 
 .card-description {
-    color: rgba(255, 255, 255, 0.8);
+    color: #374151;
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 15px;
 }
 
 .dropdown-content {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: #f3f4f6;
     border-radius: 15px;
     padding: 20px;
     margin-top: 15px;
-    border-left: 4px solid rgba(255, 139, 167, 0.8);
+    border-left: 4px solid #3b82f6;
     display: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
 }
 
 .dropdown-content.open {
@@ -204,7 +217,7 @@ body {
 }
 
 .dropdown-content h4 {
-    color: white;
+    color: #1f2937;
     margin-bottom: 15px;
     font-size: 1.1rem;
     font-weight: 600;
@@ -212,11 +225,10 @@ body {
 
 .dropdown-content ul {
     list-style: none;
-    space-y: 10px;
 }
 
 .dropdown-content li {
-    color: rgba(255, 255, 255);
+    color: #374151;
     margin-bottom: 10px;
     padding-left: 20px;
     position: relative;
@@ -225,7 +237,7 @@ body {
 
 .dropdown-content li:before {
     content: "•";
-    color: rgba(255, 139, 167, 0.8);
+    color: #3b82f6;
     font-size: 1.2rem;
     position: absolute;
     left: 0;
@@ -233,7 +245,7 @@ body {
 
 .expand-icon {
     font-size: 1.2rem;
-    color: rgba(255, 139, 167, 0.8);
+    color: #3b82f6;
     transition: transform 0.3s ease;
 }
 
@@ -245,68 +257,67 @@ body {
     padding: 30px;
     border-radius: 20px;
     margin-bottom: 30px;
+    background: #fff;
 }
 
 .meal-plans {
     padding: 30px;
     border-radius: 20px;
     margin-bottom: 30px;
+    background: #fff;
 }
 
 .meal-plans .card-emoji {
-    background: linear-gradient(135deg, rgba(168, 237, 234, 0.8), rgba(254, 214, 227, 0.8));
+    background: #e0f7fa;
 }
 
 .meal-plans .dropdown-content {
-    border-left-color: rgba(168, 237, 234, 0.8);
+    border-left-color: #3b82f6;
 }
 
 .meal-plans .dropdown-content li:before {
-    color: rgba(168, 237, 234, 0.8);
+    color: #3b82f6;
 }
 
 .meal-plans .expand-icon {
-    color: rgba(168, 237, 234, 0.8);
+    color: #3b82f6;
 }
 
 .meal-plans .card:hover {
-    border-color: rgba(168, 237, 234, 0.4);
+    border-color: #3b82f6;
 }
 
 .age-badge {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 74, 0.8));
-    color: #2d3748;
+    background: #f3f4f6;
+    color: #1f2937;
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .meal-sample {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: #f3f4f6;
     border-radius: 10px;
     padding: 15px;
     margin: 10px 0;
-    border-left: 3px solid rgba(168, 237, 234, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 3px solid #3b82f6;
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
 }
 
 .meal-sample h5 {
-    color: white;
+    color: #1f2937;
     margin-bottom: 8px;
     font-size: 1rem;
     font-weight: 600;
 }
 
 .meal-sample p {
-    color: rgba(255, 255, 255, 0.8);
+    color: #374151;
     font-size: 0.9rem;
     margin-bottom: 5px;
     line-height: 1.4;

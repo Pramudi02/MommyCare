@@ -119,7 +119,7 @@ function MaternalHealthHub() {
 
   return (
     <div className="container">
-      <div className="header">
+      <div className="header-maternity">
         <h1>
           <User className="header-icon" />
           Maternal Health Hub

@@ -100,7 +100,7 @@ const ChildGrowthChart = () => {
 
   return (
     <div className="child-growth-chart">
-      <div className="glass-header">
+      <div className="header-growthchart">
         <h1>
           <BarChart3 className="header-icon" style={{marginRight: "15px"}} />
           Baby Growth Chart & Percentile Calculator
@@ -252,6 +252,15 @@ const ChildGrowthChart = () => {
                 <Line type="monotone" dataKey="p97" stroke="#f44336" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
+            <div className="chart-legend">
+              <div className="legend-item"><span className="legend-color" style={{background:'#ff6b6b'}}></span>3rd percentile</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#ffa726'}}></span>10th percentile</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#ffeb3b'}}></span>25th percentile</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#4caf50'}}></span>50th percentile (Median)</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#2196f3'}}></span>75th percentile</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#9c27b0'}}></span>90th percentile</div>
+              <div className="legend-item"><span className="legend-color" style={{background:'#f44336'}}></span>97th percentile</div>
+            </div>
           </div>
         </div>
       </div>
