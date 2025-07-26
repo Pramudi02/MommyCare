@@ -1,14 +1,21 @@
 import React from 'react';
 import { Search, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const MainNavbar = ({ onSignUpClick, onLoginClick }) => {
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/mom');
+  };
+
   return (
     <nav className="bg-gradient-to-r from-blue-50 to-pink-50 shadow-lg border-b border-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <div className=" items-center">
-            <img src="/mommy.png" alt="MommyCare Logo" className="h-8 w-8 logo" />
+          <div className=" items-center cursor-pointer" onClick={handleLogoClick}>
+            <img src="/mommy.png" alt="MommyCare Logo" className="logo-mammy h-24"  />
           </div>
           
           {/* Search Bar */}

@@ -78,28 +78,32 @@ const Communication = () => {
   };
 
   return (
-    <div className="communication-container">
-      {/* Hero Section */}
-      <div className="heros-section">
-        <div className="heros-content w-full flex flex-col items-center">
-          <div className="flex items-center gap-3 mb-4">
-            <MessageCircle className="text-blue-500" size={32} />
-            <h1 className="text-center">The Communication module ensures smooth, secure, and real-time communication between mothers, doctors, and midwives. This feature helps bridge the gap between home care and professional medical guidance, offering instant support and updates when they matter the most.</h1>
-          </div>
-          <div className="flex flex-col md:flex-row gap-4 justify-center mt-6">
-            <button
-              className="bg-blue-200 hover:bg-blue-300 text-black font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-md transition-all text-lg"
-              onClick={() => scrollToSection('find-doctor-section')}
-            >
-              Find Your Perfect Doctor <ArrowDown size={20} />
-            </button>
-            <button
-              className="bg-yellow-100 hover:bg-yellow-200 text-black font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-md transition-all text-lg"
-              onClick={() => scrollToSection('announcements-section')}
-            >
-              Announcements <ArrowDown size={20} />
-            </button>
-          </div>
+    <div className="communication-page bg-gray-50 p-4">
+       <div className="communication-container">
+      {/* Header */}
+      <div className="headerCommunication ">
+        <div className="headerCommunication-icon">
+          <MessageCircle className="w-6 h-6" />
+        </div>
+        <h1 className="headerCommunication-title">Communication Hub</h1>
+        <p className="headerCommunication-description">
+          Connect seamlessly with healthcare providers, stay updated with announcements, and access real-time support for your maternal care journey.
+        </p>
+        
+        {/* Action Buttons */}
+        <div className="header-actions">
+          <button
+            className="header-action-btn primary"
+            onClick={() => scrollToSection('find-doctor-section')}
+          >
+            Find Your Perfect Doctor <ArrowDown size={20} />
+          </button>
+          <button
+            className="header-action-btn secondary"
+            onClick={() => scrollToSection('announcements-section')}
+          >
+            View Announcements <ArrowDown size={20} />
+          </button>
         </div>
       </div>
 
@@ -148,24 +152,24 @@ const Communication = () => {
       </div>
 
       {/* Find Doctor Section */}
-      <div className="find-doctor-section" id="find-doctor-section">
-        <div className="find-doctor-header flex items-center gap-2">
-          <SearchIcon className="text-blue-400" size={20} />
+      <div className="doctor-search-hero" id="find-doctor-section">
+        <div className="doctor-search-header flex items-center gap-2">
+          <SearchIcon className="text-white  mr-2" size={28} />
           <h2>Find Your Perfect Doctor</h2>
         </div>
-        <p>Discover trusted healthcare professionals for your motherhood journey</p>
-        <div className="search-container flex items-center gap-2">
+        <p className="text-white text-sm text-center mr-2">Discover trusted healthcare professionals for your motherhood journey</p>
+        <div className="doctor-search-form flex items-center gap-2">
           <input 
             type="text" 
             placeholder="Search doctors by name, specialty, or location..."
-            className="search-input"
+            className="doctor-search-input"
           />
-          <button className="search-button flex items-center"><SearchIcon size={16} /></button>
+          <button className="doctor-search-btn flex items-center"><SearchIcon size={16} /></button>
         </div>
-        <div className="specialties-filter">
+        <div className="doctor-specialties">
           {specialties.map((specialty, index) => (
-            <button key={index} className="specialty-tag flex items-center gap-1">
-              <Stethoscope className="text-purple-400" size={14} /> {specialty}
+            <button key={index} className="doctor-specialty-chip flex items-center gap-1">
+              <Stethoscope className="text-white-400" size={14} /> {specialty}
             </button>
           ))}
         </div>
@@ -199,6 +203,8 @@ const Communication = () => {
         </div>
       </div>
     </div>
+    </div>
+   
   );
 };
 
