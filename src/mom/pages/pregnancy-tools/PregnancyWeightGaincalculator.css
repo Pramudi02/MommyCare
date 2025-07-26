@@ -1,4 +1,4 @@
-/* PregnancyWeightGainCalculator.css - Modern Clean Design */
+/* PregnancyWeightGainCalculator.css - Updated to match Vaccination page styling with centered content */
 /* Base styles */
 * {
   margin: 0;
@@ -7,58 +7,85 @@
 }
 
 html {
-  background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%) !important;
+  background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 100%) !important;
   min-height: 100vh;
 }
 
 body {
-  background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%) !important;
+  background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 100%) !important;
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .pregnancy-calculator {
   background: transparent;
   min-height: 100vh;
-  padding: 20px 0;
+  padding: 20px;
   color: #2d3748;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
 }
 
 /* Header Styles */
 .header {
   text-align: center;
   margin-bottom: 40px;
-  background: transparent;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
 }
 
 .header .icon {
   font-size: 3rem;
   margin-bottom: 20px;
-  color: #4299e1;
+  color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .header h1 {
-  color: #2d3748;
+  color: white;
   font-size: 2.2rem;
   font-weight: 600;
   margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
 }
 
 .header p {
-  color: #718096;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+  position: relative;
+  z-index: 1;
 }
 
 /* Main Content Layout */
@@ -67,13 +94,14 @@ body {
   grid-template-columns: 1fr 400px;
   gap: 30px;
   align-items: start;
-    background-color: rgba(255, 255, 255, 0.5); /* White with 50% transparency */
+  padding: 40px;
+  background: white;
 }
 
 /* Calculator Section */
 .calculator-section {
   background: white;
-  border-radius: 16px;
+  border-radius: 1rem;
   padding: 30px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
@@ -88,23 +116,21 @@ body {
 
 .calculator-icon {
   font-size: 1.5rem;
-  color: #4299e1;
+  color: #6366f1;
 }
 
-
-  .section-header h2 {
-  color: #1e3a8a; /* Navy blue */
+.section-header h2 {
+  color: #1e293b;
   font-size: 1.4rem;
   font-weight: 600;
 }
-
 
 /* Tabs */
 .tabs {
   display: flex;
   margin-bottom: 30px;
-  border-radius: 12px;
-  background: #f7fafc;
+  border-radius: 0.75rem;
+  background: #f8fafc;
   padding: 4px;
   border: 1px solid #e2e8f0;
 }
@@ -114,24 +140,24 @@ body {
   padding: 12px 16px;
   border: none;
   background: transparent;
-  color: #718096;
+  color: #64748b;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   text-align: center;
 }
 
 .tab.active {
-  background: #4299e1;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .tab:hover:not(.active) {
-  background: #edf2f7;
-  color: #4a5568;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 /* Form Styles */
@@ -153,7 +179,7 @@ body {
 }
 
 .form-group label {
-  color: #4a5568;
+  color: #475569;
   font-weight: 500;
   margin-bottom: 8px;
   font-size: 0.9rem;
@@ -169,27 +195,27 @@ body {
   flex: 1;
   padding: 12px 16px;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-size: 0.95rem;
-  color: #2d3748;
+  color: #1e293b;
   transition: all 0.2s ease;
   background: white;
 }
 
 .input-with-unit input:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .input-with-unit input::placeholder {
-  color: #a0aec0;
+  color: #94a3b8;
 }
 
 .unit {
   position: absolute;
   right: 16px;
-  color: #718096;
+  color: #64748b;
   font-weight: 500;
   pointer-events: none;
   font-size: 0.9rem;
@@ -209,9 +235,9 @@ body {
 .week-select {
   padding: 12px 16px;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-size: 0.95rem;
-  color: #2d3748;
+  color: #1e293b;
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -219,13 +245,13 @@ body {
 
 .week-select:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .week-select option {
   background: white;
-  color: #2d3748;
+  color: #1e293b;
 }
 
 /* Checkbox */
@@ -238,7 +264,7 @@ body {
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  color: #4a5568;
+  color: #475569;
   font-size: 0.9rem;
   padding: 8px 0;
 }
@@ -248,7 +274,7 @@ body {
   width: 18px;
   height: 18px;
   border: 2px solid #cbd5e0;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -256,8 +282,8 @@ body {
 }
 
 .checkbox-label input[type="checkbox"]:checked {
-  background: #4299e1;
-  border-color: #4299e1;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-color: #6366f1;
 }
 
 .checkbox-label input[type="checkbox"]:checked::after {
@@ -273,22 +299,22 @@ body {
 
 /* Calculate Button */
 .calculate-btn {
-  background: #4299e1;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   border: none;
   color: white;
   font-weight: 600;
   padding: 14px 24px;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
 .calculate-btn:hover {
-  background: #3182ce;
+  background: linear-gradient(135deg, #5855eb 0%, #7c3aed 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(66, 153, 225, 0.3);
+  box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.3);
 }
 
 .calculate-btn:active {
@@ -307,7 +333,7 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -371,7 +397,7 @@ body {
 .weeks-pregnant {
   background: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   text-align: center;
   border: 1px solid #e2e8f0;
@@ -380,12 +406,12 @@ body {
 .weeks-number {
   font-size: 3rem;
   font-weight: 700;
-  color: #2d3748;
+  color: #1e293b;
   margin-bottom: 8px;
 }
 
 .weeks-label {
-  color: #718096;
+  color: #64748b;
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -394,7 +420,7 @@ body {
 .bmi-analysis {
   background: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
 }
@@ -404,19 +430,19 @@ body {
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
-  color: #2d3748;
+  color: #1e293b;
   font-weight: 600;
 }
 
 .bmi-icon {
   font-size: 1.2rem;
-  color: #4299e1;
+  color: #6366f1;
 }
 
 .bmi-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #4299e1;
+  color: #6366f1;
   margin-bottom: 10px;
 }
 
@@ -424,12 +450,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #48bb78;
+  color: #10b981;
   font-weight: 600;
 }
 
 .check-icon {
-  color: #48bb78;
+  color: #10b981;
   font-size: 1.2rem;
 }
 
@@ -437,7 +463,7 @@ body {
 .progress-tracking {
   background: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
 }
@@ -447,7 +473,7 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;
-  color: #2d3748;
+  color: #1e293b;
 }
 
 .progress-header span:first-child {
@@ -459,17 +485,17 @@ body {
 
 .progress-icon {
   font-size: 1.2rem;
-  color: #4299e1;
+  color: #6366f1;
 }
 
 .progress-percentage {
-  color: #48bb78;
+  color: #10b981;
   font-weight: 700;
   font-size: 1.1rem;
 }
 
 .progress-label {
-  color: #718096;
+  color: #64748b;
   font-size: 0.9rem;
   margin-bottom: 15px;
 }
@@ -477,21 +503,21 @@ body {
 .progress-bar {
   width: 100%;
   height: 8px;
-  background: #edf2f7;
-  border-radius: 4px;
+  background: #f1f5f9;
+  border-radius: 0.25rem;
   overflow: hidden;
   margin-bottom: 12px;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #48bb78, #38a169);
-  border-radius: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 0.25rem;
   transition: width 0.3s ease;
 }
 
 .progress-note {
-  color: #48bb78;
+  color: #10b981;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -500,7 +526,7 @@ body {
 .weekly-tips {
   background: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
 }
@@ -510,13 +536,13 @@ body {
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
-  color: #2d3748;
+  color: #1e293b;
   font-weight: 600;
 }
 
 .tips-icon {
   font-size: 1.2rem;
-  color: #4299e1;
+  color: #6366f1;
 }
 
 .tips-list {
@@ -528,9 +554,9 @@ body {
 
 .tips-list li {
   padding: 12px 16px;
-  background: #f7fafc;
-  border-radius: 8px;
-  color: #4a5568;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  color: #475569;
   font-size: 0.9rem;
   line-height: 1.5;
   position: relative;
@@ -575,8 +601,17 @@ body {
 }
 
 @media (max-width: 768px) {
+  .pregnancy-calculator {
+    padding: 10px;
+  }
+  
   .container {
-    padding: 0 15px;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .main-content {
+    padding: 20px;
   }
   
   .header {
@@ -612,7 +647,7 @@ body {
   }
   
   .tab {
-    border-radius: 8px;
+    border-radius: 0.5rem;
   }
   
   .results-section {
@@ -639,7 +674,7 @@ body {
 
 @media (max-width: 480px) {
   .pregnancy-calculator {
-    padding: 10px 0;
+    padding: 5px;
   }
   
   .header {
@@ -648,6 +683,10 @@ body {
   
   .header h1 {
     font-size: 1.6rem;
+  }
+  
+  .main-content {
+    padding: 15px;
   }
   
   .calculator-section {
@@ -703,7 +742,7 @@ body {
 .calculate-btn:focus,
 input:focus,
 select:focus {
-  outline: 3px solid rgba(66, 153, 225, 0.5);
+  outline: 3px solid rgba(99, 102, 241, 0.5);
   outline-offset: 2px;
 }
 

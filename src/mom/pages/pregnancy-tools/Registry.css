@@ -1,472 +1,495 @@
-/* Registry.css - Glass Morphism Design */
-/* Base styles */
+/* Modern Registry Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
-  min-height: 100vh;
-}
-
 body {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.baby-registry-main-container {
-  background: rgba(255, 255, 255, 0.045);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1.5px solid rgba(255,255,255,0.25);
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px 0;
-}
-
-.baby-registry-content-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Header Styles */
-.baby-registry-header-section {
-  text-align: center;
-  margin-bottom: 40px;
-  background: rgba(255, 255, 255, 0);
-  padding: 40px 20px;
-  border-radius: 32px 32px 0 0;
-  box-shadow: 0 4px 24px 0 rgba(190,24,93,0.07);
-  border-bottom: 1.5px solid rgba(255,255,255,0.18);
-}
-
-.baby-registry-header-section .baby-registry-header-icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
-
-.baby-registry-header-section h1 {
-  color: white;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.baby-registry-header-section p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
-  max-width: 600px;
-  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
   line-height: 1.6;
 }
 
-/* Main Content Layout */
-.baby-registry-main-content-grid {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 30px;
-  align-items: start;
+.modern-registry-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100vh;
 }
 
-/* Registry Section */
-.baby-registry-items-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.baby-registry-items-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.baby-registry-section-header {
+.modern-registry-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 25px;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.baby-registry-icon-emoji {
-  font-size: 1.5rem;
+.modern-registry-header-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   color: white;
 }
 
-.baby-registry-section-header h2 {
-  color: white;
-  font-size: 1.5rem;
+.modern-registry-title {
+  font-size: 28px;
   font-weight: 600;
+  color: #1e293b;
   margin: 0;
 }
 
-.baby-registry-add-item-btn {
+.modern-registry-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+.modern-registry-items-section {
+  background: #ffffff;
+}
+
+.modern-registry-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modern-registry-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.modern-registry-add-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  background: rgba(66, 153, 225, 0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 16px;
+  background: #6366f1;
   color: white;
-  border-radius: 10px;
+  border: none;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
-.baby-registry-add-item-btn:hover {
-  background: rgba(66, 153, 225, 0.5);
-  transform: translateY(-2px);
+.modern-registry-add-btn:hover {
+  background: #5b5bf6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Add/Edit Item Form */
-.baby-registry-add-form-container, .baby-registry-edit-form-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 25px;
-  border-radius: 15px;
-  margin-bottom: 30px;
-  transition: all 0.3s ease;
+.modern-registry-form-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.baby-registry-add-form-container:hover, .baby-registry-edit-form-container:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.baby-registry-add-form-container h3, .baby-registry-edit-form-container h3 {
-  color: white;
-  font-size: 1.2rem;
+.modern-registry-form-title {
+  font-size: 16px;
   font-weight: 600;
+  color: #1e293b;
   margin-bottom: 20px;
 }
 
-.baby-registry-form-row-container {
+.modern-registry-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.baby-registry-form-group-wrapper {
+.modern-registry-form-group {
   display: flex;
   flex-direction: column;
 }
 
-.baby-registry-form-group-wrapper label {
-  color: white;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
+.modern-registry-form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.baby-registry-form-input-field, .baby-registry-form-select-field {
-  padding: 12px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  font-size: 1rem;
-  color: white;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.modern-registry-form-input,
+.modern-registry-form-select {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #ffffff;
 }
 
-.baby-registry-form-input-field:focus, .baby-registry-form-select-field:focus {
+.modern-registry-form-input:focus,
+.modern-registry-form-select:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.2);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.baby-registry-form-input-field::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+.modern-registry-form-input::placeholder {
+  color: #9ca3af;
 }
 
-.baby-registry-form-select-field option {
-  background: #2d3748;
-  color: white;
+.modern-registry-form-select option {
+  background: #ffffff;
+  color: #1e293b;
 }
 
-.baby-registry-priority-buttons-container {
+.modern-registry-priority-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.baby-registry-priority-btn {
-  padding: 8px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+.modern-registry-priority-btn {
+  padding: 8px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.baby-registry-priority-btn:hover {
+.modern-registry-priority-btn:hover {
+  border-color: #9ca3af;
+}
+
+.modern-registry-priority-btn.active {
   border-color: var(--priority-color);
   background: var(--priority-color);
   color: white;
 }
 
-.baby-registry-priority-btn.baby-registry-priority-active {
-  background: var(--priority-color);
-  color: white;
-  border-color: var(--priority-color);
-}
-
-.baby-registry-form-actions-container {
+.modern-registry-form-actions {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   margin-top: 20px;
 }
 
-.baby-registry-save-btn, .baby-registry-cancel-btn {
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.modern-registry-save-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.baby-registry-save-btn {
-  background: rgba(72, 187, 120, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  gap: 6px;
+  padding: 10px 16px;
+  background: #10b981;
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
-.baby-registry-save-btn:hover {
-  background: rgba(72, 187, 120, 0.5);
-  transform: translateY(-2px);
+.modern-registry-save-btn:hover {
+  background: #059669;
 }
 
-.baby-registry-cancel-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+.modern-registry-cancel-btn {
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
-.baby-registry-cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+.modern-registry-cancel-btn:hover {
+  background: #f9fafb;
 }
 
-/* Registry Items */
-.baby-registry-items-header-section {
-  margin-bottom: 25px;
+.modern-registry-progress-section {
+  margin-bottom: 24px;
 }
 
-.baby-registry-items-header-section h3 {
-  color: white;
-  font-size: 1.2rem;
+.modern-registry-progress-title {
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 15px;
+  color: #1e293b;
+  margin-bottom: 12px;
 }
 
-.baby-registry-progress-bar-container {
+.modern-registry-progress-bar {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
 }
 
-.baby-registry-progress-fill-bar {
+.modern-registry-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #48bb78, #38a169);
+  background: linear-gradient(90deg, #10b981, #059669);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
 
-.baby-registry-items-grid-layout {
-  display: grid;
-  gap: 20px;
+.modern-registry-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.baby-registry-item-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+.modern-registry-item-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 20px;
-  transition: all 0.3s ease;
+  position: relative;
+  transition: all 0.2s ease;
+  border-left: 4px solid var(--priority-color, #6b7280);
 }
 
-.baby-registry-item-card:hover {
-  border-color: rgba(66, 153, 225, 0.5);
-  box-shadow: 0 4px 15px rgba(66, 153, 225, 0.1);
-  background: rgba(255, 255, 255, 0.15);
+.modern-registry-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
-.baby-registry-item-card.baby-registry-item-purchased {
+.modern-registry-item-card.purchased {
   opacity: 0.6;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f8fafc;
 }
 
-.baby-registry-item-header-section {
+.modern-registry-item-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
-.baby-registry-item-header-section h4 {
-  color: white;
-  font-size: 1.1rem;
+.modern-registry-item-title {
+  font-size: 16px;
   font-weight: 600;
+  color: #1e293b;
   margin: 0;
 }
 
-.baby-registry-item-actions-container {
+.modern-registry-item-actions {
   display: flex;
   gap: 8px;
 }
 
-.baby-registry-action-btn {
+.modern-registry-action-btn {
   padding: 6px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   background: transparent;
+  color: #6b7280;
 }
 
-.baby-registry-edit-btn {
-  color: rgba(66, 153, 225, 0.8);
+.modern-registry-action-btn:hover {
+  background: #f3f4f6;
 }
 
-.baby-registry-edit-btn:hover {
-  background: rgba(66, 153, 225, 0.2);
-  color: rgba(66, 153, 225, 1);
+.modern-registry-edit-btn:hover {
+  color: #6366f1;
+  background: #eef2ff;
 }
 
-.baby-registry-delete-btn {
-  color: rgba(239, 68, 68, 0.8);
+.modern-registry-delete-btn:hover {
+  color: #ef4444;
+  background: #fef2f2;
 }
 
-.baby-registry-delete-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: rgba(239, 68, 68, 1);
-}
-
-.baby-registry-item-details-section {
+.modern-registry-item-details {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
-.baby-registry-category-badge {
-  padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border-radius: 20px;
-  font-size: 0.85rem;
+.modern-registry-category-badge {
+  padding: 4px 10px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 500;
 }
 
-.baby-registry-priority-badge {
-  padding: 4px 12px;
+.modern-registry-priority-badge {
+  padding: 4px 10px;
   color: white;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 500;
+  background: var(--priority-color);
 }
 
-.baby-registry-purchase-btn {
+.modern-registry-purchase-btn {
   width: 100%;
   padding: 10px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
+  background: #ffffff;
+  color: #374151;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
-.baby-registry-purchase-btn:hover {
-  border-color: rgba(72, 187, 120, 0.5);
-  background: rgba(72, 187, 120, 0.2);
-  color: rgba(72, 187, 120, 1);
+.modern-registry-purchase-btn:hover {
+  background: #f9fafb;
+  border-color: #10b981;
+  color: #10b981;
 }
 
-.baby-registry-purchase-btn.baby-registry-purchase-completed {
-  background: rgba(72, 187, 120, 0.3);
+.modern-registry-purchase-btn.completed {
+  background: #10b981;
   color: white;
-  border-color: rgba(72, 187, 120, 0.5);
+  border-color: #10b981;
 }
 
-/* Info Section */
-.baby-registry-info-sidebar {
+.modern-registry-sidebar {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.baby-registry-stats-card, .baby-registry-tips-card, .baby-registry-categories-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.modern-registry-sidebar-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.baby-registry-stats-card:hover, .baby-registry-tips-card:hover, .baby-registry-categories-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.baby-registry-stats-card h3, .baby-registry-tips-card h3, .baby-registry-categories-card h3 {
-  color: white;
-  font-size: 1.2rem;
+.modern-registry-sidebar-title {
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 20px;
+  color: #1e293b;
+  margin-bottom: 16px;
 }
 
-.baby-registry-stats-grid-layout {
+.modern-registry-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 12px;
 }
 
-.baby-registry-stat-item-box {
+.modern-registry-stat-item {
   text-align: center;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  padding: 12px 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.modern-registry-stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.modern-registry-stat-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.modern-registry-tips-list {
+  list-style: none;
+  padding: 0;
+}
+
+.modern-registry-tips-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  font-size: 14px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.modern-registry-tips-list li:before {
+  content: "•";
+  color: #6366f1;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.modern-registry-tips-list li:last-child {
+  border-bottom: none;
+}
+
+.modern-registry-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.modern-registry-category-item {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modern-registry-main-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .modern-registry-form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-registry-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-registry-categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-registry-container {
+    padding: 16px;
+  }
+  
+  .modern-registry-title {
+    font-size: 24px;
+  }
+  
+  .modern-registry-priority-buttons {
+    flex-direction: column;
+  }
+  
+  .modern-registry-priority-btn {
+    text-align: center;
+  }
 }

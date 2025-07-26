@@ -87,232 +87,233 @@ const Registry = () => {
   const totalCount = registryItems.length;
 
   return (
-    <div className="baby-registry-main-container">
-      <div className="baby-registry-content-wrapper">
-        <header className="baby-registry-header-section">
-          <div className="baby-registry-header-icon">🎁</div>
-          <h1>Baby Registry</h1>
-          <p>Create and manage your baby registry to help friends and family know exactly what you need</p>
-        </header>
+    <div className="modern-registry-container">
+      <header className="modern-registry-header">
+        <div className="modern-registry-header-icon">🎁</div>
+        <h1 className="modern-registry-title">Baby Registry</h1>
+      </header>
 
-        <div className="baby-registry-main-content-grid">
-          <div className="baby-registry-items-section">
-            <div className="baby-registry-section-header">
-              <span className="baby-registry-icon-emoji">📋</span>
-              <h2>Registry Items</h2>
-              <button 
-                className="baby-registry-add-item-btn"
-                onClick={() => setIsAddingItem(!isAddingItem)}
-              >
-                <Plus size={16} />
-                Add Item
-              </button>
-            </div>
-
-            {/* Add New Item Form */}
-            {isAddingItem && (
-              <div className="baby-registry-add-form-container">
-                <h3>Add New Item</h3>
-                <div className="baby-registry-form-row-container">
-                  <div className="baby-registry-form-group-wrapper">
-                    <label>Item Name</label>
-                    <input
-                      type="text"
-                      placeholder="Enter item name"
-                      value={newItem.name}
-                      onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      className="baby-registry-form-input-field"
-                    />
-                  </div>
-                  <div className="baby-registry-form-group-wrapper">
-                    <label>Category</label>
-                    <select
-                      value={newItem.category}
-                      onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                      className="baby-registry-form-select-field"
-                    >
-                      <option value="">Select category</option>
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="baby-registry-form-group-wrapper">
-                  <label>Priority</label>
-                  <div className="baby-registry-priority-buttons-container">
-                    {priorities.map(priority => (
-                      <button
-                        key={priority.value}
-                        className={`baby-registry-priority-btn ${newItem.priority === priority.value ? 'baby-registry-priority-active' : ''}`}
-                        onClick={() => setNewItem({...newItem, priority: priority.value})}
-                        style={{ '--priority-color': priority.color }}
-                      >
-                        {priority.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="baby-registry-form-actions-container">
-                  <button className="baby-registry-save-btn" onClick={addItem}>
-                    <Save size={16} />
-                    Add Item
-                  </button>
-                  <button className="baby-registry-cancel-btn" onClick={() => setIsAddingItem(false)}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Registry Items List */}
-            <div className="baby-registry-items-list-container">
-              <div className="baby-registry-items-header-section">
-                <h3>Your Registry ({purchasedCount}/{totalCount} purchased)</h3>
-                <div className="baby-registry-progress-bar-container">
-                  <div 
-                    className="baby-registry-progress-fill-bar" 
-                    style={{ width: `${(purchasedCount / totalCount) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              <div className="baby-registry-items-grid-layout">
-                {registryItems.map(item => (
-                  <div key={item.id} className={`baby-registry-item-card ${item.purchased ? 'baby-registry-item-purchased' : ''}`}>
-                    <div className="baby-registry-item-header-section">
-                      <h4>{item.name}</h4>
-                      <div className="baby-registry-item-actions-container">
-                        <button 
-                          className="baby-registry-action-btn baby-registry-edit-btn"
-                          onClick={() => startEditing(item)}
-                        >
-                          <Edit3 size={14} />
-                        </button>
-                        <button 
-                          className="baby-registry-action-btn baby-registry-delete-btn"
-                          onClick={() => deleteItem(item.id)}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="baby-registry-item-details-section">
-                      <span className="baby-registry-category-badge">{item.category}</span>
-                      <span 
-                        className="baby-registry-priority-badge"
-                        style={{ backgroundColor: getPriorityColor(item.priority) }}
-                      >
-                        {item.priority}
-                      </span>
-                    </div>
-                    
-                    <button
-                      className={`baby-registry-purchase-btn ${item.purchased ? 'baby-registry-purchase-completed' : ''}`}
-                      onClick={() => togglePurchased(item.id)}
-                    >
-                      {item.purchased ? '✓ Purchased' : 'Mark as Purchased'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Edit Item Form */}
-            {editingItem && (
-              <div className="baby-registry-edit-form-container">
-                <h3>Edit Item</h3>
-                <div className="baby-registry-form-row-container">
-                  <div className="baby-registry-form-group-wrapper">
-                    <label>Item Name</label>
-                    <input
-                      type="text"
-                      value={newItem.name}
-                      onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      className="baby-registry-form-input-field"
-                    />
-                  </div>
-                  <div className="baby-registry-form-group-wrapper">
-                    <label>Category</label>
-                    <select
-                      value={newItem.category}
-                      onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                      className="baby-registry-form-select-field"
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="baby-registry-form-group-wrapper">
-                  <label>Priority</label>
-                  <div className="baby-registry-priority-buttons-container">
-                    {priorities.map(priority => (
-                      <button
-                        key={priority.value}
-                        className={`baby-registry-priority-btn ${newItem.priority === priority.value ? 'baby-registry-priority-active' : ''}`}
-                        onClick={() => setNewItem({...newItem, priority: priority.value})}
-                        style={{ '--priority-color': priority.color }}
-                      >
-                        {priority.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="baby-registry-form-actions-container">
-                  <button className="baby-registry-save-btn" onClick={saveEdit}>
-                    <Save size={16} />
-                    Save Changes
-                  </button>
-                  <button className="baby-registry-cancel-btn" onClick={cancelEdit}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
+      <div className="modern-registry-main-layout">
+        <div className="modern-registry-items-section">
+          <div className="modern-registry-section-header">
+            <h2 className="modern-registry-section-title">Registry Items</h2>
+            <button 
+              className="modern-registry-add-btn"
+              onClick={() => setIsAddingItem(!isAddingItem)}
+            >
+              <Plus size={16} />
+              Add Item
+            </button>
           </div>
 
-          <div className="baby-registry-info-sidebar">
-            <div className="baby-registry-stats-card">
-              <h3>Registry Statistics</h3>
-              <div className="baby-registry-stats-grid-layout">
-                <div className="baby-registry-stat-item-box">
-                  <div className="baby-registry-stat-number">{totalCount}</div>
-                  <div className="baby-registry-stat-label">Total Items</div>
+          {/* Add New Item Form */}
+          {isAddingItem && (
+            <div className="modern-registry-form-card">
+              <h3 className="modern-registry-form-title">Add New Item</h3>
+              <div className="modern-registry-form-row">
+                <div className="modern-registry-form-group">
+                  <label className="modern-registry-form-label">Item Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter item name"
+                    value={newItem.name}
+                    onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+                    className="modern-registry-form-input"
+                  />
                 </div>
-                <div className="baby-registry-stat-item-box">
-                  <div className="baby-registry-stat-number">{purchasedCount}</div>
-                  <div className="baby-registry-stat-label">Purchased</div>
-                </div>
-                <div className="baby-registry-stat-item-box">
-                  <div className="baby-registry-stat-number">{totalCount - purchasedCount}</div>
-                  <div className="baby-registry-stat-label">Remaining</div>
+                <div className="modern-registry-form-group">
+                  <label className="modern-registry-form-label">Category</label>
+                  <select
+                    value={newItem.category}
+                    onChange={(e) => setNewItem({...newItem, category: e.target.value})}
+                    className="modern-registry-form-select"
+                  >
+                    <option value="">Select category</option>
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
+              <div className="modern-registry-form-group">
+                <label className="modern-registry-form-label">Priority</label>
+                <div className="modern-registry-priority-buttons">
+                  {priorities.map(priority => (
+                    <button
+                      key={priority.value}
+                      className={`modern-registry-priority-btn ${newItem.priority === priority.value ? 'active' : ''}`}
+                      onClick={() => setNewItem({...newItem, priority: priority.value})}
+                      style={{ '--priority-color': priority.color }}
+                    >
+                      {priority.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modern-registry-form-actions">
+                <button className="modern-registry-save-btn" onClick={addItem}>
+                  <Save size={16} />
+                  Add Item
+                </button>
+                <button className="modern-registry-cancel-btn" onClick={() => setIsAddingItem(false)}>
+                  Cancel
+                </button>
+              </div>
             </div>
+          )}
 
-            <div className="baby-registry-tips-card">
-              <h3>Registry Tips</h3>
-              <ul className="baby-registry-tips-list">
-                <li>Include items in different price ranges</li>
-                <li>Add both essential and nice-to-have items</li>
-                <li>Consider your lifestyle and space</li>
-                <li>Update regularly as your needs change</li>
-                <li>Share with family and friends</li>
-              </ul>
+          {/* Progress Section */}
+          <div className="modern-registry-progress-section">
+            <h3 className="modern-registry-progress-title">
+              Your Registry ({purchasedCount}/{totalCount} purchased)
+            </h3>
+            <div className="modern-registry-progress-bar">
+              <div 
+                className="modern-registry-progress-fill" 
+                style={{ width: `${totalCount > 0 ? (purchasedCount / totalCount) * 100 : 0}%` }}
+              ></div>
             </div>
+          </div>
 
-            <div className="baby-registry-categories-card">
-              <h3>Popular Categories</h3>
-              <div className="baby-registry-categories-grid-layout">
-                {categories.map(category => (
-                  <div key={category} className="baby-registry-category-item-box">
-                    {category}
+          {/* Registry Items List */}
+          <div className="modern-registry-items-list">
+            {registryItems.map(item => (
+              <div 
+                key={item.id} 
+                className={`modern-registry-item-card ${item.purchased ? 'purchased' : ''}`}
+                style={{ '--priority-color': getPriorityColor(item.priority) }}
+              >
+                <div className="modern-registry-item-header">
+                  <h4 className="modern-registry-item-title">{item.name}</h4>
+                  <div className="modern-registry-item-actions">
+                    <button 
+                      className="modern-registry-action-btn modern-registry-edit-btn"
+                      onClick={() => startEditing(item)}
+                    >
+                      <Edit3 size={14} />
+                    </button>
+                    <button 
+                      className="modern-registry-action-btn modern-registry-delete-btn"
+                      onClick={() => deleteItem(item.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                ))}
+                </div>
+                
+                <div className="modern-registry-item-details">
+                  <span className="modern-registry-category-badge">{item.category}</span>
+                  <span 
+                    className="modern-registry-priority-badge"
+                    style={{ background: getPriorityColor(item.priority) }}
+                  >
+                    {item.priority}
+                  </span>
+                </div>
+                
+                <button
+                  className={`modern-registry-purchase-btn ${item.purchased ? 'completed' : ''}`}
+                  onClick={() => togglePurchased(item.id)}
+                >
+                  {item.purchased ? '✓ Purchased' : 'Mark as Purchased'}
+                </button>
               </div>
+            ))}
+          </div>
+
+          {/* Edit Item Form */}
+          {editingItem && (
+            <div className="modern-registry-form-card">
+              <h3 className="modern-registry-form-title">Edit Item</h3>
+              <div className="modern-registry-form-row">
+                <div className="modern-registry-form-group">
+                  <label className="modern-registry-form-label">Item Name</label>
+                  <input
+                    type="text"
+                    value={newItem.name}
+                    onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+                    className="modern-registry-form-input"
+                  />
+                </div>
+                <div className="modern-registry-form-group">
+                  <label className="modern-registry-form-label">Category</label>
+                  <select
+                    value={newItem.category}
+                    onChange={(e) => setNewItem({...newItem, category: e.target.value})}
+                    className="modern-registry-form-select"
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="modern-registry-form-group">
+                <label className="modern-registry-form-label">Priority</label>
+                <div className="modern-registry-priority-buttons">
+                  {priorities.map(priority => (
+                    <button
+                      key={priority.value}
+                      className={`modern-registry-priority-btn ${newItem.priority === priority.value ? 'active' : ''}`}
+                      onClick={() => setNewItem({...newItem, priority: priority.value})}
+                      style={{ '--priority-color': priority.color }}
+                    >
+                      {priority.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modern-registry-form-actions">
+                <button className="modern-registry-save-btn" onClick={saveEdit}>
+                  <Save size={16} />
+                  Save Changes
+                </button>
+                <button className="modern-registry-cancel-btn" onClick={cancelEdit}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="modern-registry-sidebar">
+          <div className="modern-registry-sidebar-card">
+            <h3 className="modern-registry-sidebar-title">Registry Statistics</h3>
+            <div className="modern-registry-stats-grid">
+              <div className="modern-registry-stat-item">
+                <div className="modern-registry-stat-number">{totalCount}</div>
+                <div className="modern-registry-stat-label">Total Items</div>
+              </div>
+              <div className="modern-registry-stat-item">
+                <div className="modern-registry-stat-number">{purchasedCount}</div>
+                <div className="modern-registry-stat-label">Purchased</div>
+              </div>
+              <div className="modern-registry-stat-item">
+                <div className="modern-registry-stat-number">{totalCount - purchasedCount}</div>
+                <div className="modern-registry-stat-label">Remaining</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="modern-registry-sidebar-card">
+            <h3 className="modern-registry-sidebar-title">Registry Tips</h3>
+            <ul className="modern-registry-tips-list">
+              <li>Include items in different price ranges</li>
+              <li>Add both essential and nice-to-have items</li>
+              <li>Consider your lifestyle and space</li>
+              <li>Update regularly as your needs change</li>
+              <li>Share with family and friends</li>
+            </ul>
+          </div>
+
+          <div className="modern-registry-sidebar-card">
+            <h3 className="modern-registry-sidebar-title">Popular Categories</h3>
+            <div className="modern-registry-categories-grid">
+              {categories.map(category => (
+                <div key={category} className="modern-registry-category-item">
+                  {category}
+                </div>
+              ))}
             </div>
           </div>
         </div>

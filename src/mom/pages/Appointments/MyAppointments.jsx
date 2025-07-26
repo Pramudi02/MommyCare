@@ -22,7 +22,9 @@ import {
   Zap,
   X,
   Bell,
-  Clock
+  Clock,
+  CheckCircle,
+  Plus
 } from 'lucide-react';
 import './MyAppointments.css';
 
@@ -34,6 +36,7 @@ const AppointmentsDashboard = () => {
     { number: 2, label: 'Missed Appointments', color: 'text-red-500', icon: <X size={28} className="text-red-400 mb-1" /> },
     { number: 8, label: 'Completed This Month', color: 'text-green-500', icon: <CheckCircle size={28} className="text-green-400 mb-1" /> }
   ];
+
   const clinicServices = [
     { icon: Scale, name: 'Mom Weight Check' },
     { icon: Baby, name: 'Baby Weight Check' },
@@ -42,6 +45,7 @@ const AppointmentsDashboard = () => {
     { icon: Syringe, name: 'Vaccinations' },
     { icon: Stethoscope, name: 'General Checkup' }
   ];
+
   const doctorServices = [
     { icon: UserCheck, name: 'Gynecologist' },
     { icon: User, name: 'Pediatrician' },
@@ -69,6 +73,7 @@ const AppointmentsDashboard = () => {
     25: 'upcoming',
     28: 'upcoming'
   };
+
   const upcomingAppointments = [
     {
       id: 1,
@@ -92,6 +97,7 @@ const AppointmentsDashboard = () => {
       color: 'bg-purple-100'
     }
   ];
+
   const missedAppointments = [
     {
       id: 1,
@@ -108,6 +114,7 @@ const AppointmentsDashboard = () => {
       action: 'Click to reschedule'
     }
   ];
+
   const healthReminders = [
     {
       id: 1,
@@ -138,10 +145,12 @@ const AppointmentsDashboard = () => {
       color: 'bg-cyan-100'
     }
   ];
+
   const navigateMonth = (direction) => {
     // Month navigation logic would go here
     console.log(`Navigate ${direction}`);
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4">
       <div className="max-w-7xl mx-auto">
@@ -174,6 +183,7 @@ const AppointmentsDashboard = () => {
             <div className="stat-subtitle-appointments">This Month</div>
           </div>
         </div>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
@@ -204,6 +214,7 @@ const AppointmentsDashboard = () => {
               Hospital will confirm your appointment
             </p>
           </div>
+
           {/* Doctor Consultations Card */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
             <div className="flex items-center mb-6">
@@ -232,6 +243,7 @@ const AppointmentsDashboard = () => {
               Doctor will confirm your appointment
             </p>
           </div>
+
           {/* Calendar Card */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center justify-between mb-6">
@@ -257,6 +269,7 @@ const AppointmentsDashboard = () => {
                 </button>
               </div>
             </div>
+
             {/* Calendar Header */}
             <div className="grid grid-cols-7 gap-1 mb-2">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
@@ -265,6 +278,7 @@ const AppointmentsDashboard = () => {
                 </div>
               ))}
             </div>
+
             {/* Calendar Days */}
             <div className="space-y-1">
               {[
@@ -303,6 +317,7 @@ const AppointmentsDashboard = () => {
             </div>
           </div>
         </div>
+
         {/* Appointments and Reminders Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Appointments */}
@@ -328,6 +343,7 @@ const AppointmentsDashboard = () => {
               })}
             </div>
           </div>
+
           {/* Missed Appointments */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
@@ -360,6 +376,7 @@ const AppointmentsDashboard = () => {
               </div>
             </div>
           </div>
+
           {/* Health Reminders */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
