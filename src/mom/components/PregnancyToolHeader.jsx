@@ -19,7 +19,7 @@ const PregnancyToolHeader = () => {
       id: 'baby-name-finder',
       title: 'Baby Names Finder', 
       path: '/mom/pregnancy-tracker/baby-name-finder',
-      icon: '👶'
+      icon: '🐣'
     },
     { 
       id: 'weight-gain-calculator',

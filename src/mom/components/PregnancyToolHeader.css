@@ -1,25 +1,50 @@
 html {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
 }
 
 body {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
   margin: 0;
   padding: 0;
 }
 
 .pregnancy-tools-header {
-  background: linear-gradient(135deg, #e8fffad1 0%, #e2e8f09c 100%);
+  background-image: url('/images/pregnancy.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 2rem 1rem;
   margin: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.pregnancy-tools-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(232, 255, 250, 0.1) 0%, rgba(226, 232, 240, 0.1) 100%);
+  pointer-events: none;
 }
 
 .pregnancy-tools-container {
-  max-width: 1200px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.pregnancy-tools-container {
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -47,7 +72,7 @@ body {
 .pregnancy-tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
   justify-items: center;
 }
@@ -63,7 +88,7 @@ body {
   border: 2px solid transparent;
   width: 100%;
   max-width: 220px;
-  min-height: 160px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;

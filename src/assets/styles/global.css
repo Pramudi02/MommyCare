@@ -1,11 +1,13 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
 }
 
 html {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
 } 
