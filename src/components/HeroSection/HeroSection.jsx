@@ -32,7 +32,7 @@ const HeroSection = () => {
           <div className="features-grid">
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/5982375/pexels-photo-5982375.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -42,7 +42,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/119604/baby-foot-blanket-newborn-119604.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -52,7 +52,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/9215242/pexels-photo-9215242.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -62,7 +62,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/5327659/pexels-photo-5327659.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -72,7 +72,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/7578799/pexels-photo-7578799.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -82,7 +82,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/8413214/pexels-photo-8413214.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -92,7 +92,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/7195119/pexels-photo-7195119.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
@@ -102,7 +102,7 @@ const HeroSection = () => {
 
             <div className="feature-card">
               <img
-                src="https://img.freepik.com/free-photo/still-life-positive-pregnancy-test_23-2148914472.jpg"
+                src="https://images.pexels.com/photos/32713291/pexels-photo-32713291.jpeg"
                 alt="Pregnancy Test"
                 className="feature-image"
               />
