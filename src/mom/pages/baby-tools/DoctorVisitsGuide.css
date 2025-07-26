@@ -7,27 +7,23 @@
 }
 
 html {
-      background-color: #dedede
-!important;
+  background-color: #dedede !important;
   min-height: 100vh;
 }
 
 body {
-      background-color: #dedede
-!important;
+  background-color: #dedede !important;
   min-height: 100vh;
   margin: 0;
   padding: 0;
 }
 /* Base styles */
 .doctor-visits-guide {
-    background: rgba(255, 255, 255, 0.045);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    border: 1.5px solid rgba(255,255,255,0.25);
-    min-height: 100%;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  border: 1.5px solid #e5e7eb;
+  min-height: 100%;
 }
 
 .header {
@@ -43,124 +39,128 @@ body {
 
 /* Glass morphism container */
 .glass-container {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 20px;
   min-height: 100%;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  background: #f8f9fa;
 }
 
 /* Header styling */
-.glass-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 30px 0;
-    background: rgba(255, 255, 255, 0);
-    border-radius: 32px 32px 0 0;
-    box-shadow: 0 4px 24px 0 rgba(190,24,93,0.07);
-    border-bottom: 1.5px solid rgba(255,255,255,0.18);
+.header-doctorvisits {
+  background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%);
+  text-align: center;
+  color: #1f2937;
+  padding: 40px 0 20px 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 4px 24px 0 rgba(190,24,93,0.07);
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.glass-header h1 {
-  color: white;
+.header-doctorvisits h1 {
   font-size: 2.5rem;
-  font-weight: 700;
   margin-bottom: 10px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
+  color: #1f2937;
+  text-align: center;
+}
+
+.header-doctorvisits p {
+  font-size: 1.1rem;
+  color: #374151;
+  opacity: 1;
+  text-align: center;
+}
+
+/* Remove or override the old .glass-header styles if needed */
+.glass-header {
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
 }
 
 .header-icon {
-  color: white;
+  color: #3b82f6;
   width: 2.5rem;
   height: 2.5rem;
   flex-shrink: 0;
 }
 
 .glass-header p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #374151;
   font-size: 1.1rem;
   max-width: 600px;
   margin: 0 auto;
 }
 
 /* Tab navigation */
-.glass-tab-navigation {
+.glass-tab-navigation-doctorvisits {
   display: flex;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-.tab-button {
+.tab-button-doctorvisits {
   flex: 1;
-  color: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
   padding: 12px 20px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.tab-button.active {
-    flex: 1;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.8);
-  padding: 12px 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.3);
-  color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button-doctorvisits.active {
+  background: #bed7ff;
+  color: rgb(36, 36, 36);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.10);
 }
 
 
 
-.tab-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
+.tab-button-doctorvisits:hover {
+  background: #e0e7ef;
+  color: #1f2937;
 }
 
 /* Hero card */
 .glass-hero-card {
-  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(255, 250, 173, 0.1));
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #fff;
   border-radius: 16px;
   padding: 30px;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   margin-bottom: 30px;
 }
 
 .glass-hero-card h2 {
-  color: white;
+  color: #1f2937;
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 }
 
 .glass-hero-card p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #374151;
   font-size: 1.1rem;
   margin-bottom: 25px;
   line-height: 1.6;
@@ -168,20 +168,32 @@ body {
 
 /* Glass cards */
 .glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #fff;
+  border: 2px solid #cedeff;
   border-radius: 16px;
   padding: 25px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  color: #1f2937;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
 }
 
 .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-color: #3b82f6;
 }
 
 /* Card header */
@@ -189,57 +201,98 @@ body {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f3f4f6;
 }
 
 .card-header h3 {
-  color: white;
+  color: #006aff;
   font-size: 1.25rem;
   font-weight: 600;
+  margin-left: 10px;
+}
+
+.card-header svg {
+  color: #3b82f6;
+  width: 24px;
+  height: 24px;
 }
 
 /* Appointment list */
 .appointment-list {
-  space-y: 12px;
+  margin-bottom: 12px;
 }
 
 .appointment-item {
   display: flex;
   align-items: center;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  margin-bottom: 8px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  margin-bottom: 12px;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.appointment-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+  border-radius: 0 2px 2px 0;
 }
 
 .appointment-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(4px);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  transform: translateX(6px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
 }
 
 .appointment-item.missed {
-  background: rgba(239, 68, 68, 0.2);
-  border-left: 3px solid #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left: 4px solid #ef4444;
+  border: 1px solid #fecaca;
+}
+
+.appointment-item.missed::before {
+  background: linear-gradient(180deg, #ef4444, #dc2626);
+}
+
+.appointment-item.missed:hover {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
 /* Appointment icon */
 .appointment-icon {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   border-radius: 50%;
-  padding: 8px;
-  margin-right: 12px;
+  padding: 12px;
+  margin-right: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  min-width: 44px;
+  height: 44px;
 }
 
 .appointment-icon.missed {
-  background: rgba(239, 68, 68, 0.3);
-  color: #fecaca;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.appointment-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Appointment details */
@@ -248,49 +301,61 @@ body {
 }
 
 .appointment-type {
-  color: white;
-  font-weight: 500;
-  font-size: 0.875rem;
-  margin-bottom: 2px;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  line-height: 1.4;
 }
 
 .appointment-date {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.75rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 /* Missed warning */
 .missed-warning {
   display: flex;
   align-items: center;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 15px;
-  color: #fecaca;
-  font-size: 0.875rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.missed-warning svg {
+  color: #ef4444;
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* Button styling */
-.glass-button {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.glass-button-doctorvisits {
+  background: linear-gradient(135deg, #3baef6 0%, #639ef1 100%);
+  border: none;
   color: white;
   font-weight: 600;
   padding: 12px 24px;
+  width: 50%;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .glass-button:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.18);
 }
 
 /* Grid layout */
@@ -406,4 +471,74 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.vaccination-hero-card {
+  position: relative;
+  background: url('https://health-e.in/wp-content/uploads/2023/05/Newborn-Baby-Vaccination.webp') center center/cover no-repeat;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 300px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  color: #fff;
+}
+.vaccination-hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 56, 73, 0.2) 0%, rgba(68, 0, 34, 0.2) 100%);
+  z-index: 1;
+}
+.vaccination-hero-card h2,
+.vaccination-hero-card p,
+.vaccination-hero-card button {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.vaccination-hero-card h2 {
+  color: #fff;
+}
+.vaccination-hero-card p {
+  color: #f3f4f6;
+}
+
+.checkup-hero-card {
+  position: relative;
+  background: url('https://www.parents.com/thmb/2Kt-SQRdaFwDh0UE3StWisL8z5s=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-643782350-2000-bca0b416a1374c56a8171e783bcb4384.jpg') center center/cover no-repeat;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 300px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  color: #fff;
+}
+.checkup-hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 56, 73, 0.2) 0%, rgba(68, 0, 34, 0.2) 100%);
+  z-index: 1;
+}
+.checkup-hero-card h2,
+.checkup-hero-card p,
+.checkup-hero-card button {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.checkup-hero-card h2 {
+  color: #fff;
+}
+.checkup-hero-card p {
+  color: #f3f4f6;
 }
