@@ -223,27 +223,27 @@ const Communication = () => {
 
   return (
     <div className="communication-page bg-gray-50 p-4">
-       <div className="communication-container">
+       <div className="comm-container">
       {/* Header */}
-      <div className="headerCommunication ">
-        <div className="headerCommunication-icon">
+      <div className="comm-header ">
+        <div className="comm-header-icon">
           <MessageCircle className="w-6 h-6" />
         </div>
-        <h1 className="headerCommunication-title">Communication Hub</h1>
-        <p className="headerCommunication-description">
+        <h1 className="comm-header-title">Communication Hub</h1>
+        <p className="comm-header-description">
           Connect seamlessly with healthcare providers, stay updated with announcements, and access real-time support for your maternal care journey.
         </p>
         
         {/* Action Buttons */}
-        <div className="header-actions">
+        <div className="comm-header-actions">
           <button
-            className="header-action-btn primary"
+            className="comm-header-action-btn primary"
             onClick={() => scrollToSection('find-doctor-section')}
           >
             Find Your Perfect Doctor <ArrowDown size={20} />
           </button>
           <button
-            className="header-action-btn secondary"
+            className="comm-header-action-btn secondary"
             onClick={() => scrollToSection('announcements-section')}
           >
             View Announcements <ArrowDown size={20} />
@@ -252,39 +252,39 @@ const Communication = () => {
       </div>
 
       {/* Doctors Section */}
-      <div className="doctors-section">
-        <div className="sections-header flex items-center gap-2">
+      <div className="comm-doctors-section">
+        <div className="comm-sections-header flex items-center gap-2">
           <Users className="text-purple-500" size={24} />
           <h2>Connect with your healthcare providers instantly</h2>
         </div>
-        <div className="doctors-grid">
+        <div className="comm-doctors-grid">
           {doctors.slice(0, 3).map(doctor => (
-            <div key={doctor.id} className="doctor-card">
-              <div className="doctor-avatar">
+            <div key={doctor.id} className="comm-doctor-card">
+              <div className="comm-doctor-avatar">
                 <User className="text-white bg-blue-400 rounded-full p-1" size={32} />
               </div>
-              <div className="doctor-info">
+              <div className="comm-doctor-info">
                 <h3>{doctor.name}</h3>
-                <p className="specialty">{doctor.specialty}</p>
-                <div className="appointment-details">
-                  <div className="detail-row">
+                <p className="comm-specialty">{doctor.specialty}</p>
+                <div className="comm-appointment-details">
+                  <div className="comm-detail-row">
                     <span className="label">Date:</span>
                     <span className="value">{doctor.date}</span>
                   </div>
-                  <div className="detail-row">
+                  <div className="comm-detail-row">
                     <span className="label">Time:</span>
                     <span className="value">{doctor.time}</span>
                   </div>
-                  <div className="detail-row">
+                  <div className="comm-detail-row">
                     <span className="label">Type:</span>
                     <span className="value">{doctor.type}</span>
                   </div>
-                  <div className="detail-row">
+                  <div className="comm-detail-row">
                     <span className="label">Status:</span>
-                    <span className="value status-available">{doctor.status}</span>
+                    <span className="value comm-status-available">{doctor.status}</span>
                   </div>
                 </div>
-                <button className="chat-button flex items-center gap-2">
+                <button className="comm-chat-button flex items-center gap-2">
                   <MessageCircle className="text-blue-400" size={18} />
                   Chat with {doctor.name.split(' ')[1]}
                 </button>
@@ -292,29 +292,29 @@ const Communication = () => {
             </div>
           ))}
         </div>
-        <button className="sees-more-btn flex items-center gap-2"><Users size={16} />SEE MORE</button>
+        <button className="comm-sees-more-btn flex items-center gap-2"><Users size={16} />SEE MORE</button>
       </div>
 
       {/* Find Doctor Section */}
-      <div className="doctor-search-hero" id="find-doctor-section">
-        <div className="doctor-search-header flex items-center gap-2">
+      <div className="comm-doctor-search-hero" id="find-doctor-section">
+        <div className="comm-doctor-search-header flex items-center gap-2">
           <SearchIcon className="text-white  mr-2" size={28} />
           <h2>Find Your Perfect Doctor</h2>
         </div>
         <p className="text-white text-sm text-center mr-2">Discover trusted healthcare professionals for your motherhood journey</p>
-        <div className="doctor-search-form flex items-center gap-2">
+        <div className="comm-doctor-search-form flex items-center gap-2">
           <input 
             type="text" 
             placeholder="Search doctors by name, specialty, or location..."
-            className="doctor-search-input"
+            className="comm-doctor-search-input"
           />
-          <button className="doctor-search-btn flex items-center"><SearchIcon size={16} /></button>
+          <button className="comm-doctor-search-btn flex items-center"><SearchIcon size={16} /></button>
         </div>
-        <div className="doctor-specialties">
+        <div className="comm-doctor-specialties">
           {specialties.map((specialty, index) => (
             <button 
               key={index} 
-              className="doctor-specialty-chip flex items-center gap-1"
+              className="comm-doctor-specialty-chip flex items-center gap-1"
               onClick={() => handleSpecialtyClick(specialty)}
             >
               <Stethoscope className="text-white-400" size={14} /> {specialty}
@@ -324,26 +324,26 @@ const Communication = () => {
       </div>
 
       {/* Announcements Section */}
-      <div className="announcements-section" id="announcements-section">
-        <div className="announcements-header flex items-center gap-2">
+      <div className="comm-announcements-section" id="announcements-section">
+        <div className="comm-announcements-header flex items-center gap-2">
           <Megaphone className="text-yellow-500" size={20} />
           <h2>Announcements</h2>
-          <button className="filter-btn flex items-center gap-1"><Filter size={14} />Filter</button>
+          <button className="comm-filter-btn flex items-center gap-1"><Filter size={14} />Filter</button>
         </div>
-        <div className="announcements-list">
+        <div className="comm-announcements-list">
           {announcements.map(announcement => (
-            <div key={announcement.id} className={`announcement-card ${announcement.priority}`}>
+            <div key={announcement.id} className={`comm-announcement-card ${announcement.priority}`}>
               <div className="announcement-content">
-                <div className="announcement-title-row flex items-center gap-2">
+                <div className="comm-announcement-title-row flex items-center gap-2">
                   <Bell className="text-blue-400" size={16} />
                   <h3>{announcement.title}</h3>
-                  <span className={`priority-badge ${announcement.priority}`}>
+                  <span className={`comm-priority-badge ${announcement.priority}`}>
                     {announcement.category}
                   </span>
                 </div>
                 <p>{announcement.description}</p>
-                <div className="announcement-footer">
-                  <span className="announcement-date">{announcement.date}</span>
+                <div className="comm-announcement-footer">
+                  <span className="comm-announcement-date">{announcement.date}</span>
                 </div>
               </div>
             </div>
@@ -353,49 +353,49 @@ const Communication = () => {
 
       {/* Specialty Popup Modal */}
       {showSpecialtyPopup && selectedSpecialty && (
-        <div className="specialty-popup-overlay" onClick={closeSpecialtyPopup}>
-          <div className="specialty-popup-content" onClick={(e) => e.stopPropagation()}>
+        <div className="comm-specialty-popup-overlay" onClick={closeSpecialtyPopup}>
+          <div className="comm-specialty-popup-content" onClick={(e) => e.stopPropagation()}>
             {/* Popup Header */}
-            <div className="popup-header">
-              <div className="popup-title-section">
+            <div className="comm-popup-header">
+              <div className="comm-popup-title-section">
                 {getSpecialtyIcon(selectedSpecialty)}
                 <h2>{selectedSpecialty} Specialists</h2>
                 <p>Find the perfect {selectedSpecialty.toLowerCase()} doctor for your needs</p>
               </div>
-              <button className="popup-close-btn" onClick={closeSpecialtyPopup}>
+              <button className="comm-popup-close-btn" onClick={closeSpecialtyPopup}>
                 <X size={24} />
               </button>
             </div>
 
             {/* Popup Body */}
-            <div className="popup-body">
-              <div className="popup-stats">
-                <div className="stat-item">
-                  <span className="stat-number">{getDoctorsBySpecialty(selectedSpecialty).length}</span>
-                  <span className="stat-label">Available Doctors</span>
+            <div className="comm-popup-body">
+              <div className="comm-popup-stats">
+                <div className="comm-stat-item">
+                  <span className="comm-stat-number">{getDoctorsBySpecialty(selectedSpecialty).length}</span>
+                  <span className="comm-stat-label">Available Doctors</span>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-number">4.8+</span>
-                  <span className="stat-label">Average Rating</span>
+                <div className="comm-stat-item">
+                  <span className="comm-stat-number">4.8+</span>
+                  <span className="comm-stat-label">Average Rating</span>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-number">24/7</span>
-                  <span className="stat-label">Support Available</span>
+                <div className="comm-stat-item">
+                  <span className="comm-stat-number">24/7</span>
+                  <span className="comm-stat-label">Support Available</span>
                 </div>
               </div>
 
-              <div className="popup-doctors-grid">
+              <div className="comm-popup-doctors-grid">
                 {getDoctorsBySpecialty(selectedSpecialty).map(doctor => (
-                  <div key={doctor.id} className="popup-doctor-card">
-                    <div className="popup-doctor-header">
-                      <div className="popup-doctor-avatar">
+                  <div key={doctor.id} className="comm-popup-doctor-card">
+                    <div className="comm-popup-doctor-header">
+                      <div className="comm-popup-doctor-avatar">
                         <img src={doctor.image} alt={doctor.name} />
-                        <div className="online-indicator"></div>
+                        <div className="comm-online-indicator"></div>
                       </div>
-                      <div className="popup-doctor-info">
+                      <div className="comm-popup-doctor-info">
                         <h3>{doctor.name}</h3>
-                        <p className="popup-doctor-specialty">{doctor.specialty}</p>
-                        <div className="popup-doctor-rating">
+                        <p className="comm-popup-doctor-specialty">{doctor.specialty}</p>
+                        <div className="comm-popup-doctor-rating">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
                           <span>{doctor.rating}</span>
                           <span className="experience">({doctor.experience})</span>
@@ -403,48 +403,38 @@ const Communication = () => {
                       </div>
                     </div>
 
-                    <div className="popup-doctor-details">
-                      <div className="detail-item">
-                        <MapPin className="w-4 h-4 text-gray-500" />
-                        <span>{doctor.location}</span>
-                      </div>
-                      <div className="detail-item">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span>Next Available: {doctor.date} at {doctor.time}</span>
-                      </div>
-                    </div>
+                                         <div className="comm-popup-doctor-details">
+                       <div className="comm-detail-item">
+                         <MapPin className="w-4 h-4 text-gray-500" />
+                         <span>{doctor.location}</span>
+                       </div>
+                       <div className="comm-detail-item">
+                         <Clock className="w-4 h-4 text-gray-500" />
+                         <span>Next Available: {doctor.date} at {doctor.time}</span>
+                       </div>
+                     </div>
 
-                    <div className="popup-doctor-actions">
-                      <button className="popup-action-btn primary">
-                        <MessageCircle size={16} />
-                        Chat Now
-                      </button>
-                      <button className="popup-action-btn secondary">
-                        <Phone size={16} />
-                        Call
-                      </button>
-                      <button className="popup-action-btn secondary">
-                        <Mail size={16} />
-                        Email
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Popup Footer */}
-            <div className="popup-footer">
-              <button className="popup-footer-btn" onClick={closeSpecialtyPopup}>
-                Close
-              </button>
-              <button className="popup-footer-btn primary">
-                View All {selectedSpecialty} Doctors
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                     <div className="comm-popup-doctor-actions">
+                       <button className="comm-popup-action-btn primary">
+                         <MessageCircle size={16} />
+                         Chat Now
+                       </button>
+                       <button className="comm-popup-action-btn secondary">
+                         <Phone size={16} />
+                         Call
+                       </button>
+                       <button className="comm-popup-action-btn secondary">
+                         <Mail size={16} />
+                         Email
+                       </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
     </div>
     </div>
    
