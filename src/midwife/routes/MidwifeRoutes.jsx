@@ -3,12 +3,20 @@ import { Route } from 'react-router-dom';
 import MidwifeLayout from '../MidwifeLayout';
 import Dashboard from '../pages/Dashboard';
 import MomsList from '../pages/MomsList';
-import Reports from '../pages/Reports';
+import Appointments from '../pages/Appointments';
+import MedicalRecords from '../pages/MedicalRecords';
+import Analytics from '../pages/Analytics';
+import Education from '../pages/Education';
+import Emergency from '../pages/Emergency';
 
 export default (
   <Route path="/midwife" element={<MidwifeLayout />}>
     <Route index element={<Dashboard />} />
     <Route path="moms-list" element={<MomsList />} />
-    <Route path="reports" element={<Reports />} />
+    <Route path="appointments" element={<Appointments />} />
+    <Route path="medical-records" element={<MedicalRecords />} />
+    <Route path="analytics" element={<Analytics />} />
+    <Route path="documentaries" element={<Education />} />
+    <Route path="emergency" element={<Emergency />} />
   </Route>
 ); 

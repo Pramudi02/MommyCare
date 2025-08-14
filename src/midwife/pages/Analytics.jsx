@@ -77,7 +77,7 @@ const Reports = () => {
     <div className="reports-page">
       <div className="reports-header">
         <div className="reports-title">
-          <h1>Analytics </h1>
+          <h1>Reports & Analytics 📈</h1>
           <p>Generate comprehensive reports and view healthcare analytics</p>
         </div>
         <div className="reports-controls">
