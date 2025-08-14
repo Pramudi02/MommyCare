@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./DoctorNavbar.css";
 
@@ -7,15 +7,14 @@ const menuItems = [
   { name: "Patients", path: "/doctor/patients" },
   { name: "Appointments", path: "/doctor/appointments" },
   { name: "Prescriptions", path: "/doctor/prescriptions" },
-  { name: "Schedule", path: "/doctor/schedule" },
   { name: "Medical Records", path: "/doctor/medical-records" },
-  { name: "Analytics", path: "/doctor/analytics" },
-  { name: "Settings", path: "/doctor/settings" }
+  { name: "Analytics", path: "/doctor/analytics" }
 ];
 
 const DoctorNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -25,12 +24,23 @@ const DoctorNavbar = () => {
     return location.pathname === path || (path !== "/doctor" && location.pathname.startsWith(path));
   };
 
+  const handleProfileClick = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+  };
+
+  const handleProfileOptionClick = (action) => {
+    setShowProfileDropdown(false);
+    if (action === 'settings') {
+      navigate('/doctor/settings');
+    } else if (action === 'logout') {
+      // Handle logout logic here
+      console.log('Logging out...');
+      // You can add actual logout logic like clearing tokens, redirecting to login, etc.
+    }
+  };
+
   return (
     <nav className="doctor-navbar">
-      <div className="doctor-navbar__logo">
-        <img src="/images/logo1.png" alt="MommyCare" />
-        <span>Doctor Portal</span>
-      </div>
       
       <div className="doctor-navbar__menu">
         {menuItems.map((item, idx) => (
@@ -44,12 +54,8 @@ const DoctorNavbar = () => {
         ))}
       </div>
 
-      <div className="doctor-navbar__profile">
-        <div className="doctor-avatar">
-          <img src="/images/medical.jpg" alt="Doctor" />
-        </div>
-        <span>Dr. Sarah Johnson</span>
-      </div>
+      
+      
     </nav>
   );
 };

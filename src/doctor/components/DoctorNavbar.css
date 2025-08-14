@@ -1,98 +1,116 @@
+html {
+  background-color: #dedede !important;
+  min-height: 100vh;
+}
+
+body {
+  background-color: #dedede !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 .doctor-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #edd4ed 0%, #bcd9eb 100%);
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 4px 24px rgba(67, 67, 73, 0.08);
+  backdrop-filter: blur(8px);
+  
+  min-height: 100px;
+  padding: 0 32px;
+  gap: 15px;
 }
 
 .doctor-navbar__logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.doctor-navbar__logo img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #7f56d9;
+  margin-right: 48px;
+  letter-spacing: 0.04em;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  user-select: none;
 }
 
 .doctor-navbar__menu {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 24px;
 }
 
 .doctor-navbar__item {
-  padding: 0.75rem 1.5rem;
+  color: #222;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 1px 4px rgba(127,156,245,0.04);
+  transition: 
+      color 0.18s,
+      background 0.18s,
+      box-shadow 0.18s,
+      transform 0.18s;
+  letter-spacing: 0.01em;
+  display: inline-block;
+  margin: 0 2px;
   border: none;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  backdrop-filter: blur(10px);
 }
 
 .doctor-navbar__item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: #fffdfd;
+  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
+  box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
 }
 
 .doctor-navbar__item.active {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+  color: #fffdfd;
+  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
+  box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
 }
 
-.doctor-navbar__profile {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 600;
-}
-
-.doctor-avatar img {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  object-fit: cover;
-}
-
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .doctor-navbar {
-    padding: 1rem;
-    flex-direction: column;
-    gap: 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px 8px;
   }
-  
+  .doctor-navbar__logo {
+      margin-bottom: 10px;
+      margin-right: 0;
+  }
   .doctor-navbar__menu {
-    justify-content: center;
+      gap: 10px;
+      width: 100%;
+      flex-wrap: wrap;
   }
-  
-  .doctor-navbar__profile {
-    order: -1;
+  .doctor-navbar__item {
+      font-size: 14px;
+      padding: 8px 14px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .doctor-navbar__menu {
-    gap: 0.5rem;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      gap: 6px;
   }
-  
   .doctor-navbar__item {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+      font-size: 13px;
+      padding: 7px 10px;
+      min-width: 90px;
+  }
+
+  .mx-4 {
+    margin-left: 0;
+    margin-right: 0;
   }
 }
