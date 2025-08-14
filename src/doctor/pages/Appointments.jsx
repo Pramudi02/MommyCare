@@ -4,89 +4,297 @@ import './Appointments.css';
 const Appointments = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'list'
+  const [viewMode, setViewMode] = useState('week'); // 'today', 'week', or 'month'
   const [showDateAppointmentsModal, setShowDateAppointmentsModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  // Scheduled appointments (shown on the calendar/list)
+  // Comprehensive sample data matching the image
   const [scheduledAppointments, setScheduledAppointments] = useState([
+    // Monday appointments
     {
       id: 1,
-      patient: "Emma Wilson",
+      patient: "Emergency Patient",
       patientId: 1,
-      date: "2024-12-15",
-      time: "09:00",
+      date: "2024-05-11",
+      time: "07:00",
       duration: 30,
-      type: "Prenatal Checkup",
+      type: "Emergency visit",
       status: "Confirmed",
-      notes: "Regular checkup, 24 weeks pregnant",
-      priority: "Normal",
-      image: "/images/1.png"
+      notes: "West camp, Room 312",
+      priority: "Urgent",
+      image: "/images/1.png",
+      icon: "🩺",
+      color: "pink"
     },
     {
       id: 2,
-      patient: "Sophia Rodriguez",
+      patient: "Diagnostic Patient",
       patientId: 2,
-      date: "2024-12-15",
-      time: "10:30",
-      duration: 45,
-      type: "Ultrasound",
+      date: "2024-05-11",
+      time: "07:30",
+      duration: 25,
+      type: "Diagnostic test",
       status: "Confirmed",
-      notes: "18-week anatomy scan",
-      priority: "High",
-      image: "/images/2.png"
+      notes: "Blood work and analysis",
+      priority: "Normal",
+      image: "/images/2.png",
+      icon: "💉",
+      color: "white"
     },
     {
       id: 3,
-      patient: "Isabella Chen",
+      patient: "Team Planning",
       patientId: 3,
-      date: "2024-12-15",
-      time: "14:00",
-      duration: 30,
-      type: "Follow-up",
-      status: "Pending",
-      notes: "Postpartum checkup, 6 weeks",
+      date: "2024-05-11",
+      time: "08:00",
+      duration: 60,
+      type: "Team planning",
+      status: "Confirmed",
+      notes: "East camp, Room 200 - Agenda.pdf",
       priority: "Normal",
-      image: "/images/3.png"
+      image: "/images/3.png",
+      icon: "👥",
+      color: "yellow",
+      participants: ["TY", "AB", "NR", "SS", "+3"]
     },
     {
       id: 4,
-      patient: "Mia Johnson",
+      patient: "Emergency Patient 2",
       patientId: 4,
-      date: "2024-12-15",
-      time: "15:30",
-      duration: 60,
-      type: "Emergency",
-      status: "Confirmed",
-      notes: "Emergency consultation - preeclampsia symptoms",
-      priority: "Urgent",
-      image: "/images/4.png"
-    },
-    {
-      id: 5,
-      patient: "Ava Thompson",
-      patientId: 5,
-      date: "2024-12-16",
+      date: "2024-05-11",
       time: "09:00",
       duration: 30,
-      type: "Prenatal Checkup",
+      type: "Emergency visit",
       status: "Confirmed",
-      notes: "20-week checkup",
+      notes: "West camp, Room 312",
+      priority: "Urgent",
+      image: "/images/4.png",
+      icon: "🩺",
+      color: "pink"
+    },
+    // Tuesday appointments
+    {
+      id: 5,
+      patient: "Online Consultation",
+      patientId: 5,
+      date: "2024-05-12",
+      time: "07:00",
+      duration: 60,
+      type: "Online visit",
+      status: "Confirmed",
+      notes: "West camp, Room 312 - Participants TY",
       priority: "Normal",
-      image: "/images/5.png"
+      image: "/images/5.png",
+      icon: "📹",
+      color: "gray",
+      hasJoinButton: true
     },
     {
       id: 6,
-      patient: "Charlotte Davis",
+      patient: "Diagnostic Patient 2",
       patientId: 6,
-      date: "2024-12-16",
-      time: "11:00",
-      duration: 45,
-      type: "Ultrasound",
+      date: "2024-05-12",
+      time: "08:00",
+      duration: 15,
+      type: "Diagnostic test",
       status: "Confirmed",
-      notes: "16-week scan",
+      notes: "Routine checkup",
+      priority: "Normal",
+      image: "/images/6.png",
+      icon: "💉",
+      color: "white"
+    },
+    {
+      id: 7,
+      patient: "Health Systems Training",
+      patientId: 7,
+      date: "2024-05-12",
+      time: "08:30",
+      duration: 60,
+      type: "Health systems training",
+      status: "Confirmed",
+      notes: "Clinical Immunology - Do you know how to optimally manage moderate to severe asthma in your patients?",
       priority: "High",
-      image: "/images/6.png"
+      image: "/images/7.png",
+      icon: "📚",
+      color: "white",
+      tag: "Clinical Immunology"
+    },
+    // Wednesday appointments
+    {
+      id: 8,
+      patient: "Follow-up Patient",
+      patientId: 8,
+      date: "2024-05-13",
+      time: "09:00",
+      duration: 30,
+      type: "Follow-up",
+      status: "Confirmed",
+      notes: "West camp, Room 312",
+      priority: "Normal",
+      image: "/images/8.png",
+      icon: "🩺",
+      color: "pink"
+    },
+    {
+      id: 9,
+      patient: "Interns Training",
+      patientId: 9,
+      date: "2024-05-13",
+      time: "08:30",
+      duration: 60,
+      type: "Interns visit",
+      status: "Confirmed",
+      notes: "West camp, Conference room 404",
+      priority: "Normal",
+      image: "/images/9.png",
+      icon: "👥",
+      color: "light-blue",
+      participants: ["TY", "AB", "NR", "SS", "+12"]
+    },
+    {
+      id: 10,
+      patient: "Emergency Patient 3",
+      patientId: 10,
+      date: "2024-05-13",
+      time: "09:40",
+      duration: 20,
+      type: "Emergency visit",
+      status: "Confirmed",
+      notes: "West camp, Room 312",
+      priority: "Urgent",
+      image: "/images/10.png",
+      icon: "🩺",
+      color: "pink"
+    },
+    // Thursday appointments (highlighted day)
+    {
+      id: 11,
+      patient: "Online Consultation 2",
+      patientId: 11,
+      date: "2024-05-14",
+      time: "07:00",
+      duration: 60,
+      type: "Online visit",
+      status: "In progress",
+      notes: "West camp, Room 312 - Participants TY",
+      priority: "Normal",
+      image: "/images/11.png",
+      icon: "📹",
+      color: "gray",
+      hasJoinButton: true
+    },
+    {
+      id: 12,
+      patient: "Primary Care Training",
+      patientId: 12,
+      date: "2024-05-14",
+      time: "08:00",
+      duration: 60,
+      type: "Primary Care",
+      status: "Confirmed",
+      notes: "What tools can you leverage to help maximize a co-management approach to caring for people with CKD",
+      priority: "High",
+      image: "/images/12.png",
+      icon: "🏥",
+      color: "white",
+      tag: "Chronic Kidney Disease",
+      hasJoinButton: true
+    },
+    {
+      id: 13,
+      patient: "Interns Training 2",
+      patientId: 13,
+      date: "2024-05-14",
+      time: "09:00",
+      duration: 60,
+      type: "Interns visit",
+      status: "Confirmed",
+      notes: "West camp, Conference room 404",
+      priority: "Normal",
+      image: "/images/13.png",
+      icon: "👥",
+      color: "light-blue",
+      participants: ["TY", "AD", "NR", "SS", "+12"]
+    },
+    // Friday appointments
+    {
+      id: 14,
+      patient: "Team Results Meeting",
+      patientId: 14,
+      date: "2024-05-15",
+      time: "07:00",
+      duration: 60,
+      type: "Team results",
+      status: "Confirmed",
+      notes: "East camp, Room 200 - Agenda.pdf",
+      priority: "Normal",
+      image: "/images/14.png",
+      icon: "👥",
+      color: "yellow",
+      participants: ["TY", "AB", "NR", "SS", "+3"]
+    },
+    {
+      id: 15,
+      patient: "Emergency Patient 4",
+      patientId: 15,
+      date: "2024-05-15",
+      time: "07:00",
+      duration: 30,
+      type: "Emergency visit",
+      status: "Confirmed",
+      notes: "West camp, Room 312",
+      priority: "Urgent",
+      image: "/images/15.png",
+      icon: "🩺",
+      color: "pink"
+    },
+    {
+      id: 16,
+      patient: "Diagnostic Patient 3",
+      patientId: 16,
+      date: "2024-05-15",
+      time: "07:30",
+      duration: 25,
+      type: "Diagnostic test",
+      status: "Confirmed",
+      notes: "Routine screening",
+      priority: "Normal",
+      image: "/images/16.png",
+      icon: "💉",
+      color: "white"
+    },
+    {
+      id: 17,
+      patient: "Follow-up Patient 2",
+      patientId: 17,
+      date: "2024-05-15",
+      time: "09:00",
+      duration: 30,
+      type: "Follow-up",
+      status: "Confirmed",
+      notes: "West camp, Room 312",
+      priority: "Normal",
+      image: "/images/17.png",
+      icon: "🩺",
+      color: "pink"
+    },
+    // Saturday appointments
+    {
+      id: 18,
+      patient: "Online Consultation 3",
+      patientId: 18,
+      date: "2024-05-16",
+      time: "07:00",
+      duration: 60,
+      type: "Online visit",
+      status: "Confirmed",
+      notes: "West camp, Room 312 - Participants TY",
+      priority: "Normal",
+      image: "/images/18.png",
+      icon: "📹",
+      color: "gray",
+      hasJoinButton: true
     }
   ]);
 
@@ -96,7 +304,7 @@ const Appointments = () => {
       id: 101,
       momName: 'Emma Wilson',
       momId: 1,
-      preferredDate: '2024-12-17',
+      preferredDate: '2024-05-20',
       preferredTime: '10:00',
       duration: 30,
       type: 'Follow-up',
@@ -112,7 +320,7 @@ const Appointments = () => {
       id: 102,
       momName: 'Lily Anderson',
       momId: 7,
-      preferredDate: '2024-12-18',
+      preferredDate: '2024-05-21',
       preferredTime: '13:30',
       duration: 45,
       type: 'Ultrasound',
@@ -128,7 +336,7 @@ const Appointments = () => {
       id: 103,
       momName: 'Noah Smith',
       momId: 8,
-      preferredDate: '2024-12-19',
+      preferredDate: '2024-05-22',
       preferredTime: '09:30',
       duration: 30,
       type: 'Prenatal Checkup',
@@ -142,7 +350,7 @@ const Appointments = () => {
     }
   ]);
 
-  const getAppointmentsForDate = (date) => {
+  const getAppointmentsForDate = (date) => {  
     const dateStr = date.toISOString().split('T')[0];
     return scheduledAppointments.filter(apt => apt.date === dateStr);
   };
@@ -161,16 +369,9 @@ const Appointments = () => {
       case 'confirmed': return '#10b981';
       case 'pending': return '#f59e0b';
       case 'cancelled': return '#ef4444';
+      case 'in progress': return '#ec4899';
       default: return '#6b7280';
     }
-  };
-
-  const getInitials = (name) => {
-    if (!name) return '';
-    const parts = name.split(' ');
-    const first = parts[0]?.[0] || '';
-    const last = parts[1]?.[0] || '';
-    return (first + last).toUpperCase();
   };
 
   const formatTime = (time) => {
@@ -179,6 +380,27 @@ const Appointments = () => {
     const ampm = hourNum >= 12 ? 'PM' : 'AM';
     const displayHour = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
     return `${displayHour}:${minute} ${ampm}`;
+  };
+
+  // Week-view helpers
+  const workingHours = { start: 7, end: 19 };
+  const timeSlots = [];
+  for (let hour = workingHours.start; hour <= workingHours.end; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const time = `${hour.toString().padStart(2, '0')}:${minute
+        .toString()
+        .padStart(2, '0')}`;
+      timeSlots.push(time);
+    }
+  }
+
+  const getTimeIndex = (time) => {
+    const [h, m] = time.split(':').map(Number);
+    return (h - workingHours.start) * 2 + (m >= 30 ? 2 : 1);
+  };
+
+  const getSpanFromDuration = (minutes) => {
+    return Math.max(1, Math.ceil(minutes / 30));
   };
 
   const handleDateClick = (date) => {
@@ -256,23 +478,10 @@ const Appointments = () => {
     return days;
   };
 
-  const getMonthDays = () => {
-    const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    const days = [];
-    const currentDate = new Date(startDate);
-    
-    while (currentDate <= lastDay || days.length < 42) {
-      days.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    return days;
+  const getWeekNumber = (date) => {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   };
 
   const isToday = (date) => {
@@ -282,10 +491,6 @@ const Appointments = () => {
 
   const isSelected = (date) => {
     return date.toDateString() === selectedDate.toDateString();
-  };
-
-  const isCurrentMonth = (date) => {
-    return date.getMonth() === selectedDate.getMonth();
   };
 
   const getMonthName = (date) => {
@@ -298,12 +503,31 @@ const Appointments = () => {
     setSelectedDate(newDate);
   };
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+  const getTodayAppointments = () => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    return scheduledAppointments.filter(apt => apt.date === todayStr);
+  };
+
+  const handleTodayClick = () => {
+    setViewMode('today');
+    setSelectedDate(new Date());
+  };
+
+  const handleWeekClick = () => {
+    setViewMode('week');
+  };
+
+  const handleMonthClick = () => {
+    setViewMode('month');
+  };
+
+  const getCurrentTimeSlot = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const timeIndex = (hours - workingHours.start) * 2 + (minutes >= 30 ? 2 : 1);
+    return Math.max(1, Math.min(timeIndex, timeSlots.length));
   };
 
   return (
@@ -320,39 +544,192 @@ const Appointments = () => {
           </button>
           <div className="view-toggle">
             <button 
-              className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
-              onClick={() => setViewMode('calendar')}
+              className={`toggle-btn ${viewMode === 'today' ? 'active' : ''}`}
+              onClick={handleTodayClick}
             >
-              📅 Calendar
+              Today
             </button>
             <button 
-              className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
+              className={`toggle-btn ${viewMode === 'week' ? 'active' : ''}`}
+              onClick={handleWeekClick}
             >
-              📋 List
+              Week
             </button>
+            <button 
+              className={`toggle-btn ${viewMode === 'month' ? 'active' : ''}`} 
+              onClick={handleMonthClick}
+            >
+              Month
+            </button>
+            
           </div>
         </div>
       </div>
 
-      <div className="appointments-content">
+      <div className="appointments-content"> 
         <div className="main-panel">
-          {viewMode === 'calendar' && (
-            <div className="calendar-view">
+          {viewMode === 'today' && (
+            <div className="appointments-calendar__today-view">
+              <div className="appointments-calendar__today-header">
+                <h2>Today - {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</h2>
+              </div>
+              <div className="appointments-calendar__today-timeline">
+                {timeSlots.map(time => {
+                  const timeAppointments = getTodayAppointments().filter(apt => apt.time === time);
+                  return (
+                    <div key={time} className="appointments-calendar__today-time-slot">
+                      <div className="appointments-calendar__today-time">{formatTime(time)}</div>
+                      <div className="appointments-calendar__today-events">
+                        {timeAppointments.map(appointment => (
+                          <div 
+                            key={appointment.id} 
+                            className={`appointments-calendar__today-event appointments-calendar__event--${appointment.color || 'blue'}`}
+                            onClick={() => handleAppointmentClick(appointment)}
+                          >
+                            <div className="appointments-calendar__today-event-time">
+                              {formatTime(appointment.time)}-{formatTime(appointment.time.split(':').map((n, i) => i === 0 ? String(parseInt(n) + Math.floor(appointment.duration / 60)).padStart(2, '0') : i === 1 ? String((parseInt(n) + appointment.duration % 60) % 60).padStart(2, '0') : n).join(':'))}
+                            </div>
+                            <div className="appointments-calendar__today-event-title">
+                              {appointment.type}
+                            </div>
+                            <div className="appointments-calendar__today-event-location">
+                              📍 {appointment.notes}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {viewMode === 'week' && (
+            <>
+              <div className="appointments-calendar__grid">
+                <div className="appointments-calendar__time-column">
+                  <div className="appointments-calendar__time-header"></div>
+                  {timeSlots.map(time => (
+                    <div key={time} className="appointments-calendar__time-slot">
+                      {formatTime(time)}
+                    </div>
+                  ))}
+                </div>
+
+                {getWeekDays().map(day => {
+                  const dayAppointments = getAppointmentsForDate(day);
+                  const isCurrentDay = isToday(day);
+                  const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+                  
+                  return (
+                    <div key={day.toISOString()} className="appointments-calendar__day-column">
+                      <div className={`appointments-calendar__day-header ${isCurrentDay ? 'current' : ''} ${isWeekend ? 'weekend' : ''}`}>
+                        <div className="appointments-calendar__day-name">{day.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>
+                        <div className="appointments-calendar__day-date">{day.getDate()}</div>
+                      </div>
+                      
+                      {timeSlots.map(time => {
+                        const timeAppointments = dayAppointments.filter(apt => apt.time === time);
+                        return (
+                          <div key={time} className="appointments-calendar__time-cell">
+                            {timeAppointments.map(appointment => (
+                              <div 
+                                key={appointment.id} 
+                                className={`appointments-calendar__event appointments-calendar__event--${appointment.color || 'blue'}`}
+                                style={{
+                                  gridRow: `span ${Math.ceil(appointment.duration / 30)}`
+                                }}
+                                onClick={() => handleAppointmentClick(appointment)}
+                              >
+                                <div className="appointments-calendar__event-header">
+                                  <div className="appointments-calendar__event-icon">
+                                    {appointment.icon || '📅'}
+                                  </div>
+                                  <div className="appointments-calendar__event-time">
+                                    {formatTime(appointment.time)}-{formatTime(appointment.time.split(':').map((n, i) => i === 0 ? String(parseInt(n) + Math.floor(appointment.duration / 60)).padStart(2, '0') : i === 1 ? String((parseInt(n) + appointment.duration % 60) % 60).padStart(2, '0') : n).join(':'))}
+                                  </div>
+                                </div>
+                                
+                                <div className="appointments-calendar__event-title">
+                                  {appointment.type}
+                                </div>
+                                
+                                <div className="appointments-calendar__event-location">
+                                  📍 {appointment.notes}
+                                </div>
+                                
+                                {appointment.participants && (
+                                  <div className="appointments-calendar__event-participants">
+                                    <div className="appointments-calendar__event-participants-label">
+                                      Participants
+                                    </div>
+                                    <div className="appointments-calendar__event-participants-list">
+                                      {appointment.participants.map((participant, index) => (
+                                        <div key={index} className="appointments-calendar__event-participant">
+                                          {participant}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {appointment.hasJoinButton && (
+                                  <button className="appointments-calendar__event-join">
+                                    {appointment.status === 'In progress' ? 'In progress...' : 'Join'}
+                                  </button>
+                                )}
+                                
+                                {appointment.status && appointment.status !== 'Confirmed' && (
+                                  <div className="appointments-calendar__event-status">
+                                    {appointment.status}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Current time indicator */}
+              <div 
+                className="appointments-calendar__current-time"
+                style={{
+                  top: `${(parseInt(new Date().getHours()) - 7) * 60 + parseInt(new Date().getMinutes())}px`
+                }}
+              >
+                <div className="appointments-calendar__current-time-line"></div>
+                <div className="appointments-calendar__current-time-label">
+                  {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {viewMode === 'month' && (
+            <div className="calendar-view month-mode">
               <div className="calendar-header">
                 <button className="calendar-nav-btn" onClick={() => navigateMonth(-1)}>‹</button>
                 <h2>{getMonthName(selectedDate)}</h2>
                 <button className="calendar-nav-btn" onClick={() => navigateMonth(1)}>›</button>
               </div>
 
-              <div className="calendar-grid">
-                <div className="calendar-weekdays">
+              <div className="month-calendar">
+                <div className="month-weekdays">
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="weekday">{day}</div>
+                    <div key={day} className="month-weekday">{day}</div>
                   ))}
                 </div>
                 
-                <div className="calendar-days">
+                <div className="month-days">
                   {generateCalendarDays().map((date, index) => {
                     const dayAppointments = getAppointmentsForDate(date);
                     const isCurrentMonth = date.getMonth() === selectedDate.getMonth();
@@ -360,24 +737,24 @@ const Appointments = () => {
                     return (
                       <div 
                         key={index} 
-                        className={`calendar-day ${isToday(date) ? 'today' : ''} ${isSelected(date) ? 'selected' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
+                        className={`month-day ${isToday(date) ? 'today' : ''} ${isSelected(date) ? 'selected' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
                         onClick={() => handleDateClick(date)}
                       >
-                        <span className="day-number">{date.getDate()}</span>
+                        <span className="month-day-number">{date.getDate()}</span>
                         {dayAppointments.length > 0 && (
-                          <div className="day-appointments">
-                            {dayAppointments.slice(0, 3).map((apt) => (
+                          <div className="month-day-appointments">
+                            {dayAppointments.slice(0, 2).map((apt) => (
                               <div 
                                 key={apt.id}
-                                className="apt-chip"
+                                className="month-apt-chip"
                                 title={`${apt.patient} • ${apt.type} • ${formatTime(apt.time)}`}
                               >
-                                <span className="chip-dot" style={{ backgroundColor: getStatusColor(apt.status) }}></span>
-                                <span className="chip-time">{formatTime(apt.time)}</span>
+                                <span className="month-chip-dot" style={{ backgroundColor: getStatusColor(apt.status) }}></span>
+                                <span className="month-chip-time">{formatTime(apt.time)}</span>
                               </div>
                             ))}
-                            {dayAppointments.length > 3 && (
-                              <span className="more-appointments">+{dayAppointments.length - 3} more</span>
+                            {dayAppointments.length > 2 && (
+                              <span className="month-more-appointments">+{dayAppointments.length - 2}</span>
                             )}
                           </div>
                         )}
@@ -389,71 +766,7 @@ const Appointments = () => {
             </div>
           )}
 
-          {viewMode === 'list' && (
-            <div className="list-view">
-              <div className="list-controls">
-                <div className="date-filter">
-                  <label>Filter by Date:</label>
-                  <input 
-                    type="date" 
-                    value={selectedDate.toISOString().split('T')[0]}
-                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                  />
-                </div>
-              </div>
 
-              <div className="appointments-table">
-                <div className="table-header">
-                  <div className="header-cell">Time</div>
-                  <div className="header-cell">Patient</div>
-                  <div className="header-cell">Type</div>
-                  <div className="header-cell">Duration</div>
-                  <div className="header-cell">Status</div>
-                  <div className="header-cell">Priority</div>
-                  <div className="header-cell">Actions</div>
-                </div>
-                
-                {scheduledAppointments
-                  .filter(apt => apt.date === selectedDate.toISOString().split('T')[0])
-                  .sort((a, b) => a.time.localeCompare(b.time))
-                  .map(appointment => (
-                    <div key={appointment.id} className="table-row">
-                      <div className="table-cell time-cell">
-                        {formatTime(appointment.time)}
-                        <span className="duration">({appointment.duration} min)</span>
-                      </div>
-                      <div className="table-cell patient-cell">
-                        <img src={appointment.image} alt={appointment.patient} />
-                        <span>{appointment.patient}</span>
-                      </div>
-                      <div className="table-cell">{appointment.type}</div>
-                      <div className="table-cell">{appointment.duration} min</div>
-                      <div className="table-cell">
-                        <span 
-                          className="status-badge"
-                          style={{ backgroundColor: getStatusColor(appointment.status) }}
-                        >
-                          {appointment.status}
-                        </span>
-                      </div>
-                      <div className="table-cell">
-                        <span 
-                          className="priority-badge"
-                          style={{ backgroundColor: getPriorityColor(appointment.priority) }}
-                        >
-                          {appointment.priority}
-                        </span>
-                      </div>
-                      <div className="table-cell actions-cell">
-                        <button className="action-btn view-btn">👁️</button>
-                        <button className="action-btn edit-btn">✏️</button>
-                        <button className="action-btn delete-btn">🗑️</button>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <aside className="sidebar">
