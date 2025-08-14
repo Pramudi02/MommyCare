@@ -1,255 +1,289 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, TrendingUp, Target, Activity, Lightbulb, CheckCircle } from 'lucide-react';
 import './PregnancyWeightGaincalculator.css';
 
-const PregnancyWeightGainCalculator = () => {
-  const [activeTab, setActiveTab] = useState('first');
+const PregnancyCalculator = () => {
   const [formData, setFormData] = useState({
-    preWeight: '',
+    prePregnancyWeight: '',
     currentWeight: '',
-    heightFt: '',
-    heightIn: '',
-    heightCm: '',
-    age: '',
-    week: '',
-    twins: false
+    height: '',
+    heightUnit: 'cm',
+    weekOfPregnancy: '',
+    isMultiples: false
   });
 
-  const [results, setResults] = useState({
-    weightGain: 2.5,
-    minRange: 11.5,
-    maxRange: 16,
-    remaining: 8,
-    weeksPregnant: 16,
-    bmi: 22.4,
-    bmiStatus: 'Normal Weight'
+  const [activeTab, setActiveTab] = useState('First Trimester');
+  const [calculatedData, setCalculatedData] = useState({
+    weightGain: 0,
+    bmi: 0,
+    recommendedRange: { min: 0, max: 0 },
+    remaining: 0,
+    weeksPregnant: 16
   });
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const tabs = ['First Trimester', 'Second Trimester', 'Third Trimester', 'Postpartum'];
+
+  const weekOptions = Array.from({ length: 42 }, (_, i) => i + 1);
+
+  const calculateBMI = (weight, height, unit) => {
+    if (!weight || !height) return 0;
+    const weightKg = parseFloat(weight);
+    const heightM = unit === 'cm' ? parseFloat(height) / 100 : parseFloat(height) * 0.3048;
+    return (weightKg / (heightM * heightM)).toFixed(1);
   };
 
-  const calculateRecommendations = () => {
-    // Add your calculation logic here
-    console.log('Calculating recommendations...');
+  const getRecommendedWeightGain = (bmi, isMultiples) => {
+    if (isMultiples) {
+      if (bmi < 18.5) return { min: 17, max: 25 };
+      if (bmi >= 18.5 && bmi < 25) return { min: 17, max: 25 };
+      if (bmi >= 25 && bmi < 30) return { min: 14, max: 23 };
+      return { min: 11, max: 19 };
+    } else {
+      if (bmi < 18.5) return { min: 13, max: 18 };
+      if (bmi >= 18.5 && bmi < 25) return { min: 11, max: 16 };
+      if (bmi >= 25 && bmi < 30) return { min: 7, max: 11 };
+      return { min: 5, max: 9 };
+    }
+  };
+
+  const calculateWeightGain = () => {
+    const { prePregnancyWeight, currentWeight, height, heightUnit, weekOfPregnancy, isMultiples } = formData;
+    
+    if (!prePregnancyWeight || !currentWeight || !height) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const weightGain = parseFloat(currentWeight) - parseFloat(prePregnancyWeight);
+    const bmi = calculateBMI(prePregnancyWeight, height, heightUnit);
+    const recommendedRange = getRecommendedWeightGain(parseFloat(bmi), isMultiples);
+    const remaining = recommendedRange.max - weightGain;
+
+    setCalculatedData({
+      weightGain: weightGain.toFixed(1),
+      bmi: parseFloat(bmi),
+      recommendedRange,
+      remaining: remaining.toFixed(1),
+      weeksPregnant: parseInt(weekOfPregnancy) || 16
+    });
+  };
+
+  const getWeightStatus = () => {
+    const { weightGain, recommendedRange } = calculatedData;
+    const gain = parseFloat(weightGain);
+    if (gain < recommendedRange.min) return 'below';
+    if (gain > recommendedRange.max) return 'above';
+    return 'normal';
+  };
+
+  const getProgressPercentage = () => {
+    const { weightGain, recommendedRange } = calculatedData;
+    const gain = parseFloat(weightGain);
+    const percentage = (gain / recommendedRange.max) * 100;
+    return Math.min(Math.max(percentage, 0), 100);
   };
 
   return (
-    <div className="pregnancy-calculator">
-      <div className="container">
-        <header className="header">
-          <div className="icon">👶</div>
-          <h1>Pregnancy Weight Gain Calculator</h1>
-          <p>Track your healthy weight journey with personalized recommendations and expert guidance throughout your pregnancy</p>
+    <div className="pregnancy-calc-container">
+      <div className="pregnancy-calc-content">
+        {/* Header */}
+        <header className="pregnancy-calc-header">
+          <div className="pregnancy-calc-header-icon">
+            <Calculator size={24} />
+          </div>
+          <h1 className="pregnancy-calc-title">Pregnancy Weight Gain Calculator</h1>
+          <p className="pregnancy-calc-subtitle">
+            Track your healthy weight journey with personalized recommendations and expert guidance throughout your pregnancy
+          </p>
         </header>
 
-        <div className="main-content">
-          <div className="calculator-section">
-            <div className="section-header">
-              <span className="calculator-icon">📊</span>
+        <div className="pregnancy-calc-main-layout">
+          {/* Left Panel - Calculator Form */}
+          <div className="pregnancy-calc-form-panel">
+            <div className="pregnancy-calc-form-header">
+              <Calculator size={16} />
               <h2>Calculate Your Weight Gain</h2>
             </div>
 
-            <div className="tabs">
-              <button 
-                className={`tab ${activeTab === 'first' ? 'active' : ''}`}
-                onClick={() => setActiveTab('first')}
-              >
-                First Trimester
-              </button>
-              <button 
-                className={`tab ${activeTab === 'second' ? 'active' : ''}`}
-                onClick={() => setActiveTab('second')}
-              >
-                Second Trimester
-              </button>
-              <button 
-                className={`tab ${activeTab === 'third' ? 'active' : ''}`}
-                onClick={() => setActiveTab('third')}
-              >
-                Third Trimester
-              </button>
-              <button 
-                className={`tab ${activeTab === 'postpartum' ? 'active' : ''}`}
-                onClick={() => setActiveTab('postpartum')}
-              >
-                Postpartum
-              </button>
+            {/* Trimester Tabs */}
+            <div className="pregnancy-calc-tabs">
+              {tabs.map(tab => (
+                <button
+                  key={tab}
+                  className={`pregnancy-calc-tab ${activeTab === tab ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
 
-            <div className="calculator-form">
-              <div className="form-row">
-                <div className="form-group">
+            {/* Form Fields */}
+            <div className="pregnancy-calc-form">
+              <div className="pregnancy-calc-form-row">
+                <div className="pregnancy-calc-form-group">
                   <label>Pre-pregnancy Weight</label>
-                  <div className="input-with-unit">
-                    <input 
-                      type="number" 
+                  <div className="pregnancy-calc-input-group">
+                    <input
+                      type="number"
                       placeholder="Enter weight"
-                      value={formData.preWeight}
-                      onChange={(e) => handleInputChange('preWeight', e.target.value)}
+                      value={formData.prePregnancyWeight}
+                      onChange={(e) => setFormData({...formData, prePregnancyWeight: e.target.value})}
                     />
-                    <span className="unit">kg</span>
+                    <span className="pregnancy-calc-unit">kg</span>
                   </div>
                 </div>
-                <div className="form-group">
+                <div className="pregnancy-calc-form-group">
                   <label>Current Weight</label>
-                  <div className="input-with-unit">
-                    <input 
-                      type="number" 
+                  <div className="pregnancy-calc-input-group">
+                    <input
+                      type="number"
                       placeholder="Enter current weight"
                       value={formData.currentWeight}
-                      onChange={(e) => handleInputChange('currentWeight', e.target.value)}
+                      onChange={(e) => setFormData({...formData, currentWeight: e.target.value})}
                     />
-                    <span className="unit">kg</span>
+                    <span className="pregnancy-calc-unit">kg</span>
                   </div>
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="pregnancy-calc-form-row">
+                <div className="pregnancy-calc-form-group">
                   <label>Height</label>
-                  <div className="height-inputs">
-                    <div className="input-with-unit">
-                      <input 
-                        type="number" 
-                        placeholder="ft"
-                        value={formData.heightFt}
-                        onChange={(e) => handleInputChange('heightFt', e.target.value)}
-                      />
-                      <span className="unit">ft</span>
-                    </div>
-                    <div className="input-with-unit">
-                      <input 
-                        type="number" 
-                        placeholder="in"
-                        value={formData.heightIn}
-                        onChange={(e) => handleInputChange('heightIn', e.target.value)}
-                      />
-                      <span className="unit">in</span>
-                    </div>
-                    <div className="input-with-unit">
-                      <input 
-                        type="number" 
-                        placeholder="cm"
-                        value={formData.heightCm}
-                        onChange={(e) => handleInputChange('heightCm', e.target.value)}
-                      />
-                      <span className="unit">cm</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Age</label>
-                  <div className="input-with-unit">
-                    <input 
-                      type="number" 
-                      placeholder="Your age"
-                      value={formData.age}
-                      onChange={(e) => handleInputChange('age', e.target.value)}
+                  <div className="pregnancy-calc-height-input">
+                    <input
+                      type="number"
+                      placeholder="Your height"
+                      value={formData.height}
+                      onChange={(e) => setFormData({...formData, height: e.target.value})}
                     />
+                    <select
+                      value={formData.heightUnit}
+                      onChange={(e) => setFormData({...formData, heightUnit: e.target.value})}
+                      className="pregnancy-calc-unit-select"
+                    >
+                      <option value="cm">cm</option>
+                      <option value="ft">ft</option>
+                    </select>
                   </div>
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="pregnancy-calc-form-group">
                 <label>Week of Pregnancy</label>
-                <select 
-                  className="week-select"
-                  value={formData.week}
-                  onChange={(e) => handleInputChange('week', e.target.value)}
+                <select
+                  value={formData.weekOfPregnancy}
+                  onChange={(e) => setFormData({...formData, weekOfPregnancy: e.target.value})}
+                  className="pregnancy-calc-select"
                 >
                   <option value="">Select your current week</option>
-                  {Array.from({length: 40}, (_, i) => (
-                    <option key={i+1} value={i+1}>Week {i+1}</option>
+                  {weekOptions.map(week => (
+                    <option key={week} value={week}>Week {week}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="checkbox-group">
-                <label className="checkbox-label">
-                  <input 
-                    type="checkbox" 
-                    checked={formData.twins}
-                    onChange={(e) => handleInputChange('twins', e.target.checked)}
+              <div className="pregnancy-calc-checkbox-group">
+                <label className="pregnancy-calc-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={formData.isMultiples}
+                    onChange={(e) => setFormData({...formData, isMultiples: e.target.checked})}
                   />
-                  <span className="checkmark"></span>
+                  <span className="pregnancy-calc-checkmark"></span>
                   I'm carrying twins or multiples
                 </label>
               </div>
 
-              <button type="button" className="calculate-btn" onClick={calculateRecommendations}>
+              <button
+                className="pregnancy-calc-calculate-btn"
+                onClick={calculateWeightGain}
+              >
                 Calculate Weight Gain Recommendations
               </button>
             </div>
           </div>
 
-          <div className="results-section">
-            <div className="weight-summary">
-              <div className="summary-header">
-                <span className="summary-icon">📊</span>
+          {/* Right Panel - Results */}
+          <div className="pregnancy-calc-result-panel">
+            {/* Weight Gain Summary */}
+            <div className="pregnancy-calc-result-card pregnancy-calc-summary-card">
+              <div className="pregnancy-calc-card-header">
+                <TrendingUp size={16} />
                 <span>Weight Gain Summary</span>
               </div>
-              <div className="weight-gain">
-                <span className="gain-value">+{results.weightGain} kg</span>
-                <span className="gain-label">Total Weight Gained</span>
+              <div className="pregnancy-calc-weight-display">
+                <span className="pregnancy-calc-weight-value">
+                  {calculatedData.weightGain > 0 ? '+' : ''}{calculatedData.weightGain} kg
+                </span>
+                <span className="pregnancy-calc-weight-label">Total Weight Gained</span>
               </div>
-              <div className="recommendations">
-                <div className="rec-item">
-                  <span className="rec-label">Recommended Range</span>
+              <div className="pregnancy-calc-range-info">
+                <div className="pregnancy-calc-range-item">
+                  <span className="pregnancy-calc-range-label">Recommended Range</span>
                 </div>
-                <div className="rec-item">
-                  <span className="rec-label">Minimum</span>
-                  <span className="rec-value">{results.minRange} kg</span>
+                <div className="pregnancy-calc-range-item">
+                  <span className="pregnancy-calc-range-label">Minimum</span>
+                  <span className="pregnancy-calc-range-value">{calculatedData.recommendedRange.min} kg</span>
                 </div>
-                <div className="rec-item">
-                  <span className="rec-label">Maximum</span>
-                  <span className="rec-value">{results.maxRange} kg</span>
+                <div className="pregnancy-calc-range-item">
+                  <span className="pregnancy-calc-range-label">Maximum</span>
+                  <span className="pregnancy-calc-range-value">{calculatedData.recommendedRange.max} kg</span>
                 </div>
-                <div className="rec-item">
-                  <span className="rec-label">Remaining</span>
-                  <span className="rec-value">{results.remaining} kg</span>
+                <div className="pregnancy-calc-range-item">
+                  <span className="pregnancy-calc-range-label">Remaining</span>
+                  <span className="pregnancy-calc-range-value">{calculatedData.remaining} kg</span>
                 </div>
               </div>
             </div>
 
-            <div className="weeks-pregnant">
-              <div className="weeks-number">{results.weeksPregnant}</div>
-              <div className="weeks-label">Weeks Pregnant</div>
+            {/* Weeks Pregnant */}
+            <div className="pregnancy-calc-result-card pregnancy-calc-weeks-card">
+              <div className="pregnancy-calc-weeks-number">{calculatedData.weeksPregnant}</div>
+              <div className="pregnancy-calc-weeks-label">Weeks Pregnant</div>
             </div>
 
-            <div className="bmi-analysis">
-              <div className="bmi-header">
-                <span className="bmi-icon">📊</span>
+            {/* BMI Analysis */}
+            <div className="pregnancy-calc-result-card pregnancy-calc-bmi-card">
+              <div className="pregnancy-calc-card-header">
+                <Target size={16} />
                 <span>BMI Analysis</span>
               </div>
-              <div className="bmi-value">{results.bmi}</div>
-              <div className="bmi-status">
-                <span>{results.bmiStatus}</span>
-                <span className="check-icon">✓</span>
+              <div className="pregnancy-calc-bmi-value">
+                <span className="pregnancy-calc-bmi-number">{calculatedData.bmi}</span>
+                <span className="pregnancy-calc-bmi-label">Normal Weight</span>
+                <CheckCircle size={16} className="pregnancy-calc-bmi-check" />
               </div>
             </div>
 
-            <div className="progress-tracking">
-              <div className="progress-header">
-                <span className="progress-icon">📈</span>
+            {/* Progress Tracking */}
+            <div className="pregnancy-calc-result-card pregnancy-calc-progress-card">
+              <div className="pregnancy-calc-card-header">
+                <Activity size={16} />
                 <span>Progress Tracking</span>
-                <span className="progress-percentage">70%</span>
               </div>
-              <div className="progress-label">Weight Gain Progress</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{width: '70%'}}></div>
+              <div className="pregnancy-calc-progress-content">
+                <span className="pregnancy-calc-progress-label">Weight Gain Progress</span>
+                <span className="pregnancy-calc-progress-percentage">{Math.round(getProgressPercentage())}%</span>
               </div>
-              <div className="progress-note">Gaining at healthy weight pace</div>
+              <div className="pregnancy-calc-progress-bar">
+                <div 
+                  className="pregnancy-calc-progress-fill"
+                  style={{ width: `${getProgressPercentage()}%` }}
+                ></div>
+              </div>
+              <div className="pregnancy-calc-progress-note">
+                On track for healthy weight gain
+              </div>
             </div>
 
-            <div className="weekly-tips">
-              <div className="tips-header">
-                <span className="tips-icon">💡</span>
+            {/* Weekly Tips */}
+            <div className="pregnancy-calc-result-card pregnancy-calc-tips-card">
+              <div className="pregnancy-calc-card-header">
+                <Lightbulb size={16} />
                 <span>Weekly Tips</span>
               </div>
-              <ul className="tips-list">
+              <ul className="pregnancy-calc-tips-list">
                 <li>Eat nutrient-dense foods for you and baby</li>
                 <li>Stay hydrated with 8-10 glasses of water daily</li>
                 <li>Include prenatal vitamins in your routine</li>
@@ -264,4 +298,4 @@ const PregnancyWeightGainCalculator = () => {
   );
 };
 
-export default PregnancyWeightGainCalculator;
+export default PregnancyCalculator;

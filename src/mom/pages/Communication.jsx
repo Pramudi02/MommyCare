@@ -1,8 +1,11 @@
-import React from 'react';
-import { MessageCircle, Search as SearchIcon, Bell, User, Users, HeartPulse, Stethoscope, Baby, Megaphone, Filter, ArrowDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageCircle, Search as SearchIcon, Bell, User, Users, HeartPulse, Stethoscope, Baby, Megaphone, Filter, ArrowDown, X, Phone, Mail, MapPin, Star, Clock } from 'lucide-react';
 import './Communication.css';
 
 const Communication = () => {
+  const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+  const [showSpecialtyPopup, setShowSpecialtyPopup] = useState(false);
+
   const doctors = [
     {
       id: 1,
@@ -11,7 +14,13 @@ const Communication = () => {
       date: 'Nov 12, 2024',
       time: '2:30 PM',
       type: 'Prenatal Checkup',
-      status: 'Available'
+      status: 'Available',
+      rating: 4.9,
+      experience: '15+ years',
+      location: 'Downtown Medical Center',
+      phone: '+1 (555) 123-4567',
+      email: 'sarah.johnson@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 2,
@@ -20,7 +29,13 @@ const Communication = () => {
       date: 'Nov 12, 2024',
       time: '11:00 AM',
       type: 'Baby Consultation',
-      status: 'Available'
+      status: 'Available',
+      rating: 4.8,
+      experience: '12+ years',
+      location: 'Children\'s Hospital',
+      phone: '+1 (555) 234-5678',
+      email: 'michael.chen@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 3,
@@ -29,7 +44,103 @@ const Communication = () => {
       date: 'Nov 14, 2024',
       time: '4:00 PM',
       type: 'Ultrasound Scan',
-      status: 'Available'
+      status: 'Available',
+      rating: 4.9,
+      experience: '18+ years',
+      location: 'Women\'s Health Clinic',
+      phone: '+1 (555) 345-6789',
+      email: 'emily.rodriguez@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 4,
+      name: 'Dr. David Kim',
+      specialty: 'Cardiology',
+      date: 'Nov 15, 2024',
+      time: '10:00 AM',
+      type: 'Heart Health Check',
+      status: 'Available',
+      rating: 4.7,
+      experience: '20+ years',
+      location: 'Cardiac Care Institute',
+      phone: '+1 (555) 456-7890',
+      email: 'david.kim@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 5,
+      name: 'Dr. Lisa Thompson',
+      specialty: 'Pediatrics',
+      date: 'Nov 16, 2024',
+      time: '3:00 PM',
+      type: 'Vaccination',
+      status: 'Available',
+      rating: 4.8,
+      experience: '14+ years',
+      location: 'Family Care Center',
+      phone: '+1 (555) 567-8901',
+      email: 'lisa.thompson@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 6,
+      name: 'Dr. James Wilson',
+      specialty: 'Obstetrics',
+      date: 'Nov 17, 2024',
+      time: '1:30 PM',
+      type: 'Prenatal Visit',
+      status: 'Available',
+      rating: 4.9,
+      experience: '16+ years',
+      location: 'Maternity Care Center',
+      phone: '+1 (555) 678-9012',
+      email: 'james.wilson@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 7,
+      name: 'Dr. Maria Garcia',
+      specialty: 'Gynecology',
+      date: 'Nov 18, 2024',
+      time: '2:00 PM',
+      type: 'Annual Checkup',
+      status: 'Available',
+      rating: 4.8,
+      experience: '13+ years',
+      location: 'Women\'s Wellness Center',
+      phone: '+1 (555) 789-0123',
+      email: 'maria.garcia@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 8,
+      name: 'Dr. Robert Brown',
+      specialty: 'Radiology',
+      date: 'Nov 19, 2024',
+      time: '9:00 AM',
+      type: 'Ultrasound',
+      status: 'Available',
+      rating: 4.7,
+      experience: '17+ years',
+      location: 'Imaging Center',
+      phone: '+1 (555) 890-1234',
+      email: 'robert.brown@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: 9,
+      name: 'Dr. Jennifer Lee',
+      specialty: 'Dental Health',
+      date: 'Nov 20, 2024',
+      time: '11:30 AM',
+      type: 'Dental Checkup',
+      status: 'Available',
+      rating: 4.8,
+      experience: '11+ years',
+      location: 'Family Dental Care',
+      phone: '+1 (555) 901-2345',
+      email: 'jennifer.lee@mommycare.com',
+      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face'
     }
   ];
 
@@ -77,29 +188,66 @@ const Communication = () => {
     }
   };
 
+  const handleSpecialtyClick = (specialty) => {
+    setSelectedSpecialty(specialty);
+    setShowSpecialtyPopup(true);
+  };
+
+  const closeSpecialtyPopup = () => {
+    setShowSpecialtyPopup(false);
+    setSelectedSpecialty(null);
+  };
+
+  const getDoctorsBySpecialty = (specialty) => {
+    return doctors.filter(doctor => doctor.specialty === specialty);
+  };
+
+  const getSpecialtyIcon = (specialty) => {
+    switch (specialty) {
+      case 'Cardiology':
+        return <HeartPulse className="w-6 h-6 text-red-500" />;
+      case 'Obstetrics':
+        return <Baby className="w-6 h-6 text-pink-500" />;
+      case 'Pediatrics':
+        return <Baby className="w-6 h-6 text-blue-500" />;
+      case 'Gynecology':
+        return <User className="w-6 h-6 text-purple-500" />;
+      case 'Radiology':
+        return <Stethoscope className="w-6 h-6 text-green-500" />;
+      case 'Dental Health':
+        return <Stethoscope className="w-6 h-6 text-teal-500" />;
+      default:
+        return <Stethoscope className="w-6 h-6 text-gray-500" />;
+    }
+  };
+
   return (
-    <div className="communication-container">
-      {/* Hero Section */}
-      <div className="heros-section">
-        <div className="heros-content w-full flex flex-col items-center">
-          <div className="flex items-center gap-3 mb-4">
-            <MessageCircle className="text-blue-500" size={32} />
-            <h1 className="text-center">The Communication module ensures smooth, secure, and real-time communication between mothers, doctors, and midwives. This feature helps bridge the gap between home care and professional medical guidance, offering instant support and updates when they matter the most.</h1>
-          </div>
-          <div className="flex flex-col md:flex-row gap-4 justify-center mt-6">
-            <button
-              className="bg-blue-200 hover:bg-blue-300 text-black font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-md transition-all text-lg"
-              onClick={() => scrollToSection('find-doctor-section')}
-            >
-              Find Your Perfect Doctor <ArrowDown size={20} />
-            </button>
-            <button
-              className="bg-yellow-100 hover:bg-yellow-200 text-black font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-md transition-all text-lg"
-              onClick={() => scrollToSection('announcements-section')}
-            >
-              Announcements <ArrowDown size={20} />
-            </button>
-          </div>
+    <div className="communication-page bg-gray-50 p-4">
+       <div className="communication-container">
+      {/* Header */}
+      <div className="headerCommunication ">
+        <div className="headerCommunication-icon">
+          <MessageCircle className="w-6 h-6" />
+        </div>
+        <h1 className="headerCommunication-title">Communication Hub</h1>
+        <p className="headerCommunication-description">
+          Connect seamlessly with healthcare providers, stay updated with announcements, and access real-time support for your maternal care journey.
+        </p>
+        
+        {/* Action Buttons */}
+        <div className="header-actions">
+          <button
+            className="header-action-btn primary"
+            onClick={() => scrollToSection('find-doctor-section')}
+          >
+            Find Your Perfect Doctor <ArrowDown size={20} />
+          </button>
+          <button
+            className="header-action-btn secondary"
+            onClick={() => scrollToSection('announcements-section')}
+          >
+            View Announcements <ArrowDown size={20} />
+          </button>
         </div>
       </div>
 
@@ -110,7 +258,7 @@ const Communication = () => {
           <h2>Connect with your healthcare providers instantly</h2>
         </div>
         <div className="doctors-grid">
-          {doctors.map(doctor => (
+          {doctors.slice(0, 3).map(doctor => (
             <div key={doctor.id} className="doctor-card">
               <div className="doctor-avatar">
                 <User className="text-white bg-blue-400 rounded-full p-1" size={32} />
@@ -148,24 +296,28 @@ const Communication = () => {
       </div>
 
       {/* Find Doctor Section */}
-      <div className="find-doctor-section" id="find-doctor-section">
-        <div className="find-doctor-header flex items-center gap-2">
-          <SearchIcon className="text-blue-400" size={20} />
+      <div className="doctor-search-hero" id="find-doctor-section">
+        <div className="doctor-search-header flex items-center gap-2">
+          <SearchIcon className="text-white  mr-2" size={28} />
           <h2>Find Your Perfect Doctor</h2>
         </div>
-        <p>Discover trusted healthcare professionals for your motherhood journey</p>
-        <div className="search-container flex items-center gap-2">
+        <p className="text-white text-sm text-center mr-2">Discover trusted healthcare professionals for your motherhood journey</p>
+        <div className="doctor-search-form flex items-center gap-2">
           <input 
             type="text" 
             placeholder="Search doctors by name, specialty, or location..."
-            className="search-input"
+            className="doctor-search-input"
           />
-          <button className="search-button flex items-center"><SearchIcon size={16} /></button>
+          <button className="doctor-search-btn flex items-center"><SearchIcon size={16} /></button>
         </div>
-        <div className="specialties-filter">
+        <div className="doctor-specialties">
           {specialties.map((specialty, index) => (
-            <button key={index} className="specialty-tag flex items-center gap-1">
-              <Stethoscope className="text-purple-400" size={14} /> {specialty}
+            <button 
+              key={index} 
+              className="doctor-specialty-chip flex items-center gap-1"
+              onClick={() => handleSpecialtyClick(specialty)}
+            >
+              <Stethoscope className="text-white-400" size={14} /> {specialty}
             </button>
           ))}
         </div>
@@ -198,7 +350,104 @@ const Communication = () => {
           ))}
         </div>
       </div>
+
+      {/* Specialty Popup Modal */}
+      {showSpecialtyPopup && selectedSpecialty && (
+        <div className="specialty-popup-overlay" onClick={closeSpecialtyPopup}>
+          <div className="specialty-popup-content" onClick={(e) => e.stopPropagation()}>
+            {/* Popup Header */}
+            <div className="popup-header">
+              <div className="popup-title-section">
+                {getSpecialtyIcon(selectedSpecialty)}
+                <h2>{selectedSpecialty} Specialists</h2>
+                <p>Find the perfect {selectedSpecialty.toLowerCase()} doctor for your needs</p>
+              </div>
+              <button className="popup-close-btn" onClick={closeSpecialtyPopup}>
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Popup Body */}
+            <div className="popup-body">
+              <div className="popup-stats">
+                <div className="stat-item">
+                  <span className="stat-number">{getDoctorsBySpecialty(selectedSpecialty).length}</span>
+                  <span className="stat-label">Available Doctors</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">4.8+</span>
+                  <span className="stat-label">Average Rating</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">24/7</span>
+                  <span className="stat-label">Support Available</span>
+                </div>
+              </div>
+
+              <div className="popup-doctors-grid">
+                {getDoctorsBySpecialty(selectedSpecialty).map(doctor => (
+                  <div key={doctor.id} className="popup-doctor-card">
+                    <div className="popup-doctor-header">
+                      <div className="popup-doctor-avatar">
+                        <img src={doctor.image} alt={doctor.name} />
+                        <div className="online-indicator"></div>
+                      </div>
+                      <div className="popup-doctor-info">
+                        <h3>{doctor.name}</h3>
+                        <p className="popup-doctor-specialty">{doctor.specialty}</p>
+                        <div className="popup-doctor-rating">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span>{doctor.rating}</span>
+                          <span className="experience">({doctor.experience})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="popup-doctor-details">
+                      <div className="detail-item">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span>{doctor.location}</span>
+                      </div>
+                      <div className="detail-item">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span>Next Available: {doctor.date} at {doctor.time}</span>
+                      </div>
+                    </div>
+
+                    <div className="popup-doctor-actions">
+                      <button className="popup-action-btn primary">
+                        <MessageCircle size={16} />
+                        Chat Now
+                      </button>
+                      <button className="popup-action-btn secondary">
+                        <Phone size={16} />
+                        Call
+                      </button>
+                      <button className="popup-action-btn secondary">
+                        <Mail size={16} />
+                        Email
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Popup Footer */}
+            <div className="popup-footer">
+              <button className="popup-footer-btn" onClick={closeSpecialtyPopup}>
+                Close
+              </button>
+              <button className="popup-footer-btn primary">
+                View All {selectedSpecialty} Doctors
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+    </div>
+   
   );
 };
 

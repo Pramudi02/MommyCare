@@ -1,440 +1,345 @@
-/* BirthPlanWorksheet.css - Glass Morphism Design */
-/* Base styles */
+/* BirthPlanWorksheet.css */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
-  min-height: 100vh;
-}
-
 body {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
 }
 
-.birth-plan-worksheet {
-  background: rgba(255, 255, 255, 0.045);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1.5px solid rgba(255,255,255,0.25);
+.bp-worksheet-wrapper {
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: white;
   padding: 20px 0;
 }
 
-.container {
+.bp-worksheet-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
 /* Header Styles */
-.header {
+.bp-main-header {
   text-align: center;
   margin-bottom: 40px;
-  background: rgba(255, 255, 255, 0);
+  background: white;
   padding: 40px 20px;
-  border-radius: 32px 32px 0 0;
-  box-shadow: 0 4px 24px 0 rgba(190,24,93,0.07);
-  border-bottom: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.header .icon {
+.bp-main-header .bp-header-icon {
   font-size: 3rem;
   margin-bottom: 20px;
 }
 
-.header h1 {
-  color: white;
+.bp-main-header h1 {
+  color: #ec4899;
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.header p {
-  color: rgba(255, 255, 255, 0.9);
+.bp-main-header p {
+  color: #666;
   font-size: 1.1rem;
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
 }
 
-/* Main Content Layout */
-.main-content {
+/* Main Content */
+.bp-content-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 2fr 1fr;
   gap: 30px;
   align-items: start;
 }
 
 /* Worksheet Section */
-.worksheet-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+.bp-worksheet-main {
+  background: white;
+  border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.worksheet-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.section-header {
+.bp-section-title {
   display: flex;
   align-items: center;
-  gap: 10px;
   margin-bottom: 25px;
 }
 
-.worksheet-icon {
+.bp-section-title .bp-title-icon {
   font-size: 1.5rem;
-  color: white;
+  margin-right: 15px;
 }
 
-.section-header h2 {
-  color: white;
-  font-size: 1.5rem;
+.bp-section-title h2 {
+  color: #1e3a8a; /* Navy blue as requested */
+  font-size: 1.8rem;
   font-weight: 600;
 }
 
 /* Action Buttons */
-.action-buttons {
+.bp-control-buttons {
   display: flex;
   gap: 15px;
   margin-bottom: 30px;
   flex-wrap: wrap;
 }
 
-.action-btn {
+.bp-control-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid #d946ef;
+  background: #d946ef;
   color: white;
-  font-weight: 500;
+  border-radius: 25px;
   cursor: pointer;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.action-btn:hover {
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.action-btn.active {
-  background: rgba(66, 153, 225, 0.3);
+.bp-control-btn:hover {
+  background: #d946ef;
   color: white;
-  border-color: rgba(66, 153, 225, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(217, 70, 239, 0.3);
 }
 
-.save-btn {
-  background: rgba(72, 187, 120, 0.3);
+.bp-control-btn.active {
+  background: #d946ef;
   color: white;
-  border-color: rgba(72, 187, 120, 0.5);
 }
 
-.save-btn:hover {
-  background: rgba(72, 187, 120, 0.5);
-  border-color: rgba(72, 187, 120, 0.7);
+.bp-save-button {
+  border-color: #10b981;
+  color: #10b981;
 }
 
-.cancel-btn {
-  background: rgba(255, 255, 255, 0.1);
+.bp-save-button:hover {
+  background: #10b981;
   color: white;
-  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+.bp-download-button {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: white;
+}
+
+.bp-download-button:hover {
+  background: #3b82f6;
+  color: white;
 }
 
 /* Plan Sections */
-.plan-sections {
-  display: flex;
-  flex-direction: column;
+.bp-form-sections {
+  display: grid;
   gap: 25px;
 }
 
-.plan-section h3 {
-  color: white;
-  font-size: 1.1rem;
+.bp-form-group {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 15px;
+  border-left: 4px solid #d946ef;
+}
+
+.bp-form-group h3 {
+  color: #1e3a8a;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.plan-input {
+.bp-form-textarea {
   width: 100%;
-  min-height: 120px;
+  min-height: 100px;
   padding: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #e5e7eb;
   border-radius: 10px;
-  font-size: 0.95rem;
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  resize: vertical;
-  transition: all 0.3s ease;
   font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
 }
 
-.plan-input:focus {
+.bp-form-textarea:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.2);
+  border-color: #d946ef;
+  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
 }
 
-.plan-input:disabled {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.5);
+.bp-form-textarea:disabled {
+  background: #f9f9f9;
   cursor: not-allowed;
 }
 
-.plan-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+.bp-form-textarea::placeholder {
+  color: #9ca3af;
 }
 
 /* Tips Section */
-.tips-section {
+.bp-sidebar-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.tips-card, .checklist-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.bp-tips-panel,
+.bp-checklist-panel {
+  background: white;
   padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-top: 4px solid #d946ef;
 }
 
-.tips-card:hover, .checklist-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.tips-card h3, .checklist-card h3 {
-  color: white;
-  font-size: 1.2rem;
+.bp-tips-panel h3,
+.bp-checklist-panel h3 {
+  color: #ec4899;
+  font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
-.tips-list {
+.bp-tips-panel h3:before {
+  content: "💡";
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.bp-checklist-panel h3:before {
+  content: "✅";
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+/* Tips List */
+.bp-tips-listing {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.tips-list li {
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: white;
-  font-size: 0.9rem;
+.bp-tips-listing li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  color: #666;
   line-height: 1.5;
-  position: relative;
-  padding-left: 40px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
 }
 
-.tips-list li:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(4px);
+.bp-tips-listing li:before {
+  content: "→";
+  color: #d946ef;
+  font-weight: bold;
+  margin-top: 2px;
 }
 
-.tips-list li::before {
-  content: '💡';
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.checklist {
+/* Checklist */
+.bp-checklist-items {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.checklist-item {
+.bp-checklist-option {
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  color: white;
-  font-size: 0.95rem;
-  padding: 8px 0;
-  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
 
-.checklist-item:hover {
-  color: rgba(255, 255, 255, 0.8);
+.bp-checklist-option:hover {
+  background: #f8f0ff;
 }
 
-.checklist-item input[type="checkbox"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  position: relative;
+.bp-checklist-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #d946ef;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
 
-.checklist-item input[type="checkbox"]:checked {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.checklist-item input[type="checkbox"]:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #2d3748;
-  font-size: 12px;
-  font-weight: bold;
+.bp-checklist-option span {
+  color: #666;
+  font-weight: 500;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .main-content {
+  .bp-content-grid {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 20px;
   }
   
-  .tips-section {
-    order: -1;
+  .bp-sidebar-section {
+    flex-direction: row;
   }
 }
 
 @media (max-width: 768px) {
-  .container {
+  .bp-worksheet-container {
     padding: 0 15px;
   }
   
-  .header {
+  .bp-main-header {
     padding: 30px 20px;
-    margin-bottom: 30px;
   }
   
-  .header h1 {
+  .bp-main-header h1 {
     font-size: 2rem;
   }
   
-  .header p {
-    font-size: 1rem;
-  }
-  
-  .worksheet-section {
+  .bp-worksheet-main {
     padding: 20px;
   }
   
-  .action-buttons {
+  .bp-control-buttons {
     flex-direction: column;
   }
   
-  .action-btn {
+  .bp-control-btn {
+    width: 100%;
     justify-content: center;
   }
   
-  .tips-card, .checklist-card {
-    padding: 20px;
+  .bp-sidebar-section {
+    flex-direction: column;
   }
 }
 
 @media (max-width: 480px) {
-  .birth-plan-worksheet {
-    padding: 10px 0;
-  }
-  
-  .header {
-    padding: 20px 15px;
-  }
-  
-  .header h1 {
+  .bp-main-header h1 {
     font-size: 1.8rem;
   }
   
-  .worksheet-section {
-    padding: 15px;
+  .bp-section-title h2 {
+    font-size: 1.5rem;
   }
   
-  .plan-input {
-    min-height: 100px;
-    padding: 12px;
-    font-size: 0.9rem;
+  .bp-form-group h3 {
+    font-size: 1.1rem;
   }
   
-  .tips-card, .checklist-card {
-    padding: 15px;
-  }
-  
-  .tips-list li {
-    padding: 10px 12px;
-    padding-left: 35px;
-    font-size: 0.85rem;
+  .bp-form-textarea {
+    min-height: 80px;
   }
 }
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.worksheet-section, .tips-card, .checklist-card {
-  animation: fadeIn 0.6s ease-out;
-}
-
-/* Focus Styles for Accessibility */
-.action-btn:focus,
-.plan-input:focus {
-  outline: 3px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-} 

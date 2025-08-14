@@ -1,14 +1,29 @@
 import React from 'react';
 import { Search, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const MainNavbar = ({ onSignUpClick, onLoginClick }) => {
+const MainNavbar = () => {
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/mom');
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleSignupClick = () => {
+    navigate('/signup');
+  };
+
   return (
     <nav className="bg-gradient-to-r from-blue-50 to-pink-50 shadow-lg border-b border-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <div className=" items-center">
-            <img src="/mommy.png" alt="MommyCare Logo" className="h-8 w-8 logo" />
+          <div className=" items-center cursor-pointer" onClick={handleLogoClick}>
+            <img src="/mommy.png" alt="MommyCare Logo" className="logo-mammy h-24"  />
           </div>
           
           {/* Search Bar */}
@@ -29,19 +44,20 @@ const MainNavbar = ({ onSignUpClick, onLoginClick }) => {
           <div className="flex items-center space-x-2 sm:space-x-3">
             <button 
               className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:bg-blue-100 rounded-full text-sm sm:text-base"
-              onClick={onLoginClick}
+              onClick={handleLoginClick}
             >
               Login
             </button>
             <button 
               className="px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-500 to-pink-500 text-white font-medium rounded-full hover:from-blue-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base"
-              onClick={onSignUpClick}
+              onClick={handleSignupClick}
             >
               Sign Up
             </button>
           </div>
         </div>
       </div>
+
     </nav>
   );
 };

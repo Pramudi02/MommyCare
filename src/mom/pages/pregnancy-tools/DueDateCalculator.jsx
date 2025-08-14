@@ -106,7 +106,6 @@ const DueDateCalculator = () => {
 
   return (
     <div className="pregnancy-calculator">
-      <div className="calculator-section">
         <div className="calculator-card">
           <h2 className="calculator-title">
             <span className="calendar-icon">📅</span>
@@ -162,7 +161,6 @@ const DueDateCalculator = () => {
             Update your timeline
           </button>
         </div>
-      </div>
 
       {timeline && (
         <div className="timeline-section">

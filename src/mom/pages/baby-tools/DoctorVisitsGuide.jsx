@@ -90,7 +90,7 @@ export default function DoctorVisitsGuide() {
     <div className="doctor-visits-guide">
       <div className="glass-container">
         {/* Header */}
-        <div className="glass-header">
+        <div className="header-doctorvisits">
           <h1>
             <Stethoscope className="header-icon" />
             Baby Health Tracker & Doctor Visits Guide
@@ -99,16 +99,16 @@ export default function DoctorVisitsGuide() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="glass-tab-navigation">
+        <div className="glass-tab-navigation-doctorvisits">
           <button
             onClick={() => setActiveTab('vaccinations')}
-            className={`tab-button ${activeTab === 'vaccinations' ? 'active' : ''}`}
+            className={`tab-button-doctorvisits ${activeTab === 'vaccinations' ? 'active' : ''}`}
           >
             Vaccinations & Immunizations
           </button>
           <button
             onClick={() => setActiveTab('checkups')}
-            className={`tab-button ${activeTab === 'checkups' ? 'active' : ''}`}
+            className={`tab-button-doctorvisits ${activeTab === 'checkups' ? 'active' : ''}`}
           >
             Well-baby Visits & Checkups
           </button>
@@ -117,10 +117,10 @@ export default function DoctorVisitsGuide() {
         {/* Vaccination Tab */}
         {activeTab === 'vaccinations' && (
           <div className="space-y-6">
-            <div className="glass-hero-card">
+            <div className="vaccination-hero-card glass-hero-card">
               <h2>Ready to Track Your Baby's Vaccination Schedule?</h2>
               <p>Never miss an important vaccination date with our smart reminder system</p>
-              <button className="glass-button">
+              <button className="glass-button-doctorvisits">
                 View Vaccination Schedule
               </button>
             </div>
@@ -130,10 +130,10 @@ export default function DoctorVisitsGuide() {
         {/* Checkups Tab */}
         {activeTab === 'checkups' && (
           <div className="space-y-6">
-            <div className="glass-hero-card">
+            <div className="checkup-hero-card glass-hero-card">
               <h2>Time for your little one's check-up!</h2>
               <p>Regular visits help track your baby's growth and development. Ready to schedule?</p>
-              <button className="glass-button">
+              <button className="glass-button-doctorvisits">
                 Request new appointment
               </button>
             </div>

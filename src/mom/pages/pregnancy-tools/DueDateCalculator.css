@@ -7,60 +7,56 @@
 }
 
 html {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
 }
 
 body {
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%) !important;
+      background-color: #dedede
+!important;
   min-height: 100vh;
   margin: 0;
   padding: 0;
 }
 
 .pregnancy-calculator {
-  background: rgba(255, 255, 255, 0.045);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #f8f9fa;
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1.5px solid rgba(255,255,255,0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  padding: 20px;
   display: flex;
-  gap: 30px;
   flex-wrap: wrap;
+  padding: 20px;
+  gap: 30px;
 }
 
 /* Calculator Section */
 .calculator-section {
-  flex: 0 0 300px;
   min-width: 280px;
 }
 
 .calculator-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  flex: 0 0 300px;
+  min-width: 280px;
 }
 
 .calculator-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .calculator-title {
-  background: linear-gradient(135deg, rgba(233, 30, 99, 0.3), rgba(240, 98, 146, 0.2));
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #e91e63, #f06292);
   color: white;
   margin: -24px -24px 24px -24px;
   padding: 20px 24px;
@@ -84,7 +80,7 @@ body {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: white;
+  color: #374151;
   font-size: 14px;
 }
 
@@ -92,38 +88,36 @@ body {
 .form-select {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   transition: border-color 0.2s ease;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
+  background: #f8f9fa;
+  color: #374151;
   box-sizing: border-box;
 }
 
 .form-input:focus,
 .form-select:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.2);
+  border-color: #e91e63;
+  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+  background: #f8f9fa;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: #9ca3af;
 }
 
 .form-select option {
-  background: #2d3748;
-  color: white;
+  background: #f8f9fa;
+  color: #374151;
 }
 
 .calculate-btn {
   width: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #e91e63, #f06292);
+  border: none;
   color: white;
   font-weight: 600;
   padding: 14px 24px;
@@ -132,15 +126,13 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
 }
 
 .calculate-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(135deg, #d81b60, #e91e63);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
 }
 
 .calculate-btn:disabled {
@@ -156,49 +148,43 @@ body {
 }
 
 .timeline-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .timeline-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .timeline-title {
   font-size: 24px;
   font-weight: 700;
-  color: white;
+  color: #1f2937;
   margin-bottom: 24px;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .due-date-banner {
-  background: linear-gradient(135deg, rgba(233, 30, 99, 0.3), rgba(240, 98, 146, 0.2));
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #e91e63, #f06292);
   color: white;
   padding: 24px;
   border-radius: 12px;
   text-align: center;
   margin-bottom: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.2);
   transition: all 0.3s ease;
 }
 
 .due-date-banner:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(135deg, rgba(233, 30, 99, 0.4), rgba(240, 98, 146, 0.3));
+  box-shadow: 0 8px 32px rgba(233, 30, 99, 0.3);
+  background: linear-gradient(135deg, #d81b60, #e91e63);
 }
 
 .due-date-text {
@@ -229,8 +215,7 @@ body {
   text-align: center;
   border: 2px solid;
   transition: transform 0.2s ease;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background: #f8f9fa;
 }
 
 .milestone-card:hover {
@@ -238,54 +223,54 @@ body {
 }
 
 .milestone-card.conception {
-  background: rgba(255, 193, 7, 0.2);
-  border-color: rgba(255, 193, 7, 0.5);
-  color: #ffd54f;
+  background: #fff8e1;
+  border-color: #ffc107;
+  color: #f57c00;
 }
 
 .milestone-card.implantation {
-  background: rgba(40, 167, 69, 0.2);
-  border-color: rgba(40, 167, 69, 0.5);
-  color: #81c784;
+  background: #e8f5e8;
+  border-color: #28a745;
+  color: #2e7d32;
 }
 
 .milestone-card.blood-test {
-  background: rgba(0, 123, 255, 0.2);
-  border-color: rgba(0, 123, 255, 0.5);
-  color: #64b5f6;
+  background: #e3f2fd;
+  border-color: #007bff;
+  color: #1565c0;
 }
 
 .milestone-card.heartbeat {
-  background: rgba(220, 53, 69, 0.2);
-  border-color: rgba(220, 53, 69, 0.5);
-  color: #e57373;
+  background: #ffebee;
+  border-color: #dc3545;
+  color: #c62828;
 }
 
 .milestone-title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: white;
+  color: inherit;
 }
 
 .milestone-date {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: rgba(255, 255, 255, 0.9);
+  color: inherit;
 }
 
 .milestone-subtitle {
   font-size: 12px;
   opacity: 0.8;
-  color: rgba(255, 255, 255, 0.7);
+  color: inherit;
 }
 
 /* Pregnancy Timeline Visual */
 .pregnancy-timeline-section {
   margin-bottom: 40px;
   padding-bottom: 32px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .timeline-visual {
@@ -296,7 +281,7 @@ body {
 
 .timeline-bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: #e5e7eb;
   border-radius: 4px;
   position: relative;
   width: 100%;
@@ -334,7 +319,7 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.8);
+  border: 4px solid white;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 2;
@@ -364,31 +349,30 @@ body {
 .marker-label {
   font-size: 13px;
   font-weight: 600;
-  color: white;
+  color: #374151;
   margin-bottom: 4px;
   line-height: 1.2;
 }
 
 .marker-date {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
   font-weight: 500;
   line-height: 1.2;
 }
 
 /* Trimesters Section */
 .trimesters-section {
-  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: 2px solid #e5e7eb;
   padding-top: 32px;
 }
 
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: #1f2937;
   margin-bottom: 24px;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .trimesters-grid {
@@ -404,10 +388,9 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
+  background: #f8f9fa;
 }
 
 .trimester-card:hover {
@@ -416,18 +399,18 @@ body {
 }
 
 .trimester-card.first {
-  background: linear-gradient(135deg, rgba(255, 243, 224, 0.2), rgba(255, 224, 178, 0.1));
-  color: #ffb74d;
+  background: #fff8e1;
+  color: #f57c00;
 }
 
 .trimester-card.second {
-  background: linear-gradient(135deg, rgba(232, 245, 232, 0.2), rgba(200, 230, 200, 0.1));
-  color: #81c784;
+  background: #e8f5e8;
+  color: #2e7d32;
 }
 
 .trimester-card.third {
-  background: linear-gradient(135deg, rgba(227, 242, 253, 0.2), rgba(187, 222, 251, 0.1));
-  color: #64b5f6;
+  background: #e3f2fd;
+  color: #1565c0;
 }
 
 .trimester-number {
@@ -435,20 +418,20 @@ body {
   font-weight: 700;
   margin-bottom: 8px;
   line-height: 1;
-  color: white;
+  color: inherit;
 }
 
 .trimester-dates {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: rgba(255, 255, 255, 0.9);
+  color: inherit;
 }
 
 .trimester-weeks {
   font-size: 12px;
   opacity: 0.8;
-  color: rgba(255, 255, 255, 0.7);
+  color: inherit;
 }
 
 /* Additional Dates */
@@ -459,10 +442,8 @@ body {
 }
 
 .date-item {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
@@ -471,27 +452,27 @@ body {
 
 .date-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .date-label {
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
   margin-bottom: 8px;
 }
 
 .date-value {
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: #374151;
   margin-bottom: 4px;
 }
 
 .date-subtitle {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #9ca3af;
 }
 
 /* Responsive Design */

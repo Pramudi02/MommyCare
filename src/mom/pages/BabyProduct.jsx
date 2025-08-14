@@ -72,26 +72,29 @@ const BabyProduct = () => {
     }
   ];
   return (
-    <div className="min-h-screen  p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="baby-product-page bg-gray-50 p-4">
+      <div className="baby-product-container  mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <ShoppingBag className="text-pink-400" size={32} />
-            <h1 className="text-3xl font-bold text-gray-800">Baby Products</h1>
+        <div className="headerBabyProduct">
+          <div className="headerBabyProduct-icon">
+            <ShoppingBag className="w-6 h-6" />
           </div>
-          <p className="text-gray-200 max-w-md mx-auto">
-            Everything you need for your little one - from feeding essentials to comfort items
+          <h1 className="headerBabyProduct-title">Baby Products</h1>
+          <p className="headerBabyProduct-description">
+            Everything you need for your little one - from feeding essentials to comfort items, all carefully curated for your baby's safety and development.
           </p>
-        </div>
-        {/* Search Bar */}
-        <div className="relative max-w-md mx-auto mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search for baby products..."
-            className="w-full pl-10 pr-4 py-3 bg-white rounded-full shadow-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
-          />
+          
+          {/* Search Bar inside Header */}
+          <div className="header-search-container">
+            <div className="relative max-w-md mx-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search for baby products..."
+                className="w-full pl-10 pr-4 py-3 bg-white rounded-full shadow-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
+              />
+            </div>
+          </div>
         </div>
         {/* Category Tabs */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
