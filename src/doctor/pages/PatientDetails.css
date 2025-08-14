@@ -1,0 +1,237 @@
+/* PatientDetails.css */
+.patient-details-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f8f9fb;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.patient-details-page h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+
+/* Main Patient Card */
+.patient-header {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.patient-header img {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 4px solid #f7fafc;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.patient-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.01em;
+}
+
+.patient-header p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.patient-header strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Status Badge Styling */
+.patient-header p:nth-of-type(2) {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Info Cards Container */
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* Individual Info Cards */
+.info-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.info-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.info-card p {
+  margin: 12px 0;
+  font-size: 15px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.info-card strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Medical Info Cards */
+.medical-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.medical-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.medical-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Medical History List */
+.medical-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medical-card li {
+  background: #f7fafc;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #4a5568;
+  border-left: 4px solid #4299e1;
+}
+
+/* Allergies styling */
+.allergies-list {
+  background: #fef5e7;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #ed8936;
+  font-size: 15px;
+  color: #744210;
+  margin-top: 8px;
+}
+
+/* Status badges */
+.status-active {
+  background: #c6f6d5;
+  color: #22543d;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .patient-details-page {
+    padding: 16px;
+  }
+  
+  .patient-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+  
+  .patient-info-grid,
+  .medical-info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .patient-header img {
+    width: 100px;
+    height: 100px;
+    align-self: center;
+  }
+  
+  .patient-header h2 {
+    font-size: 24px;
+  }
+  
+  .info-card,
+  .medical-card {
+    padding: 20px;
+  }
+}
+
+/* Additional styling for better visual hierarchy */
+.patient-details-page p strong::after {
+  content: ':';
+  margin-right: 8px;
+}
+
+/* Subtle animations */
+.patient-header,
+.info-card,
+.medical-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.patient-header:hover,
+.info-card:hover,
+.medical-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Icon placeholders - you can add actual icons later */
+.info-card h3::before {
+  content: '📋';
+  margin-right: 8px;
+}
+
+.medical-card h3::before {
+  content: '🏥';
+  margin-right: 8px;
+}
+
+.medical-card:last-child h3::before {
+  content: '⚠️';
+}

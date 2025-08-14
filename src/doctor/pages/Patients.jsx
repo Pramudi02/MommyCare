@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Patients.css';
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const navigate = useNavigate();
 
   // Sample patient data
   const patients = [
@@ -107,27 +109,29 @@ const Patients = () => {
   ];
 
   const filteredPatients = patients.filter(patient => {
-    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || patient.status.toLowerCase() === filterStatus.toLowerCase();
+    const matchesSearch =
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === 'all' || patient.status.toLowerCase() === filterStatus.toLowerCase();
     return matchesSearch && matchesFilter;
   });
 
   const handlePatientClick = (patient) => {
-    setSelectedPatient(patient);
-  };
-
-  const closePatientDetails = () => {
-    setSelectedPatient(null);
+    navigate(`/doctor/patients/PatientDetails`);
   };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'active': return '#10b981';
-      case 'follow-up': return '#f59e0b';
-      case 'emergency': return '#ef4444';
-      default: return '#6b7280';
+      case 'active':
+        return '#10b981';
+      case 'follow-up':
+        return '#f59e0b';
+      case 'emergency':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
@@ -138,10 +142,6 @@ const Patients = () => {
           <h1>Patient Management</h1>
           <p>Manage your patients and their medical records</p>
         </div>
-        <button className="add-patient-btn">
-          <span>➕</span>
-          Add New Patient
-        </button>
       </div>
 
       {/* Search and Filters */}
@@ -155,7 +155,7 @@ const Patients = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        
+
         <div className="filters">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
             <option value="all">All Status</option>
@@ -176,7 +176,7 @@ const Patients = () => {
                 {patient.status}
               </div>
             </div>
-            
+
             <div className="patient-card__body">
               <h3>{patient.name}</h3>
               <p className="patient-age">{patient.age} years old</p>
@@ -184,7 +184,7 @@ const Patients = () => {
               <p className="patient-contact">{patient.email}</p>
               <p className="patient-phone">{patient.phone}</p>
             </div>
-            
+
             <div className="patient-card__footer">
               <span className="last-visit">Last: {patient.lastVisit}</span>
               <span className="next-visit">Next: {patient.nextVisit}</span>
@@ -192,97 +192,8 @@ const Patients = () => {
           </div>
         ))}
       </div>
-
-      {/* Patient Details Modal */}
-      {selectedPatient && (
-        <div className="patient-modal-overlay" onClick={closePatientDetails}>
-          <div className="patient-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="patient-modal__header">
-              <h2>{selectedPatient.name}</h2>
-              <button className="close-btn" onClick={closePatientDetails}>✕</button>
-            </div>
-            
-            <div className="patient-modal__content">
-              <div className="patient-modal__section">
-                <h3>Personal Information</h3>
-                <div className="info-grid">
-                  <div className="info-item">
-                    <label>Age:</label>
-                    <span>{selectedPatient.age} years old</span>
-                  </div>
-                  <div className="info-item">
-                    <label>Blood Type:</label>
-                    <span>{selectedPatient.bloodType}</span>
-                  </div>
-                  <div className="info-item">
-                    <label>Email:</label>
-                    <span>{selectedPatient.email}</span>
-                  </div>
-                  <div className="info-item">
-                    <label>Phone:</label>
-                    <span>{selectedPatient.phone}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="patient-modal__section">
-                <h3>Medical Information</h3>
-                <div className="info-grid">
-                  <div className="info-item">
-                    <label>Current Condition:</label>
-                    <span>{selectedPatient.condition}</span>
-                  </div>
-                  <div className="info-item">
-                    <label>Status:</label>
-                    <span className="status-badge" style={{ backgroundColor: getStatusColor(selectedPatient.status) }}>
-                      {selectedPatient.status}
-                    </span>
-                  </div>
-                  <div className="info-item">
-                    <label>Last Visit:</label>
-                    <span>{selectedPatient.lastVisit}</span>
-                  </div>
-                  <div className="info-item">
-                    <label>Next Visit:</label>
-                    <span>{selectedPatient.nextVisit}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="patient-modal__section">
-                <h3>Emergency Contact</h3>
-                <p>{selectedPatient.emergencyContact}</p>
-              </div>
-
-              <div className="patient-modal__section">
-                <h3>Medical History</h3>
-                <div className="tags">
-                  {selectedPatient.medicalHistory.map((item, index) => (
-                    <span key={index} className="tag medical-history">{item}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="patient-modal__section">
-                <h3>Allergies</h3>
-                <div className="tags">
-                  {selectedPatient.allergies.map((allergy, index) => (
-                    <span key={index} className="tag allergy">{allergy}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="patient-modal__actions">
-              <button className="btn btn-primary">Schedule Appointment</button>
-              <button className="btn btn-secondary">Write Prescription</button>
-              <button className="btn btn-outline">View Medical Records</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default Patients; 
+export default Patients;
