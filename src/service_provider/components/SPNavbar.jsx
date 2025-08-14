@@ -6,10 +6,8 @@ const menuItems = [
   { name: "Dashboard", path: "/service-provider" },
   { name: "Products", path: "/service-provider/products" },
   { name: "Orders", path: "/service-provider/orders" },
-  { name: "Appointments", path: "/service-provider/appointments" },
   { name: "Customers", path: "/service-provider/customers" },
-  { name: "Analytics", path: "/service-provider/analytics" },
-  { name: "Services", path: "/service-provider/services" }
+  { name: "Analytics", path: "/service-provider/analytics" }
 ];
 
 const SPNavbar = () => {

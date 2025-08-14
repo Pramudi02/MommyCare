@@ -5,7 +5,7 @@ import {
   Users, 
   Calendar, 
   DollarSign, 
-  Star,
+  Star, 
   Plus,
   Eye,
   Edit,
@@ -191,18 +191,18 @@ const Dashboard = () => {
           <p>Here's what's happening with your business today</p>
         </div>
         <div className="dashboard-header__right">
-          <div className="period-selector">
+        <div className="period-selector">
             <label htmlFor="period">Time Period:</label>
-            <select
+          <select 
               id="period"
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-            >
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
+            value={selectedPeriod} 
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+          >
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
               <option value="quarter">This Quarter</option>
-            </select>
+          </select>
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ const Dashboard = () => {
                   <div className={`order-status ${getStatusColor(order.status)}`}>
                     {getStatusIcon(order.status)}
                     <span>{order.status}</span>
-                  </div>
+                </div>
                   <div className="order-date">{order.date}</div>
                 </div>
               </div>
@@ -264,12 +264,12 @@ const Dashboard = () => {
             {topProducts.map((product, index) => (
               <div key={index} className="product-item">
                 <div className="product-item__left">
-                  <div className="product-image">{product.image}</div>
-                  <div className="product-info">
+                <div className="product-image">{product.image}</div>
+                <div className="product-info">
                     <div className="product-name">{product.name}</div>
-                    <div className="product-rating">
+                  <div className="product-rating">
                       <Star className="w-4 h-4 fill-current" />
-                      <span>{product.rating}</span>
+                    <span>{product.rating}</span>
                     </div>
                   </div>
                 </div>
