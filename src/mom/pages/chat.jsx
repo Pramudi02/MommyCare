@@ -450,20 +450,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                   
                   <div className="chat-header-details">
                     <h3>{getProviderById(selectedChat)?.name}</h3>
-                    <div className="chat-header-meta">
-                      <span className="chat-specialty">
-                        {getProviderIcon(getProviderById(selectedChat)?.type)}
-                        {getProviderById(selectedChat)?.specialty}
-                      </span>
-                      <span className="chat-rating">
-                        <Star size={14} fill="#fbbf24" />
-                        {getProviderById(selectedChat)?.rating}
-                      </span>
-                      <span className="chat-experience">
-                        <Clock size={14} />
-                        {getProviderById(selectedChat)?.experience}
-                      </span>
-                    </div>
                     <span className="chat-availability">
                       {getStatusText(getProviderById(selectedChat)?.status)}
                     </span>
@@ -700,10 +686,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               </div>
               
               <div className="chat-info-actions">
-                <button className="chat-info-action-btn primary">
-                  <Phone size={16} />
-                  Schedule Call
-                </button>
+                
                 <button className="chat-info-action-btn secondary">
                   <FileText size={16} />
                   View Profile
