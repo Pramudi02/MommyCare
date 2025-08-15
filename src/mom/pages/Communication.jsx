@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { MessageCircle, Search as SearchIcon, Bell, User, Users, HeartPulse, Stethoscope, Baby, Megaphone, Filter, ArrowDown, X, Phone, Mail, MapPin, Star, Clock } from 'lucide-react';
+import ChatBox from './chat';
 import './Communication.css';
 
 const Communication = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [showSpecialtyPopup, setShowSpecialtyPopup] = useState(false);
+  const [showChatBox, setShowChatBox] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
   const doctors = [
     {
@@ -284,7 +287,13 @@ const Communication = () => {
                     <span className="value comm-status-available">{doctor.status}</span>
                   </div>
                 </div>
-                <button className="comm-chat-button flex items-center gap-2">
+                <button 
+                  className="comm-chat-button flex items-center gap-2"
+                  onClick={() => {
+                    setSelectedProvider(doctor);
+                    setShowChatBox(true);
+                  }}
+                >
                   <MessageCircle className="text-blue-400" size={18} />
                   Chat with {doctor.name.split(' ')[1]}
                 </button>
@@ -415,7 +424,14 @@ const Communication = () => {
                      </div>
 
                      <div className="comm-popup-doctor-actions">
-                       <button className="comm-popup-action-btn primary">
+                       <button 
+                         className="comm-popup-action-btn primary"
+                         onClick={() => {
+                           setSelectedProvider(doctor);
+                           setShowChatBox(true);
+                           setShowSpecialtyPopup(false);
+                         }}
+                       >
                          <MessageCircle size={16} />
                          Chat Now
                        </button>
@@ -434,8 +450,18 @@ const Communication = () => {
              </div>
            </div>
          </div>
-       )}
-    </div>
+                )}
+
+        {/* ChatBox Component */}
+        <ChatBox 
+          isOpen={showChatBox}
+          onClose={() => {
+            setShowChatBox(false);
+            setSelectedProvider(null);
+          }}
+          selectedProvider={selectedProvider}
+        />
+      </div>
     </div>
    
   );
