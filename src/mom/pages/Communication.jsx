@@ -423,27 +423,23 @@ const Communication = () => {
                        </div>
                      </div>
 
-                     <div className="comm-popup-doctor-actions">
-                       <button 
-                         className="comm-popup-action-btn primary"
-                         onClick={() => {
-                           setSelectedProvider(doctor);
-                           setShowChatBox(true);
-                           setShowSpecialtyPopup(false);
-                         }}
-                       >
-                         <MessageCircle size={16} />
-                         Chat Now
-                       </button>
-                       <button className="comm-popup-action-btn secondary">
-                         <Phone size={16} />
-                         Call
-                       </button>
-                       <button className="comm-popup-action-btn secondary">
-                         <Mail size={16} />
-                         Email
-                       </button>
-                     </div>
+                                           <div className="comm-popup-doctor-actions">
+                        <button 
+                          className="comm-popup-action-btn primary"
+                          onClick={() => {
+                            setSelectedProvider(doctor);
+                            setShowChatBox(true);
+                            setShowSpecialtyPopup(false);
+                          }}
+                        >
+                          <MessageCircle size={16} />
+                          Chat Now
+                        </button>
+                        <button className="comm-popup-action-btn secondary">
+                          <User size={16} />
+                          View Profile
+                        </button>
+                      </div>
                    </div>
                  ))}
                </div>
