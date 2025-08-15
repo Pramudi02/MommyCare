@@ -343,7 +343,9 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               <MessageCircle size={24} />
               <h2>Healthcare Chat</h2>
             </div>
-            
+            <button className="chat-header-menu-btn" onClick={onClose}>
+              <X size={20} />
+            </button>
           </div>
 
 
@@ -753,10 +755,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
           </div>
         )}
 
-        {/* Close Button */}
-        <button className="chat-close-btn" onClick={onClose}>
-          <X size={24} />
-        </button>
+        
       </div>
     </div>
   );
