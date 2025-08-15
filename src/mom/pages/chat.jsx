@@ -46,7 +46,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   const [showChatInfo, setShowChatInfo] = useState(false);
   const [showVoiceCall, setShowVoiceCall] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
-  const [activeTab, setActiveTab] = useState('chats');
   
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -347,30 +346,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
             
           </div>
 
-          {/* Tab Navigation */}
-          <div className="chat-tab-navigation">
-            <button 
-              className={`chat-tab ${activeTab === 'chats' ? 'active' : ''}`}
-              onClick={() => setActiveTab('chats')}
-            >
-              <MessageCircle size={16} />
-              Chats
-            </button>
-            <button 
-              className={`chat-tab ${activeTab === 'doctors' ? 'active' : ''}`}
-              onClick={() => setActiveTab('doctors')}
-            >
-              <Stethoscope size={16} />
-              Doctors
-            </button>
-            <button 
-              className={`chat-tab ${activeTab === 'midwives' ? 'active' : ''}`}
-              onClick={() => setActiveTab('midwives')}
-            >
-              <Baby size={16} />
-              Midwives
-            </button>
-          </div>
+
 
           {/* Search and Filter */}
           <div className="chat-search-section">
@@ -385,35 +361,33 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               />
             </div>
             
-            {activeTab === 'chats' && (
-              <div className="chat-filter-tabs">
-                <button
-                  className={`chat-filter-tab ${filterType === 'all' ? 'active' : ''}`}
-                  onClick={() => setFilterType('all')}
-                >
-                  All
-                </button>
-                <button
-                  className={`chat-filter-tab ${filterType === 'doctor' ? 'active' : ''}`}
-                  onClick={() => setFilterType('doctor')}
-                >
-                  <Stethoscope size={14} />
-                  Doctors
-                </button>
-                <button
-                  className={`chat-filter-tab ${filterType === 'midwife' ? 'active' : ''}`}
-                  onClick={() => setFilterType('midwife')}
-                >
-                  <Baby size={14} />
-                  Midwives
-                </button>
-              </div>
-            )}
+            <div className="chat-filter-tabs">
+              <button
+                className={`chat-filter-tab ${filterType === 'all' ? 'active' : ''}`}
+                onClick={() => setFilterType('all')}
+              >
+                All
+              </button>
+              <button
+                className={`chat-filter-tab ${filterType === 'doctor' ? 'active' : ''}`}
+                onClick={() => setFilterType('doctor')}
+              >
+                <Stethoscope size={14} />
+                Doctors
+              </button>
+              <button
+                className={`chat-filter-tab ${filterType === 'midwife' ? 'active' : ''}`}
+                onClick={() => setFilterType('midwife')}
+              >
+                <Baby size={14} />
+                Midwives
+              </button>
+            </div>
           </div>
 
           {/* Provider List */}
           <div className="chat-provider-list">
-            {activeTab === 'chats' && filteredProviders.map(provider => (
+            {filteredProviders.map(provider => (
               <div
                 key={provider.id}
                 className={`chat-provider-item ${selectedChat === provider.id ? 'active' : ''}`}
@@ -452,70 +426,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                     </div>
                   )}
                 </div>
-              </div>
-            ))}
-
-            {activeTab === 'doctors' && healthcareProviders.filter(p => p.type === 'doctor').map(provider => (
-              <div
-                key={provider.id}
-                className="chat-provider-card"
-                onClick={() => setSelectedChat(provider.id)}
-              >
-                <div className="chat-provider-card-avatar">
-                  <img src={provider.avatar} alt={provider.name} />
-                  <div 
-                    className="chat-status-indicator"
-                    style={{ backgroundColor: getStatusColor(provider.status) }}
-                  ></div>
-                </div>
-                
-                <div className="chat-provider-card-info">
-                  <h3>{provider.name}</h3>
-                  <p className="chat-provider-card-specialty">{provider.specialty}</p>
-                  <div className="chat-provider-card-rating">
-                    <Star size={14} fill="#fbbf24" />
-                    <span>{provider.rating}</span>
-                    <span className="chat-provider-card-experience">({provider.experience})</span>
-                  </div>
-                  <p className="chat-provider-card-availability">{provider.availability}</p>
-                </div>
-                
-                <button className="chat-provider-card-action">
-                  <MessageCircle size={16} />
-                  Chat
-                </button>
-              </div>
-            ))}
-
-            {activeTab === 'midwives' && healthcareProviders.filter(p => p.type === 'midwife').map(provider => (
-              <div
-                key={provider.id}
-                className="chat-provider-card"
-                onClick={() => setSelectedChat(provider.id)}
-              >
-                <div className="chat-provider-card-avatar">
-                  <img src={provider.avatar} alt={provider.name} />
-                  <div 
-                    className="chat-status-indicator"
-                    style={{ backgroundColor: getStatusColor(provider.status) }}
-                  ></div>
-                </div>
-                
-                <div className="chat-provider-card-info">
-                  <h3>{provider.name}</h3>
-                  <p className="chat-provider-card-specialty">{provider.specialty}</p>
-                  <div className="chat-provider-card-rating">
-                    <Star size={14} fill="#fbbf24" />
-                    <span>{provider.rating}</span>
-                    <span className="chat-provider-card-experience">({provider.experience})</span>
-                  </div>
-                  <p className="chat-provider-card-availability">{provider.availability}</p>
-                </div>
-                
-                <button className="chat-provider-card-action">
-                  <MessageCircle size={16} />
-                  Chat
-                </button>
               </div>
             ))}
           </div>
