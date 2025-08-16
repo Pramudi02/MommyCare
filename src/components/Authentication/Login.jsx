@@ -55,8 +55,8 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // Try the mock login endpoint first
-      const response = await fetch('http://localhost:5000/api/auth/login-mock', {
+      // Use the real login endpoint
+      const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -89,8 +89,8 @@ const Signup = () => {
     setIsLoading(true);
     
     try {
-      // Try the mock endpoint first
-      const response = await fetch('http://localhost:5000/api/auth/register-mock', {
+      // Use the real registration endpoint
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

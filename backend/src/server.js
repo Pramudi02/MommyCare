@@ -5,9 +5,6 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -31,7 +28,6 @@ const { protect } = require('./middleware/auth');
 
 // Import config
 const { connectDB } = require('./config/database');
-const initDatabase = require('./config/initDatabase');
 
 const app = express();
 const server = http.createServer(app);
@@ -51,21 +47,14 @@ const io = socketIo(server, {
   }
 });
 
-// Connect to MongoDB and initialize database
+// Connect to MongoDB and start server
 const startServer = async () => {
   try {
-    console.log('🔌 Connecting to databases...');
+    console.log('🔌 Connecting to Auth database...');
     await connectDB();
-    console.log('✅ Database connections established');
+    console.log('✅ Database connection established');
     
-    // Try to initialize database, but don't fail if it doesn't work
-    try {
-      await initDatabase();
-    } catch (initError) {
-      console.log('⚠️ Database initialization failed, continuing...');
-    }
-    
-    const PORT = process.env.PORT || 5001;
+    const PORT = process.env.PORT || 5000;
     
     server.listen(PORT, () => {
       console.log(`🚀 MommyCare Backend Server running on port ${PORT}`);
@@ -75,17 +64,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
-    console.log('⚠️ Starting server without database connection...');
-    
-    // Start server even if database connection fails
-    const PORT = process.env.PORT || 5001;
-    server.listen(PORT, () => {
-      console.log(`🚀 MommyCare Backend Server running on port ${PORT} (Database: Disconnected)`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-      console.log('⚠️ Some features may not work without database connection');
-    });
+    process.exit(1);
   }
 };
 
@@ -111,15 +90,6 @@ app.use('/api/', limiter);
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
-
-// Data sanitization against XSS
-app.use(xss());
-
-// Prevent parameter pollution
-app.use(hpp());
 
 // Compression middleware
 app.use(compression());
@@ -204,18 +174,12 @@ app.set('io', io);
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   console.log(`⚠️ Unhandled Rejection: ${err.message}`);
-  // Don't exit the process, just log the error
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.log(`❌ Uncaught Exception: ${err.message}`);
-  // Only exit for critical errors
-  if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
-    console.log('⚠️ Network error, continuing...');
-  } else {
-    server.close(() => process.exit(1));
-  }
+  server.close(() => process.exit(1));
 });
 
 // Start the server
