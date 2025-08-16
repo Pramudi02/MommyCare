@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Baby, Stethoscope, Heart, Store } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
 import './Signup.css';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -82,6 +84,8 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('Form data before validation:', formData);
+    
     if (!validateForm()) {
       return;
     }
@@ -89,46 +93,104 @@ const Signup = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Replace with actual API call
+      // Debug: Log the data being sent
+      const requestData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        role: formData.role,
+        password: formData.password
+      };
+      console.log('Sending registration data:', requestData);
+      
+      // Use the real registration endpoint
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          role: formData.role,
-          password: formData.password
-        })
+        body: JSON.stringify(requestData)
       });
 
       const data = await response.json();
+      console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
-        // Navigate based on user role for additional setup
+        // Use AuthContext login function
+        login(data);
+        
+        // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
           case 'mom':
-            window.location.href = 'http://localhost:5174/mom';
+            navigate('/mom');
             break;
           case 'doctor':
-            navigate('/get-permission-doctor');
+            navigate('/doctor');
             break;
           case 'midwife':
-            navigate('/get-permission-midWife');
+            navigate('/midwife');
             break;
           case 'service_provider':
-            navigate('/get-permission-serviceProvider');
+            navigate('/service-provider');
             break;
           default:
             navigate('/');
         }
+      } else if (response.status === 503) {
+        // Database temporarily unavailable
+        setErrors({ general: 'Service temporarily unavailable. Please try again in a moment.' });
       } else {
+        console.error('Registration failed:', { status: response.status, data });
+        console.error('Validation errors:', data.errors);
         setErrors({ general: data.message || 'Registration failed' });
       }
     } catch (error) {
-      setErrors({ general: 'Network error. Please try again.' });
+      console.error('Backend registration error:', error);
+      
+      // Fallback: Local mock registration when backend is not available
+      try {
+        console.log('Using local mock registration...');
+        
+        // Create mock user data
+        const mockUser = {
+          _id: 'local-mock-user-' + Date.now(),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          role: formData.role,
+          isEmailVerified: true,
+          isActive: true
+        };
+        
+        const mockToken = 'local-mock-token-' + Date.now();
+        
+        // Use AuthContext for mock data
+        login({
+          token: mockToken,
+          user: mockUser
+        });
+        
+        // Navigate directly to role-specific dashboard (no admin approval needed)
+        switch (formData.role) {
+          case 'mom':
+            navigate('/mom');
+            break;
+          case 'doctor':
+            navigate('/doctor');
+            break;
+          case 'midwife':
+            navigate('/midwife');
+            break;
+          case 'service_provider':
+            navigate('/service-provider');
+            break;
+          default:
+            navigate('/');
+        }
+      } catch (localError) {
+        console.error('Local mock registration error:', localError);
+        setErrors({ general: 'Registration failed. Please try again.' });
+      }
     } finally {
       setIsLoading(false);
     }

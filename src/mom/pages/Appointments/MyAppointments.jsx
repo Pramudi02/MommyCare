@@ -1,5 +1,5 @@
 // MommyCare/src/mom/pages/Appointments/MyAppointments.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
   Scale, 
@@ -26,10 +26,20 @@ import {
   CheckCircle,
   Plus
 } from 'lucide-react';
+import { clinicVisitRequestAPI } from '../../../services/api';
+import ClinicVisitRequestModal from '../../components/ClinicVisitRequestModal';
+import ClinicVisitRequestsList from '../../components/ClinicVisitRequestsList';
 import './MyAppointments.css';
 
 const AppointmentsDashboard = () => {
   const [currentMonth, setCurrentMonth] = useState('July 2025');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clinicRequests, setClinicRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const statsData = [
     { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500', icon: <Calendar size={28} className="text-blue-400 mb-1" /> },
@@ -72,6 +82,108 @@ const AppointmentsDashboard = () => {
     22: 'upcoming',
     25: 'upcoming',
     28: 'upcoming'
+  };
+
+  // Check authentication status and fetch clinic visit requests on component mount
+  useEffect(() => {
+    checkAuthStatus();
+    fetchClinicRequests();
+  }, []);
+
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  };
+
+  // Demo function to simulate login (for testing purposes)
+  const demoLogin = () => {
+    localStorage.setItem('token', 'demo-token-123');
+    setIsAuthenticated(true);
+    fetchClinicRequests(); // Refresh requests after login
+  };
+
+  const demoLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setSelectedCategory(null);
+    setClinicRequests([]);
+  };
+
+  const fetchClinicRequests = async () => {
+    try {
+      setIsLoading(true);
+      const response = await clinicVisitRequestAPI.getAll();
+      setClinicRequests(response.data || []);
+    } catch (error) {
+      console.error('Error fetching clinic requests:', error);
+      
+      // Handle authentication errors silently for fetch requests
+      if (error.message.includes('Not authorized') || error.message.includes('no token')) {
+        // User is not authenticated, set empty requests array
+        setClinicRequests([]);
+      } else {
+        // For other errors, show in console but don't alert user
+        console.warn('Could not fetch clinic requests:', error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmitRequest = async (requestData) => {
+    try {
+      setIsSubmitting(true);
+      await clinicVisitRequestAPI.create(requestData);
+      setIsModalOpen(false);
+      setSelectedCategory(null); // Reset selection after successful submission
+      fetchClinicRequests(); // Refresh the list
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000); // Hide after 5 seconds
+    } catch (error) {
+      console.error('Error creating clinic request:', error);
+      
+      // Handle different types of errors
+      if (error.message.includes('Not authorized') || error.message.includes('no token')) {
+        alert('Please log in to create clinic visit requests. You need to be authenticated to use this feature.');
+      } else if (error.message.includes('Failed to fetch')) {
+        alert('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        alert(`Failed to create clinic visit request: ${error.message}`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelRequest = async (requestId) => {
+    if (window.confirm('Are you sure you want to cancel this request?')) {
+      try {
+        setIsLoading(true);
+        await clinicVisitRequestAPI.cancel(requestId);
+        fetchClinicRequests(); // Refresh the list
+      } catch (error) {
+        console.error('Error cancelling request:', error);
+        alert('Failed to cancel request. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handleOpenModal = () => {
+    if (!isAuthenticated) {
+      alert('Please log in to create clinic visit requests');
+      return;
+    }
+    if (!selectedCategory) {
+      alert('Please select a clinic service category first');
+      return;
+    }
+    setIsModalOpen(true);
   };
 
   const upcomingAppointments = [
@@ -184,32 +296,120 @@ const AppointmentsDashboard = () => {
           </div>
         </div>
 
+        {/* Authentication Notice */}
+        {!isAuthenticated && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-blue-800">
+                <AlertTriangle className="w-5 h-5 mr-2" />
+                <span className="font-medium">Authentication Required</span>
+              </div>
+              <button
+                onClick={demoLogin}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+              >
+                Demo Login
+              </button>
+            </div>
+            <p className="text-blue-700 text-sm mt-1">
+              You need to be logged in to create and manage clinic visit requests. Please log in to your account to use this feature.
+            </p>
+          </div>
+        )}
+
+        {/* Demo Logout Button */}
+        {isAuthenticated && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-green-800">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                <span className="font-medium">Authenticated</span>
+              </div>
+              <button
+                onClick={demoLogout}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+              >
+                Demo Logout
+              </button>
+            </div>
+            <p className="text-green-700 text-sm mt-1">
+              You are now logged in and can create clinic visit requests. This is a demo session.
+            </p>
+          </div>
+        )}
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
-                <Building2 className="text-pink-500 w-6 h-6" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                  <Building2 className="text-pink-500 w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
+              {selectedCategory && (
+                <div className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">
+                  Selected: {selectedCategory}
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4 mb-6">
               {clinicServices.map((service, index) => {
                 const IconComponent = service.icon;
+                const isSelected = selectedCategory === service.name;
                 return (
-                  <div key={index} className="service-item flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent">
-                    <div className="mb-2">
-                      <IconComponent className="w-6 h-6 text-gray-600" />
+                  <div 
+                    key={index} 
+                    onClick={() => isAuthenticated && handleCategorySelect(service.name)}
+                    className={`service-item flex flex-col items-center p-4 rounded-lg transition-all border ${
+                      isAuthenticated 
+                        ? isSelected 
+                          ? 'bg-pink-100 border-pink-300 shadow-md scale-105 cursor-pointer' 
+                          : 'hover:bg-gray-50 border-transparent hover:border-gray-200 cursor-pointer'
+                        : 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-60'
+                    }`}
+                  >
+                    <div className={`mb-2 ${isSelected ? 'text-pink-600' : 'text-gray-600'}`}>
+                      <IconComponent className="w-6 h-6" />
                     </div>
-                    <span className="text-sm text-gray-700 text-center">{service.name}</span>
+                    <span className={`text-sm text-center font-medium ${
+                      isSelected ? 'text-pink-700' : 'text-gray-700'
+                    }`}>
+                      {service.name}
+                    </span>
                   </div>
                 );
               })}
             </div>
-            <button className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-3 rounded-full transition-colors">
-              <Plus className="inline-block mr-2" size={18} /> Request Clinic Visit
-            </button>
+            <div className="flex gap-3">
+              <button 
+                onClick={handleOpenModal}
+                disabled={!selectedCategory || !isAuthenticated}
+                className={`flex-1 font-medium py-3 rounded-full transition-colors ${
+                  selectedCategory && isAuthenticated
+                    ? 'bg-pink-400 hover:bg-pink-500 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <Plus className="inline-block mr-2" size={18} /> 
+                {!isAuthenticated 
+                  ? 'Please log in first' 
+                  : selectedCategory 
+                    ? `Request ${selectedCategory}` 
+                    : 'Select a service first'
+                }
+              </button>
+              {selectedCategory && isAuthenticated && (
+                <button 
+                  onClick={() => setSelectedCategory(null)}
+                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
             <p className="text-xs text-gray-500 text-center mt-2">
               Hospital will confirm your appointment
             </p>
@@ -401,7 +601,37 @@ const AppointmentsDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
+            <div className="flex items-center text-green-800">
+              <CheckCircle className="w-5 h-5 mr-2" />
+              <span className="font-medium">Clinic visit request created successfully!</span>
+            </div>
+            <p className="text-green-700 text-sm mt-1">Your request has been submitted and is pending approval.</p>
+          </div>
+        )}
+
+        {/* Clinic Visit Requests Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
+          <ClinicVisitRequestsList 
+            requests={clinicRequests}
+            onCancel={handleCancelRequest}
+            isLoading={isLoading}
+            isAuthenticated={isAuthenticated}
+          />
+        </div>
       </div>
+
+      {/* Clinic Visit Request Modal */}
+      <ClinicVisitRequestModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmitRequest}
+        isLoading={isSubmitting}
+        selectedCategory={selectedCategory}
+      />
     </div>
   );
 };

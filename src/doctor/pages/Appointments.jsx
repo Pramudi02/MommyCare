@@ -291,315 +291,383 @@ const Appointments = () => {
   return (
     <div className="appointments-page">
       <div className="appointments-header">
-        <div className="appointments-header__left">
-          <h1>Appointment Management</h1>
-          <p>Schedule and manage patient appointments</p>
+        <h1>Appointment Management</h1>
+        <p>Schedule and manage patient appointments</p>
+        <div className="doctor-dashboard-header-decoration"></div>
+      </div>
+
+      {/* Statistics Cards - Matching dashboard exactly */}
+      <div className="appointments-stats">
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
+            <span>📅</span>
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.length}</h3>
+            <p>Total Appointments</p>
+          </div>
         </div>
-        <div className="appointments-header__right">
-          <button className="new-appointment-btn">
-            <span>➕</span>
-            New Appointment
-          </button>
-          <div className="view-toggle">
-            <button 
-              className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
-              onClick={() => setViewMode('calendar')}
-            >
-              📅 Calendar
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              📋 List
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'schedule' ? 'active' : ''}`}
-              onClick={() => setViewMode('schedule')}
-            >
-              ⏰ Schedule
-            </button>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#2196F3" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
+            <span>✅</span>
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Confirmed').length}</h3>
+            <p>Confirmed</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#FF9800" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
+            <span>⏳</span>
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Pending').length}</h3>
+            <p>Pending</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#F44336" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
+            <span>🚨</span>
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.priority === 'Urgent').length}</h3>
+            <p>Urgent Cases</p>
           </div>
         </div>
       </div>
 
-      {viewMode === 'calendar' && (
-        /* Calendar View */
-        <div className="calendar-view">
-          <div className="calendar-header">
-            <button className="calendar-nav-btn" onClick={() => navigateMonth(-1)}>‹</button>
-            <h2>{getMonthName(selectedDate)}</h2>
-            <button className="calendar-nav-btn" onClick={() => navigateMonth(1)}>›</button>
+      <div className="appointments-content">
+        {/* Left Column */}
+        <div className="appointments-left">
+          {/* View Toggle Controls */}
+          <div className="appointments-section">
+            <div className="appointments-section-header">
+              <h2>Appointment Views</h2>
+            </div>
+            <div className="view-toggle">
+              <button 
+                className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
+                onClick={() => setViewMode('calendar')}
+              >
+                📅 Calendar
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                📋 List
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'schedule' ? 'active' : ''}`}
+                onClick={() => setViewMode('schedule')}
+              >
+                ⏰ Schedule
+              </button>
+            </div>
           </div>
 
-          <div className="calendar-grid">
-            <div className="calendar-weekdays">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="weekday">{day}</div>
-              ))}
-            </div>
-            
-            <div className="calendar-days">
-              {generateCalendarDays().map((date, index) => {
-                const dayAppointments = getAppointmentsForDate(date);
-                const isCurrentMonth = date.getMonth() === selectedDate.getMonth();
-                
-                return (
-                  <div 
-                    key={index} 
-                    className={`calendar-day ${isToday(date) ? 'today' : ''} ${isSelected(date) ? 'selected' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
-                    onClick={() => handleDateClick(date)}
-                  >
-                    <span className="day-number">{date.getDate()}</span>
-                    {dayAppointments.length > 0 && (
-                      <div className="appointment-indicators">
-                        {dayAppointments.slice(0, 3).map((apt, aptIndex) => (
-                          <div 
-                            key={aptIndex}
-                            className="appointment-dot"
-                            style={{ backgroundColor: getPriorityColor(apt.priority) }}
-                            title={`${apt.patient} - ${apt.type}`}
-                          />
-                        ))}
-                        {dayAppointments.length > 3 && (
-                          <span className="more-appointments">+{dayAppointments.length - 3}</span>
-                        )}
+          {viewMode === 'calendar' && (
+            /* Calendar View */
+            <div className="appointments-section">
+              <div className="appointments-section-header">
+                <h2>Calendar View</h2>
+                <button className="appointments-view-all-btn">New Appointment</button>
+              </div>
+              <div className="calendar-view">
+                <div className="calendar-header">
+                  <button className="calendar-nav-btn" onClick={() => navigateMonth(-1)}>‹</button>
+                  <h2>{getMonthName(selectedDate)}</h2>
+                  <button className="calendar-nav-btn" onClick={() => navigateMonth(1)}>›</button>
+                </div>
+
+                <div className="calendar-grid">
+                  <div className="calendar-weekdays">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="weekday">{day}</div>
+                    ))}
+                  </div>
+                  
+                  <div className="calendar-days">
+                    {generateCalendarDays().map((date, index) => {
+                      const dayAppointments = getAppointmentsForDate(date);
+                      const isCurrentMonth = date.getMonth() === selectedDate.getMonth();
+                      
+                      return (
+                        <div 
+                          key={index} 
+                          className={`calendar-day ${isToday(date) ? 'today' : ''} ${isSelected(date) ? 'selected' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
+                          onClick={() => handleDateClick(date)}
+                        >
+                          <span className="day-number">{date.getDate()}</span>
+                          {dayAppointments.length > 0 && (
+                            <div className="appointment-indicators">
+                              {dayAppointments.slice(0, 3).map((apt, aptIndex) => (
+                                <div 
+                                  key={aptIndex}
+                                  className="appointment-dot"
+                                  style={{ backgroundColor: getPriorityColor(apt.priority) }}
+                                  title={`${apt.patient} - ${apt.type}`}
+                                />
+                              ))}
+                              {dayAppointments.length > 3 && (
+                                <span className="more-appointments">+{dayAppointments.length - 3}</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Date Appointments */}
+                <div className="selected-date-appointments">
+                  <h3>Appointments for {selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}</h3>
+                  
+                  <div className="appointments-list">
+                    {getAppointmentsForDate(selectedDate).map(appointment => (
+                      <div 
+                        key={appointment.id} 
+                        className="appointment-item"
+                        onClick={() => handleAppointmentClick(appointment)}
+                      >
+                        <div className="appointment-time">
+                          {formatTime(appointment.time)}
+                          <span className="duration">({appointment.duration} min)</span>
+                        </div>
+                        <div className="appointment-details">
+                          <h4>{appointment.patient}</h4>
+                          <p>{appointment.type}</p>
+                          <p className="notes">{appointment.notes}</p>
+                        </div>
+                        <div className="appointment-status">
+                          <span 
+                            className="status-badge"
+                            style={{ backgroundColor: getStatusColor(appointment.status) }}
+                          >
+                            {appointment.status}
+                          </span>
+                          <span 
+                            className="priority-badge"
+                            style={{ backgroundColor: getPriorityColor(appointment.priority) }}
+                          >
+                            {appointment.priority}
+                          </span>
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                );
-              })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column */}
+        <div className="appointments-right">
+          {/* Quick Actions */}
+          <div className="appointments-section">
+            <h2>Quick Actions</h2>
+            <div className="doctor-quick-actions">
+              <button className="doctor-quick-action-btn">
+                <span className="doctor-quick-action-icon">➕</span>
+                <span>Add New Patient</span>
+              </button>
+              <button className="doctor-quick-action-btn">
+                <span className="doctor-quick-action-icon">📅</span>
+                <span>Schedule Appointment</span>
+              </button>
+              <button className="doctor-quick-action-btn">
+                <span className="doctor-quick-action-icon">💊</span>
+                <span>Write Prescription</span>
+              </button>
+              <button className="doctor-quick-action-btn">
+                <span className="doctor-quick-action-icon">📊</span>
+                <span>View Reports</span>
+              </button>
             </div>
           </div>
 
-          {/* Selected Date Appointments */}
-          <div className="selected-date-appointments">
-            <h3>Appointments for {selectedDate.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}</h3>
-            
-            <div className="appointments-list">
-              {getAppointmentsForDate(selectedDate).map(appointment => (
-                <div 
-                  key={appointment.id} 
-                  className="appointment-item"
-                  onClick={() => handleAppointmentClick(appointment)}
-                >
-                  <div className="appointment-time">
-                    {formatTime(appointment.time)}
-                    <span className="duration">({appointment.duration} min)</span>
-                  </div>
-                  <div className="appointment-details">
+          {/* Today's Appointments Summary */}
+          <div className="appointments-section">
+            <div className="appointments-section-header">
+              <h2>Today's Appointments</h2>
+              <button className="appointments-view-all-btn">View All</button>
+            </div>
+            <div className="doctor-appointments-list">
+              {appointments.slice(0, 4).map(appointment => (
+                <div key={appointment.id} className="doctor-appointment-item">
+                  <div className="doctor-appointment-time">{formatTime(appointment.time)}</div>
+                  <div className="doctor-appointment-details">
                     <h4>{appointment.patient}</h4>
                     <p>{appointment.type}</p>
-                    <p className="notes">{appointment.notes}</p>
                   </div>
-                  <div className="appointment-status">
-                    <span 
-                      className="status-badge"
-                      style={{ backgroundColor: getStatusColor(appointment.status) }}
-                    >
-                      {appointment.status}
-                    </span>
-                    <span 
-                      className="priority-badge"
-                      style={{ backgroundColor: getPriorityColor(appointment.priority) }}
-                    >
-                      {appointment.priority}
-                    </span>
+                  <div className={`doctor-appointment-status ${appointment.status.toLowerCase()}`}>
+                    {appointment.status}
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {viewMode === 'list' && (
         /* List View */
-        <div className="list-view">
-          <div className="list-controls">
-            <div className="date-filter">
-              <label>Filter by Date:</label>
-              <input 
-                type="date" 
-                value={selectedDate.toISOString().split('T')[0]}
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              />
-            </div>
+        <div className="appointments-section">
+          <div className="appointments-section-header">
+            <h2>List View</h2>
+            <button className="appointments-view-all-btn">New Appointment</button>
           </div>
-
-          <div className="appointments-table">
-            <div className="table-header">
-              <div className="header-cell">Time</div>
-              <div className="header-cell">Patient</div>
-              <div className="header-cell">Type</div>
-              <div className="header-cell">Duration</div>
-              <div className="header-cell">Status</div>
-              <div className="header-cell">Priority</div>
-              <div className="header-cell">Actions</div>
+          <div className="list-view">
+            <div className="list-controls">
+              <div className="date-filter">
+                <label>Filter by Date:</label>
+                <input 
+                  type="date" 
+                  value={selectedDate.toISOString().split('T')[0]}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                />
+              </div>
             </div>
-            
-            {appointments
-              .filter(apt => apt.date === selectedDate.toISOString().split('T')[0])
-              .sort((a, b) => a.time.localeCompare(b.time))
-              .map(appointment => (
-                <div key={appointment.id} className="table-row">
-                  <div className="table-cell time-cell">
-                    {formatTime(appointment.time)}
-                    <span className="duration">({appointment.duration} min)</span>
+
+            <div className="appointments-table">
+              <div className="table-header">
+                <div className="header-cell">Time</div>
+                <div className="header-cell">Patient</div>
+                <div className="header-cell">Type</div>
+                <div className="header-cell">Duration</div>
+                <div className="header-cell">Status</div>
+                <div className="header-cell">Priority</div>
+                <div className="header-cell">Actions</div>
+              </div>
+              
+              {appointments
+                .filter(apt => apt.date === selectedDate.toISOString().split('T')[0])
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map(appointment => (
+                  <div key={appointment.id} className="table-row">
+                    <div className="table-cell time-cell">
+                      {formatTime(appointment.time)}
+                      <span className="duration">({appointment.duration} min)</span>
+                    </div>
+                    <div className="table-cell patient-cell">
+                      <img src={appointment.image} alt={appointment.patient} />
+                      <span>{appointment.patient}</span>
+                    </div>
+                    <div className="table-cell">{appointment.type}</div>
+                    <div className="table-cell">{appointment.duration} min</div>
+                    <div className="table-cell">
+                      <span 
+                        className="status-badge"
+                        style={{ backgroundColor: getStatusColor(appointment.status) }}
+                      >
+                        {appointment.status}
+                      </span>
+                    </div>
+                    <div className="table-cell">
+                      <span 
+                        className="priority-badge"
+                        style={{ backgroundColor: getPriorityColor(appointment.priority) }}
+                      >
+                        {appointment.priority}
+                      </span>
+                    </div>
+                    <div className="table-cell actions-cell">
+                      <button className="action-btn view-btn">👁️</button>
+                      <button className="action-btn edit-btn">✏️</button>
+                      <button className="action-btn delete-btn">🗑️</button>
+                    </div>
                   </div>
-                  <div className="table-cell patient-cell">
-                    <img src={appointment.image} alt={appointment.patient} />
-                    <span>{appointment.patient}</span>
-                  </div>
-                  <div className="table-cell">{appointment.type}</div>
-                  <div className="table-cell">{appointment.duration} min</div>
-                  <div className="table-cell">
-                    <span 
-                      className="status-badge"
-                      style={{ backgroundColor: getStatusColor(appointment.status) }}
-                    >
-                      {appointment.status}
-                    </span>
-                  </div>
-                  <div className="table-cell">
-                    <span 
-                      className="priority-badge"
-                      style={{ backgroundColor: getPriorityColor(appointment.priority) }}
-                    >
-                      {appointment.priority}
-                    </span>
-                  </div>
-                  <div className="table-cell actions-cell">
-                    <button className="action-btn view-btn">👁️</button>
-                    <button className="action-btn edit-btn">✏️</button>
-                    <button className="action-btn delete-btn">🗑️</button>
-                  </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         </div>
       )}
 
       {viewMode === 'schedule' && (
         /* Schedule View */
-        <div className="schedule-view">
-          <div className="schedule-header">
-            <div className="schedule-view-toggle">
-              <button 
-                className={`schedule-toggle-btn ${scheduleViewMode === 'day' ? 'active' : ''}`}
-                onClick={() => setScheduleViewMode('day')}
-              >
-                Day
-              </button>
-              <button 
-                className={`schedule-toggle-btn ${scheduleViewMode === 'week' ? 'active' : ''}`}
-                onClick={() => setScheduleViewMode('week')}
-              >
-                Week
-              </button>
-              <button 
-                className={`schedule-toggle-btn ${scheduleViewMode === 'month' ? 'active' : ''}`}
-                onClick={() => setScheduleViewMode('month')}
-              >
-                Month
-              </button>
-            </div>
-            <div className="schedule-navigation">
-              <button className="schedule-nav-btn" onClick={() => navigateSchedule(-1)}>‹</button>
-              <h3>
-                {scheduleViewMode === 'day' && selectedDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-                {scheduleViewMode === 'week' && `Week of ${getWeekDays()[0].toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric' 
-                })} - ${getWeekDays()[6].toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}`}
-                {scheduleViewMode === 'month' && selectedDate.toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  year: 'numeric' 
-                })}
-              </h3>
-              <button className="schedule-nav-btn" onClick={() => navigateSchedule(1)}>›</button>
-            </div>
+        <div className="appointments-section">
+          <div className="appointments-section-header">
+            <h2>Schedule View</h2>
+            <button className="appointments-view-all-btn">New Appointment</button>
           </div>
-
-          {/* Schedule Content */}
-          <div className="schedule-content">
-            {scheduleViewMode === 'day' && (
-              <div className="day-schedule">
-                <div className="time-column">
-                  {timeSlots.map(time => (
-                    <div key={time} className="time-slot-header">
-                      {formatTime(time)}
-                    </div>
-                  ))}
-                </div>
-                <div className="schedule-grid">
-                  {timeSlots.map(time => {
-                    const appointment = getAppointmentForTimeSlot(selectedDate, time);
-                    return (
-                      <div 
-                        key={time} 
-                        className={`schedule-cell ${appointment ? 'has-appointment' : 'empty'}`}
-                        onClick={() => handleTimeSlotClick(selectedDate, time)}
-                      >
-                        {appointment && (
-                          <div className="schedule-appointment" style={{ borderLeftColor: getStatusColor(appointment.status) }}>
-                            <div className="schedule-appointment-time">{formatTime(appointment.time)}</div>
-                            <div className="schedule-appointment-patient">{appointment.patient}</div>
-                            <div className="schedule-appointment-type">{appointment.type}</div>
-                            <div className="schedule-appointment-status" style={{ backgroundColor: getStatusColor(appointment.status) }}>
-                              {appointment.status}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+          <div className="schedule-view">
+            <div className="schedule-header">
+              <div className="schedule-view-toggle">
+                <button 
+                  className={`schedule-toggle-btn ${scheduleViewMode === 'day' ? 'active' : ''}`}
+                  onClick={() => setScheduleViewMode('day')}
+                >
+                  Day
+                </button>
+                <button 
+                  className={`schedule-toggle-btn ${scheduleViewMode === 'week' ? 'active' : ''}`}
+                  onClick={() => setScheduleViewMode('week')}
+                >
+                  Week
+                </button>
+                <button 
+                  className={`schedule-toggle-btn ${scheduleViewMode === 'month' ? 'active' : ''}`}
+                  onClick={() => setScheduleViewMode('month')}
+                >
+                  Month
+                </button>
               </div>
-            )}
+              <div className="schedule-navigation">
+                <button className="schedule-nav-btn" onClick={() => navigateSchedule(-1)}>‹</button>
+                <h3>
+                  {scheduleViewMode === 'day' && selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                  {scheduleViewMode === 'week' && `Week of ${getWeekDays()[0].toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })} - ${getWeekDays()[6].toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })}`}
+                  {scheduleViewMode === 'month' && selectedDate.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                  })}
+                </h3>
+                <button className="schedule-nav-btn" onClick={() => navigateSchedule(1)}>›</button>
+              </div>
+            </div>
 
-            {scheduleViewMode === 'week' && (
-              <div className="week-schedule">
-                <div className="time-column">
-                  <div className="time-header">Time</div>
-                  {timeSlots.map(time => (
-                    <div key={time} className="time-slot-header">
-                      {formatTime(time)}
-                    </div>
-                  ))}
-                </div>
-                {getWeekDays().map(day => (
-                  <div key={day.toISOString()} className="day-column">
-                    <div className="day-header">
-                      <div className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                      <div className={`day-date ${isToday(day) ? 'today' : ''}`}>
-                        {day.getDate()}
+            {/* Schedule Content */}
+            <div className="schedule-content">
+              {scheduleViewMode === 'day' && (
+                <div className="day-schedule">
+                  <div className="time-column">
+                    {timeSlots.map(time => (
+                      <div key={time} className="time-slot-header">
+                        {formatTime(time)}
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                  <div className="schedule-grid">
                     {timeSlots.map(time => {
-                      const appointment = getAppointmentForTimeSlot(day, time);
+                      const appointment = getAppointmentForTimeSlot(selectedDate, time);
                       return (
                         <div 
                           key={time} 
                           className={`schedule-cell ${appointment ? 'has-appointment' : 'empty'}`}
-                          onClick={() => handleTimeSlotClick(day, time)}
+                          onClick={() => handleTimeSlotClick(selectedDate, time)}
                         >
                           {appointment && (
                             <div className="schedule-appointment" style={{ borderLeftColor: getStatusColor(appointment.status) }}>
+                              <div className="schedule-appointment-time">{formatTime(appointment.time)}</div>
                               <div className="schedule-appointment-patient">{appointment.patient}</div>
                               <div className="schedule-appointment-type">{appointment.type}</div>
                               <div className="schedule-appointment-status" style={{ backgroundColor: getStatusColor(appointment.status) }}>
@@ -611,47 +679,90 @@ const Appointments = () => {
                       );
                     })}
                   </div>
-                ))}
-              </div>
-            )}
-
-            {scheduleViewMode === 'month' && (
-              <div className="month-schedule">
-                <div className="month-weekdays">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="month-weekday">{day}</div>
-                  ))}
                 </div>
-                <div className="month-grid">
-                  {getMonthDays().map((day, index) => {
-                    const appointments = getScheduleAppointmentsForDate(day);
-                    return (
-                      <div 
-                        key={index} 
-                        className={`month-day ${isToday(day) ? 'today' : ''} ${!isCurrentMonth(day) ? 'other-month' : ''}`}
-                      >
-                        <div className="month-day-number">{day.getDate()}</div>
-                        {appointments.length > 0 && (
-                          <div className="month-appointments">
-                            {appointments.slice(0, 3).map((apt, aptIndex) => (
-                              <div 
-                                key={aptIndex}
-                                className="month-appointment-dot"
-                                style={{ backgroundColor: getStatusColor(apt.status) }}
-                                title={`${apt.patient} - ${apt.type}`}
-                              />
-                            ))}
-                            {appointments.length > 3 && (
-                              <span className="more-appointments">+{appointments.length - 3}</span>
+              )}
+
+              {scheduleViewMode === 'week' && (
+                <div className="week-schedule">
+                  <div className="time-column">
+                    <div className="time-header">Time</div>
+                    {timeSlots.map(time => (
+                      <div key={time} className="time-slot-header">
+                        {formatTime(time)}
+                      </div>
+                    ))}
+                  </div>
+                  {getWeekDays().map(day => (
+                    <div key={day.toISOString()} className="day-column">
+                      <div className="day-header">
+                        <div className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                        <div className={`day-date ${isToday(day) ? 'today' : ''}`}>
+                          {day.getDate()}
+                        </div>
+                      </div>
+                      {timeSlots.map(time => {
+                        const appointment = getAppointmentForTimeSlot(day, time);
+                        return (
+                          <div 
+                            key={time} 
+                            className={`schedule-cell ${appointment ? 'has-appointment' : 'empty'}`}
+                            onClick={() => handleTimeSlotClick(day, time)}
+                          >
+                            {appointment && (
+                              <div className="schedule-appointment" style={{ borderLeftColor: getStatusColor(appointment.status) }}>
+                                <div className="schedule-appointment-patient">{appointment.patient}</div>
+                                <div className="schedule-appointment-type">{appointment.type}</div>
+                                <div className="schedule-appointment-status" style={{ backgroundColor: getStatusColor(appointment.status) }}>
+                                  {appointment.status}
+                                </div>
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
+
+              {scheduleViewMode === 'month' && (
+                <div className="month-schedule">
+                  <div className="month-weekdays">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="month-weekday">{day}</div>
+                    ))}
+                  </div>
+                  <div className="month-grid">
+                    {getMonthDays().map((day, index) => {
+                      const appointments = getScheduleAppointmentsForDate(day);
+                      return (
+                        <div 
+                          key={index} 
+                          className={`month-day ${isToday(day) ? 'today' : ''} ${!isCurrentMonth(day) ? 'other-month' : ''}`}
+                        >
+                          <div className="month-day-number">{day.getDate()}</div>
+                          {appointments.length > 0 && (
+                            <div className="month-appointments">
+                              {appointments.slice(0, 3).map((apt, aptIndex) => (
+                                <div 
+                                  key={aptIndex}
+                                  className="month-appointment-dot"
+                                  style={{ backgroundColor: getStatusColor(apt.status) }}
+                                  title={`${apt.patient} - ${apt.type}`}
+                                />
+                              ))}
+                              {appointments.length > 3 && (
+                                <span className="more-appointments">+{appointments.length - 3}</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
