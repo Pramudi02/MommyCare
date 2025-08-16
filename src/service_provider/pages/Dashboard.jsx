@@ -17,7 +17,11 @@ import {
   HandHeart,
   BarChart3,
   MessageSquare,
-  Settings
+  Settings,
+  Baby,
+  Briefcase,
+  Droplets,
+  Car
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -100,28 +104,28 @@ const Dashboard = () => {
       sales: 45,
       revenue: '$4,049.55',
       rating: 4.8,
-      image: '👶'
+      icon: <Baby className="sp-product-icon" />
     },
     {
       name: 'Diaper Bag',
       sales: 38,
       revenue: '$1,729.00',
       rating: 4.6,
-      image: '👜'
+      icon: <Briefcase className="sp-product-icon" />
     },
     {
       name: 'Breast Pump',
       sales: 32,
       revenue: '$4,159.68',
       rating: 4.9,
-      image: '🍼'
+      icon: <Droplets className="sp-product-icon" />
     },
     {
       name: 'Baby Stroller',
       sales: 28,
       revenue: '$8,399.72',
       rating: 4.7,
-      image: '🚼'
+      icon: <Car className="sp-product-icon" />
     }
   ];
 
@@ -269,7 +273,9 @@ const Dashboard = () => {
             {topProducts.map((product, index) => (
               <div key={index} className="sp-product-item">
                 <div className="sp-product-left">
-                  <div className="sp-product-image">{product.image}</div>
+                  <div className="sp-product-icon-container">
+                    {product.icon}
+                  </div>
                   <div className="sp-product-info">
                     <div className="sp-product-name">{product.name}</div>
                     <div className="sp-product-rating">
