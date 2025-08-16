@@ -22,6 +22,7 @@ const doctorRoutes = require('./routes/doctor');
 const serviceProviderRoutes = require('./routes/serviceProvider');
 const appointmentRoutes = require('./routes/appointments');
 const messageRoutes = require('./routes/messages');
+const chatRoutes = require('./routes/chat');
 const aiRoutes = require('./routes/ai');
 
 // Import middleware
@@ -108,9 +109,16 @@ app.use('/api/doctor', protect, doctorRoutes);
 app.use('/api/service-provider', protect, serviceProviderRoutes);
 app.use('/api/appointments', protect, appointmentRoutes);
 app.use('/api/messages', protect, messageRoutes);
+app.use('/api/chat', protect, chatRoutes);
 app.use('/api/ai', protect, aiRoutes);
 
-// Socket.io connection handling
+// Import chat socket handler
+const { initializeChatSocket } = require('./socket/chatSocket');
+
+// Initialize chat socket functionality
+initializeChatSocket(io);
+
+// Legacy socket handlers for backward compatibility
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 

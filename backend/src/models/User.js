@@ -203,6 +203,25 @@ const UserSchema = new mongoose.Schema({
     timezone: { type: String, default: 'UTC' }
   },
 
+  // Chat-related fields
+  isOnline: {
+    type: Boolean,
+    default: false
+  },
+  status: {
+    type: String,
+    enum: ['online', 'away', 'offline'],
+    default: 'offline'
+  },
+  lastSeen: {
+    type: Date,
+    default: Date.now
+  },
+  specialty: {
+    type: String,
+    default: ''
+  },
+
   // Security
   passwordResetToken: String,
   passwordResetExpire: Date,
@@ -234,6 +253,11 @@ UserSchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.lastName}`;
 });
 
+// Virtual for name (alias for fullName for chat compatibility)
+UserSchema.virtual('name').get(function() {
+  return `${this.firstName} ${this.lastName}`;
+});
+
 // Virtual for age
 UserSchema.virtual('age').get(function() {
   if (!this.dateOfBirth) return null;
@@ -249,6 +273,11 @@ UserSchema.virtual('age').get(function() {
 
 // Index for search
 UserSchema.index({ firstName: 'text', lastName: 'text', email: 'text' });
+
+// Index for chat functionality
+UserSchema.index({ isOnline: 1, lastSeen: -1 });
+UserSchema.index({ status: 1 });
+UserSchema.index({ specialty: 1 });
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
