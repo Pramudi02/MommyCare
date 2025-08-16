@@ -33,10 +33,12 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard__header">
-        <h1>Welcome back, Dr. Sarah Johnson</h1>
-        <p>Here's what's happening today in your practice</p>
-      </div>
+     
+<div className="dashboard__header">
+  <h1>Welcome back, Dr. Sarah Johnson</h1>
+  <p>Here's what's happening today in your practice</p>
+  <div className="dashboard__header-decoration"></div>
+</div>
 
       {/* Statistics Cards */}
       <div className="dashboard__stats">

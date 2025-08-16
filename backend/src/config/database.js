@@ -1,104 +1,138 @@
 const mongoose = require('mongoose');
 
+// Database connection instances for all 5 databases
+let authConnection = null;
+let adminConnection = null;
+let localConnection = null;
+let testConnection = null;
+let configConnection = null;
+
 const connectDB = async () => {
   try {
-    // Ensure we're connecting to the mommycare database
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mommycare';
+    const baseUri = process.env.MONGODB_URI;
     
-    // If the URI doesn't specify a database, append /mommycare
-    const finalURI = mongoURI.includes('/mommycare') ? mongoURI : `${mongoURI}/mommycare`;
+    if (!baseUri) {
+      throw new Error('MONGODB_URI environment variable is required');
+    }
     
-    const conn = await mongoose.connect(finalURI, {
+    // Enhanced connection options for Node.js 22 + MongoDB Atlas compatibility
+    const connectionOptions = {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
-    });
-
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    console.log(`📊 Database: ${conn.connection.name}`);
+      retryWrites: true,
+      w: 'majority',
+      // SSL/TLS options for Node.js 22 compatibility
+      tls: true,
+      tlsAllowInvalidCertificates: true,
+      tlsAllowInvalidHostnames: true,
+      // Additional options for stability
+      bufferCommands: true,
+      autoIndex: false
+    };
     
-    // Create chat collections if they don't exist
-    await createChatCollections();
+    console.log('🔌 Connecting to all databases...');
     
-    // Handle connection events
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB connection error:', err);
-    });
+    // 1. Connect to Auth database (for user authentication)
+    const authDbUri = baseUri.endsWith('/') 
+      ? `${baseUri}Auth` 
+      : `${baseUri}/Auth`;
+    
+    authConnection = await mongoose.createConnection(authDbUri, connectionOptions);
+    console.log(`✅ Auth Database Connected: ${authConnection.host}`);
+    console.log(`📊 Auth Database: ${authConnection.name}`);
+    
+    // 2. Connect to Admin database (for system administration)
+    const adminDbUri = baseUri.endsWith('/') 
+      ? `${baseUri}admin` 
+      : `${baseUri}/admin`;
+    
+    adminConnection = await mongoose.createConnection(adminDbUri, connectionOptions);
+    console.log(`✅ Admin Database Connected: ${adminConnection.host}`);
+    console.log(`📊 Admin Database: ${adminConnection.name}`);
+    
+    // 3. Connect to Local database (for development)
+    const localDbUri = baseUri.endsWith('/') 
+      ? `${baseUri}local` 
+      : `${baseUri}/local`;
+    
+    localConnection = await mongoose.createConnection(localDbUri, connectionOptions);
+    console.log(`✅ Local Database Connected: ${localConnection.host}`);
+    console.log(`📊 Local Database: ${localConnection.name}`);
+    
+    // 4. Connect to Test database (for testing)
+    const testDbUri = baseUri.endsWith('/') 
+      ? `${baseUri}test` 
+      : `${baseUri}/test`;
+    
+    testConnection = await mongoose.createConnection(testDbUri, connectionOptions);
+    console.log(`✅ Test Database Connected: ${testConnection.host}`);
+    console.log(`📊 Test Database: ${testConnection.name}`);
+    
+    // 5. Connect to Config database (for MongoDB configuration)
+    const configDbUri = baseUri.endsWith('/') 
+      ? `${baseUri}config` 
+      : `${baseUri}/config`;
+    
+    configConnection = await mongoose.createConnection(configDbUri, connectionOptions);
+    console.log(`✅ Config Database Connected: ${configConnection.host}`);
+    console.log(`📊 Config Database: ${configConnection.name}`);
+    
+    // Handle connection events for all connections
+    [authConnection, adminConnection, localConnection, testConnection, configConnection].forEach(conn => {
+      if (conn) {
+        conn.on('error', (err) => {
+          console.error(`❌ Database connection error (${conn.name}):`, err.message);
+        });
 
-    mongoose.connection.on('disconnected', () => {
-      console.log('⚠️ MongoDB disconnected');
-    });
+        conn.on('disconnected', () => {
+          console.log(`⚠️ Database disconnected: ${conn.name}`);
+        });
 
-    mongoose.connection.on('reconnected', () => {
-      console.log('🔄 MongoDB reconnected');
+        conn.on('reconnected', () => {
+          console.log(`🔄 Database reconnected: ${conn.name}`);
+        });
+      }
     });
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed through app termination');
-      process.exit(0);
+      try {
+        await Promise.all([
+          authConnection?.close(),
+          adminConnection?.close(),
+          localConnection?.close(),
+          testConnection?.close(),
+          configConnection?.close()
+        ].filter(Boolean));
+        console.log('All MongoDB connections closed through app termination');
+        process.exit(0);
+      } catch (error) {
+        console.error('Error closing connections:', error);
+        process.exit(1);
+      }
     });
 
+    console.log('🎉 All 5 databases connected successfully!');
+
   } catch (error) {
-    console.error('❌ Error connecting to MongoDB:', error.message);
-    process.exit(1);
+    console.error('❌ Database connection failed:', error.message);
+    throw error;
   }
 };
 
-// Function to create chat collections if they don't exist
-const createChatCollections = async () => {
-  try {
-    const db = mongoose.connection.db;
-    
-    // Check if collections exist
-    const collections = await db.listCollections().toArray();
-    const collectionNames = collections.map(col => col.name);
-    
-    // Create Chat collection if it doesn't exist
-    if (!collectionNames.includes('chats')) {
-      await db.createCollection('chats');
-      console.log('✅ Created "chats" collection');
-      
-      // Create indexes for better performance
-      const chatCollection = db.collection('chats');
-      await chatCollection.createIndex({ participants: 1 });
-      await chatCollection.createIndex({ conversationId: 1 });
-      await chatCollection.createIndex({ lastActivity: -1 });
-      console.log('✅ Created indexes for "chats" collection');
-    }
-    
-    // Create Message collection if it doesn't exist
-    if (!collectionNames.includes('messages')) {
-      await db.createCollection('messages');
-      console.log('✅ Created "messages" collection');
-      
-      // Create indexes for better performance
-      const messageCollection = db.collection('messages');
-      await messageCollection.createIndex({ sender: 1, recipient: 1, createdAt: -1 });
-      await messageCollection.createIndex({ recipient: 1, read: 1 });
-      console.log('✅ Created indexes for "messages" collection');
-    }
-    
-    // Create User collection if it doesn't exist (for chat-related fields)
-    if (!collectionNames.includes('users')) {
-      await db.createCollection('users');
-      console.log('✅ Created "users" collection');
-      
-      // Create indexes for chat functionality
-      const userCollection = db.collection('users');
-      await userCollection.createIndex({ isOnline: 1, lastSeen: -1 });
-      await userCollection.createIndex({ status: 1 });
-      await userCollection.createIndex({ specialty: 1 });
-      console.log('✅ Created indexes for "users" collection');
-    }
-    
-    console.log('🎯 Chat collections are ready!');
-    
-  } catch (error) {
-    console.error('⚠️ Warning: Could not create chat collections:', error.message);
-    console.log('💡 Collections may already exist or will be created automatically when first used');
-  }
-};
+// Get database connections
+const getAuthConnection = () => authConnection;
+const getAdminConnection = () => adminConnection;
+const getLocalConnection = () => localConnection;
+const getTestConnection = () => testConnection;
+const getConfigConnection = () => configConnection;
 
-module.exports = connectDB;
+module.exports = {
+  connectDB,
+  getAuthConnection,
+  getAdminConnection,
+  getLocalConnection,
+  getTestConnection,
+  getConfigConnection
+};

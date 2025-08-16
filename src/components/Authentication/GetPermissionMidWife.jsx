@@ -180,31 +180,13 @@ const GetPermissionMidWife = () => {
     
     try {
       // TODO: Replace with actual API call
-      const formDataToSend = new FormData();
-      
-      // Append all form data
-      Object.keys(formData).forEach(key => {
-        if (key === 'location') {
-          formDataToSend.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'services') {
-          formDataToSend.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'documents') {
-          Object.keys(formData.documents).forEach(docKey => {
-            if (formData.documents[docKey]) {
-              formDataToSend.append(`documents.${docKey}`, formData.documents[docKey]);
-            }
-          });
-        } else {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
-
       const response = await fetch('http://localhost:5000/api/midwife/permission-request', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
         },
-        body: formDataToSend
+        body: JSON.stringify(formData)
       });
 
       const data = await response.json();
