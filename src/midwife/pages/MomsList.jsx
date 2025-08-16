@@ -117,7 +117,12 @@ const MomsList = () => {
 
   return (
     <div className="moms-list">
-      <div className="moms-list__header">
+      <div className="moms-list-container">
+        <div className="moms-list-content">
+          <div className="moms-list__header">
+        <div className="moms-list__header-icon">
+          <FiUser className="w-6 h-6" />
+        </div>
         <div className="moms-list__title">
           <h1>Moms Management</h1>
           <p>Manage and track all your pregnant moms</p>
@@ -336,6 +341,8 @@ const MomsList = () => {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 };

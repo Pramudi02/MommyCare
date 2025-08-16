@@ -61,8 +61,11 @@ const Settings = () => {
   return (
     <div className="settings-page">
       <div className="settings-header">
+        <div className="settings-header-icon">
+          <span style={{ fontSize: '1.5rem' }}>⚙️</span>
+        </div>
         <div className="settings-title">
-          <h1>⚙️ Settings</h1>
+          <h1>Settings</h1>
           <p>Manage your profile, preferences, and system settings</p>
         </div>
         <button className="save-btn" onClick={saveSettings}>

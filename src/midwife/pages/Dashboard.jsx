@@ -43,13 +43,18 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="dashboard">
-      <div className="dashboard__header">
-        <div className="dashboard__welcome">
+    <div className="midwife-dashboard-page">
+      <div className="midwife-dashboard-container">
+        <div className="midwife-dashboard">
+          <div className="midwife-dashboard__header">
+        <div className="midwife-dashboard__header-icon">
+          <FiUsers className="w-6 h-6" />
+        </div>
+        <div className="midwife-dashboard__welcome">
           <h1>Welcome back, Sarah</h1>
           <p>Here's what's happening with your moms today</p>
         </div>
-        <div className="dashboard__filter">
+        <div className="midwife-dashboard__filter">
           <select defaultValue="this-week">
             <option value="this-week">This Week</option>
             <option value="last-week">Last Week</option>
@@ -58,18 +63,18 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="dashboard__stats">
+      <div className="midwife-dashboard__stats">
         {stats.map((stat, index) => {
           const IconComponent = stat.icon;
           return (
-            <div key={index} className={`stat-card stat-card--${stat.color}`}>
-              <div className="stat-card__icon">
+            <div key={index} className={`midwife-stat-card midwife-stat-card--${stat.color}`}>
+              <div className="midwife-stat-card__icon">
                 <IconComponent size={24} />
               </div>
-              <div className="stat-card__content">
-                <h3 className="stat-card__title">{stat.title}</h3>
-                <div className="stat-card__value">{stat.value}</div>
-                <div className={`stat-card__change stat-card__change--${stat.change.includes('+') ? 'positive' : stat.change.includes('-') ? 'negative' : 'neutral'}`}>
+              <div className="midwife-stat-card__content">
+                <h3 className="midwife-stat-card__title">{stat.title}</h3>
+                <div className="midwife-stat-card__value">{stat.value}</div>
+                <div className={`midwife-stat-card__change midwife-stat-card__change--${stat.change.includes('+') ? 'positive' : stat.change.includes('-') ? 'negative' : 'neutral'}`}>
                   {stat.change}
                 </div>
               </div>
@@ -78,24 +83,24 @@ const Dashboard = () => {
         })}
       </div>
 
-      <div className="dashboard__main-content">
-        <div className="dashboard__left">
-          <div className="dashboard__section">
+      <div className="midwife-dashboard__main-content">
+        <div className="midwife-dashboard__left">
+          <div className="midwife-dashboard__section">
             <h2>Recent Activities</h2>
-            <div className="activities-list">
+            <div className="midwife-activities-list">
               {recentActivities.map((activity, index) => (
-                <div key={index} className={`activity-item activity-item--${activity.status}`}>
-                  <div className="activity-item__icon">
+                <div key={index} className={`midwife-activity-item midwife-activity-item--${activity.status}`}>
+                  <div className="midwife-activity-item__icon">
                     {activity.type === 'Appointment' && <FiCalendar size={16} />}
                     {activity.type === 'Medical Record' && <FiFileText size={16} />}
                     {activity.type === 'Emergency' && <FiAlertTriangle size={16} />}
                     {activity.type === 'Education' && <FiBookOpen size={16} />}
                   </div>
-                  <div className="activity-item__content">
-                    <p className="activity-item__description">{activity.description}</p>
-                    <span className="activity-item__time">{activity.time}</span>
+                  <div className="midwife-activity-item__content">
+                    <p className="midwife-activity-item__description">{activity.description}</p>
+                    <span className="midwife-activity-item__time">{activity.time}</span>
                   </div>
-                  <div className={`activity-item__status activity-item__status--${activity.status}`}>
+                  <div className={`midwife-activity-item__status midwife-activity-item__status--${activity.status}`}>
                     {activity.status}
                   </div>
                 </div>
@@ -103,73 +108,95 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="dashboard__section">
+          <div className="midwife-dashboard__section">
             <h2>Pregnancy Stages Overview</h2>
-            <div className="pregnancy-stages">
+            <div className="midwife-pregnancy-stages">
               {pregnancyStages.map((stage, index) => (
-                <div key={index} className="pregnancy-stage">
-                  <div className="pregnancy-stage__header">
+                <div key={index} className="midwife-pregnancy-stage">
+                  <div className="midwife-pregnancy-stage__header">
                     <h3>{stage.stage}</h3>
-                    <span className="pregnancy-stage__count">{stage.count} moms</span>
+                    <span className="midwife-pregnancy-stage__count">{stage.count} moms</span>
                   </div>
-                  <div className="pregnancy-stage__progress">
+                  <div className="midwife-pregnancy-stage__progress">
                     <div 
-                      className="pregnancy-stage__bar" 
+                      className="midwife-pregnancy-stage__bar" 
                       style={{ width: `${stage.percentage}%` }}
                     ></div>
                   </div>
-                  <span className="pregnancy-stage__percentage">{stage.percentage}%</span>
+                  <span className="midwife-pregnancy-stage__percentage">{stage.percentage}%</span>
                 </div>
               ))}
+            </div>
+            
+            <div className="midwife-dashboard-summary">
+              <h3>Weekly Summary</h3>
+              <div className="midwife-summary-stats">
+                <div className="midwife-summary-stat">
+                  <div className="midwife-summary-stat__value">12</div>
+                  <div className="midwife-summary-stat__label">New Appointments</div>
+                </div>
+                <div className="midwife-summary-stat">
+                  <div className="midwife-summary-stat__value">8</div>
+                  <div className="midwife-summary-stat__label">Completed Visits</div>
+                </div>
+                <div className="midwife-summary-stat">
+                  <div className="midwife-summary-stat__value">3</div>
+                  <div className="midwife-summary-stat__label">Emergency Calls</div>
+                </div>
+                <div className="midwife-summary-stat">
+                  <div className="midwife-summary-stat__value">95%</div>
+                  <div className="midwife-summary-stat__label">Satisfaction Rate</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="dashboard__right">
-          <div className="dashboard__section">
+        <div className="midwife-dashboard__right">
+          <div className="midwife-dashboard__section">
             <h2>Quick Actions</h2>
-            <div className="quick-actions">
+            <div className="midwife-quick-actions">
               {quickActions.map((action, index) => {
                 const IconComponent = action.icon;
                 return (
-                  <button key={index} className={`quick-action quick-action--${action.color}`}>
-                    <div className="quick-action__icon">
+                  <button key={index} className={`midwife-quick-action midwife-quick-action--${action.color}`}>
+                    <div className="midwife-quick-action__icon">
                       <IconComponent size={20} />
                     </div>
-                    <span className="quick-action__title">{action.title}</span>
+                    <span className="midwife-quick-action__title">{action.title}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="dashboard__section">
+          <div className="midwife-dashboard__section">
             <h2>Upcoming Appointments</h2>
-            <div className="appointments-list">
+            <div className="midwife-appointments-list">
               {upcomingAppointments.map((appointment, index) => (
-                <div key={index} className="appointment-item">
-                  <div className="appointment-item__time">{appointment.time}</div>
-                  <div className="appointment-item__content">
-                    <h4 className="appointment-item__name">{appointment.name}</h4>
-                    <p className="appointment-item__type">{appointment.type}</p>
+                <div key={index} className="midwife-appointment-item">
+                  <div className="midwife-appointment-item__time">{appointment.time}</div>
+                  <div className="midwife-appointment-item__content">
+                    <h4 className="midwife-appointment-item__name">{appointment.name}</h4>
+                    <p className="midwife-appointment-item__type">{appointment.type}</p>
                   </div>
-                  <button className="appointment-item__action">View</button>
+                  <button className="midwife-appointment-item__action">View</button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="dashboard__section">
+          <div className="midwife-dashboard__section">
             <h2>Emergency Contacts</h2>
-            <div className="emergency-contacts">
+            <div className="midwife-emergency-contacts">
               {emergencyContacts.map((contact, index) => (
-                <div key={index} className="emergency-contact">
-                  <div className="emergency-contact__info">
-                    <h4 className="emergency-contact__name">{contact.name}</h4>
-                    <p className="emergency-contact__role">{contact.role}</p>
-                    <p className="emergency-contact__phone">{contact.phone}</p>
+                <div key={index} className="midwife-emergency-contact">
+                  <div className="midwife-emergency-contact__info">
+                    <h4 className="midwife-emergency-contact__name">{contact.name}</h4>
+                    <p className="midwife-emergency-contact__role">{contact.role}</p>
+                    <p className="midwife-emergency-contact__phone">{contact.phone}</p>
                   </div>
-                  <button className="emergency-contact__call">
+                  <button className="midwife-emergency-contact__call">
                     <FiPhone size={16} />
                   </button>
                 </div>
@@ -179,6 +206,8 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+  </div>
+</div>
   );
 };
 

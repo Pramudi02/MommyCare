@@ -8,7 +8,7 @@ const menuItems = [
   { name: 'Appointments', path: '/midwife/appointments' },
   { name: 'Medical Records', path: '/midwife/medical-records' },
   { name: 'Analytics', path: '/midwife/analytics' },
-  { name: 'Documentaries', path: '/midwife/documentaries' },
+  { name: 'Articles', path: '/midwife/articles' },
   { name: 'Emergency', path: '/midwife/emergency' }
 ];
 

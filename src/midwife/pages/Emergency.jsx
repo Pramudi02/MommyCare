@@ -45,8 +45,11 @@ const Emergency = () => {
   return (
     <div className="emergency-page">
       <div className="emergency-header">
+        <div className="emergency-header-icon">
+          <FiAlertTriangle className="w-6 h-6" />
+        </div>
         <div className="emergency-title">
-          <h1><FiAlertTriangle style={{ verticalAlign: 'middle' }} /> Emergency Management</h1>
+          <h1>Emergency Management</h1>
           <p>Incoming alerts from moms and critical protocols</p>
         </div>
         <div className="emergency-status">

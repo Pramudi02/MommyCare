@@ -7,27 +7,89 @@
 }
 
 .emergency-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   margin-bottom: 30px;
-  padding: 20px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-  color: white;
+  padding: 3rem 2rem;
+  background-image: url('/images/emergency.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+}
+
+/* Add subtle pattern overlay */
+.emergency-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Darker overlay for emergency */
+  pointer-events: none;
+}
+
+.emergency-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4) 0%, rgba(220, 38, 38, 0.4) 100%);
+  pointer-events: none;
+}
+
+.emergency-title {
+  position: relative;
+  z-index: 1;
 }
 
 .emergency-title h1 {
-  margin: 0 0 5px 0;
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
+  color: white !important;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .emergency-title p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Add an icon to the header */
+.emergency-header-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.emergency-header-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.emergency-status {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
 }
 
 .emergency-status {

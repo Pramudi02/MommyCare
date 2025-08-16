@@ -1,541 +1,823 @@
-.reports-page {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #f8fafc;
+.analytics-page {
   min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
 }
 
-.reports-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+.analytics-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-.reports-title h1 {
-  margin: 0 0 5px 0;
-  color: #1e293b;
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.reports-title p {
-  margin: 0;
-  color: #64748b;
-  font-size: 1rem;
-}
-
-.date-range-selector {
-  padding: 10px 15px;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  background: white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.date-range-selector:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.reports-content {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 20px;
-}
-
-.report-types {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  height: fit-content;
-}
-
-.report-types h3 {
-  margin: 0 0 20px 0;
-  color: #1e293b;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 10px;
-}
-
-.report-grid {
+.analytics-content {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1.5rem;
 }
 
-.report-card {
+.analytics-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 3rem 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.analytics-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(102, 126, 234, 0.8);
+  border-radius: 1rem;
+  z-index: 1;
+}
+
+.analytics-header-icon {
+  position: relative;
+  z-index: 2;
+  width: 4rem;
+  height: 4rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  justify-content: center;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.analytics-header-icon svg {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.analytics-title {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.analytics-title h1 {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.analytics-title p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.analytics-controls {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
+}
+
+.analytics-date-selector {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.analytics-date-selector option {
+  background: #1f2937;
+  color: white;
+}
+
+/* Report Types Section */
+.analytics-report-types {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.analytics-report-types h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+.analytics-report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.analytics-report-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #f8fafc;
-}
-
-.report-card:hover {
-  border-color: #667eea;
   background: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.report-card.active {
+.analytics-report-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.analytics-report-card.analytics-active {
   border-color: #667eea;
   background: linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
-.report-icon {
-  font-size: 1.5rem;
-  width: 50px;
-  height: 50px;
+.analytics-report-icon {
+  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 
-.report-info {
+.analytics-report-info {
   flex: 1;
 }
 
-.report-info h4 {
-  margin: 0 0 5px 0;
-  color: #1e293b;
-  font-size: 1rem;
+.analytics-report-info h4 {
+  font-size: 1.1rem;
   font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
 }
 
-.report-info p {
+.analytics-report-info p {
+  font-size: 0.9rem;
+  color: #6b7280;
   margin: 0;
-  color: #64748b;
-  font-size: 0.8rem;
   line-height: 1.4;
 }
 
-.generate-btn {
-  background: #667eea;
+.analytics-generate-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-.generate-btn:hover {
-  background: #5a67d8;
+.analytics-generate-btn:hover {
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.report-preview {
+/* Report Preview Section */
+.analytics-report-preview {
   background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
 }
 
-.preview-header {
+.analytics-preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-.preview-header h2 {
-  margin: 0;
-  color: #1e293b;
+.analytics-preview-header h2 {
   font-size: 1.5rem;
   font-weight: 600;
+  color: #1f2937;
+  margin: 0;
 }
 
-.preview-actions {
+.analytics-preview-actions {
   display: flex;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
-.action-btn {
+.analytics-action-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: #f1f5f9;
-  color: #64748b;
-  border: 2px solid #e2e8f0;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.action-btn:hover {
-  background: #667eea;
+.analytics-action-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.analytics-action-btn span {
+  font-size: 1rem;
+}
+
+/* Metrics Grid - Updated to match dashboard style */
+.analytics-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.analytics-metric-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.analytics-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border-color: #3b82f6;
+}
+
+/* Different colored stat cards */
+.analytics-metric-card--blue {
+  border-left-color: #3b82f6;
+}
+
+.analytics-metric-card--purple {
+  border-left-color: #8b5cf6;
+}
+
+.analytics-metric-card--pink {
+  border-left-color: #ec4899;
+}
+
+.analytics-metric-card--red {
+  border-left-color: #ef4444;
+}
+
+.analytics-metric-card--blue:hover {
+  border-color: #3b82f6;
+}
+
+.analytics-metric-card--purple:hover {
+  border-color: #8b5cf6;
+}
+
+.analytics-metric-card--pink:hover {
+  border-color: #ec4899;
+}
+
+.analytics-metric-card--red:hover {
+  border-color: #ef4444;
+}
+
+.analytics-metric-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  flex-shrink: 0;
+}
+
+/* Different colored icons */
+.analytics-metric-icon--blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.analytics-metric-icon--purple {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.analytics-metric-icon--pink {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.analytics-metric-icon--red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.analytics-metric-content {
+  flex: 1;
+}
+
+.analytics-metric-content h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.analytics-metric-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.analytics-metric-change {
+  font-size: 0.875rem;
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Age Range Breakdown */
+.analytics-age-range-breakdown {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.analytics-age-range-breakdown h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.analytics-age-range-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.analytics-age-range-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analytics-age-range-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  min-width: 60px;
+}
+
+.analytics-age-range-bar-container {
+  flex: 1;
+  height: 20px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.analytics-age-range-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.analytics-age-range-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Charts Section */
+.analytics-charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.analytics-chart-card {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.analytics-chart-card h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.analytics-chart-placeholder {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  height: 200px;
+  padding: 1rem 0;
+}
+
+.analytics-chart-bar {
+  flex: 1;
+  border-radius: 0.25rem 0.25rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-height: 40px;
+}
+
+/* Blood Type Filter */
+.analytics-blood-type-filter {
+  margin-bottom: 1rem;
+}
+
+.analytics-blood-type-selector {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.analytics-blood-type-selector:hover {
   border-color: #667eea;
 }
 
-.preview-content {
-  min-height: 500px;
+.analytics-blood-type-selector:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Overview Report */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+/* Blood Type Color Variables */
+:root {
+  --analytics-blood-type-Oplus: #3b82f6;   /* O+ - Blue */
+  --analytics-blood-type-Ominus: #1d4ed8;  /* O- - Darker Blue */
+  --analytics-blood-type-Aplus: #ef4444;   /* A+ - Red */
+  --analytics-blood-type-Aminus: #dc2626;  /* A- - Darker Red */
+  --analytics-blood-type-Bplus: #10b981;   /* B+ - Green */
+  --analytics-blood-type-Bminus: #059669;  /* B- - Darker Green */
+  --analytics-blood-type-ABplus: #8b5cf6;  /* AB+ - Purple */
+  --analytics-blood-type-ABminus: #7c3aed; /* AB- - Darker Purple */
 }
 
-.metric-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  border-left: 4px solid #667eea;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.metric-icon {
-  font-size: 1.5rem;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.metric-content h3 {
-  margin: 0 0 5px 0;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.metric-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 5px;
-}
-
-.metric-change {
-  color: #10b981;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.charts-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.chart-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.chart-card h4 {
-  margin: 0 0 20px 0;
-  color: #1e293b;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.chart-placeholder {
-  display: flex;
-  align-items: end;
-  gap: 15px;
-  height: 150px;
-  padding: 20px 0;
-}
-
-.chart-bar {
-  flex: 1;
-  border-radius: 8px 8px 0 0;
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 500;
-  min-height: 20px;
-}
-
-.pie-chart-placeholder {
+.analytics-pie-chart-placeholder {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   margin: 0 auto;
+  border-radius: 50%;
+  background: #f3f4f6;
 }
 
-.pie-segment {
+.analytics-pie-chart {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
 }
 
-.pie-center {
+.analytics-pie-center {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: #1e293b;
-  font-size: 0.9rem;
+  color: #1f2937;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
-/* Appointments Report */
-.appointment-timeline {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
+/* Blood Type Legend */
+.analytics-blood-type-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
 }
 
-.appointment-timeline h4 {
-  margin: 0 0 20px 0;
-  color: #1e293b;
+.analytics-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.analytics-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.analytics-legend-label {
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Appointment Timeline */
+.analytics-appointment-timeline {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.analytics-appointment-timeline h4 {
   font-size: 1.1rem;
   font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
 }
 
-.timeline-chart {
+.analytics-timeline-chart {
   display: flex;
   align-items: end;
-  gap: 20px;
-  height: 120px;
-  padding: 20px 0;
+  gap: 1rem;
+  height: 200px;
+  padding: 1rem 0;
 }
 
-.week-bar {
+.analytics-week-bar {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.bar-label {
-  font-size: 0.8rem;
-  color: #64748b;
+.analytics-bar-label {
+  font-size: 0.75rem;
+  color: #6b7280;
   font-weight: 500;
 }
 
-.bar-container {
+.analytics-bar-container {
   width: 100%;
-  height: 80px;
-  background: #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
+  height: 120px;
+  background: #e5e7eb;
+  border-radius: 0.25rem;
   position: relative;
+  overflow: hidden;
 }
 
-.bar-fill {
+.analytics-bar-fill {
   position: absolute;
   bottom: 0;
   width: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
+  border-radius: 0.25rem 0.25rem 0 0;
   transition: height 0.3s ease;
 }
 
-.bar-value {
-  font-size: 0.8rem;
-  color: #1e293b;
+.analytics-bar-value {
+  font-size: 0.875rem;
   font-weight: 600;
+  color: #1f2937;
 }
 
-/* Health Report */
-.health-alerts {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
+/* Health Alerts */
+.analytics-health-alerts {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
 }
 
-.health-alerts h4 {
-  margin: 0 0 20px 0;
-  color: #1e293b;
+.analytics-health-alerts h4 {
   font-size: 1.1rem;
   font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
 }
 
-.alerts-list {
+.analytics-alerts-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1rem;
 }
 
-.alert-item {
+.analytics-alert-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px;
-  border-radius: 10px;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
   border-left: 4px solid;
 }
 
-.alert-item.warning {
+.analytics-alert-item--warning {
   background: #fef3c7;
   border-left-color: #f59e0b;
 }
 
-.alert-item.danger {
-  background: #fecaca;
+.analytics-alert-item--danger {
+  background: #fee2e2;
   border-left-color: #ef4444;
 }
 
-.alert-icon {
-  font-size: 1.2rem;
+.analytics-alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
-.alert-content h5 {
-  margin: 0 0 5px 0;
-  color: #1e293b;
+.analytics-alert-content h5 {
   font-size: 1rem;
   font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
 }
 
-.alert-content p {
+.analytics-alert-content p {
+  font-size: 0.875rem;
+  color: #6b7280;
   margin: 0;
-  color: #64748b;
-  font-size: 0.9rem;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .reports-content {
+  .analytics-report-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .analytics-metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .analytics-charts-section {
     grid-template-columns: 1fr;
   }
   
-  .report-types {
-    order: -1;
-  }
-  
-  .report-grid {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 10px;
-  }
-  
-  .report-card {
-    min-width: 300px;
-  }
-  
-  .charts-section {
-    grid-template-columns: 1fr;
+  .analytics-blood-type-legend {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .reports-page {
-    padding: 15px;
+  .analytics-container {
+    padding: 1rem;
   }
   
-  .reports-header {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
+  .analytics-header {
+    padding: 2rem 1rem;
   }
   
-  .reports-title h1 {
+  .analytics-title h1 {
     font-size: 1.5rem;
   }
   
-  .preview-header {
+  .analytics-preview-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .analytics-preview-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .analytics-report-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .analytics-report-info {
     text-align: center;
   }
   
-  .preview-actions {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .metric-card {
+  .analytics-metric-card {
     flex-direction: column;
     text-align: center;
-    gap: 10px;
+    gap: 1rem;
   }
   
-  .timeline-chart {
+  .analytics-timeline-chart {
     flex-direction: column;
     height: auto;
-    gap: 15px;
+    gap: 1rem;
   }
   
-  .week-bar {
+  .analytics-week-bar {
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
+    gap: 1rem;
   }
   
-  .bar-container {
-    width: 60%;
+  .analytics-bar-container {
+    width: 100px;
     height: 60px;
+  }
+  
+  .analytics-alert-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .analytics-blood-type-legend {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive styles for header */
+@media (max-width: 768px) {
+  .analytics-header {
+    padding: 2rem 1rem;
+  }
+  
+  .analytics-title h1 {
+    font-size: 2rem;
+  }
+  
+  .analytics-title p {
+    font-size: 1rem;
+  }
+  
+  .analytics-header-icon {
+    width: 3rem;
+    height: 3rem;
   }
 }
 
 @media (max-width: 480px) {
-  .report-preview {
-    padding: 20px;
+  .analytics-header {
+    padding: 1.5rem 1rem;
   }
   
-  .chart-card {
-    padding: 15px;
+  .analytics-title h1 {
+    font-size: 1.75rem;
   }
   
-  .chart-placeholder {
-    flex-direction: column;
-    height: auto;
-    gap: 10px;
-  }
-  
-  .chart-bar {
-    width: 100%;
-    height: 40px;
-    border-radius: 8px;
+  .analytics-title p {
+    font-size: 0.9rem;
   }
 }

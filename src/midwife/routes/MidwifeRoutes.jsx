@@ -6,7 +6,7 @@ import MomsList from '../pages/MomsList';
 import Appointments from '../pages/Appointments';
 import MedicalRecords from '../pages/MedicalRecords';
 import Analytics from '../pages/Analytics';
-import Education from '../pages/Education';
+import Articles from '../pages/Education';
 import Emergency from '../pages/Emergency';
 
 export default (
@@ -16,7 +16,7 @@ export default (
     <Route path="appointments" element={<Appointments />} />
     <Route path="medical-records" element={<MedicalRecords />} />
     <Route path="analytics" element={<Analytics />} />
-    <Route path="documentaries" element={<Education />} />
+    <Route path="articles" element={<Articles />} />
     <Route path="emergency" element={<Emergency />} />
   </Route>
 ); 

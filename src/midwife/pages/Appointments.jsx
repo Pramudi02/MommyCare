@@ -237,6 +237,30 @@ const Appointments = () => {
 
   const currentTime = getCurrentTime();
 
+  const getCurrentTimePosition = () => {
+    const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+    const currentMinutes = currentHour * 60 + currentMinute;
+    
+    // Find the closest time slot
+    let closestSlot = timeSlots[0];
+    let minDifference = Math.abs(currentMinutes - (7 * 60)); // 7 AM in minutes
+    
+    timeSlots.forEach(slot => {
+      const [slotHour, slotMinute] = slot.split(':').map(Number);
+      const slotMinutes = slotHour * 60 + slotMinute;
+      const difference = Math.abs(currentMinutes - slotMinutes);
+      
+      if (difference < minDifference) {
+        minDifference = difference;
+        closestSlot = slot;
+      }
+    });
+    
+    // Calculate position: header height (60px) + time slot index * slot height (30px)
+    const slotIndex = timeSlots.indexOf(closestSlot);
+    return 60 + (slotIndex * 30);
+  };
+
   const handleAppointmentClick = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
@@ -341,102 +365,100 @@ const Appointments = () => {
 
   const renderWeekView = () => {
     return (
-      <>
-        <div className="appointments-calendar__grid">
-          <div className="appointments-calendar__time-column">
-            <div className="appointments-calendar__time-header"></div>
-            {timeSlots.map(time => (
-              <div key={time} className="appointments-calendar__time-slot">
-                {time}
-              </div>
-            ))}
-          </div>
-
-          {days.map(day => (
-            <div key={day.key} className="appointments-calendar__day-column">
-              <div className={`appointments-calendar__day-header ${day.current ? 'current' : ''} ${day.weekend ? 'weekend' : ''}`}>
-                <div className="appointments-calendar__day-name">{day.name}</div>
-                <div className="appointments-calendar__day-date">{day.date}</div>
-              </div>
-              
-              {timeSlots.map(time => {
-                const dayAppointments = getAppointmentsForTimeSlot(day.key, time);
-                return (
-                  <div key={time} className="appointments-calendar__time-cell">
-                    {dayAppointments.map(appointment => (
-                      <div 
-                        key={appointment.id} 
-                        className={`appointments-calendar__event appointments-calendar__event--${appointment.color}`}
-                        style={{
-                          gridRow: `span ${Math.ceil((parseInt(appointment.endTime.split(':')[1]) - parseInt(appointment.startTime.split(':')[1])) / 30)}`
-                        }}
-                        onClick={() => handleAppointmentClick(appointment)}
-                      >
-                        <div className="appointments-calendar__event-header">
-                          <div className="appointments-calendar__event-icon">
-                            {getIconComponent(appointment.icon)}
-                          </div>
-                          <div className="appointments-calendar__event-time">
-                            {appointment.startTime}-{appointment.endTime}
-                          </div>
-                        </div>
-                        
-                        <div className="appointments-calendar__event-title">
-                          {appointment.type}
-                        </div>
-                        
-                        <div className="appointments-calendar__event-location">
-                          <FiMapPin size={12} />
-                          {appointment.location}
-                        </div>
-                        
-                        {appointment.agenda && (
-                          <div className="appointments-calendar__event-agenda">
-                            <FiCalendar size={12} />
-                            {appointment.agenda}
-                          </div>
-                        )}
-                        
-                        {appointment.participants && (
-                          <div className="appointments-calendar__event-participants">
-                            <div className="appointments-calendar__event-participants-label">
-                              Participants
-                            </div>
-                            <div className="appointments-calendar__event-participants-list">
-                              {appointment.participants.map((participant, index) => (
-                                <div key={index} className="appointments-calendar__event-participant">
-                                  {participant}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {appointment.joinButton && (
-                          <button className="appointments-calendar__event-join">
-                            Join
-                          </button>
-                        )}
-                        
-                        {appointment.status && (
-                          <div className="appointments-calendar__event-status">
-                            {appointment.status}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
+      <div className="appointments-calendar__grid">
+        <div className="appointments-calendar__time-column">
+          <div className="appointments-calendar__time-header"></div>
+          {timeSlots.map(time => (
+            <div key={time} className="appointments-calendar__time-slot">
+              {time}
             </div>
           ))}
         </div>
+
+        {days.map(day => (
+          <div key={day.key} className="appointments-calendar__day-column">
+            <div className={`appointments-calendar__day-header ${day.current ? 'current' : ''} ${day.weekend ? 'weekend' : ''}`}>
+              <div className="appointments-calendar__day-name">{day.name}</div>
+              <div className="appointments-calendar__day-date">{day.date}</div>
+            </div>
+            
+            {timeSlots.map(time => {
+              const dayAppointments = getAppointmentsForTimeSlot(day.key, time);
+              return (
+                <div key={time} className="appointments-calendar__time-cell">
+                  {dayAppointments.map(appointment => (
+                    <div 
+                      key={appointment.id} 
+                      className={`appointments-calendar__event appointments-calendar__event--${appointment.color}`}
+                      style={{
+                        gridRow: `span ${Math.ceil((parseInt(appointment.endTime.split(':')[1]) - parseInt(appointment.startTime.split(':')[1])) / 30)}`
+                      }}
+                      onClick={() => handleAppointmentClick(appointment)}
+                    >
+                      <div className="appointments-calendar__event-header">
+                        <div className="appointments-calendar__event-icon">
+                          {getIconComponent(appointment.icon)}
+                        </div>
+                        <div className="appointments-calendar__event-time">
+                          {appointment.startTime}-{appointment.endTime}
+                        </div>
+                      </div>
+                      
+                      <div className="appointments-calendar__event-title">
+                        {appointment.type}
+                      </div>
+                      
+                      <div className="appointments-calendar__event-location">
+                        <FiMapPin size={12} />
+                        {appointment.location}
+                      </div>
+                      
+                      {appointment.agenda && (
+                        <div className="appointments-calendar__event-agenda">
+                          <FiCalendar size={12} />
+                          {appointment.agenda}
+                        </div>
+                      )}
+                      
+                      {appointment.participants && (
+                        <div className="appointments-calendar__event-participants">
+                          <div className="appointments-calendar__event-participants-label">
+                            Participants
+                          </div>
+                          <div className="appointments-calendar__event-participants-list">
+                            {appointment.participants.map((participant, index) => (
+                              <div key={index} className="appointments-calendar__event-participant">
+                                {participant}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {appointment.joinButton && (
+                        <button className="appointments-calendar__event-join">
+                          Join
+                        </button>
+                      )}
+                      
+                      {appointment.status && (
+                        <div className="appointments-calendar__event-status">
+                          {appointment.status}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        ))}
 
         {/* Current time indicator */}
         <div 
           className="appointments-calendar__current-time"
           style={{
-            top: `${(parseInt(currentTime.split(':')[0]) - 7) * 60 + parseInt(currentTime.split(':')[1])}px`
+            top: `${getCurrentTimePosition()}px`
           }}
         >
           <div className="appointments-calendar__current-time-line"></div>
@@ -444,24 +466,52 @@ const Appointments = () => {
             {currentTime}
           </div>
         </div>
-      </>
+      </div>
     );
   };
 
   return (
     <div className="appointments-calendar">
-      <div className="appointments-calendar__main">
+      <div className="appointments-calendar-container">
+        <div className="appointments-calendar-content">
+          <div className="appointments-calendar__main">
         <div className="appointments-calendar__header">
-          <div className="appointments-calendar__title">
-            <h1>Stay up to date, Sarah</h1>
-            <div className="appointments-calendar__week-selector">
-              <button className="appointments-calendar__week-btn">
-                {currentWeek}
-                <FiCalendar size={16} />
-              </button>
-            </div>
+          <div className="appointments-calendar__header-icon">
+            <FiCalendar className="w-6 h-6" />
           </div>
-          
+          <div className="appointments-calendar__title">
+            <h1>Appointments</h1>
+            <p>Manage and schedule appointments with your moms efficiently</p>
+          </div>
+        </div>
+
+        <div className="appointments-calendar__filters">
+          <div className="appointments-calendar__week-selector">
+            <button className="appointments-calendar__week-btn">
+              {currentWeek}
+              <FiCalendar size={16} />
+            </button>
+          </div>
+          <div className="appointments-calendar__view-toggles">
+            <button 
+              className={`appointments-calendar__view-btn ${viewMode === 'today' ? 'active' : ''}`}
+              onClick={() => setViewMode('today')}
+            >
+              Today
+            </button>
+            <button 
+              className={`appointments-calendar__view-btn ${viewMode === 'week' ? 'active' : ''}`}
+              onClick={() => setViewMode('week')}
+            >
+              Week
+            </button>
+            <button 
+              className={`appointments-calendar__view-btn ${viewMode === 'month' ? 'active' : ''}`}
+              onClick={() => setViewMode('month')}
+            >
+              Month
+            </button>
+          </div>
           <div className="appointments-calendar__actions">
             <button className="appointments-calendar__action-btn">
               <FiPlus size={16} />
@@ -473,106 +523,89 @@ const Appointments = () => {
           </div>
         </div>
 
-        <div className="appointments-calendar__view-toggles">
-          <button 
-            className={`appointments-calendar__view-btn ${viewMode === 'today' ? 'active' : ''}`}
-            onClick={() => setViewMode('today')}
-          >
-            Today
-          </button>
-          <button 
-            className={`appointments-calendar__view-btn ${viewMode === 'week' ? 'active' : ''}`}
-            onClick={() => setViewMode('week')}
-          >
-            Week
-          </button>
-          <button 
-            className={`appointments-calendar__view-btn ${viewMode === 'month' ? 'active' : ''}`}
-            onClick={() => setViewMode('month')}
-          >
-            Month
-          </button>
-        </div>
-
-        {viewMode === 'today' && renderTodayView()}
-        {viewMode === 'week' && renderWeekView()}
-        {viewMode === 'month' && renderMonthView()}
-      </div>
-
-      {/* Appointment Requests Sidebar */}
-      <div className="appointments-calendar__sidebar">
-        <div className="appointments-calendar__requests-section">
-          <h3>Appointment Requests</h3>
-          <div className="appointments-calendar__requests-list">
-            {appointmentRequests.map(request => (
-              <div key={request.id} className="appointments-calendar__request-item">
-                <div className="appointments-calendar__request-date">
-                  {new Date(request.date).toLocaleDateString()}
-                </div>
-                <div className="appointments-calendar__request-content">
-                  <h4 className="appointments-calendar__request-mom">{request.mom}</h4>
-                  <p className="appointments-calendar__request-type">{request.type} • {request.time}</p>
-                  <p className="appointments-calendar__request-description">{request.description}</p>
-                </div>
-                <div className="appointments-calendar__request-actions">
-                  <button 
-                    className="appointments-calendar__request-btn appointments-calendar__request-btn--accept"
-                    onClick={() => handleAcceptRequest(request.id)}
-                  >
-                    <FiCheck size={14} />
-                    Accept
-                  </button>
-                  <button 
-                    className="appointments-calendar__request-btn appointments-calendar__request-btn--remove"
-                    onClick={() => handleRemoveRequest(request.id)}
-                  >
-                    <FiX size={14} />
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
+        <div className="appointments-calendar__content-wrapper">
+          <div className="appointments-calendar__calendar-section">
+            {viewMode === 'today' && renderTodayView()}
+            {viewMode === 'week' && renderWeekView()}
+            {viewMode === 'month' && renderMonthView()}
           </div>
-        </div>
-      </div>
 
-      {/* Appointment Detail Modal */}
-      {isModalOpen && selectedAppointment && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h2>Appointment Details</h2>
-              <button className="modal__close" onClick={() => setIsModalOpen(false)}>
-                <FiX size={20} />
-              </button>
-            </div>
-            <div className="modal__content">
-              <div className="modal__section">
-                <h3>Appointment Information</h3>
-                <div className="modal__grid">
-                  <div className="modal__field">
-                    <label>Date & Time</label>
-                    <span>{selectedAppointment.date} at {selectedAppointment.startTime}-{selectedAppointment.endTime}</span>
+          {/* Appointment Requests Section */}
+          <div className="appointments-calendar__requests-section">
+            <h3>Appointment Requests</h3>
+            <div className="appointments-calendar__requests-list">
+              {appointmentRequests.map(request => (
+                <div key={request.id} className="appointments-calendar__request-item">
+                  <div className="appointments-calendar__request-date">
+                    {new Date(request.date).toLocaleDateString()}
                   </div>
-                  <div className="modal__field">
-                    <label>Type</label>
-                    <span>{selectedAppointment.type}</span>
+                  <div className="appointments-calendar__request-content">
+                    <h4 className="appointments-calendar__request-mom">{request.mom}</h4>
+                    <p className="appointments-calendar__request-type">{request.type} • {request.time}</p>
+                    <p className="appointments-calendar__request-description">{request.description}</p>
                   </div>
-                  <div className="modal__field">
-                    <label>Location</label>
-                    <span>{selectedAppointment.location}</span>
+                  <div className="appointments-calendar__request-actions">
+                    <button 
+                      className="appointments-calendar__request-btn appointments-calendar__request-btn--accept"
+                      onClick={() => handleAcceptRequest(request.id)}
+                    >
+                      <FiCheck size={14} />
+                      Accept
+                    </button>
+                    <button 
+                      className="appointments-calendar__request-btn appointments-calendar__request-btn--remove"
+                      onClick={() => handleRemoveRequest(request.id)}
+                    >
+                      <FiX size={14} />
+                      Remove
+                    </button>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="modal__actions">
-              <button className="modal__btn modal__btn--secondary">Reschedule</button>
-              <button className="modal__btn modal__btn--primary">Mark Complete</button>
+              ))}
             </div>
           </div>
         </div>
-      )}
+
+        {/* Appointment Detail Modal */}
+        {isModalOpen && selectedAppointment && (
+          <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h2>Appointment Details</h2>
+                <button className="modal__close" onClick={() => setIsModalOpen(false)}>
+                  <FiX size={20} />
+                </button>
+              </div>
+              <div className="modal__content">
+                <div className="modal__section">
+                  <h3>Appointment Information</h3>
+                  <div className="modal__grid">
+                    <div className="modal__field">
+                      <label>Date & Time</label>
+                      <span>{selectedAppointment.date} at {selectedAppointment.startTime}-{selectedAppointment.endTime}</span>
+                    </div>
+                    <div className="modal__field">
+                      <label>Type</label>
+                      <span>{selectedAppointment.type}</span>
+                    </div>
+                    <div className="modal__field">
+                      <label>Location</label>
+                      <span>{selectedAppointment.location}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal__actions">
+                <button className="modal__btn modal__btn--secondary">Reschedule</button>
+                <button className="modal__btn modal__btn--primary">Mark Complete</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
+  </div>
+  </div>
   );
 };
 

@@ -1,44 +1,156 @@
 .appointments-calendar {
-  padding: 2rem;
-  background: #fafafa;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.appointments-calendar-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.appointments-calendar-content {
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.appointments-calendar__content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .appointments-calendar__content-wrapper {
+    grid-template-columns: 2fr 1fr;
+  }
 }
 
 .appointments-calendar__main {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.appointments-calendar__sidebar {
-  flex: 1;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+.appointments-calendar__calendar-section {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.appointments-calendar__requests-section {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
   height: fit-content;
   max-height: 80vh;
   overflow-y: auto;
 }
 
 .appointments-calendar__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  padding: 2rem;
-  background: white;
+  text-align: center;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+  padding: 3rem 2rem;
+  background-image: url('/images/appointments.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+}
+
+/* Add subtle pattern overlay */
+.appointments-calendar__header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* Dark overlay for text readability */
+  pointer-events: none;
+}
+
+.appointments-calendar__header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+  pointer-events: none;
+}
+
+.appointments-calendar__title {
+  position: relative;
+  z-index: 1;
 }
 
 .appointments-calendar__title h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white !important;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.appointments-calendar__title p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Add an icon to the header */
+.appointments-calendar__header-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.appointments-calendar__header-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.appointments-calendar__actions {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
+}
+
+.appointments-calendar__filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .appointments-calendar__week-selector {
@@ -50,7 +162,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   background: #1a1a1a;
   color: white;
   border: none;
@@ -69,6 +181,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  margin-left: auto;
 }
 
 .appointments-calendar__action-btn {
@@ -112,7 +225,6 @@
 .appointments-calendar__view-toggles {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 2rem;
   justify-content: center;
 }
 
@@ -145,6 +257,7 @@
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .appointments-calendar__time-column {
@@ -355,10 +468,10 @@
 
 .appointments-calendar__current-time {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 80px;
   z-index: 20;
   pointer-events: none;
+  width: calc(100% - 80px);
 }
 
 .appointments-calendar__current-time-line {
@@ -1202,6 +1315,11 @@
     grid-template-columns: 60px repeat(7, 1fr);
   }
   
+  .appointments-calendar__current-time {
+    left: 60px;
+    width: calc(100% - 60px);
+  }
+  
   .appointments-calendar__time-slot {
     font-size: 0.625rem;
     padding: 0.25rem 0.25rem;
@@ -1226,10 +1344,13 @@
     flex: none;
   }
   
-  .appointments-calendar__sidebar {
-    flex: none;
+  .appointments-calendar__content-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .appointments-calendar__requests-section {
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1rem;
   }
   
   .appointments-calendar__header {
@@ -1242,9 +1363,26 @@
     font-size: 1.5rem;
   }
   
+  .appointments-calendar__filters {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .appointments-calendar__actions {
+    margin-left: 0;
+    justify-content: center;
+  }
+  
   .appointments-calendar__grid {
     grid-template-columns: 50px repeat(7, 1fr);
     font-size: 0.75rem;
+  }
+  
+  .appointments-calendar__current-time {
+    left: 50px;
+    width: calc(100% - 50px);
   }
   
   .appointments-calendar__event {
