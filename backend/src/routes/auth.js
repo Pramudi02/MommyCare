@@ -1,6 +1,5 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const asyncHandler = require('express-async-handler');
 const { protect } = require('../middleware/auth');
 
 /**
@@ -13,10 +12,8 @@ const { protect } = require('../middleware/auth');
  *         - firstName
  *         - lastName
  *         - email
- *         - phone
  *         - password
  *         - role
- *         - gender
  *       properties:
  *         firstName:
  *           type: string
@@ -30,19 +27,19 @@ const { protect } = require('../middleware/auth');
  *           description: User's email address
  *         phone:
  *           type: string
- *           description: User's phone number
+ *           description: User's phone number (optional)
  *         password:
  *           type: string
  *           minLength: 6
  *           description: User's password
  *         role:
  *           type: string
- *           enum: [mom, doctor, service_provider]
+ *           enum: [mom, doctor, midwife, service_provider]
  *           description: User's role
  *         gender:
  *           type: string
  *           enum: [male, female, other]
- *           description: User's gender
+ *           description: User's gender (optional)
  *     LoginRequest:
  *       type: object
  *       required:
@@ -87,10 +84,10 @@ const validateRegistration = [
   body('firstName').trim().isLength({ min: 2, max: 50 }).withMessage('First name must be between 2 and 50 characters'),
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be between 2 and 50 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('phone').matches(/^\+?[\d\s-()]+$/).withMessage('Please provide a valid phone number'),
+  body('phone').optional().matches(/^\+?[\d\s-()]+$/).withMessage('Please provide a valid phone number'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('role').isIn(['mom', 'doctor', 'service_provider']).withMessage('Invalid role'),
-  body('gender').isIn(['male', 'female', 'other']).withMessage('Invalid gender')
+  body('role').isIn(['mom', 'doctor', 'midwife', 'service_provider']).withMessage('Invalid role'),
+  body('gender').optional().isIn(['male', 'female', 'other']).withMessage('Invalid gender')
 ];
 
 const validateLogin = [
@@ -119,6 +116,107 @@ const handleValidationErrors = (req, res, next) => {
   }
   next();
 };
+
+// Async error handler wrapper
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+// Test endpoint to check database connectivity
+router.get('/test-db', async (req, res) => {
+  try {
+    const getUserModel = require('../models/User');
+    const User = getUserModel();
+    const count = await User.countDocuments();
+    res.json({ 
+      status: 'success', 
+      message: 'Database connection working',
+      userCount: count
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
+});
+
+// Mock login endpoint for testing (remove in production)
+router.post('/login-mock', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ 
+        status: 'error', 
+        message: 'Email and password are required'
+      });
+    }
+    
+    // Mock successful login (accept any valid email/password)
+    const mockUser = {
+      _id: 'mock-user-id-' + Date.now(),
+      firstName: 'Demo',
+      lastName: 'User',
+      email: email,
+      role: 'mom', // Default to mom role for demo
+      isEmailVerified: true,
+      isActive: true
+    };
+    
+    const mockToken = 'mock-jwt-token-' + Date.now();
+    
+    res.status(200).json({
+      status: 'success',
+      token: mockToken,
+      user: mockUser
+    });
+  } catch (error) {
+    console.error('Mock login error:', error);
+    res.status(500).json({ status: 'error', message: 'Mock login failed' });
+  }
+});
+
+// Mock registration endpoint for testing (remove in production)
+router.post('/register-mock', async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, role } = req.body;
+    
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password || !role) {
+      return res.status(400).json({ 
+        status: 'error', 
+        message: 'Missing required fields',
+        required: ['firstName', 'lastName', 'email', 'password', 'role']
+      });
+    }
+    
+    // Mock successful registration
+    const mockUser = {
+      _id: 'mock-user-id-' + Date.now(),
+      firstName,
+      lastName,
+      email,
+      role,
+      isEmailVerified: true,
+      isActive: true
+    };
+    
+    const mockToken = 'mock-jwt-token-' + Date.now();
+    
+    res.status(201).json({
+      status: 'success',
+      token: mockToken,
+      user: mockUser
+    });
+  } catch (error) {
+    console.error('Mock registration error:', error);
+    res.status(500).json({ status: 'error', message: 'Mock registration failed' });
+  }
+});
 
 /**
  * @swagger

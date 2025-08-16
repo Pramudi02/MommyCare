@@ -19,6 +19,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const momRoutes = require('./routes/mom');
 const doctorRoutes = require('./routes/doctor');
+const midwifeRoutes = require('./routes/midwife');
 const serviceProviderRoutes = require('./routes/serviceProvider');
 const appointmentRoutes = require('./routes/appointments');
 const messageRoutes = require('./routes/messages');
@@ -29,24 +30,73 @@ const errorHandler = require('./middleware/errorHandler');
 const { protect } = require('./middleware/auth');
 
 // Import config
-const connectDB = require('./config/database');
+const { connectDB } = require('./config/database');
+const initDatabase = require('./config/initDatabase');
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:5173',
+  process.env.FRONTEND_URL_ALT || 'http://localhost:5174'
+];
+
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST']
   }
 });
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB and initialize database
+const startServer = async () => {
+  try {
+    console.log('🔌 Connecting to databases...');
+    await connectDB();
+    console.log('✅ Database connections established');
+    
+    // Try to initialize database, but don't fail if it doesn't work
+    try {
+      await initDatabase();
+    } catch (initError) {
+      console.log('⚠️ Database initialization failed, continuing...');
+    }
+    
+    const PORT = process.env.PORT || 5001;
+    
+    server.listen(PORT, () => {
+      console.log(`🚀 MommyCare Backend Server running on port ${PORT}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    console.log('⚠️ Starting server without database connection...');
+    
+    // Start server even if database connection fails
+    const PORT = process.env.PORT || 5001;
+    server.listen(PORT, () => {
+      console.log(`🚀 MommyCare Backend Server running on port ${PORT} (Database: Disconnected)`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+      console.log('⚠️ Some features may not work without database connection');
+    });
+  }
+};
 
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -105,6 +155,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
 app.use('/api/auth', authRoutes);
 app.use('/api/mom', protect, momRoutes);
 app.use('/api/doctor', protect, doctorRoutes);
+app.use('/api/midwife', protect, midwifeRoutes);
 app.use('/api/service-provider', protect, serviceProviderRoutes);
 app.use('/api/appointments', protect, appointmentRoutes);
 app.use('/api/messages', protect, messageRoutes);
@@ -150,24 +201,24 @@ app.use('*', (req, res) => {
 // Make io accessible to routes
 app.set('io', io);
 
-const PORT = process.env.PORT || 5000;
-
-server.listen(PORT, () => {
-  console.log(`🚀 MommyCare Backend Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-});
-
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`);
-  server.close(() => process.exit(1));
+  console.log(`⚠️ Unhandled Rejection: ${err.message}`);
+  // Don't exit the process, just log the error
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log(`Error: ${err.message}`);
-  server.close(() => process.exit(1));
+  console.log(`❌ Uncaught Exception: ${err.message}`);
+  // Only exit for critical errors
+  if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+    console.log('⚠️ Network error, continuing...');
+  } else {
+    server.close(() => process.exit(1));
+  }
 });
+
+// Start the server
+startServer();
 
 module.exports = { app, server, io };
