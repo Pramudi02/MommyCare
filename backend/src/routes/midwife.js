@@ -6,10 +6,10 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/service-provider/permission-request:
+ * /api/midwife/permission-request:
  *   post:
- *     summary: Submit service provider permission request
- *     tags: [Service Provider]
+ *     summary: Submit midwife permission request
+ *     tags: [Midwife]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -19,25 +19,23 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               businessName:
+ *               clinicName:
  *                 type: string
- *               businessAddress:
+ *               clinicAddress:
  *                 type: string
- *               businessPhone:
+ *               clinicPhone:
  *                 type: string
- *               businessEmail:
+ *               clinicEmail:
  *                 type: string
- *               businessType:
+ *               midwifeSpecialization:
  *                 type: string
- *               registrationNumber:
+ *               certificationNumber:
  *                 type: string
- *               taxId:
+ *               licenseNumber:
  *                 type: string
- *               yearsInBusiness:
+ *               yearsOfExperience:
  *                 type: string
  *               services:
- *                 type: array
- *               products:
  *                 type: array
  *               location:
  *                 type: object
@@ -49,7 +47,7 @@ const router = express.Router();
  *       401:
  *         description: Not authorized
  */
-router.post('/permission-request', protect, authorize('service_provider'), asyncHandler(async (req, res) => {
+router.post('/permission-request', protect, authorize('midwife'), asyncHandler(async (req, res) => {
   // TODO: Implement permission request logic
   // For now, just return success
   res.status(201).json({
@@ -58,16 +56,5 @@ router.post('/permission-request', protect, authorize('service_provider'), async
   });
 }));
 
-router.get('/dashboard', (req, res) => {
-	res.json({ status: 'success', data: { message: 'Service Provider dashboard endpoint (stub)' } });
-});
-
-router.get('/products', (req, res) => {
-	res.json({ status: 'success', data: [] });
-});
-
-router.get('/orders', (req, res) => {
-	res.json({ status: 'success', data: [] });
-});
-
 module.exports = router;
+
