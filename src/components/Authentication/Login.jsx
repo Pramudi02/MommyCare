@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
 import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     emailOrUsername: '',
     password: ''
@@ -70,9 +72,8 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Use AuthContext login function
+        login(data);
         
         // Navigate based on user role
         switch (data.user.role) {
@@ -118,10 +119,11 @@ const Login = () => {
         const mockToken = 'local-mock-token-' + Date.now();
         
         // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+        // localStorage.setItem('token', mockToken); // Removed as per new_code
+        // localStorage.setItem('user', JSON.stringify(mockUser)); // Removed as per new_code
         
         // Navigate to mom dashboard for demo
+        login(mockUser); // Use AuthContext login for mock
         navigate('/mom');
       } catch (localError) {
         console.error('Local mock login error:', localError);

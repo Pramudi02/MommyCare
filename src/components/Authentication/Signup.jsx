@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Baby, Stethoscope, Heart, Store } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
 import './Signup.css';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -107,9 +109,8 @@ const Signup = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Use AuthContext login function
+        login(data);
         
         // Navigate based on user role for additional setup
         switch (formData.role) {
@@ -154,9 +155,11 @@ const Signup = () => {
         
         const mockToken = 'local-mock-token-' + Date.now();
         
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+        // Use AuthContext for mock data
+        login({
+          token: mockToken,
+          user: mockUser
+        });
         
         // Navigate based on user role
         switch (formData.role) {

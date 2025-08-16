@@ -34,6 +34,48 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
+// User Profile API functions
+export const userProfileAPI = {
+  // Get current user profile
+  getProfile: async () => {
+    return apiRequest('/auth/me');
+  },
+
+  // Update user profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Update user password
+  updatePassword: async (passwordData) => {
+    return apiRequest('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify(passwordData),
+    });
+  },
+};
+
+// Get user profile (alias for backward compatibility)
+export const getUserProfile = async () => {
+  try {
+    const response = await userProfileAPI.getProfile();
+    // Handle different response structures
+    if (response.user) {
+      return response.user;
+    } else if (response.data) {
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (error) {
+    console.error('Failed to get user profile:', error);
+    throw error;
+  }
+};
+
 // Clinic Visit Request API functions
 export const clinicVisitRequestAPI = {
   // Create a new clinic visit request

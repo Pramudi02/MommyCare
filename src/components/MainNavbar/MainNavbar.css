@@ -2,3 +2,66 @@
 .logo-mammy{
     width: 200px;
 }
+
+/* Profile dropdown animations */
+.profile-dropdown-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.profile-dropdown-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms, transform 200ms;
+}
+
+.profile-dropdown-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-dropdown-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 200ms, transform 200ms;
+}
+
+/* Avatar hover effects */
+.avatar-container {
+    transition: all 0.2s ease-in-out;
+}
+
+.avatar-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading spinner for avatar */
+.avatar-loading {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
