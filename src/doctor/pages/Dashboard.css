@@ -1,286 +1,131 @@
-/* Dashboard.css - Enhanced with more attractive styles */
-
 .dashboard {
-  width: 100%;
   min-height: 100vh;
-  max-width: 1300px;
-  margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   padding: 2rem;
-  background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #e0e7ff 100%);
-  min-height: calc(100vh - 100px);
-  position: relative;
-  overflow-x: hidden;
+  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%);
+  color: #fff;
 }
 
-.dashboard::before {
+/* Update the dashboard header styles */
+.dashboard__header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+/* Add new styles for the header background */
+.dashboard__header::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
-  pointer-events: none;
+  background-image: url('/images/doctor-dashboard-banner.jpg'); /* You'll need to add this image */
+  background-size: cover;
+  background-position: center;
+  opacity: 0.2;
   z-index: 0;
 }
 
-.dashboard > * {
+/* Ensure text stays above the background */
+.dashboard__header h1,
+.dashboard__header p {
   position: relative;
   z-index: 1;
 }
 
-/* Header Styles */
-.dashboard__header {
-  text-align: center;
-  margin-bottom: 3rem;
-  padding: 3rem 2rem;
-  background: linear-gradient(135deg, #edd4ed 0%, #bcd9eb 50%, #a5b4fc 100%);
-  border-radius: 2rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 20px 40px rgba(139, 92, 246, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  backdrop-filter: blur(20px);
-  transform: translateY(0);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dashboard__header:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 30px 60px rgba(139, 92, 246, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-}
-
-.dashboard__header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transform: rotate(45deg);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
 .dashboard__header h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin-bottom: 0.75rem;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: fadeInUp 0.8s ease-out;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard__header p {
-  color: #64748b;
-  font-weight: 600;
   font-size: 1.2rem;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-  animation: fadeInUp 0.8s ease-out 0.2s both;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Add decorative elements */
+.dashboard__header-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.1)
+  );
+  z-index: 1;
 }
 
 /* Statistics Cards */
 .dashboard__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  border-left: 5px solid;
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.stat-card:nth-child(1) { animation-delay: 0.1s; }
-.stat-card:nth-child(2) { animation-delay: 0.2s; }
-.stat-card:nth-child(3) { animation-delay: 0.3s; }
-.stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s;
-}
-
-.stat-card:hover::before {
-  left: 100%;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 30px 60px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  transform: translateY(-5px);
 }
 
 .stat-card__icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  color: white;
-  flex-shrink: 0;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card__icon::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: rotate(45deg);
-  transition: transform 0.6s;
-}
-
-.stat-card:hover .stat-card__icon::after {
-  transform: rotate(45deg) translate(50%, 50%);
+  font-size: 1.5rem;
 }
 
 .stat-card__content h3 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin: 0 0 0.5rem 0;
-  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
 }
 
-.stat-card__content p {
-  color: #64748b;
-  font-weight: 600;
-  margin: 0;
-  font-size: 1rem;
-}
-
-/* Content Layout */
+/* Dashboard Content Layout */
 .dashboard__content {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
 }
 
-/* Section Styles */
+/* Section Styling */
 .dashboard__section {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.dashboard__section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #8b5cf6, #a855f7, #ec4899, #8b5cf6);
-  background-size: 200% 100%;
-  animation: gradientMove 3s ease infinite;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.dashboard__section:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 30px 60px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-}
-
-.dashboard__section h2 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid;
-  border-image: linear-gradient(90deg, #8b5cf6, #a855f7) 1;
-  position: relative;
-}
-
-.dashboard__section h2::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 50px;
-  height: 3px;
-  background: linear-gradient(90deg, #ec4899, #f472b6);
-  border-radius: 2px;
-}
-
-/* Section Header */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -288,38 +133,9 @@
   margin-bottom: 1.5rem;
 }
 
-.view-all-btn {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 1rem;
+.section-header h2 {
+  font-size: 1.25rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.view-all-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s;
-}
-
-.view-all-btn:hover::before {
-  left: 100%;
-}
-
-.view-all-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
 }
 
 /* Appointments List */
@@ -333,197 +149,70 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
-  border-radius: 1rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.appointment-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-  transition: left 0.6s;
-}
-
-.appointment-item:hover::before {
-  left: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: transform 0.2s ease;
 }
 
 .appointment-item:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-  transform: translateX(8px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.3);
+  transform: translateX(5px);
 }
 
 .appointment-time {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  font-weight: 700;
-  font-size: 0.9rem;
-  min-width: 90px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.appointment-time::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: rotate(45deg);
-  transition: transform 0.6s;
-}
-
-.appointment-item:hover .appointment-time::after {
-  transform: rotate(45deg) translate(50%, 50%);
-}
-
-.duration {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  font-weight: 500;
-}
-
-.appointment-details {
-  flex: 1;
-}
-
-.appointment-details h4 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 0.25rem 0;
-}
-
-.appointment-details p {
-  color: #64748b;
-  font-size: 0.9rem;
-  margin: 0;
-  font-weight: 500;
-}
-
-.appointment-details .notes {
-  font-style: italic;
-  color: #94a3b8;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-weight: 600;
+  color: #4f46e5;
+  background: rgba(79, 70, 229, 0.1);
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 
 .appointment-status {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-end;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
 }
 
-.status-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 1.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.appointment-status.confirmed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
 }
 
-.status-badge:hover {
-  transform: scale(1.05);
-}
-
-.priority-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 1.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.priority-badge:hover {
-  transform: scale(1.05);
+.appointment-status.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
 }
 
 /* Quick Actions */
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 .quick-action-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, rgba(253, 242, 248, 0.9) 0%, rgba(243, 232, 255, 0.9) 100%);
-  border: 2px solid transparent;
-  border-radius: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-.quick-action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-  transition: left 0.6s;
-}
-
-.quick-action-btn:hover::before {
-  left: 100%;
-}
-
-.quick-action-btn:hover {
-  transform: translateY(-8px) scale(1.05);
-  border-color: #8b5cf6;
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
-  background: linear-gradient(135deg, rgba(253, 242, 248, 1) 0%, rgba(243, 232, 255, 1) 100%);
-}
-
-.quick-action-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
   transition: all 0.3s ease;
 }
 
-.quick-action-btn:hover .quick-action-icon {
-  transform: scale(1.1) rotate(5deg);
+.quick-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
-.quick-action-btn span:last-child {
-  font-weight: 700;
-  color: #1e293b;
-  font-size: 0.95rem;
+.quick-action-icon {
+  font-size: 1.25rem;
 }
 
-/* Recent Patients */
+/* Patients List */
 .patients-list {
   display: flex;
   flex-direction: column;
@@ -534,135 +223,71 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
-  border-radius: 1rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.patient-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-  transition: left 0.6s;
-}
-
-.patient-item:hover::before {
-  left: 100%;
-}
-
-.patient-item:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-  transform: translateX(8px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.3);
-}
-
-.patient-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.patient-avatar::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: rotate(45deg);
-  transition: transform 0.6s;
-}
-
-.patient-item:hover .patient-avatar::after {
-  transform: rotate(45deg) translate(50%, 50%);
-}
-
-.patient-info {
-  flex: 1;
-}
-
-.patient-info h4 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 0.25rem 0;
-}
-
-.patient-info p {
-  color: #64748b;
-  font-size: 0.85rem;
-  margin: 0;
-  font-weight: 500;
-}
-
-.patient-condition {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
-  color: #7c3aed;
-  padding: 0.5rem 1rem;
-  border-radius: 1.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
-.patient-condition:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+.patient-item:hover {
+  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.patient-avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.patient-info h4 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.patient-action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(79, 70, 229, 0.2);
+  color: #4f46e5;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.patient-action-btn:hover {
+  background: rgba(79, 70, 229, 0.3);
 }
 
 /* Calendar Widget */
 .calendar-widget {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  position: relative;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1rem;
 }
 
-.calendar-widget::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #8b5cf6, #a855f7, #ec4899, #8b5cf6);
-  background-size: 200% 100%;
-  animation: gradientMove 3s ease infinite;
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.calendar-widget h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 1.5rem 0;
-  text-align: center;
-  position: relative;
+.calendar-nav {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.calendar-nav:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .calendar-grid {
@@ -674,80 +299,36 @@
 .calendar-day {
   aspect-ratio: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(226, 232, 240, 0.5);
-}
-
-.calendar-day::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.calendar-day:hover::before {
-  opacity: 1;
+  transition: all 0.2s ease;
 }
 
 .calendar-day:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #7c3aed;
-  transform: scale(1.1);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.3);
-  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.calendar-day.today {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
+.appointment-dot {
+  background: #4f46e5;
   color: white;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-  transform: scale(1.05);
-}
-
-.calendar-day.today .day-number {
-  color: white;
-}
-
-.calendar-day.has-appointment {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
-  color: #16a34a;
-  font-weight: 700;
-  border-color: rgba(34, 197, 94, 0.3);
-}
-
-.calendar-day.has-appointment:hover {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
-  transform: scale(1.15);
-  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .dashboard__content {
     grid-template-columns: 1fr;
-  }
-  
-  .dashboard__stats {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  .quick-actions {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -756,68 +337,11 @@
     padding: 1rem;
   }
   
-  .dashboard__header {
-    padding: 2rem 1rem;
-  }
-  
-  .dashboard__header h1 {
-    font-size: 2.2rem;
-  }
-  
   .dashboard__stats {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .quick-actions {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  
-  .stat-card {
-    padding: 1.5rem;
-  }
-  
-  .stat-card__icon {
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
-  }
-  
-  .stat-card__content h3 {
-    font-size: 2rem;
-  }
-  
-  .dashboard__section {
-    padding: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard__header h1 {
-    font-size: 1.8rem;
   }
   
   .quick-actions {
     grid-template-columns: 1fr;
-  }
-  
-  .appointment-item,
-  .patient-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.75rem;
-  }
-  
-  .appointment-status {
-    align-items: center;
-  }
-  
-  .calendar-grid {
-    gap: 0.25rem;
-  }
-  
-  .calendar-day {
-    font-size: 0.8rem;
   }
 }
