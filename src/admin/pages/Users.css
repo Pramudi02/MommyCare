@@ -431,6 +431,170 @@
   margin: 0;
 }
 
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  color: #667eea;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-icon {
+  width: 64px;
+  height: 64px;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.error-container h3 {
+  color: #111827;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.error-container p {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0 0 24px 0;
+}
+
+.retry-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retry-btn:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+/* User Actions Footer */
+.user-actions-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-toggle-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-toggle-btn.activate {
+  background: #10b981;
+  color: white;
+}
+
+.status-toggle-btn.activate:hover {
+  background: #059669;
+}
+
+.status-toggle-btn.deactivate {
+  background: #f59e0b;
+  color: white;
+}
+
+.status-toggle-btn.deactivate:hover {
+  background: #d97706;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  padding: 20px 0;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .users-page {
@@ -476,5 +640,22 @@
   
   .user-card-body {
     padding: 16px;
+  }
+
+  .user-actions-footer {
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+  }
+  
+  .status-toggle-btn,
+  .delete-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
   }
 } 

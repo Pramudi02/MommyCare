@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { protect } = require('../middleware/auth');
+const { protectAdmin } = require('../middleware/adminAuth');
 
 const {
   registerAdmin,
@@ -20,52 +21,58 @@ const {
   bulkUpdatePermissionRequests
 } = require('../controllers/adminPermissionController');
 
+const {
+  getAllUsers,
+  getUserById,
+  updateUserStatus,
+  deleteUser,
+  getUserStats
+} = require('../controllers/adminUserController');
+
 const router = express.Router();
 
-// Validation middleware for admin operations
+// Validation middleware
 const validateAdminRegistration = [
-  body('username').trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
-  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('role').isIn(['super_admin', 'admin', 'moderator']).withMessage('Invalid admin role'),
-  body('permissions').optional().isArray().withMessage('Permissions must be an array')
+  body('username').trim().isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+  body('email').isEmail().withMessage('Please provide a valid email'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  body('role').isIn(['super_admin', 'admin', 'moderator']).withMessage('Invalid admin role')
 ];
 
 const validateAdminLogin = [
-  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+  body('email').isEmail().withMessage('Please provide a valid email'),
   body('password').notEmpty().withMessage('Password is required')
+];
+
+const validateAdminProfileUpdate = [
+  body('username').optional().trim().isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+  body('email').optional().isEmail().withMessage('Please provide a valid email')
 ];
 
 const validateAdminPasswordUpdate = [
   body('currentPassword').notEmpty().withMessage('Current password is required'),
-  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
+  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long')
 ];
 
-const validateAdminProfileUpdate = [
-  body('username').optional().trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
-  body('email').optional().isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('permissions').optional().isArray().withMessage('Permissions must be an array')
-];
-
-// Validation middleware for permission request management
 const validateStatusUpdate = [
-  body('status').isIn(['pending', 'approved', 'rejected', 'under_review']).withMessage('Invalid status'),
-  body('rejectionReason').optional().isString().withMessage('Rejection reason must be a string'),
-  body('adminNotes').optional().isString().withMessage('Admin notes must be a string')
+  body('status').isIn(['pending', 'approved', 'rejected']).withMessage('Invalid status')
+];
+
+const validateAdminNote = [
+  body('note').trim().notEmpty().withMessage('Note cannot be empty')
 ];
 
 const validateBulkUpdate = [
   body('requestIds').isArray().withMessage('Request IDs must be an array'),
-  body('status').isIn(['pending', 'approved', 'rejected', 'under_review']).withMessage('Invalid status'),
-  body('rejectionReason').optional().isString().withMessage('Rejection reason must be a string'),
-  body('adminNotes').optional().isString().withMessage('Admin notes must be a string')
+  body('status').isIn(['pending', 'approved', 'rejected']).withMessage('Invalid status')
 ];
 
-const validateAdminNote = [
-  body('note').notEmpty().withMessage('Note content is required')
+// Validation middleware for user management
+const validateUserStatusUpdate = [
+  body('isActive').isBoolean().withMessage('isActive must be a boolean value')
 ];
 
-// Check for validation errors
+// Handle validation errors
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -78,7 +85,7 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Async error handler wrapper
+// Async handler wrapper
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
@@ -108,16 +115,23 @@ router.get('/test-db', async (req, res) => {
 router.post('/register', validateAdminRegistration, handleValidationErrors, asyncHandler(registerAdmin));
 router.post('/login', validateAdminLogin, handleValidationErrors, asyncHandler(loginAdmin));
 router.post('/logout', asyncHandler(logoutAdmin));
-router.get('/me', protect, asyncHandler(getAdminMe));
-router.put('/profile', validateAdminProfileUpdate, handleValidationErrors, protect, asyncHandler(updateAdminProfile));
-router.put('/password', validateAdminPasswordUpdate, handleValidationErrors, protect, asyncHandler(updateAdminPassword));
+router.get('/me', protectAdmin, asyncHandler(getAdminMe));
+router.put('/profile', validateAdminProfileUpdate, handleValidationErrors, protectAdmin, asyncHandler(updateAdminProfile));
+router.put('/password', validateAdminPasswordUpdate, handleValidationErrors, protectAdmin, asyncHandler(updateAdminPassword));
+
+// User management routes (admin only)
+router.get('/users', protectAdmin, asyncHandler(getAllUsers));
+router.get('/users/stats', protectAdmin, asyncHandler(getUserStats));
+router.get('/users/:id', protectAdmin, asyncHandler(getUserById));
+router.patch('/users/:id/status', validateUserStatusUpdate, handleValidationErrors, protectAdmin, asyncHandler(updateUserStatus));
+router.delete('/users/:id', protectAdmin, asyncHandler(deleteUser));
 
 // Permission request management routes (admin only)
-router.get('/permission-requests', protect, asyncHandler(getAllPermissionRequests));
-router.get('/permission-requests/stats', protect, asyncHandler(getPermissionRequestStats));
-router.get('/permission-request/:requestId', protect, asyncHandler(getPermissionRequestById));
-router.put('/permission-request/:requestId/status', validateStatusUpdate, handleValidationErrors, protect, asyncHandler(updatePermissionRequestStatus));
-router.post('/permission-request/:requestId/notes', validateAdminNote, handleValidationErrors, protect, asyncHandler(addAdminNote));
-router.put('/permission-requests/bulk-update', validateBulkUpdate, handleValidationErrors, protect, asyncHandler(bulkUpdatePermissionRequests));
+router.get('/permission-requests', protectAdmin, asyncHandler(getAllPermissionRequests));
+router.get('/permission-requests/stats', protectAdmin, asyncHandler(getPermissionRequestStats));
+router.get('/permission-request/:requestId', protectAdmin, asyncHandler(getPermissionRequestById));
+router.put('/permission-request/:requestId/status', validateStatusUpdate, handleValidationErrors, protectAdmin, asyncHandler(updatePermissionRequestStatus));
+router.post('/permission-request/:requestId/notes', validateAdminNote, handleValidationErrors, protectAdmin, asyncHandler(addAdminNote));
+router.put('/permission-requests/bulk-update', validateBulkUpdate, handleValidationErrors, protectAdmin, asyncHandler(bulkUpdatePermissionRequests));
 
 module.exports = router;
