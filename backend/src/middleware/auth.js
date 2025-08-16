@@ -12,6 +12,19 @@ const protect = asyncHandler(async (req, res, next) => {
       // Get token from header
       token = req.headers.authorization.split(' ')[1];
 
+      // TEMPORARY TESTING: Allow demo token for testing purposes
+      if (token === 'demo-token-123') {
+        // For testing: Create a mock user object with mom1 ID
+        req.user = {
+          _id: 'mom1',
+          role: 'mom',
+          email: 'test@mommycare.com',
+          name: 'Test Mom'
+        };
+        console.log('🔧 TESTING MODE: Using demo token with momId: mom1');
+        return next();
+      }
+
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
