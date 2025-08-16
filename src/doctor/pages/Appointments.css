@@ -290,7 +290,6 @@
   background: #f3f4f6;
 }
 
-/* Calendar View - Matching dashboard section style */
 .calendar-view {
   background: #ffffff;
   border-radius: 20px;
@@ -301,13 +300,15 @@
 }
 
 .calendar-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
 }
 
 .calendar-nav-btn {
+
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   width: 40px;
@@ -328,7 +329,22 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: #111827;
+
   margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.calendar-header::before {
+  content: '';
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  height: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(107, 92, 231, 0.25);
+  border-radius: 9999px;
 }
 
 .calendar-grid {
@@ -362,12 +378,14 @@
 }
 
 .calendar-day {
+
   aspect-ratio: 1;
   padding: 0.5rem;
   border-right: 1px solid #e5e7eb;
   border-bottom: 1px solid #e5e7eb;
+
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.2s ease;
   position: relative;
   background: #ffffff;
 }
@@ -381,6 +399,7 @@
 }
 
 .calendar-day.today {
+
   background: #4f46e5;
   color: white;
 }
@@ -392,6 +411,7 @@
 .calendar-day.selected {
   background: rgba(79, 70, 229, 0.1);
   border: 2px solid #4f46e5;
+
 }
 
 .calendar-day.other-month {
@@ -400,9 +420,11 @@
 }
 
 .day-number {
+
   font-weight: 600;
   color: #111827;
   margin-bottom: 0.5rem;
+
 }
 
 .appointment-indicators {
@@ -424,7 +446,9 @@
   font-weight: 500;
 }
 
+
 /* Selected Date Appointments - Matching dashboard list style */
+
 .selected-date-appointments {
   background: #ffffff;
   border-radius: 20px;
@@ -1127,6 +1151,7 @@
   transform: translateY(-2px);
 }
 
+
 /* Schedule Modal */
 .schedule-modal-overlay {
   position: fixed;
@@ -1370,26 +1395,32 @@
   }
 }
 
+
 @media (max-width: 768px) {
   .appointments-page {
     padding: 1rem;
   }
   
+
   .appointments-stats {
     grid-template-columns: 1fr;
   }
   
+
   .appointments-header {
     padding: 2rem 1rem;
   }
-  
+
   .appointments-header h1 {
+
     font-size: 2rem;
   }
   
   .calendar-view,
+
   .list-view,
   .schedule-view {
+
     padding: 1rem;
   }
   
@@ -1418,14 +1449,17 @@
     padding: 0.5rem;
   }
   
+
   .appointment-modal,
   .schedule-modal {
+
     margin: 1rem;
     max-height: calc(100vh - 2rem);
   }
   
   .appointment-modal__header,
   .appointment-modal__content,
+
   .appointment-modal__actions,
   .schedule-modal__header,
   .schedule-modal__content,
@@ -1435,11 +1469,13 @@
   
   .info-row,
   .detail-row {
+
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
   
+
   .appointment-modal__actions,
   .schedule-modal__actions {
     flex-direction: column;
@@ -1458,4 +1494,5 @@
   .form-row {
     grid-template-columns: 1fr;
   }
+
 }

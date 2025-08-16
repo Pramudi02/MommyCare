@@ -16,7 +16,7 @@ const DueDateCalculator = () => {
     calculateSampleTimeline(sampleDate);
   }, []);
 
-  const calculateSampleTimeline = (startDate) => {
+  const calculateSampleTimeline = (startDate) => { //sample timeline
     const dueDate = new Date(startDate);
     dueDate.setDate(dueDate.getDate() + 280);
 

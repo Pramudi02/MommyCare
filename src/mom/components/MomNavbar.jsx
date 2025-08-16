@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./MomNavbar.css";
 
@@ -16,9 +16,11 @@ const menuItems = [
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleNavClick = (path) => {
     navigate(path);
+    setIsOpen(false);
   };
 
   const isActive = (path) => {
@@ -27,15 +29,28 @@ const Navigation = () => {
 
   return (
     <nav className="main-navbar">
-      {menuItems.map((item, idx) => (
-        <button
-          key={idx}
-          onClick={() => handleNavClick(item.path)}
-          className={`main-navbar__item ${isActive(item.path) ? 'active' : ''}`}
-        >
-          {item.name}
-        </button>
-      ))}
+      <button
+        className="main-navbar__toggle"
+        aria-expanded={isOpen}
+        aria-controls="mom-navbar-menu"
+        onClick={() => setIsOpen((v) => !v)}
+      >
+        <span className="toggle-bar" />
+        <span className="toggle-bar" />
+        <span className="toggle-bar" />
+      </button>
+
+      <div id="mom-navbar-menu" className={`main-navbar__menu ${isOpen ? 'open' : ''}`}>
+        {menuItems.map((item, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleNavClick(item.path)}
+            className={`main-navbar__item ${isActive(item.path) ? 'active' : ''}`}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
     </nav>
   );
 };
