@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Patients.css';
+import { FaSearch } from 'react-icons/fa';
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,27 +137,26 @@ const Patients = () => {
   };
 
   return (
-    <div className="patients-page">
-      <div className="patients-header">
-        <div className="patients-header__left">
-          <h1>Patient Management</h1>
-          <p>Manage your patients and their medical records</p>
-        </div>
+    <div className="obgyn-patient-management-page">
+      {/* Header with Banner */}
+      <div className="obgyn-patient-dashboard-header">
+        <h1>Patient Management</h1>
+        <p>Manage your patients and their medical records efficiently</p>
       </div>
 
       {/* Search and Filters */}
-      <div className="patients-controls">
-        <div className="search-box">
+      <div className="obgyn-patient-search-controls">
+        <div className="obgyn-patient-search-input-wrapper">
           <input
             type="text"
             placeholder="Search patients by name, email, or condition..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="search-icon">🔍</span>
+          <span className="obgyn-patient-search-icon"><FaSearch /></span>
         </div>
 
-        <div className="filters">
+        <div className="obgyn-patient-filter-dropdown">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -167,30 +167,39 @@ const Patients = () => {
       </div>
 
       {/* Patients Grid */}
-      <div className="patients-grid">
-        {filteredPatients.map(patient => (
-          <div key={patient.id} className="patient-card" onClick={() => handlePatientClick(patient)}>
-            <div className="patient-card__header">
-              <img src={patient.image} alt={patient.name} className="patient-avatar" />
-              <div className="patient-status" style={{ backgroundColor: getStatusColor(patient.status) }}>
-                {patient.status}
+      <div className="obgyn-patient-cards-grid">
+        {filteredPatients.length > 0 ? (
+          filteredPatients.map(patient => (
+            <div key={patient.id} className="obgyn-patient-profile-card" onClick={() => handlePatientClick(patient)}>
+              <div className="obgyn-patient-card-header-section">
+                <img src={patient.image} alt={patient.name} className="obgyn-patient-profile-avatar" />
+                <div className="obgyn-patient-basic-info">
+                  <h3>{patient.name}</h3>
+                  <p className="obgyn-patient-age-display">{patient.age} years old</p>
+                </div>
+                <div className="obgyn-patient-status-badge" style={{ backgroundColor: getStatusColor(patient.status) }}>
+                  {patient.status}
+                </div>
+              </div>
+
+              <div className="obgyn-patient-card-main-content">
+                <p className="obgyn-patient-condition-display">{patient.condition}</p>
+                <p className="obgyn-patient-email-display">{patient.email}</p>
+                <p className="obgyn-patient-phone-display">{patient.phone}</p>
+              </div>
+
+              <div className="obgyn-patient-card-footer-section">
+                <span className="obgyn-patient-last-visit-badge">Last: {patient.lastVisit}</span>
+                <span className="obgyn-patient-next-visit-badge">Next: {patient.nextVisit}</span>
               </div>
             </div>
-
-            <div className="patient-card__body">
-              <h3>{patient.name}</h3>
-              <p className="patient-age">{patient.age} years old</p>
-              <p className="patient-condition">{patient.condition}</p>
-              <p className="patient-contact">{patient.email}</p>
-              <p className="patient-phone">{patient.phone}</p>
-            </div>
-
-            <div className="patient-card__footer">
-              <span className="last-visit">Last: {patient.lastVisit}</span>
-              <span className="next-visit">Next: {patient.nextVisit}</span>
-            </div>
+          ))
+        ) : (
+          <div className="obgyn-patient-empty-state">
+            <h3>No patients found</h3>
+            <p>Try adjusting your search criteria or filters.</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

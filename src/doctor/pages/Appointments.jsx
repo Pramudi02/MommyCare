@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import './Appointments.css';
+import { 
+  FaCalendarAlt, 
+  FaCheck, 
+  FaClock, 
+  FaExclamationTriangle,
+  FaList,
+  FaClock as FaSchedule
+} from 'react-icons/fa';
 
 const Appointments = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -291,41 +299,89 @@ const Appointments = () => {
   return (
     <div className="appointments-page">
       <div className="appointments-header">
-        <div className="appointments-header__left">
-          <h1>Appointment Management</h1>
-          <p>Schedule and manage patient appointments</p>
+        <h1>Appointment Management</h1>
+        <p>Schedule and manage patient appointments</p>
+        <div className="doctor-dashboard-header-decoration"></div>
+      </div>
+
+      {/* Statistics Cards - Matching dashboard exactly */}
+      <div className="appointments-stats">
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
+            <FaCalendarAlt />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.length}</h3>
+            <p>Total Appointments</p>
+          </div>
         </div>
-        <div className="appointments-header__right">
-          <button className="new-appointment-btn">
-            <span>➕</span>
-            New Appointment
-          </button>
-          <div className="view-toggle">
-            <button 
-              className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
-              onClick={() => setViewMode('calendar')}
-            >
-              📅 Calendar
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              📋 List
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'schedule' ? 'active' : ''}`}
-              onClick={() => setViewMode('schedule')}
-            >
-              ⏰ Schedule
-            </button>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#2196F3" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
+            <FaCheck />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Confirmed').length}</h3>
+            <p>Confirmed</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#FF9800" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
+            <FaClock />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Pending').length}</h3>
+            <p>Pending</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#F44336" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
+            <FaExclamationTriangle />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.priority === 'Urgent').length}</h3>
+            <p>Urgent Cases</p>
           </div>
         </div>
       </div>
 
-      {viewMode === 'calendar' && (
-        /* Calendar View */
-        <div className="calendar-view">
+      <div className="appointments-content">
+        {/* Left Column */}
+        <div className="appointments-left">
+          {/* View Toggle Controls */}
+          <div className="appointments-section">
+            <div className="appointments-section-header">
+              <h2>Appointment Views</h2>
+            </div>
+            <div className="view-toggle">
+              <button 
+                className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
+                onClick={() => setViewMode('calendar')}
+              >
+                <FaCalendarAlt /> Calendar
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                <FaList /> List
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'schedule' ? 'active' : ''}`}
+                onClick={() => setViewMode('schedule')}
+              >
+                <FaSchedule /> Schedule
+              </button>
+            </div>
+          </div>
+
+          {viewMode === 'calendar' && (
+            /* Calendar View */
+            <div className="appointments-section">
+              <div className="appointments-section-header">
+                <h2>Calendar View</h2>
+                <button className="appointments-view-all-btn">New Appointment</button>
+              </div>
+              <div className="calendar-view">
           <div className="calendar-header">
             <button className="calendar-nav-btn" onClick={() => navigateMonth(-1)}>‹</button>
             <h2>{getMonthName(selectedDate)}</h2>
@@ -416,7 +472,15 @@ const Appointments = () => {
             </div>
           </div>
         </div>
+        </div>
       )}
+        </div>
+
+                 {/* Right Column - Removed Quick Actions and Today's Appointments */}
+         <div className="appointments-right">
+           {/* Empty right column - content removed as requested */}
+         </div>
+      </div>
 
       {viewMode === 'list' && (
         /* List View */

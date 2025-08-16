@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import './Prescriptions.css';
+import { 
+  FaPills, 
+  FaCheck, 
+  FaClipboardList, 
+  FaExclamationTriangle,
+  FaSearch
+} from 'react-icons/fa';
 
 const Prescriptions = () => {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -166,64 +173,124 @@ const Prescriptions = () => {
 
   return (
     <div className="prescriptions-page">
+      {/* Header - Matching dashboard exactly */}
       <div className="prescriptions-header">
-        <div className="prescriptions-header__left">
-          <h1>Prescription Management</h1>
-          <p>Create and manage patient prescriptions</p>
-        </div>
-        <button className="new-prescription-btn" onClick={openNewPrescription}>
-          <span>💊</span>
-          New Prescription
-        </button>
+        <h1>Prescription Management</h1>
+        <p>Create and manage patient prescriptions</p>
+        <div className="doctor-dashboard-header-decoration"></div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="prescriptions-controls">
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="Search prescriptions by patient or type..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <span className="search-icon">🔍</span>
+      {/* Statistics Cards - Matching dashboard exactly */}
+      <div className="prescriptions-stats">
+        <div className="prescription-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
+          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
+            <FaPills />
+          </div>
+          <div className="prescription-stat-card-content">
+            <h3>{prescriptions.length}</h3>
+            <p>Total Prescriptions</p>
+          </div>
         </div>
-        
-        <div className="filters">
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="expired">Expired</option>
-          </select>
+        <div className="prescription-stat-card" style={{ borderLeftColor: "#2196F3" }}>
+          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
+            <FaCheck />
+          </div>
+          <div className="prescription-stat-card-content">
+            <h3>{prescriptions.filter(p => p.status === 'Active').length}</h3>
+            <p>Active</p>
+          </div>
+        </div>
+        <div className="prescription-stat-card" style={{ borderLeftColor: "#FF9800" }}>
+          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
+            <FaClipboardList />
+          </div>
+          <div className="prescription-stat-card-content">
+            <h3>{prescriptions.filter(p => p.status === 'Completed').length}</h3>
+            <p>Completed</p>
+          </div>
+        </div>
+        <div className="prescription-stat-card" style={{ borderLeftColor: "#F44336" }}>
+          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
+            <FaExclamationTriangle />
+          </div>
+          <div className="prescription-stat-card-content">
+            <h3>{prescriptions.filter(p => p.status === 'Expired').length}</h3>
+            <p>Expired</p>
+          </div>
         </div>
       </div>
 
-      {/* Prescriptions Grid */}
-      <div className="prescriptions-grid">
-        {filteredPrescriptions.map(prescription => (
-          <div key={prescription.id} className="prescription-card" onClick={() => handlePrescriptionClick(prescription)}>
-            <div className="prescription-card__header">
-              <img src={prescription.image} alt={prescription.patient} className="patient-avatar" />
-              <div className="prescription-status" style={{ backgroundColor: getStatusColor(prescription.status) }}>
-                {prescription.status}
+      <div className="prescriptions-content">
+        {/* Left Column */}
+        <div className="prescriptions-left">
+          {/* Search and Filters Section */}
+          <div className="prescriptions-section">
+            <div className="prescriptions-section-header">
+              <h2>Prescription Controls</h2>
+              <button className="prescriptions-view-all-btn" onClick={openNewPrescription}>
+                <FaPills /> New Prescription
+              </button>
+            </div>
+            <div className="prescriptions-controls">
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Search prescriptions by patient or type..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <span className="search-icon"><FaSearch /></span>
+              </div>
+              
+              <div className="filters">
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                  <option value="expired">Expired</option>
+                </select>
               </div>
             </div>
-            
-            <div className="prescription-card__body">
-              <h3>{prescription.patient}</h3>
-              <p className="prescription-type">{prescription.type}</p>
-              <p className="prescription-date">Prescribed: {prescription.date}</p>
-              <p className="medication-count">{prescription.medications.length} medication(s)</p>
-              <p className="next-refill">Next Refill: {prescription.nextRefill}</p>
+          </div>
+
+          {/* Prescriptions Grid Section */}
+          <div className="prescriptions-section">
+            <div className="prescriptions-section-header">
+              <h2>Prescriptions</h2>
+              <span className="prescriptions-count">{filteredPrescriptions.length} prescriptions</span>
             </div>
-            
-            <div className="prescription-card__footer">
-              <button className="view-btn">View Details</button>
-              <button className="refill-btn">Request Refill</button>
+            <div className="prescriptions-grid">
+              {filteredPrescriptions.map(prescription => (
+                <div key={prescription.id} className="prescription-card" onClick={() => handlePrescriptionClick(prescription)}>
+                  <div className="prescription-card__header">
+                    <img src={prescription.image} alt={prescription.patient} className="patient-avatar" />
+                    <div className="prescription-status" style={{ backgroundColor: getStatusColor(prescription.status) }}>
+                      {prescription.status}
+                    </div>
+                  </div>
+                  
+                  <div className="prescription-card__body">
+                    <h3>{prescription.patient}</h3>
+                    <p className="prescription-type">{prescription.type}</p>
+                    <p className="prescription-date">Prescribed: {prescription.date}</p>
+                    <p className="medication-count">{prescription.medications.length} medication(s)</p>
+                    <p className="next-refill">Next Refill: {prescription.nextRefill}</p>
+                  </div>
+                  
+                  <div className="prescription-card__footer">
+                    <button className="view-btn">View Details</button>
+                    <button className="refill-btn">Request Refill</button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Right Column - Empty for now */}
+        <div className="prescriptions-right">
+          {/* Empty right column - can be used for additional features later */}
+        </div>
       </div>
 
       {/* Prescription Details Modal */}

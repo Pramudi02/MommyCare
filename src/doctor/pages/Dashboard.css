@@ -1,61 +1,61 @@
-.dashboard {
+.doctor-dashboard-container {
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #1b495c 0%, #51386a 100%);
-  color: #fff;
+  background: #ffffff;
+  color: #333333;
 }
 
-/* Update the dashboard header styles */
-.dashboard__header {
+/* Updated dashboard header styles */
+.doctor-dashboard-header {
   position: relative;
   text-align: center;
   margin-bottom: 2.5rem;
   padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: #ffffff;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-/* Add new styles for the header background */
-.dashboard__header::before {
+/* Banner background without transparency */
+.doctor-dashboard-header::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/images/doctor-dashboard-banner.jpg'); /* You'll need to add this image */
+  background-image: url('/images/doctor-dashboard-banner.jpg');
   background-size: cover;
   background-position: center;
-  opacity: 0.2;
+  opacity: 1; /* Removed transparency */
   z-index: 0;
 }
 
-/* Ensure text stays above the background */
-.dashboard__header h1,
-.dashboard__header p {
+/* Ensure text stays above the background with better contrast */
+.doctor-dashboard-header h1,
+.doctor-dashboard-header p {
   position: relative;
   z-index: 1;
 }
 
-.dashboard__header h1 {
+.doctor-dashboard-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
-.dashboard__header p {
+.doctor-dashboard-header p {
   font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
-/* Add decorative elements */
-.dashboard__header-decoration {
+/* Updated decorative elements */
+.doctor-dashboard-header-decoration {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -64,36 +64,37 @@
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(255, 255, 255, 0.1)
+    rgba(0, 0, 0, 0.3)
   );
   z-index: 1;
 }
 
 /* Statistics Cards */
-.dashboard__stats {
+.doctor-dashboard-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.stat-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+.doctor-stat-card {
+  background: #ffffff;
   border-radius: 15px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.3s ease;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.stat-card:hover {
+.doctor-stat-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.stat-card__icon {
+.doctor-stat-card-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -103,63 +104,86 @@
   font-size: 1.5rem;
 }
 
-.stat-card__content h3 {
+.doctor-stat-card-content h3 {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  color: #111827;
+}
+
+.doctor-stat-card-content p {
+  color: #6b7280;
 }
 
 /* Dashboard Content Layout */
-.dashboard__content {
+.doctor-dashboard-content {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 2rem;
 }
 
 /* Section Styling */
-.dashboard__section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+.doctor-dashboard-section {
+  background: #ffffff;
   border-radius: 20px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.section-header {
+.doctor-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.section-header h2 {
+.doctor-section-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
+  color: #111827;
+}
+
+.doctor-view-all-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.doctor-view-all-btn:hover {
+  background: #4338ca;
 }
 
 /* Appointments List */
-.appointments-list {
+.doctor-appointments-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.appointment-item {
+.doctor-appointment-item {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f9fafb;
   border-radius: 12px;
-  transition: transform 0.2s ease;
+  border: 1px solid #f3f4f6;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.appointment-item:hover {
+.doctor-appointment-item:hover {
   transform: translateX(5px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.appointment-time {
+.doctor-appointment-time {
   font-weight: 600;
   color: #4f46e5;
   background: rgba(79, 70, 229, 0.1);
@@ -167,118 +191,160 @@
   border-radius: 8px;
 }
 
-.appointment-status {
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
+.doctor-appointment-details h4 {
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.doctor-appointment-details p {
+  color: #6b7280;
   font-size: 0.875rem;
 }
 
-.appointment-status.confirmed {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+.doctor-appointment-status {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
-.appointment-status.pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+.doctor-appointment-status.confirmed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.doctor-appointment-status.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 /* Quick Actions */
-.quick-actions {
+.doctor-quick-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
 }
 
-.quick-action-btn {
+.doctor-quick-action-btn {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  color: white;
+  color: #374151;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.875rem;
 }
 
-.quick-action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.doctor-quick-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
   transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.quick-action-icon {
+.doctor-quick-action-icon {
   font-size: 1.25rem;
 }
 
 /* Patients List */
-.patients-list {
+.doctor-patients-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.patient-item {
+.doctor-patient-item {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f9fafb;
   border-radius: 12px;
+  border: 1px solid #f3f4f6;
   transition: all 0.3s ease;
 }
 
-.patient-item:hover {
+.doctor-patient-item:hover {
   transform: translateX(5px);
-  background: rgba(255, 255, 255, 0.1);
+  background: #f3f4f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.patient-avatar img {
+.doctor-patient-avatar img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid #e5e7eb;
 }
 
-.patient-info h4 {
+.doctor-patient-info h4 {
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: #111827;
 }
 
-.patient-action-btn {
+.doctor-patient-age {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.doctor-patient-condition {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.doctor-patient-last-visit {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.doctor-patient-action-btn {
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  background: rgba(79, 70, 229, 0.2);
-  color: #4f46e5;
+  background: #4f46e5;
+  color: white;
   border: none;
   cursor: pointer;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
-.patient-action-btn:hover {
-  background: rgba(79, 70, 229, 0.3);
+.doctor-patient-action-btn:hover {
+  background: #4338ca;
 }
 
 /* Calendar Widget */
-.calendar-widget {
-  background: rgba(255, 255, 255, 0.05);
+.doctor-calendar-widget {
+  background: #f9fafb;
   border-radius: 15px;
   padding: 1rem;
+  border: 1px solid #f3f4f6;
 }
 
-.calendar-header {
+.doctor-calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.calendar-nav {
+.doctor-calendar-header span {
+  color: #111827;
+  font-weight: 600;
+}
+
+.doctor-calendar-nav {
   background: none;
   border: none;
-  color: white;
+  color: #374151;
   font-size: 1.25rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -286,33 +352,39 @@
   transition: background-color 0.2s;
 }
 
-.calendar-nav:hover {
-  background: rgba(255, 255, 255, 0.1);
+.doctor-calendar-nav:hover {
+  background: #f3f4f6;
 }
 
-.calendar-grid {
+.doctor-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
 }
 
-.calendar-day {
+.doctor-calendar-day {
   aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: 1px solid #f3f4f6;
 }
 
-.calendar-day:hover {
-  background: rgba(255, 255, 255, 0.1);
+.doctor-calendar-day:hover {
+  background: #f3f4f6;
 }
 
-.appointment-dot {
+.doctor-day-number {
+  color: #374151;
+  font-weight: 500;
+}
+
+.doctor-appointment-dot {
   background: #4f46e5;
   color: white;
   width: 20px;
@@ -327,21 +399,29 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .dashboard__content {
+  .doctor-dashboard-content {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .dashboard {
+  .doctor-dashboard-container {
     padding: 1rem;
   }
   
-  .dashboard__stats {
+  .doctor-dashboard-stats {
     grid-template-columns: 1fr;
   }
   
-  .quick-actions {
+  .doctor-quick-actions {
     grid-template-columns: 1fr;
+  }
+  
+  .doctor-dashboard-header {
+    padding: 2rem 1rem;
+  }
+  
+  .doctor-dashboard-header h1 {
+    font-size: 2rem;
   }
 }
