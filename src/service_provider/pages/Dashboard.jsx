@@ -13,7 +13,11 @@ import {
   ShoppingCart,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  HandHeart,
+  BarChart3,
+  MessageSquare,
+  Settings
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -26,32 +30,32 @@ const Dashboard = () => {
       value: '$12,450',
       change: '+12.5%',
       changeType: 'positive',
-      icon: <DollarSign className="w-8 h-8" />,
-      color: 'bg-green-500'
+      icon: <DollarSign className="sp-stat-icon" />,
+      color: 'sp-bg-green'
     },
     {
       title: 'Products Sold',
       value: '156',
       change: '+8.2%',
       changeType: 'positive',
-      icon: <Package className="w-8 h-8" />,
-      color: 'bg-blue-500'
+      icon: <Package className="sp-stat-icon" />,
+      color: 'sp-bg-blue'
     },
     {
       title: 'Active Customers',
       value: '89',
       change: '+5.7%',
       changeType: 'positive',
-      icon: <Users className="w-8 h-8" />,
-      color: 'bg-purple-500'
+      icon: <Users className="sp-stat-icon" />,
+      color: 'sp-bg-purple'
     },
     {
       title: 'Pending Orders',
       value: '23',
       change: '-2.1%',
       changeType: 'negative',
-      icon: <ShoppingCart className="w-8 h-8" />,
-      color: 'bg-orange-500'
+      icon: <ShoppingCart className="sp-stat-icon" />,
+      color: 'sp-bg-orange'
     }
   ];
 
@@ -125,99 +129,100 @@ const Dashboard = () => {
     {
       title: 'Add New Product',
       description: 'Create and list new baby products',
-      icon: <Plus className="w-6 h-6" />,
+      icon: <Plus className="sp-action-icon" />,
       action: 'add-product',
-      color: 'bg-blue-500'
+      color: 'sp-bg-blue'
     },
     {
       title: 'View Orders',
       description: 'Check and manage customer orders',
-      icon: <ShoppingCart className="w-6 h-6" />,
+      icon: <ShoppingCart className="sp-action-icon" />,
       action: 'view-orders',
-      color: 'bg-green-500'
+      color: 'sp-bg-green'
     },
     {
       title: 'Customer Support',
       description: 'Respond to customer inquiries',
-      icon: <Users className="w-6 h-6" />,
+      icon: <MessageSquare className="sp-action-icon" />,
       action: 'support',
-      color: 'bg-purple-500'
+      color: 'sp-bg-purple'
     },
     {
       title: 'Analytics Report',
       description: 'Generate detailed business reports',
-      icon: <TrendingUp className="w-6 h-6" />,
+      icon: <BarChart3 className="sp-action-icon" />,
       action: 'analytics',
-      color: 'bg-orange-500'
+      color: 'sp-bg-orange'
     }
   ];
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'text-green-600 bg-green-100';
+        return 'sp-status-completed';
       case 'processing':
-        return 'text-blue-600 bg-blue-100';
+        return 'sp-status-processing';
       case 'shipped':
-        return 'text-purple-600 bg-purple-100';
+        return 'sp-status-shipped';
       case 'pending':
-        return 'text-orange-600 bg-orange-100';
+        return 'sp-status-pending';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'sp-status-default';
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="w-4 h-4" />;
+        return <CheckCircle className="sp-status-icon" />;
       case 'processing':
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="sp-status-icon" />;
       case 'shipped':
-        return <Package className="w-4 h-4" />;
+        return <Package className="sp-status-icon" />;
       case 'pending':
-        return <AlertCircle className="w-4 h-4" />;
+        return <AlertCircle className="sp-status-icon" />;
       default:
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="sp-status-icon" />;
     }
   };
 
   return (
-    <div className="dashboard-page">
+    <div className="sp-dashboard-page">
       {/* Header */}
-      <div className="dashboard-header">
-        <div className="dashboard-header__left">
-          <h1>Welcome back, Service Provider! 👋</h1>
-          <p>Here's what's happening with your business today</p>
+      <div className="sp-dashboard-header">
+        <div className="sp-header-left">
+          <h1 className="sp-welcome-title">Welcome back, Service Provider! <HandHeart className="sp-wave-icon" /></h1>
+          <p className="sp-welcome-subtitle">Here's what's happening with your business today</p>
         </div>
-        <div className="dashboard-header__right">
-        <div className="period-selector">
-            <label htmlFor="period">Time Period:</label>
-          <select 
+        <div className="sp-header-right">
+          <div className="sp-period-selector">
+            <label htmlFor="period" className="sp-period-label">TIME PERIOD:</label>
+            <select 
               id="period"
-            value={selectedPeriod} 
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-          >
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
+              className="sp-period-select"
+              value={selectedPeriod} 
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+            >
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
               <option value="quarter">This Quarter</option>
-          </select>
+            </select>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="stats-grid">
+      <div className="sp-stats-grid">
         {stats.map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-card__icon" style={{ backgroundColor: stat.color.replace('bg-', '') }}>
+          <div key={index} className="sp-stat-card">
+            <div className={`sp-stat-icon-container ${stat.color}`}>
               {stat.icon}
             </div>
-            <div className="stat-card__content">
-              <h3 className="stat-card__title">{stat.title}</h3>
-              <div className="stat-card__value">{stat.value}</div>
-              <div className={`stat-card__change ${stat.changeType}`}>
+            <div className="sp-stat-content">
+              <h3 className="sp-stat-title">{stat.title}</h3>
+              <div className="sp-stat-value">{stat.value}</div>
+              <div className={`sp-stat-change ${stat.changeType}`}>
                 {stat.change}
               </div>
             </div>
@@ -226,28 +231,28 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="dashboard-content">
+      <div className="sp-dashboard-content">
         {/* Recent Orders */}
-        <div className="content-card orders-section">
-          <div className="content-card__header">
-            <h2>Recent Orders</h2>
-            <button className="view-all-btn">View All</button>
+        <div className="sp-content-card sp-orders-section">
+          <div className="sp-card-header">
+            <h2 className="sp-card-title">Recent Orders</h2>
+            <button className="sp-view-all-btn">View All</button>
           </div>
-          <div className="orders-list">
+          <div className="sp-orders-list">
             {recentOrders.map((order) => (
-              <div key={order.id} className="order-item">
-                <div className="order-item__left">
-                  <div className="order-id">{order.id}</div>
-                  <div className="order-customer">{order.customer}</div>
-                  <div className="order-product">{order.product}</div>
+              <div key={order.id} className="sp-order-item">
+                <div className="sp-order-left">
+                  <div className="sp-order-id">{order.id}</div>
+                  <div className="sp-order-customer">{order.customer}</div>
+                  <div className="sp-order-product">{order.product}</div>
                 </div>
-                <div className="order-item__right">
-                  <div className="order-amount">{order.amount}</div>
-                  <div className={`order-status ${getStatusColor(order.status)}`}>
+                <div className="sp-order-right">
+                  <div className="sp-order-amount">{order.amount}</div>
+                  <div className={`sp-order-status ${getStatusColor(order.status)}`}>
                     {getStatusIcon(order.status)}
                     <span>{order.status}</span>
-                </div>
-                  <div className="order-date">{order.date}</div>
+                  </div>
+                  <div className="sp-order-date">{order.date}</div>
                 </div>
               </div>
             ))}
@@ -255,27 +260,27 @@ const Dashboard = () => {
         </div>
 
         {/* Top Products */}
-        <div className="content-card products-section">
-          <div className="content-card__header">
-            <h2>Top Performing Products</h2>
-            <button className="view-all-btn">View All</button>
+        <div className="sp-content-card sp-products-section">
+          <div className="sp-card-header">
+            <h2 className="sp-card-title">Top Performing Products</h2>
+            <button className="sp-view-all-btn">View All</button>
           </div>
-          <div className="products-list">
+          <div className="sp-products-list">
             {topProducts.map((product, index) => (
-              <div key={index} className="product-item">
-                <div className="product-item__left">
-                <div className="product-image">{product.image}</div>
-                <div className="product-info">
-                    <div className="product-name">{product.name}</div>
-                  <div className="product-rating">
-                      <Star className="w-4 h-4 fill-current" />
-                    <span>{product.rating}</span>
+              <div key={index} className="sp-product-item">
+                <div className="sp-product-left">
+                  <div className="sp-product-image">{product.image}</div>
+                  <div className="sp-product-info">
+                    <div className="sp-product-name">{product.name}</div>
+                    <div className="sp-product-rating">
+                      <Star className="sp-star-icon" />
+                      <span>{product.rating}</span>
                     </div>
                   </div>
                 </div>
-                <div className="product-item__right">
-                  <div className="product-sales">{product.sales} sales</div>
-                  <div className="product-revenue">{product.revenue}</div>
+                <div className="sp-product-right">
+                  <div className="sp-product-sales">{product.sales} sales</div>
+                  <div className="sp-product-revenue">{product.revenue}</div>
                 </div>
               </div>
             ))}
@@ -284,19 +289,19 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="quick-actions">
-        <h2>Quick Actions</h2>
-        <div className="actions-grid">
+      <div className="sp-quick-actions">
+        <h2 className="sp-actions-title">Quick Actions</h2>
+        <div className="sp-actions-grid">
           {quickActions.map((action, index) => (
-            <div key={index} className="action-card">
-              <div className="action-card__icon" style={{ backgroundColor: action.color.replace('bg-', '') }}>
+            <div key={index} className="sp-action-card">
+              <div className={`sp-action-icon-container ${action.color}`}>
                 {action.icon}
               </div>
-              <div className="action-card__content">
-                <h3>{action.title}</h3>
-                <p>{action.description}</p>
+              <div className="sp-action-content">
+                <h3 className="sp-action-title">{action.title}</h3>
+                <p className="sp-action-description">{action.description}</p>
               </div>
-              <button className="action-btn">Go</button>
+              <button className="sp-action-btn">Go</button>
             </div>
           ))}
         </div>
