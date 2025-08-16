@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import './Appointments.css';
+import { 
+  FaCalendarAlt, 
+  FaCheck, 
+  FaClock, 
+  FaExclamationTriangle,
+  FaList,
+  FaClock as FaSchedule
+} from 'react-icons/fa';
 
 const Appointments = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -533,38 +541,184 @@ const Appointments = () => {
   return (
     <div className="appointments-page">
       <div className="appointments-header">
-        <div className="appointments-header__left">
-          <h1>Appointment Management</h1>
-          <p>Schedule and manage patient appointments</p>
+        <h1>Appointment Management</h1>
+        <p>Schedule and manage patient appointments</p>
+        <div className="doctor-dashboard-header-decoration"></div>
+      </div>
+
+      {/* Statistics Cards - Matching dashboard exactly */}
+      <div className="appointments-stats">
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
+            <FaCalendarAlt />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.length}</h3>
+            <p>Total Appointments</p>
+          </div>
         </div>
-        <div className="appointments-header__right">
-          <button className="new-appointment-btn">
-            <span>➕</span>
-            New Appointment
-          </button>
-          <div className="view-toggle">
-            <button 
-              className={`toggle-btn ${viewMode === 'today' ? 'active' : ''}`}
-              onClick={handleTodayClick}
-            >
-              Today
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'week' ? 'active' : ''}`}
-              onClick={handleWeekClick}
-            >
-              Week
-            </button>
-            <button 
-              className={`toggle-btn ${viewMode === 'month' ? 'active' : ''}`} 
-              onClick={handleMonthClick}
-            >
-              Month
-            </button>
-            
+
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#2196F3" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
+            <FaCheck />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Confirmed').length}</h3>
+            <p>Confirmed</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#FF9800" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
+            <FaClock />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.status === 'Pending').length}</h3>
+            <p>Pending</p>
+          </div>
+        </div>
+        <div className="appointment-stat-card" style={{ borderLeftColor: "#F44336" }}>
+          <div className="appointment-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
+            <FaExclamationTriangle />
+          </div>
+          <div className="appointment-stat-card-content">
+            <h3>{appointments.filter(apt => apt.priority === 'Urgent').length}</h3>
+            <p>Urgent Cases</p>
           </div>
         </div>
       </div>
+
+      <div className="appointments-content">
+        {/* Left Column */}
+        <div className="appointments-left">
+          {/* View Toggle Controls */}
+          <div className="appointments-section">
+            <div className="appointments-section-header">
+              <h2>Appointment Views</h2>
+            </div>
+            <div className="view-toggle">
+              <button 
+                className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
+                onClick={() => setViewMode('calendar')}
+              >
+                <FaCalendarAlt /> Calendar
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                <FaList /> List
+              </button>
+              <button 
+                className={`toggle-btn ${viewMode === 'schedule' ? 'active' : ''}`}
+                onClick={() => setViewMode('schedule')}
+              >
+                <FaSchedule /> Schedule
+              </button>
+            </div>
+          </div>
+
+          {viewMode === 'calendar' && (
+            /* Calendar View */
+            <div className="appointments-section">
+              <div className="appointments-section-header">
+                <h2>Calendar View</h2>
+                <button className="appointments-view-all-btn">New Appointment</button>
+              </div>
+              <div className="calendar-view">
+          <div className="calendar-header">
+            <button className="calendar-nav-btn" onClick={() => navigateMonth(-1)}>‹</button>
+            <h2>{getMonthName(selectedDate)}</h2>
+            <button className="calendar-nav-btn" onClick={() => navigateMonth(1)}>›</button>
+          </div>
+
+          <div className="calendar-grid">
+            <div className="calendar-weekdays">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                <div key={day} className="weekday">{day}</div>
+              ))}
+            </div>
+
+            
+          </div>
+        </div>
+
+        </div>
+      )}
+        </div>
+
+                 {/* Right Column - Removed Quick Actions and Today's Appointments */}
+         <div className="appointments-right">
+           {/* Empty right column - content removed as requested */}
+         </div>
+      </div>
+
+      {viewMode === 'list' && (
+        /* List View */
+        <div className="list-view">
+          <div className="list-controls">
+            <div className="date-filter">
+              <label>Filter by Date:</label>
+              <input 
+                type="date" 
+                value={selectedDate.toISOString().split('T')[0]}
+                onChange={(e) => setSelectedDate(new Date(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div className="appointments-table">
+            <div className="table-header">
+              <div className="header-cell">Time</div>
+              <div className="header-cell">Patient</div>
+              <div className="header-cell">Type</div>
+              <div className="header-cell">Duration</div>
+              <div className="header-cell">Status</div>
+              <div className="header-cell">Priority</div>
+              <div className="header-cell">Actions</div>
+            </div>
+            
+            {appointments
+              .filter(apt => apt.date === selectedDate.toISOString().split('T')[0])
+              .sort((a, b) => a.time.localeCompare(b.time))
+              .map(appointment => (
+                <div key={appointment.id} className="table-row">
+                  <div className="table-cell time-cell">
+                    {formatTime(appointment.time)}
+                    <span className="duration">({appointment.duration} min)</span>
+                  </div>
+                  <div className="table-cell patient-cell">
+                    <img src={appointment.image} alt={appointment.patient} />
+                    <span>{appointment.patient}</span>
+                  </div>
+                  <div className="table-cell">{appointment.type}</div>
+                  <div className="table-cell">{appointment.duration} min</div>
+                  <div className="table-cell">
+                    <span 
+                      className="status-badge"
+                      style={{ backgroundColor: getStatusColor(appointment.status) }}
+                    >
+                      {appointment.status}
+                    </span>
+                  </div>
+                  <div className="table-cell">
+                    <span 
+                      className="priority-badge"
+                      style={{ backgroundColor: getPriorityColor(appointment.priority) }}
+                    >
+                      {appointment.priority}
+                    </span>
+                  </div>
+                  <div className="table-cell actions-cell">
+                    <button className="action-btn view-btn">👁️</button>
+                    <button className="action-btn edit-btn">✏️</button>
+                    <button className="action-btn delete-btn">🗑️</button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
 
       <div className="appointments-content"> 
         <div className="main-panel">
