@@ -1,14 +1,20 @@
 const mongoose = require('mongoose');
 
+// ⚠️  SECURITY WARNING: This file contains hardcoded database credentials
+// This is NOT recommended for production. Use environment variables instead.
+// TODO: Remove hardcoded credentials and use only environment variables
+
 // Single database connection
 let connection = null;
 
 const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI;
+    // Try environment variable first, fallback to hardcoded URL
+    let uri = process.env.MONGODB_URI;
     
     if (!uri) {
-      throw new Error('MONGODB_URI environment variable is required');
+      // console.log('⚠️  MONGODB_URI not found in environment, using hardcoded fallback');
+      uri = 'mongodb+srv://pramupiyumika:Mommycare123new@mommycarecluster.noiaord.mongodb.net/mommycare?retryWrites=true&w=majority&appName=MommyCareCluster';
     }
     
     // Enhanced connection options for Node.js 22 + MongoDB Atlas compatibility
