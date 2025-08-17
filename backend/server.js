@@ -1,3 +1,13 @@
+// Check for required dependencies
+try {
+  const express = require('express');
+  const cors = require('cors');
+  console.log('✅ Dependencies loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load dependencies:', error.message);
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -8,8 +18,14 @@ const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
-console.log('🔄 Version: 2.2 - Railway Healthcheck & CORS Fix');
+console.log('🔄 Version: 2.4 - Environment Variable & CORS Fix');
 console.log('🌐 CORS Status: Enhanced for Railway deployment');
+
+// Environment variable validation
+console.log('🔧 Environment Variables:');
+console.log('   NODE_ENV:', process.env.NODE_ENV || 'not set');
+console.log('   PORT:', process.env.PORT || 'not set (using default 5000)');
+console.log('   ADDITIONAL_CORS_ORIGINS:', process.env.ADDITIONAL_CORS_ORIGINS || 'not set');
 
 // CORS middleware - allow frontend to connect
 const allowedOrigins = [
@@ -26,6 +42,12 @@ const allowedOrigins = [
 // Add any additional origins from environment variable
 if (process.env.ADDITIONAL_CORS_ORIGINS) {
   allowedOrigins.push(...process.env.ADDITIONAL_CORS_ORIGINS.split(','));
+}
+
+// FALLBACK: If no environment variables, allow all origins
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  console.log('⚠️  Development mode detected - allowing all origins');
+  allowedOrigins.push('*');
 }
 
 console.log('🌐 CORS Configuration:');
@@ -96,7 +118,29 @@ app.get('/api/test-cors', (req, res) => {
     message: 'CORS test successful',
     origin: req.headers.origin,
     timestamp: new Date().toISOString(),
-    version: '2.3 - FORCE ALLOW ALL'
+    version: '2.4 - Environment Variable Fix'
+  });
+});
+
+// Environment test endpoint
+app.get('/api/env-test', (req, res) => {
+  console.log('🔧 Environment test endpoint called');
+  
+  // Force CORS headers
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  res.status(200).json({
+    status: 'success',
+    message: 'Environment variables check',
+    data: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      PORT: process.env.PORT || 'not set (using default)',
+      ADDITIONAL_CORS_ORIGINS: process.env.ADDITIONAL_CORS_ORIGINS || 'not set',
+      timestamp: new Date().toISOString(),
+      version: '2.4 - Environment Variable Fix'
+    }
   });
 });
 
