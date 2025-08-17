@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 
 const ClinicVisitRequestSchema = new mongoose.Schema({
   mom: {
-    type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String for testing
-    required: [true, 'Mom ID is required'],
-    // For testing: can be either ObjectId or String
-    // In production: should be ObjectId only
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Mom ID is required']
   },
   requestType: {
     type: String,
@@ -82,4 +81,21 @@ ClinicVisitRequestSchema.virtual('requestAge').get(function() {
   return diffDays;
 });
 
-module.exports = mongoose.model('ClinicVisitRequest', ClinicVisitRequestSchema);
+// Function to get the ClinicVisitRequest model with the correct database connection
+let ClinicVisitRequest = null;
+
+const getClinicVisitRequestModel = () => {
+  if (!ClinicVisitRequest) {
+    const { getAuthConnection } = require('../config/database');
+    const authConnection = getAuthConnection();
+    
+    if (!authConnection) {
+      throw new Error('Auth database connection not available');
+    }
+    
+    ClinicVisitRequest = authConnection.model('ClinicVisitRequest', ClinicVisitRequestSchema);
+  }
+  return ClinicVisitRequest;
+};
+
+module.exports = getClinicVisitRequestModel;

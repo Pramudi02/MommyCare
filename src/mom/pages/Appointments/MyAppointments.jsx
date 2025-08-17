@@ -92,21 +92,26 @@ const AppointmentsDashboard = () => {
 
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  };
-
-  // Demo function to simulate login (for testing purposes)
-  const demoLogin = () => {
-    localStorage.setItem('token', 'demo-token-123');
-    setIsAuthenticated(true);
-    fetchClinicRequests(); // Refresh requests after login
-  };
-
-  const demoLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    setSelectedCategory(null);
-    setClinicRequests([]);
+    if (token) {
+      // Verify token is valid by checking if it's a real JWT token
+      try {
+        // Basic JWT token validation (check if it has 3 parts separated by dots)
+        const tokenParts = token.split('.');
+        if (tokenParts.length === 3) {
+          setIsAuthenticated(true);
+        } else {
+          // Invalid token format, clear it
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Token validation error:', error);
+        setIsAuthenticated(false);
+      }
+    } else {
+      setIsAuthenticated(false);
+    }
   };
 
   const fetchClinicRequests = async () => {
@@ -121,6 +126,7 @@ const AppointmentsDashboard = () => {
       if (error.message.includes('Not authorized') || error.message.includes('no token')) {
         // User is not authenticated, set empty requests array
         setClinicRequests([]);
+        setIsAuthenticated(false);
       } else {
         // For other errors, show in console but don't alert user
         console.warn('Could not fetch clinic requests:', error.message);
@@ -296,48 +302,6 @@ const AppointmentsDashboard = () => {
           </div>
         </div>
 
-        {/* Authentication Notice */}
-        {!isAuthenticated && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center text-blue-800">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                <span className="font-medium">Authentication Required</span>
-              </div>
-              <button
-                onClick={demoLogin}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-              >
-                Demo Login
-              </button>
-            </div>
-            <p className="text-blue-700 text-sm mt-1">
-              You need to be logged in to create and manage clinic visit requests. Please log in to your account to use this feature.
-            </p>
-          </div>
-        )}
-
-        {/* Demo Logout Button */}
-        {isAuthenticated && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center text-green-800">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span className="font-medium">Authenticated</span>
-              </div>
-              <button
-                onClick={demoLogout}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
-              >
-                Demo Logout
-              </button>
-            </div>
-            <p className="text-green-700 text-sm mt-1">
-              You are now logged in and can create clinic visit requests. This is a demo session.
-            </p>
-          </div>
-        )}
-
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
@@ -379,6 +343,11 @@ const AppointmentsDashboard = () => {
                     }`}>
                       {service.name}
                     </span>
+                    {!isAuthenticated && (
+                      <div className="text-xs text-gray-500 mt-1 text-center">
+                        Login required
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -404,14 +373,17 @@ const AppointmentsDashboard = () => {
               {selectedCategory && isAuthenticated && (
                 <button 
                   onClick={() => setSelectedCategory(null)}
-                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
                 >
                   Clear
                 </button>
               )}
             </div>
             <p className="text-xs text-gray-500 text-center mt-2">
-              Hospital will confirm your appointment
+              {isAuthenticated 
+                ? 'Hospital will confirm your appointment' 
+                : 'Please log in to request clinic visits'
+              }
             </p>
           </div>
 
