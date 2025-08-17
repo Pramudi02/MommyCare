@@ -236,8 +236,13 @@ process.on('uncaughtException', (err) => {
 
 // Start the server
 console.log('🚀 Starting MommyCare server...');
+console.log('📁 Current working directory:', process.cwd());
+console.log('🔧 Node version:', process.version);
+console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
+
 startServer().catch(error => {
   console.error('❌ Failed to start server:', error);
+  console.error('🔍 Full error details:', error);
   process.exit(1);
 });
 
