@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+
 const ClinicVisitRequest = require('../models/ClinicVisitRequest');
 const DoctorVisitRequest = require('../models/DoctorVisitRequest');
+
 
 /**
  * @swagger
@@ -53,6 +55,8 @@ router.post('/clinic-visit-requests', protect, async (req, res, next) => {
 			});
 		}
 
+		const ClinicVisitRequest = getClinicVisitRequestModel();
+
 		// Create the request
 		const request = await ClinicVisitRequest.create({
 			mom: req.user._id,
@@ -80,6 +84,7 @@ router.post('/clinic-visit-requests', protect, async (req, res, next) => {
 // Get all clinic visit requests for the current mom
 router.get('/clinic-visit-requests', protect, async (req, res, next) => {
 	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const requests = await ClinicVisitRequest.find({ mom: req.user._id })
 			.sort({ createdAt: -1 })
 			.populate('mom', 'firstName lastName email');
@@ -96,6 +101,7 @@ router.get('/clinic-visit-requests', protect, async (req, res, next) => {
 // Get a specific clinic visit request by ID
 router.get('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const request = await ClinicVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
@@ -122,6 +128,7 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 	try {
 		const { requestType, preferredDate, preferredTime, notes, location } = req.body;
 		
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const request = await ClinicVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
@@ -142,20 +149,23 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 			});
 		}
 
-		// Update fields
-		if (requestType) request.requestType = requestType;
-		if (preferredDate) request.preferredDate = new Date(preferredDate);
-		if (preferredTime) request.preferredTime = preferredTime;
-		if (notes !== undefined) request.notes = notes;
-		if (location) request.location = location;
-
-		await request.save();
-		await request.populate('mom', 'firstName lastName email');
+		// Update the request
+		const updatedRequest = await ClinicVisitRequest.findByIdAndUpdate(
+			req.params.id,
+			{
+				requestType: requestType || request.requestType,
+				preferredDate: preferredDate ? new Date(preferredDate) : request.preferredDate,
+				preferredTime: preferredTime || request.preferredTime,
+				notes: notes !== undefined ? notes : request.notes,
+				location: location || request.location
+			},
+			{ new: true, runValidators: true }
+		).populate('mom', 'firstName lastName email');
 
 		res.json({
 			status: 'success',
 			message: 'Clinic visit request updated successfully',
-			data: request
+			data: updatedRequest
 		});
 	} catch (err) {
 		next(err);
@@ -165,6 +175,7 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 // Cancel a clinic visit request
 router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next) => {
 	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const request = await ClinicVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
@@ -185,13 +196,17 @@ router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next
 			});
 		}
 
-		request.status = 'cancelled';
-		await request.save();
+		// Update status to cancelled
+		const updatedRequest = await ClinicVisitRequest.findByIdAndUpdate(
+			req.params.id,
+			{ status: 'cancelled' },
+			{ new: true, runValidators: true }
+		).populate('mom', 'firstName lastName email');
 
 		res.json({
 			status: 'success',
 			message: 'Clinic visit request cancelled successfully',
-			data: request
+			data: updatedRequest
 		});
 	} catch (err) {
 		next(err);
