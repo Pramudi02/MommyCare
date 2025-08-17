@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Shield, 
@@ -17,7 +17,9 @@ import {
   UserPlus,
   Lock,
   Unlock,
-  MoreHorizontal
+  MoreHorizontal,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import './RoleAccessManagement.css';
 
@@ -25,70 +27,136 @@ const RoleAccessManagement = () => {
   const [activeTab, setActiveTab] = useState('definitions');
   const [editingRole, setEditingRole] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Sample role definitions data
+  // Fetch users data from backend
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        throw new Error('No admin token found');
+      }
+
+      // Fetch all users
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users?limit=100`,
+        {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          window.location.href = '/admin/login';
+          return;
+        }
+        throw new Error('Failed to fetch users data');
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        setUsers(data.data.users);
+      } else {
+        throw new Error(data.message || 'Failed to fetch users data');
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Dynamic role definitions based on actual user data
   const roleDefinitions = [
     {
       id: 1,
       name: 'System Admin',
       code: 'SYSTEM_ADMIN',
       description: 'Full system access with administrative privileges',
-      userCount: 2,
+      userCount: users.filter(u => u.role === 'admin' || u.role === 'super_admin').length,
       isSystemRole: true,
       permissions: ['all_access', 'user_management', 'system_config', 'security_management']
     },
     {
       id: 2,
-      name: 'MOH Officer',
-      code: 'MOH_OFFICER',
-      description: 'Ministry of Health officer with regional oversight',
-      userCount: 8,
-      isSystemRole: true,
-      permissions: ['regional_management', 'report_generation', 'user_management', 'content_management']
-    },
-    {
-      id: 3,
       name: 'Doctor',
       code: 'DOCTOR',
       description: 'Medical doctor with patient management access',
-      userCount: 45,
+      userCount: users.filter(u => u.role === 'doctor').length,
       isSystemRole: true,
       permissions: ['patient_management', 'medical_records', 'appointments', 'ai_predictions']
     },
     {
-      id: 4,
+      id: 3,
       name: 'Midwife',
       code: 'MIDWIFE',
       description: 'Midwife with limited patient care access',
-      userCount: 67,
+      userCount: users.filter(u => u.role === 'midwife').length,
       isSystemRole: true,
       permissions: ['basic_patient_care', 'vaccinations', 'appointments', 'educational_content']
+    },
+    {
+      id: 4,
+      name: 'Mother',
+      code: 'MOTHER',
+      description: 'Pregnant mother with limited access to personal data',
+      userCount: users.filter(u => u.role === 'mom').length,
+      isSystemRole: true,
+      permissions: ['personal_data', 'appointments', 'educational_content', 'ai_predictions']
+    },
+    {
+      id: 5,
+      name: 'Service Provider',
+      code: 'SERVICE_PROVIDER',
+      description: 'External service provider with limited access',
+      userCount: users.filter(u => u.role === 'service_provider').length,
+      isSystemRole: true,
+      permissions: ['service_management', 'basic_reports', 'customer_data']
     }
   ];
 
-  // Sample permissions data
+  // Sample permissions data (this could be fetched from backend in future)
   const allPermissions = [
     { id: 'all_access', name: 'Full System Access', category: 'System', critical: true },
     { id: 'user_management', name: 'User Management', category: 'Administration' },
     { id: 'system_config', name: 'System Configuration', category: 'System', critical: true },
     { id: 'security_management', name: 'Security Management', category: 'Security', critical: true },
-    { id: 'regional_management', name: 'Regional Management', category: 'Administration' },
-    { id: 'report_generation', name: 'Report Generation', category: 'Analytics' },
-    { id: 'content_management', name: 'Content Management', category: 'Content' },
     { id: 'patient_management', name: 'Patient Management', category: 'Healthcare' },
     { id: 'medical_records', name: 'Medical Records Access', category: 'Healthcare' },
     { id: 'appointments', name: 'Appointment Management', category: 'Healthcare' },
     { id: 'ai_predictions', name: 'AI Predictions Access', category: 'AI/ML' },
     { id: 'basic_patient_care', name: 'Basic Patient Care', category: 'Healthcare' },
     { id: 'vaccinations', name: 'Vaccination Management', category: 'Healthcare' },
-    { id: 'educational_content', name: 'Educational Content', category: 'Content' }
+    { id: 'educational_content', name: 'Educational Content', category: 'Content' },
+    { id: 'personal_data', name: 'Personal Data Access', category: 'User' },
+    { id: 'service_management', name: 'Service Management', category: 'Business' },
+    { id: 'basic_reports', name: 'Basic Reports', category: 'Analytics' },
+    { id: 'customer_data', name: 'Customer Data Access', category: 'Business' }
   ];
 
-  // Sample user assignment data
-  const userRoleAssignments = [
-    { id: 1, name: 'Dr. Samanthi Silva', email: 'samanthi.silva@moh.lk', currentRole: 'Doctor', lastLogin: '2024-06-10', status: 'Active' },
-    { id: 2, name: 'Midwife Nirmala Perera', email: 'nirmala.p@clinic.lk', currentRole: 'Midwife', lastLogin: '2024-06-11', status: 'Active' }
-  ];
+  // Filter users based on search term
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const TabButton = ({ id, label, isActive, onClick }) => (
     <button
@@ -251,50 +319,62 @@ const RoleAccessManagement = () => {
             </tr>
           </thead>
           <tbody className="table-tbody">
-            {userRoleAssignments.map(user => (
-              <tr key={user.id} className="user-row">
-                <td className="checkbox-cell">
-                  <input type="checkbox" className="user-checkbox" />
-                </td>
-                <td className="user-cell">
-                  <div className="user-info">
-                    <div className="user-name">{user.name}</div>
-                    <div className="user-email">{user.email}</div>
-                  </div>
-                </td>
-                <td className="role-cell">
-                  <span className="role-badge">{user.currentRole}</span>
-                </td>
-                <td className="login-cell">
-                  {user.lastLogin}
-                </td>
-                <td className="status-cell">
-                  <span className={`status-badge ${user.status === 'Active' ? 'active' : 'inactive'}`}>
-                    {user.status}
-                  </span>
-                </td>
-                <td className="actions-cell">
-                  <div className="action-controls">
-                    <select className="role-select">
-                      <option>Change Role</option>
-                      {roleDefinitions.map(role => (
-                        <option key={role.id} value={role.code}>{role.name}</option>
-                      ))}
-                    </select>
-                    <button className="edit-user-btn">
-                      <Edit className="edit-icon" />
-                    </button>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map(user => (
+                <tr key={user.id} className="user-row">
+                  <td className="checkbox-cell">
+                    <input type="checkbox" className="user-checkbox" />
+                  </td>
+                  <td className="user-cell">
+                    <div className="user-info">
+                      <div className="user-name">{user.name}</div>
+                      <div className="user-email">{user.email}</div>
+                    </div>
+                  </td>
+                  <td className="role-cell">
+                    <span className="role-badge">{user.role}</span>
+                  </td>
+                  <td className="login-cell">
+                    {user.lastLogin || 'Never'}
+                  </td>
+                  <td className="status-cell">
+                    <span className={`status-badge ${user.status === 'Active' ? 'active' : 'inactive'}`}>
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="actions-cell">
+                    <div className="action-controls">
+                      <select className="role-select">
+                        <option>Change Role</option>
+                        {roleDefinitions.map(role => (
+                          <option key={role.id} value={role.code}>{role.name}</option>
+                        ))}
+                      </select>
+                      <a href={`/admin/users/${user.id}`} className="edit-user-btn">
+                        <Edit className="edit-icon" />
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="empty-state">
+                  <div className="empty-content">
+                    <Users className="empty-icon" />
+                    <h3>No users found</h3>
+                    <p>Try adjusting your search criteria</p>
                   </div>
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
       
       <div className="table-footer">
         <div className="footer-left">
-          <span className="footer-text">Showing 2 of 122 users</span>
+          <span className="footer-text">Showing {filteredUsers.length} of {users.length} users</span>
         </div>
         <div className="footer-right">
           <button className="export-btn">
@@ -306,6 +386,40 @@ const RoleAccessManagement = () => {
       </div>
     </div>
   );
+
+  if (loading) {
+    return (
+      <main className="dashboard-main">
+        <div className="loading-container">
+          <Loader2 className="loading-spinner" />
+          <p>Loading role and access management data...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="dashboard-main">
+        <div className="error-container">
+          <AlertCircle className="error-icon" />
+          <h3>Error Loading Data</h3>
+          <p>{error}</p>
+          <button onClick={fetchUsers} className="retry-btn">
+            Try Again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // Calculate total stats
+  const totalStats = {
+    totalRoles: roleDefinitions.length,
+    totalUsers: users.length,
+    totalPermissions: allPermissions.length,
+    customRoles: 0
+  };
 
   return (
     <main className="dashboard-main">
@@ -364,7 +478,7 @@ const RoleAccessManagement = () => {
                   <Shield className="stat-icon blue" />
                   <div className="stat-info">
                     <p className="stat-label">Total Roles</p>
-                    <p className="stat-value">4</p>
+                    <p className="stat-value">{totalStats.totalRoles}</p>
                   </div>
                 </div>
               </div>
@@ -373,7 +487,7 @@ const RoleAccessManagement = () => {
                   <Users className="stat-icon green" />
                   <div className="stat-info">
                     <p className="stat-label">Total Users</p>
-                    <p className="stat-value">122</p>
+                    <p className="stat-value">{totalStats.totalUsers}</p>
                   </div>
                 </div>
               </div>
@@ -382,7 +496,7 @@ const RoleAccessManagement = () => {
                   <Lock className="stat-icon orange" />
                   <div className="stat-info">
                     <p className="stat-label">Permissions</p>
-                    <p className="stat-value">14</p>
+                    <p className="stat-value">{totalStats.totalPermissions}</p>
                   </div>
                 </div>
               </div>
@@ -391,7 +505,7 @@ const RoleAccessManagement = () => {
                   <Settings className="stat-icon purple" />
                   <div className="stat-info">
                     <p className="stat-label">Custom Roles</p>
-                    <p className="stat-value">0</p>
+                    <p className="stat-value">{totalStats.customRoles}</p>
                   </div>
                 </div>
               </div>
