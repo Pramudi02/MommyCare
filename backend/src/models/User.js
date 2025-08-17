@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      /^\w+([.-]?\w+)@\w+([.-]?\w+)(\.\w{2,3})+$/,
       'Please enter a valid email'
     ]
   },
@@ -46,16 +46,10 @@ userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ role: 1 });
 
 // Virtual for full name
-UserSchema.virtual('fullName').get(function() {
+userSchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.lastName}`;
 });
-// Pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
+
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
@@ -104,4 +98,4 @@ const getUserModel = () => {
   return User;
 };
 
-module.exports = getUserModel;
+module.exports=getUserModel;
