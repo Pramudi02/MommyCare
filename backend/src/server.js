@@ -145,15 +145,24 @@ app.get('/health', (req, res) => {
 
 // Enhanced health check for Railway
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'MommyCare API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    database: 'connected'
-  });
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'MommyCare API is running',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      database: 'connected'
+    });
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Health check failed',
+      error: error.message
+    });
+  }
 });
 
 // Swagger API Documentation
@@ -226,6 +235,10 @@ process.on('uncaughtException', (err) => {
 });
 
 // Start the server
-startServer();
+console.log('🚀 Starting MommyCare server...');
+startServer().catch(error => {
+  console.error('❌ Failed to start server:', error);
+  process.exit(1);
+});
 
 module.exports = { app, server, io };
