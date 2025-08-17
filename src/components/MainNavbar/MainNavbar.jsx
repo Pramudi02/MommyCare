@@ -102,7 +102,7 @@ const MainNavbar = () => {
     if (user?.user?.firstName && user?.user?.lastName) {
       return `${user.user.firstName} ${user.user.lastName}`;
     }
-    return 'User';
+    return null; // Don't show anything if no real data
   };
 
   // Get user role from profile or auth context
@@ -113,7 +113,7 @@ const MainNavbar = () => {
     if (user?.user?.role) {
       return getRoleDisplayName(user.user.role);
     }
-    return 'Role';
+    return null; // Don't show anything if no real data
   };
 
   // Get user email from profile or auth context
@@ -124,7 +124,7 @@ const MainNavbar = () => {
     if (user?.user?.email) {
       return user.user.email;
     }
-    return 'email@example.com';
+    return null; // Don't show anything if no real data
   };
 
   // Get initials for avatar
@@ -135,7 +135,7 @@ const MainNavbar = () => {
     if (user?.user?.firstName && user?.user?.lastName) {
       return getInitials(user.user.firstName, user.user.lastName);
     }
-    return 'U';
+    return null; // Don't show anything if no real data
   };
 
   return (
@@ -159,24 +159,32 @@ const MainNavbar = () => {
                   onClick={handleProfileClick}
                   className="flex items-center space-x-3 p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
                 >
-                  {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                    {loading ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      getAvatarInitials()
-                    )}
-                  </div>
+                  {/* Avatar - Only show if we have real user data */}
+                  {getAvatarInitials() ? (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                      {loading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        getAvatarInitials()
+                      )}
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-sm">
+                      <User className="w-5 h-5" />
+                    </div>
+                  )}
                   
-                  {/* User Info */}
-                  <div className="hidden sm:block text-left">
-                    <div className="text-sm font-medium text-gray-900">
-                      {loading ? 'Loading...' : getDisplayName()}
+                  {/* User Info - Only show if we have real data */}
+                  {getDisplayName() && getUserRole() && (
+                    <div className="hidden sm:block text-left">
+                      <div className="text-sm font-medium text-gray-900">
+                        {loading ? 'Loading...' : getDisplayName()}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {loading ? '' : getUserRole()}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {loading ? '' : getUserRole()}
-                    </div>
-                  </div>
+                  )}
                   
                   {/* Dropdown Arrow */}
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
@@ -185,25 +193,27 @@ const MainNavbar = () => {
                 {/* Dropdown Menu */}
                 {profileDropdown && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-50 border border-gray-200">
-                    {/* Profile Header */}
-                    <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
-                          {getAvatarInitials()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-gray-900 truncate">
-                            {getDisplayName()}
+                    {/* Profile Header - Only show if we have real data */}
+                    {getDisplayName() && getUserEmail() && getUserRole() && (
+                      <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
+                            {getAvatarInitials()}
                           </div>
-                          <div className="text-xs text-gray-500 truncate">
-                            {getUserEmail()}
-                          </div>
-                          <div className="text-xs text-blue-600 font-medium mt-1">
-                            {getUserRole()}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">
+                              {getDisplayName()}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {getUserEmail()}
+                            </div>
+                            <div className="text-xs text-blue-600 font-medium mt-1">
+                              {getUserRole()}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Menu Items */}
                     <div className="py-1">
