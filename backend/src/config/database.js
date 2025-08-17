@@ -9,18 +9,16 @@ let connection = null;
 
 const connectDB = async () => {
   try {
-    // Try environment variable first, fallback to hardcoded URL
-    let uri = process.env.MONGODB_URI;
+    // Use environment variable for MongoDB URI
+    const uri = process.env.MONGODB_URI;
     
     if (!uri) {
-      console.log('⚠️  MONGODB_URI not found in environment, using hardcoded fallback');
-      uri = 'mongodb+srv://pramupiyumika:Mommycare123new@mommycarecluster.noiaord.mongodb.net/mommycare?retryWrites=true&w=majority&appName=MommyCareCluster';
+      throw new Error('MONGODB_URI environment variable is required');
     }
     
-    // Set JWT secret fallback if not provided
+    // Check if JWT secret is provided
     if (!process.env.JWT_SECRET) {
-      console.log('⚠️  JWT_SECRET not found in environment, using fallback');
-      process.env.JWT_SECRET = 'fallback-secret-key-for-development-only';
+      throw new Error('JWT_SECRET environment variable is required');
     }
     
     // Enhanced connection options for Node.js 22 + MongoDB Atlas compatibility

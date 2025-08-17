@@ -75,7 +75,7 @@ userSchema.methods.getSignedJwtToken = function() {
       role: this.role,
       email: this.email
     },
-    process.env.JWT_SECRET || 'fallback-secret-key-for-development-only',
+    process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE || '30d' }
   );
 };

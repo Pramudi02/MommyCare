@@ -14,25 +14,29 @@ const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// MongoDB connection
-const MONGODB_URI = 'mongodb+srv://pramupiyumika:Mommycare123new@mommycarecluster.noiaord.mongodb.net/mommycare?retryWrites=true&w=majority&appName=MommyCareCluster';
+// MongoDB connection - use environment variable
+const MONGODB_URI = process.env.MONGODB_URI;
 
-// Connect to MongoDB
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB successfully');
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection failed:', error.message);
-    console.log('⚠️  Continuing with in-memory storage as fallback');
-  });
+if (MONGODB_URI) {
+  // Connect to MongoDB if URI is provided
+  mongoose.connect(MONGODB_URI)
+    .then(() => {
+      console.log('✅ Connected to MongoDB successfully');
+    })
+    .catch((error) => {
+      console.error('❌ MongoDB connection failed:', error.message);
+      console.log('⚠️  Continuing with in-memory storage as fallback');
+    });
+} else {
+  console.log('⚠️  MONGODB_URI not set, using in-memory storage only');
+}
 
 // Simple in-memory user store for demo purposes (fallback)
 const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
-console.log('🔄 Version: 2.6 - DEMO SERVER with MongoDB Connection');
+console.log('🔄 Version: 2.7 - Environment Variables Only (No Hardcoded Secrets)');
 console.log('🌐 CORS Status: Enhanced for Railway deployment');
 
 // Environment variable validation
