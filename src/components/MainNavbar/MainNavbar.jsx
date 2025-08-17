@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Heart, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { getUserProfile } from '../../services/api';
@@ -147,19 +147,8 @@ const MainNavbar = () => {
             <img src="/mommy.png" alt="MommyCare Logo" className="logo-mammy h-24" />
           </div>
           
-          {/* Search Bar */}
-          <div className="flex flex-1 max-w-md mx-4 sm:mx-8">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-blue-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search baby care tips, products..."
-                className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-full bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent placeholder-blue-400 text-gray-700 text-sm sm:text-base"
-              />
-            </div>
-          </div>
+          {/* Spacer - removed search field */}
+          <div className="flex flex-1"></div>
           
           {/* Auth Section - Show Profile Dropdown if logged in, otherwise show Login/Signup */}
           <div className="flex items-center space-x-2 sm:space-x-3">

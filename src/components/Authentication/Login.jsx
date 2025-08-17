@@ -76,24 +76,32 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('✅ Login successful:', data.data);
+        console.log('👤 User role:', data.data.user.role);
+        
         // Use AuthContext login function
         login(data.data);
         
         // Navigate based on user role
         switch (data.data.user.role) {
           case 'mom':
+            console.log('🚀 Navigating to /mom');
             navigate('/mom');
             break;
           case 'doctor':
+            console.log('🚀 Navigating to /doctor');
             navigate('/doctor');
             break;
           case 'midwife':
+            console.log('🚀 Navigating to /midwife');
             navigate('/midwife');
             break;
           case 'service_provider':
+            console.log('🚀 Navigating to /service-provider');
             navigate('/service-provider');
             break;
           default:
+            console.log('⚠️ Unknown role, navigating to /');
             navigate('/');
         }
       } else if (response.status === 503) {

@@ -30,16 +30,21 @@ export const AuthProvider = ({ children }) => {
 
   // Login function
   const login = (userData) => {
+    console.log('🔐 AuthContext login called with:', userData);
+    
     // Store both token and user data
     const userInfo = {
       token: userData.token,
       user: userData.user || userData
     };
+    
+    console.log('👤 Setting user info:', userInfo);
     setUser(userInfo);
     
     // Store token in localStorage
     if (userData.token) {
       localStorage.setItem('token', userData.token);
+      console.log('💾 Token stored in localStorage');
     }
   };
 
