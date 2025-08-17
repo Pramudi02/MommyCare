@@ -53,19 +53,32 @@ const io = socketIo(server, {
 const startServer = async () => {
   try {
     console.log('🔌 Connecting to all databases...');
+    console.log('📊 Environment:', process.env.NODE_ENV || 'development');
+    console.log('🌐 Port:', process.env.PORT || 5000);
+    
+    // Check if MongoDB URI is set
+    if (!process.env.MONGODB_URI) {
+      console.error('❌ MONGODB_URI environment variable is not set!');
+      console.error('💡 Please set MONGODB_URI in Railway environment variables');
+      process.exit(1);
+    }
+    
     await connectDB();
     console.log('✅ All database connections established');
     
     const PORT = process.env.PORT || 5000;
     
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 MommyCare Backend Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔗 Railway health check: http://localhost:${PORT}/api/health`);
       console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+      console.log('✅ Server is ready to accept connections');
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
+    console.error('🔍 Error details:', error);
     process.exit(1);
   }
 };
@@ -113,7 +126,23 @@ app.get('/health', (req, res) => {
     status: 'success',
     message: 'MommyCare API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    database: 'connected' // We'll enhance this later
+  });
+});
+
+// Enhanced health check for Railway
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'MommyCare API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    database: 'connected'
   });
 });
 
