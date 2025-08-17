@@ -31,30 +31,17 @@ if (process.env.ADDITIONAL_CORS_ORIGINS) {
 console.log('🌐 CORS Configuration:');
 console.log('   Allowed origins:', allowedOrigins);
 
-// More robust CORS configuration
+// Simplified CORS configuration - FORCE ALLOW ALL
 app.use((req, res, next) => {
   console.log('🔍 CORS middleware processing:', req.method, req.url);
   console.log('   Origin:', req.headers.origin);
   console.log('   User-Agent:', req.headers['user-agent']);
   
-  // Set CORS headers explicitly
-  const origin = req.headers.origin;
-  
-  // Special handling for Railway healthcheck
-  if (req.headers['user-agent'] && req.headers['user-agent'].includes('Railway')) {
-    console.log('🚂 Railway healthcheck detected');
-    res.header('Access-Control-Allow-Origin', '*');
-  } else if (origin) {
-    res.header('Access-Control-Allow-Origin', origin);
-    console.log('✅ Set Access-Control-Allow-Origin:', origin);
-  } else {
-    res.header('Access-Control-Allow-Origin', '*');
-    console.log('✅ Set Access-Control-Allow-Origin: *');
-  }
-  
+  // FORCE ALLOW ALL ORIGINS - TEMPORARY FIX
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Credentials', 'false'); // Changed to false for * origin
   
   console.log('✅ CORS headers set for:', req.method, req.url);
   
@@ -69,26 +56,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Also apply the cors package for additional safety
+// Simplified cors package configuration
 app.use(cors({
-  origin: (origin, callback) => {
-    console.log('🔍 CORS package check for origin:', origin);
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      console.log('✅ Allowing request with no origin');
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ Allowing origin:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('❌ CORS blocked origin:', origin);
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
+  origin: true, // Allow all origins
+  credentials: false, // Disable credentials for * origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   optionsSuccessStatus: 200
@@ -115,12 +86,17 @@ app.get('/api/test-cors', (req, res) => {
   console.log('   Origin:', req.headers.origin);
   console.log('   Headers:', req.headers);
   
+  // Force CORS headers for this endpoint
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
   res.status(200).json({
     status: 'success',
     message: 'CORS test successful',
     origin: req.headers.origin,
     timestamp: new Date().toISOString(),
-    version: '2.0 - Enhanced CORS'
+    version: '2.3 - FORCE ALLOW ALL'
   });
 });
 
@@ -199,6 +175,11 @@ app.get('/api/auth/me', (req, res) => {
 app.post('/api/auth/register', (req, res) => {
   console.log('📝 User registration called:', req.body);
   
+  // FORCE CORS headers for registration
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
   // Check if user already exists
   if (users.has(req.body.email)) {
     return res.status(400).json({
@@ -247,6 +228,11 @@ app.post('/api/auth/register', (req, res) => {
 app.post('/api/auth/login', (req, res) => {
   console.log('🔐 User login called:', req.body);
   
+  // FORCE CORS headers for login
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
   // Find user by email
   const user = users.get(req.body.email);
   
@@ -263,7 +249,7 @@ app.post('/api/auth/login', (req, res) => {
       status: 'error',
       message: 'Invalid password'
     });
-  }
+    }
   
   console.log('✅ User logged in:', { email: user.email, role: user.role });
   
