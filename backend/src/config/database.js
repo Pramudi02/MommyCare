@@ -1,17 +1,13 @@
 const mongoose = require('mongoose');
 
-// Database connection instances for all 5 databases
-let authConnection = null;
-let adminConnection = null;
-let localConnection = null;
-let testConnection = null;
-let configConnection = null;
+// Single database connection
+let connection = null;
 
 const connectDB = async () => {
   try {
-    const baseUri = process.env.MONGODB_URI;
+    const uri = process.env.MONGODB_URI;
     
-    if (!baseUri) {
+    if (!uri) {
       throw new Error('MONGODB_URI environment variable is required');
     }
     
@@ -31,89 +27,39 @@ const connectDB = async () => {
       autoIndex: false
     };
     
-    console.log('🔌 Connecting to all databases...');
+    console.log('🔌 Connecting to database...');
     
-    // 1. Connect to Auth database (for user authentication)
-    const authDbUri = baseUri.endsWith('/') 
-      ? `${baseUri}Auth` 
-      : `${baseUri}/Auth`;
+    // Connect to the single database
+    connection = await mongoose.connect(uri, connectionOptions);
+    console.log(`✅ Database Connected: ${connection.connection.host}`);
+    console.log(`📊 Database: ${connection.connection.name}`);
     
-    authConnection = await mongoose.createConnection(authDbUri, connectionOptions);
-    console.log(`✅ Auth Database Connected: ${authConnection.host}`);
-    console.log(`📊 Auth Database: ${authConnection.name}`);
-    
-    // 2. Connect to Admin database (for system administration)
-    const adminDbUri = baseUri.endsWith('/') 
-      ? `${baseUri}admin` 
-      : `${baseUri}/admin`;
-    
-    adminConnection = await mongoose.createConnection(adminDbUri, connectionOptions);
-    console.log(`✅ Admin Database Connected: ${adminConnection.host}`);
-    console.log(`📊 Admin Database: ${adminConnection.name}`);
-    
-    // 3. Connect to Local database (for development)
-    const localDbUri = baseUri.endsWith('/') 
-      ? `${baseUri}local` 
-      : `${baseUri}/local`;
-    
-    localConnection = await mongoose.createConnection(localDbUri, connectionOptions);
-    console.log(`✅ Local Database Connected: ${localConnection.host}`);
-    console.log(`📊 Local Database: ${localConnection.name}`);
-    
-    // 4. Connect to Test database (for testing)
-    const testDbUri = baseUri.endsWith('/') 
-      ? `${baseUri}test` 
-      : `${baseUri}/test`;
-    
-    testConnection = await mongoose.createConnection(testDbUri, connectionOptions);
-    console.log(`✅ Test Database Connected: ${testConnection.host}`);
-    console.log(`📊 Test Database: ${testConnection.name}`);
-    
-    // 5. Connect to Config database (for MongoDB configuration)
-    const configDbUri = baseUri.endsWith('/') 
-      ? `${baseUri}config` 
-      : `${baseUri}/config`;
-    
-    configConnection = await mongoose.createConnection(configDbUri, connectionOptions);
-    console.log(`✅ Config Database Connected: ${configConnection.host}`);
-    console.log(`📊 Config Database: ${configConnection.name}`);
-    
-    // Handle connection events for all connections
-    [authConnection, adminConnection, localConnection, testConnection, configConnection].forEach(conn => {
-      if (conn) {
-        conn.on('error', (err) => {
-          console.error(`❌ Database connection error (${conn.name}):`, err.message);
-        });
+    // Handle connection events
+    connection.connection.on('error', (err) => {
+      console.error(`❌ Database connection error:`, err.message);
+    });
 
-        conn.on('disconnected', () => {
-          console.log(`⚠️ Database disconnected: ${conn.name}`);
-        });
+    connection.connection.on('disconnected', () => {
+      console.log(`⚠️ Database disconnected`);
+    });
 
-        conn.on('reconnected', () => {
-          console.log(`🔄 Database reconnected: ${conn.name}`);
-        });
-      }
+    connection.connection.on('reconnected', () => {
+      console.log(`🔄 Database reconnected`);
     });
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
       try {
-        await Promise.all([
-          authConnection?.close(),
-          adminConnection?.close(),
-          localConnection?.close(),
-          testConnection?.close(),
-          configConnection?.close()
-        ].filter(Boolean));
-        console.log('All MongoDB connections closed through app termination');
+        await connection.connection.close();
+        console.log('MongoDB connection closed through app termination');
         process.exit(0);
       } catch (error) {
-        console.error('Error closing connections:', error);
+        console.error('Error closing connection:', error);
         process.exit(1);
       }
     });
 
-    console.log('🎉 All 5 databases connected successfully!');
+    console.log('🎉 Database connected successfully!');
 
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
@@ -121,15 +67,19 @@ const connectDB = async () => {
   }
 };
 
-// Get database connections
-const getAuthConnection = () => authConnection;
-const getAdminConnection = () => adminConnection;
-const getLocalConnection = () => localConnection;
-const getTestConnection = () => testConnection;
-const getConfigConnection = () => configConnection;
+// Get database connection
+const getConnection = () => connection;
+
+// For backward compatibility, keep the old function names but they all return the same connection
+const getAuthConnection = () => connection;
+const getAdminConnection = () => connection;
+const getLocalConnection = () => connection;
+const getTestConnection = () => connection;
+const getConfigConnection = () => connection;
 
 module.exports = {
   connectDB,
+  getConnection,
   getAuthConnection,
   getAdminConnection,
   getLocalConnection,
