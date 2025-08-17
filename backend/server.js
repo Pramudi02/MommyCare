@@ -26,9 +26,32 @@ if (process.env.ADDITIONAL_CORS_ORIGINS) {
 console.log('🌐 CORS Configuration:');
 console.log('   Allowed origins:', allowedOrigins);
 
+// More robust CORS configuration
+app.use((req, res, next) => {
+  console.log('🔍 CORS middleware processing:', req.method, req.url);
+  console.log('   Origin:', req.headers.origin);
+  console.log('   User-Agent:', req.headers['user-agent']);
+  
+  // Set CORS headers explicitly
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    console.log('✅ Handling OPTIONS preflight request');
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
+// Also apply the cors package for additional safety
 app.use(cors({
   origin: (origin, callback) => {
-    console.log('🔍 CORS check for origin:', origin);
+    console.log('🔍 CORS package check for origin:', origin);
     
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
@@ -50,9 +73,6 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// Handle preflight requests
-app.options('*', cors());
-
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -65,6 +85,20 @@ app.get('/health', (req, res) => {
     message: 'MommyCare API is running',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
+  });
+});
+
+// Test CORS endpoint
+app.get('/api/test-cors', (req, res) => {
+  console.log('🧪 CORS test endpoint called');
+  console.log('   Origin:', req.headers.origin);
+  console.log('   Headers:', req.headers);
+  
+  res.status(200).json({
+    status: 'success',
+    message: 'CORS test successful',
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
   });
 });
 
