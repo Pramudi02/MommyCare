@@ -97,28 +97,27 @@ const DoctorChat = () => {
 
     socket.on('new_message', (data) => {
       const msg = data.message || {};
-      const senderId = msg.senderId;
-      const recipientId = msg.recipientId;
-
-      // In doctor view, selectedChat is momId. If the sender is momId, mark as 'mom'; if sender is current doctor, mark as 'doctor'
-      if (selectedChat && (senderId === selectedChat || recipientId === selectedChat)) {
+      const conversationId = data.conversationId;
+      
+      // Only append messages for the currently active conversation
+      if (activeConversationId && conversationId === activeConversationId) {
         setChatMessages(prev => [...prev, {
           id: msg.id,
-          sender: senderId === selectedChat ? 'mom' : 'doctor',
+          // Determine sender based on current user vs message sender
+          sender: msg.senderId === currentUser?._id ? 'doctor' : 'mom',
           message: msg.content,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           type: msg.messageType,
           status: msg.status || 'delivered'
         }]);
-      } else if (!selectedChat && senderId) {
+      } else if (!selectedChat && conversationId) {
         // Auto-select the mom who sent the message and load conversation messages
-        const momExists = moms.some(m => m.id === senderId);
+        const momId = msg.senderId === currentUser?._id ? msg.recipientId : msg.senderId;
+        const momExists = moms.some(m => m.id === momId);
         if (momExists) {
-          setSelectedChat(senderId);
-          if (data.conversationId) {
-            setActiveConversationId(data.conversationId);
-            fetchMessages(data.conversationId);
-          }
+          setSelectedChat(momId);
+          setActiveConversationId(conversationId);
+          fetchMessages(conversationId);
           setChatMessages(prev => [...prev, {
             id: msg.id,
             sender: 'mom',
@@ -132,8 +131,9 @@ const DoctorChat = () => {
     });
 
     socket.on('typing_indicator', (data) => {
-      const { userId, isTyping: typing } = data || {};
-      if (userId && userId === selectedChat) {
+      const { conversationId, userId, isTyping: typing } = data || {};
+      // Only show typing for the currently active conversation
+      if (activeConversationId && conversationId === activeConversationId && userId !== currentUser?._id) {
         setIsTyping(!!typing);
       } else {
         setIsTyping(false);
@@ -168,7 +168,7 @@ const DoctorChat = () => {
           });
           if (response.ok) {
             const userData = await response.json();
-            setCurrentUser(userData.data);
+            setCurrentUser(userData.user);
           }
         }
       } catch (error) {
@@ -367,7 +367,10 @@ const DoctorChat = () => {
   // Handle typing indicator
   const handleTyping = (isTyping) => {
     if (socket && activeConversationId) {
-      socket.emit(isTyping ? 'typing_start' : 'typing_stop', activeConversationId);
+      socket.emit(isTyping ? 'typing_start' : 'typing_stop', {
+        conversationId: activeConversationId,
+        userId: currentUser?._id
+      });
     }
   };
 
