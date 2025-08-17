@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, MapPin, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory }) => {
+const DoctorVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory }) => {
   const [formData, setFormData] = useState({
     requestType: selectedCategory || '',
     preferredDate: '',
@@ -61,14 +61,16 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      onSubmit(formData);
+    if (!validateForm()) {
+      return;
     }
+
+    onSubmit(formData);
   };
 
   const handleClose = () => {
     setFormData({
-      requestType: '',
+      requestType: selectedCategory || '',
       preferredDate: '',
       preferredTime: '',
       location: '',
@@ -155,10 +157,10 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Request Clinic Visit</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Request Doctor Visit</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -169,12 +171,12 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Request Type */}
+          {/* Request Type - Read Only */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Request Type <span className="text-red-500">*</span>
             </label>
-            <div className="w-full px-4 py-3 bg-pink-50 border border-pink-200 rounded-lg text-pink-700 font-medium">
+            <div className="w-full px-3 py-2 bg-cyan-50 border border-cyan-200 rounded-lg text-cyan-700 font-medium">
               {selectedCategory || 'No category selected'}
             </div>
           </div>
@@ -192,11 +194,11 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                 onClick={() => setShowCalendar(!showCalendar)}
                 readOnly
                 placeholder="Click to select date"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent cursor-pointer ${
-                  errors.preferredDate ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-200 focus:border-cyan-400 transition-colors cursor-pointer ${
+                  errors.preferredDate ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Calendar className="absolute right-3 top-2.5 text-gray-400" size={20} />
             </div>
             
             {/* Calendar Popup */}
@@ -241,9 +243,9 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                           : isPastDate(day)
                           ? 'text-gray-300 cursor-not-allowed'
                           : isToday(day)
-                          ? 'bg-pink-500 text-white font-bold'
+                          ? 'bg-cyan-500 text-white font-bold'
                           : isSelected(day)
-                          ? 'bg-pink-200 text-pink-800 font-medium'
+                          ? 'bg-cyan-200 text-cyan-800 font-medium'
                           : 'hover:bg-gray-100 text-gray-700'
                       }`}
                     >
@@ -255,10 +257,10 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
             )}
             
             {errors.preferredDate && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <div className="flex items-center mt-1 text-red-500 text-sm">
                 <AlertCircle size={16} className="mr-1" />
                 {errors.preferredDate}
-              </p>
+              </div>
             )}
           </div>
 
@@ -267,26 +269,29 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Preferred Time <span className="text-red-500">*</span>
             </label>
-            <select
-              name="preferredTime"
-              value={formData.preferredTime}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-                errors.preferredTime ? 'border-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="">Select preferred time</option>
-              {timeSlots.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                name="preferredTime"
+                value={formData.preferredTime}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-200 focus:border-cyan-400 transition-colors ${
+                  errors.preferredTime ? 'border-red-300' : 'border-gray-300'
+                }`}
+              >
+                <option value="">Select preferred time</option>
+                {timeSlots.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+              <Clock className="absolute right-3 top-2.5 text-gray-400" size={20} />
+            </div>
             {errors.preferredTime && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <div className="flex items-center mt-1 text-red-500 text-sm">
                 <AlertCircle size={16} className="mr-1" />
                 {errors.preferredTime}
-              </p>
+              </div>
             )}
           </div>
 
@@ -302,17 +307,17 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                 value={formData.location}
                 onChange={handleInputChange}
                 placeholder="Enter clinic/hospital location"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-                  errors.location ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-200 focus:border-cyan-400 transition-colors ${
+                  errors.location ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
-              <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <MapPin className="absolute right-3 top-2.5 text-gray-400" size={20} />
             </div>
             {errors.location && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <div className="flex items-center mt-1 text-red-500 text-sm">
                 <AlertCircle size={16} className="mr-1" />
                 {errors.location}
-              </p>
+              </div>
             )}
           </div>
 
@@ -328,27 +333,38 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                 onChange={handleInputChange}
                 placeholder="Any additional information or special requirements..."
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                maxLength={500}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-200 focus:border-cyan-400 transition-colors resize-none"
               />
               <FileText className="absolute right-3 top-3 text-gray-400" size={20} />
             </div>
+            <div className="text-xs text-gray-500 text-right mt-1">
+              {formData.notes.length}/500
+            </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex gap-3 pt-4">
+          {/* Action Buttons */}
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-300 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
             >
-              {isLoading ? 'Submitting...' : 'Submit Request'}
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Submitting...
+                </div>
+              ) : (
+                'Submit Request'
+              )}
             </button>
           </div>
         </form>
@@ -357,4 +373,4 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
   );
 };
 
-export default ClinicVisitRequestModal;
+export default DoctorVisitRequestModal;
