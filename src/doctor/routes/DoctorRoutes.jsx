@@ -9,6 +9,7 @@ import MedicalRecords from '../pages/MedicalRecords';
 import Analytics from '../pages/Analytics';
 import Settings from '../pages/Settings';
 import PatientDetails from '../pages/PatientDetails';
+import DoctorChat from '../pages/DoctorChat';
 
 export default (
   <Route path="/doctor" element={<DoctorLayout />}>
@@ -18,6 +19,7 @@ export default (
     <Route path="prescriptions" element={<Prescriptions />} />
     <Route path="medical-records" element={<MedicalRecords />} />
     <Route path="analytics" element={<Analytics />} />
+    <Route path="chat" element={<DoctorChat />} />
     <Route path="settings" element={<Settings />} />
     <Route path="patients/PatientDetails" element={<PatientDetails/>} />
   </Route>
