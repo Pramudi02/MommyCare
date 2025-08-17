@@ -52,8 +52,6 @@ const HealthcareProviders = () => {
         throw new Error('No admin token found');
       }
 
-      console.log('Fetching healthcare providers data...');
-
       // Fetch users with roles 'doctor' or 'midwife'
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users?limit=100`,
@@ -76,16 +74,12 @@ const HealthcareProviders = () => {
       }
 
       const data = await response.json();
-      console.log('API Response:', data);
-      console.log('Raw users data:', data.data.users);
       
       if (data.status === 'success') {
         // Filter and transform user data to provider format
         const allUsers = data.data.users;
-        console.log('All users:', allUsers);
         
         const doctorMidwifeUsers = allUsers.filter(user => user.role === 'doctor' || user.role === 'midwife');
-        console.log('Doctor and Midwife users:', doctorMidwifeUsers);
         
         const allProviders = doctorMidwifeUsers.map(user => ({
           id: user.id,
@@ -96,23 +90,20 @@ const HealthcareProviders = () => {
           phone: user.phone || 'Not specified',
           clinic: user.clinic || 'Not specified',
           location: user.location || 'Not specified',
-          patients: user.patients || Math.floor(Math.random() * 50) + 10, // Random for demo
+          patients: user.patients || 0,
           status: user.status === 'Active' ? 'verified' : 'pending',
           joinDate: user.joinDate || 'Not specified',
-          rating: user.rating || (Math.random() * 1 + 4).toFixed(1), // Random for demo
-          completedAppointments: user.completedAppointments || Math.floor(Math.random() * 200) + 50, // Random for demo
+          rating: user.rating || '0.0',
+          completedAppointments: user.completedAppointments || 0,
           verificationStatus: user.status === 'Active' ? 'approved' : 'pending',
-          experience: user.experience || `${Math.floor(Math.random() * 15) + 2} years`, // Random for demo
+          experience: user.experience || 'Not specified',
           qualifications: user.qualifications || (user.role === 'doctor' ? 'MBBS' : 'Diploma in Midwifery'),
-          availability: user.availability || 'Monday-Friday',
+          availability: user.availability || 'Not specified',
           lastActive: user.lastLogin || 'Never',
           avatar: user.avatar || user.name.split(' ').map(n => n[0]).join('').toUpperCase(),
           avatarColor: user.avatarColor || (user.role === 'doctor' ? 'blue' : 'green')
         }));
 
-        console.log('Transformed providers:', allProviders);
-        console.log('Doctors count:', allProviders.filter(p => p.type === 'doctor').length);
-        console.log('Midwives count:', allProviders.filter(p => p.type === 'midwife').length);
         setProviders(allProviders);
       } else {
         throw new Error(data.message || 'Failed to fetch providers data');
@@ -132,7 +123,6 @@ const HealthcareProviders = () => {
 
   // Get current providers based on active view
   const currentProviders = providers.filter(provider => provider.type === activeView);
-  console.log('Current providers for view:', activeView, currentProviders);
 
   // Apply search and filters
   const filteredProviders = currentProviders.filter(provider => {
@@ -146,20 +136,18 @@ const HealthcareProviders = () => {
     
     return matchesSearch && matchesStatus && matchesSpecialization;
   });
-  console.log('Filtered providers:', filteredProviders);
 
   // Get unique specializations for current view
   const specializations = [...new Set(currentProviders.map(p => p.specialization))];
-  console.log('Available specializations:', specializations);
 
   // Calculate stats for current view
   const currentStats = {
     total: currentProviders.length,
     verified: currentProviders.filter(p => p.status === 'verified').length,
     pending: currentProviders.filter(p => p.status === 'pending').length,
-    totalPatients: currentProviders.reduce((sum, p) => sum + p.patients, 0),
+    totalPatients: currentProviders.reduce((sum, p) => sum + (parseInt(p.patients) || 0), 0),
     avgRating: currentProviders.length > 0 
-      ? (currentProviders.reduce((sum, p) => sum + parseFloat(p.rating), 0) / currentProviders.length).toFixed(1)
+      ? (currentProviders.reduce((sum, p) => sum + (parseFloat(p.rating) || 0), 0) / currentProviders.length).toFixed(1)
       : '0.0'
   };
 
@@ -322,7 +310,7 @@ const HealthcareProviders = () => {
                 <th className="providers-table-header-cell">Contact Info</th>
                 <th className="providers-table-header-cell">Specialization</th>
                 <th className="providers-table-header-cell">Experience</th>
-                <th className="providers-table-header-cell">Patients</th>
+                <th className="providers-table-header-cell">Statistics</th>
                 <th className="providers-table-header-cell">Status</th>
                 <th className="providers-table-header-cell">Actions</th>
               </tr>
@@ -371,11 +359,15 @@ const HealthcareProviders = () => {
                     <td className="providers-stats-cell">
                       <div className="providers-stats-mini">
                         <div className="providers-stat-mini-item">
-                          <div className="providers-stat-mini-number">{provider.patients}</div>
+                          <div className="providers-stat-mini-number">{provider.patients || 0}</div>
                           <div className="providers-stat-mini-label">Patients</div>
                         </div>
                         <div className="providers-stat-mini-item">
-                          <div className="providers-stat-mini-number">{provider.rating}</div>
+                          <div className="providers-stat-mini-number">{provider.completedAppointments || 0}</div>
+                          <div className="providers-stat-mini-label">Appointments</div>
+                        </div>
+                        <div className="providers-stat-mini-item">
+                          <div className="providers-stat-mini-number">{provider.rating || '0.0'}</div>
                           <div className="providers-stat-mini-label">Rating</div>
                         </div>
                       </div>
