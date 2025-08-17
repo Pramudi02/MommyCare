@@ -102,7 +102,7 @@ const MainNavbar = () => {
     if (user?.user?.firstName && user?.user?.lastName) {
       return `${user.user.firstName} ${user.user.lastName}`;
     }
-    return 'User';
+    return '';
   };
 
   // Get user role from profile or auth context
@@ -113,7 +113,7 @@ const MainNavbar = () => {
     if (user?.user?.role) {
       return getRoleDisplayName(user.user.role);
     }
-    return 'Role';
+    return '';
   };
 
   // Get user email from profile or auth context
@@ -124,7 +124,7 @@ const MainNavbar = () => {
     if (user?.user?.email) {
       return user.user.email;
     }
-    return 'email@example.com';
+    return '';
   };
 
   // Get initials for avatar
@@ -179,15 +179,17 @@ const MainNavbar = () => {
                     )}
                   </div>
                   
-                  {/* User Info */}
-                  <div className="hidden sm:block text-left">
-                    <div className="text-sm font-medium text-gray-900">
-                      {loading ? 'Loading...' : getDisplayName()}
+                  {/* User Info - Only show if we have data */}
+                  {getDisplayName() && getUserRole() && (
+                    <div className="hidden sm:block text-left">
+                      <div className="text-sm font-medium text-gray-900">
+                        {loading ? 'Loading...' : getDisplayName()}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {loading ? '' : getUserRole()}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {loading ? '' : getUserRole()}
-                    </div>
-                  </div>
+                  )}
                   
                   {/* Dropdown Arrow */}
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
@@ -203,15 +205,21 @@ const MainNavbar = () => {
                           {getAvatarInitials()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-gray-900 truncate">
-                            {getDisplayName()}
-                          </div>
-                          <div className="text-xs text-gray-500 truncate">
-                            {getUserEmail()}
-                          </div>
-                          <div className="text-xs text-blue-600 font-medium mt-1">
-                            {getUserRole()}
-                          </div>
+                          {getDisplayName() && (
+                            <div className="text-sm font-semibold text-gray-900 truncate">
+                              {getDisplayName()}
+                            </div>
+                          )}
+                          {getUserEmail() && (
+                            <div className="text-xs text-gray-500 truncate">
+                              {getUserEmail()}
+                            </div>
+                          )}
+                          {getUserRole() && (
+                            <div className="text-xs text-blue-600 font-medium mt-1">
+                              {getUserRole()}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
