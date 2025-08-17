@@ -143,7 +143,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
           type: msg.messageType,
-          status: msg.status || 'delivered'
+          status: msg.status || 'delivered',
+          replyTo: msg.replyTo ? {
+            sender: msg.replyTo.sender,
+            message: msg.replyTo.content
+          } : null
         };
         
         // Add new message and sort by timestamp to maintain correct order
@@ -321,7 +325,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
             timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
             type: msg.messageType,
-            status: msg.read ? 'read' : 'delivered'
+            status: msg.read ? 'read' : 'delivered',
+            replyTo: msg.replyTo ? {
+              sender: msg.replyTo.sender,
+              message: msg.replyTo.content
+            } : null
           }))
           .sort((a, b) => a.originalTimestamp - b.originalTimestamp); // Sort by timestamp (oldest first)
         
@@ -1025,21 +1033,45 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                           </>
                         )}
                         {msg.type === 'file' && (
-                          <div className="chat-file-message">
-                            <File size={20} />
-                            <div className="chat-file-info">
-                              <span className="chat-file-name">{msg.message}</span>
-                              <span className="chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="chat-file-message">
+                              <File size={20} />
+                              <div className="chat-file-info">
+                                <span className="chat-file-name">{msg.message}</span>
+                                <span className="chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                              </div>
+                              <button className="chat-download-btn">
+                                <Download size={16} />
+                              </button>
                             </div>
-                            <button className="chat-download-btn">
-                              <Download size={16} />
-                            </button>
-                          </div>
+                          </>
                         )}
                         {msg.type === 'image' && (
-                          <div className="chat-image-message">
-                            <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
-                          </div>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="chat-image-message">
+                              <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
+                            </div>
+                          </>
                         )}
                         
                         <div className="chat-message-meta">
