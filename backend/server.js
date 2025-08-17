@@ -10,15 +10,29 @@ try {
 
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Simple in-memory user store for demo purposes
+// MongoDB connection
+const MONGODB_URI = 'mongodb+srv://pramupiyumika:Mommycare123new@mommycarecluster.noiaord.mongodb.net/mommycare?retryWrites=true&w=majority&appName=MommyCareCluster';
+
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('✅ Connected to MongoDB successfully');
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.log('⚠️  Continuing with in-memory storage as fallback');
+  });
+
+// Simple in-memory user store for demo purposes (fallback)
 const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
-console.log('🔄 Version: 2.5 - DEMO SERVER - Force Railway Redeploy');
+console.log('🔄 Version: 2.6 - DEMO SERVER with MongoDB Connection');
 console.log('🌐 CORS Status: Enhanced for Railway deployment');
 
 // Environment variable validation
