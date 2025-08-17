@@ -13,9 +13,13 @@ const MainNavbar = () => {
 
   // Fetch user profile when component mounts or when authentication status changes
   useEffect(() => {
+    console.log('🔍 MainNavbar useEffect - Auth status:', { isAuthenticated, hasToken: !!user?.token, user });
+    
     if (isAuthenticated && user?.token) {
+      console.log('📱 Fetching user profile...');
       fetchUserProfile();
     } else {
+      console.log('📱 Not authenticated or no token, clearing profile');
       setUserProfile(null);
     }
   }, [isAuthenticated, user?.token]);
@@ -24,6 +28,7 @@ const MainNavbar = () => {
     try {
       setLoading(true);
       const profile = await getUserProfile();
+      console.log('📱 Fetched user profile:', profile);
       setUserProfile(profile);
       // Update the auth context with the fetched profile
       updateUserProfile(profile);
@@ -31,7 +36,11 @@ const MainNavbar = () => {
       console.error('Failed to fetch user profile:', error);
       // If profile fetch fails, try to get basic info from auth context
       if (user?.user) {
+        console.log('📱 Using auth context user data:', user.user);
         setUserProfile(user.user);
+      } else {
+        console.log('📱 No user data available');
+        setUserProfile(null);
       }
     } finally {
       setLoading(false);
@@ -138,6 +147,16 @@ const MainNavbar = () => {
     return null; // Don't show anything if no real data
   };
 
+  // Check if we have any user data to display
+  const hasUserData = () => {
+    return !!(getDisplayName() && getUserRole());
+  };
+
+  // Check if we have avatar data
+  const hasAvatarData = () => {
+    return !!getAvatarInitials();
+  };
+
   return (
     <nav className="bg-gradient-to-r from-blue-50 to-pink-50 shadow-lg border-b border-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,14 +178,14 @@ const MainNavbar = () => {
                   onClick={handleProfileClick}
                   className="flex items-center space-x-3 p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
                 >
-                  {/* Avatar - Only show if we have real user data */}
-                  {getAvatarInitials() ? (
+                  {/* Avatar - Show loading, initials, or fallback */}
+                  {loading ? (
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                      {loading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        getAvatarInitials()
-                      )}
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  ) : hasAvatarData() ? (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                      {getAvatarInitials()}
                     </div>
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-sm">
@@ -174,17 +193,22 @@ const MainNavbar = () => {
                     </div>
                   )}
                   
-                  {/* User Info - Only show if we have real data */}
-                  {getDisplayName() && getUserRole() && (
+                  {/* User Info - Show loading, real data, or nothing */}
+                  {loading ? (
+                    <div className="hidden sm:block text-left">
+                      <div className="text-sm font-medium text-gray-900">Loading...</div>
+                      <div className="text-xs text-gray-500"></div>
+                    </div>
+                  ) : hasUserData() ? (
                     <div className="hidden sm:block text-left">
                       <div className="text-sm font-medium text-gray-900">
-                        {loading ? 'Loading...' : getDisplayName()}
+                        {getDisplayName()}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {loading ? '' : getUserRole()}
+                        {getUserRole()}
                       </div>
                     </div>
-                  )}
+                  ) : null}
                   
                   {/* Dropdown Arrow */}
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
@@ -193,12 +217,25 @@ const MainNavbar = () => {
                 {/* Dropdown Menu */}
                 {profileDropdown && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-50 border border-gray-200">
-                    {/* Profile Header - Only show if we have real data */}
-                    {getDisplayName() && getUserEmail() && getUserRole() && (
+                    {/* Profile Header - Show loading, real data, or fallback */}
+                    {loading ? (
                       <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
-                            {getAvatarInitials()}
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">Loading...</div>
+                            <div className="text-xs text-gray-500 truncate">Please wait...</div>
+                            <div className="text-xs text-blue-600 font-medium mt-1">Loading...</div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : hasUserData() && getUserEmail() ? (
+                      <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
+                            {getAvatarInitials() || 'U'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-semibold text-gray-900 truncate">
@@ -210,6 +247,19 @@ const MainNavbar = () => {
                             <div className="text-xs text-blue-600 font-medium mt-1">
                               {getUserRole()}
                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-base">
+                            <User className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">User</div>
+                            <div className="text-xs text-gray-500 truncate">Profile loading...</div>
+                            <div className="text-xs text-blue-600 font-medium mt-1">Please wait...</div>
                           </div>
                         </div>
                       </div>
