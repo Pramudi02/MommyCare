@@ -8,7 +8,8 @@ const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
-console.log('🔄 Version: 2.0 - Enhanced CORS and Debugging');
+console.log('🔄 Version: 2.2 - Railway Healthcheck & CORS Fix');
+console.log('🌐 CORS Status: Enhanced for Railway deployment');
 
 // CORS middleware - allow frontend to connect
 const allowedOrigins = [
@@ -16,7 +17,10 @@ const allowedOrigins = [
   'http://localhost:5174', 
   'http://localhost:3000',
   'https://mommy-care.vercel.app',
-  'https://mommy-care-git-main-pramudi02s-projects.vercel.app'
+  'https://mommy-care-git-main-pramudi02s-projects.vercel.app',
+  // Railway healthcheck origins
+  'https://railway.app',
+  'https://*.railway.app'
 ];
 
 // Add any additional origins from environment variable
@@ -34,14 +38,30 @@ app.use((req, res, next) => {
   console.log('   User-Agent:', req.headers['user-agent']);
   
   // Set CORS headers explicitly
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  const origin = req.headers.origin;
+  
+  // Special handling for Railway healthcheck
+  if (req.headers['user-agent'] && req.headers['user-agent'].includes('Railway')) {
+    console.log('🚂 Railway healthcheck detected');
+    res.header('Access-Control-Allow-Origin', '*');
+  } else if (origin) {
+    res.header('Access-Control-Allow-Origin', origin);
+    console.log('✅ Set Access-Control-Allow-Origin:', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+    console.log('✅ Set Access-Control-Allow-Origin: *');
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
   
+  console.log('✅ CORS headers set for:', req.method, req.url);
+  
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✅ Handling OPTIONS preflight request');
+    console.log('✅ Sending 200 response for preflight');
     res.status(200).end();
     return;
   }
