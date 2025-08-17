@@ -67,6 +67,9 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   });
   const [hoveredMessage, setHoveredMessage] = useState(null);
   
+  // State for reply functionality
+  const [replyingTo, setReplyingTo] = useState(null);
+  
   // Socket.IO connection
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -409,7 +412,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(), // Keep original timestamp for sorting
           type: 'text',
-          status: 'sending'
+          status: 'sending',
+          replyTo: replyingTo ? {
+            sender: replyingTo.sender,
+            message: replyingTo.message
+          } : null
         };
       
         // Add message to frontend immediately and sort by timestamp
@@ -437,7 +444,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
           body: JSON.stringify({
             recipientId: selectedChat,
             content: messageToSend,
-            messageType: 'text'
+            messageType: 'text',
+            replyTo: replyingTo ? replyingTo.id : null
           })
         });
 
@@ -455,6 +463,9 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               : msg
           ));
 
+          // Clear reply state after sending
+          setReplyingTo(null);
+          
           // Ensure we know the conversationId by refetching conversations
           try {
             console.log('🔄 Refreshing conversations after sending message...');
@@ -743,7 +754,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
         break;
       case 'reply':
         // Set message to reply to
-        setMessage(`Replying to: ${message.message}`);
+        setReplyingTo(message);
+        closeContextMenu();
         break;
       case 'copy':
         // Copy message to clipboard
@@ -753,10 +765,35 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
         // Forward message (you can implement this later)
         console.log('Forward message:', message.message);
         break;
-      case 'delete':
-        // Delete message (you can implement this later)
-        console.log('Delete message:', message.message);
-        break;
+              case 'delete':
+          // Delete message permanently from database and frontend
+          const deleteMessage = async () => {
+            try {
+              const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+              
+              const response = await fetch(`http://localhost:5000/api/chat/messages/${messageId}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+
+              if (response.ok) {
+                // Remove from frontend after successful database deletion
+                setChatMessages(prev => prev.filter(msg => msg.id !== messageId));
+                console.log('Message deleted permanently from database:', message.message);
+              } else {
+                console.error('Failed to delete message from database');
+                alert('Failed to delete message. Please try again.');
+              }
+            } catch (error) {
+              console.error('Error deleting message:', error);
+              alert('Error deleting message. Please try again.');
+            }
+          };
+          
+          deleteMessage();
+          break;
       case 'share':
         // Share message (you can implement this later)
         console.log('Share message:', message.message);
@@ -766,6 +803,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
     }
     
     closeContextMenu();
+  };
+
+  // Handle cancel reply
+  const handleCancelReply = () => {
+    setReplyingTo(null);
   };
 
   if (!isOpen) return null;
@@ -968,7 +1010,19 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                     >
                       <div className="chat-message-content">
                         {msg.type === 'text' && (
-                          <p>{msg.message}</p>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <p>{msg.message}</p>
+                          </>
                         )}
                         {msg.type === 'file' && (
                           <div className="chat-file-message">
@@ -1040,6 +1094,28 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
 
               {/* Chat Input */}
               <div className="chat-input-container">
+                {/* Reply Preview */}
+                {replyingTo && (
+                  <div className="chat-reply-preview">
+                    <div className="chat-reply-content">
+                      <div className="chat-reply-sender">
+                        <span className="chat-reply-label">Replying to:</span>
+                        <span className="chat-reply-name">{replyingTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}</span>
+                      </div>
+                      <div className="chat-reply-message">
+                        {replyingTo.message}
+                      </div>
+                    </div>
+                    <button 
+                      className="chat-reply-cancel"
+                      onClick={handleCancelReply}
+                      title="Cancel reply"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+                
                 <div className="chat-input-wrapper">
                   <div className="chat-input-actions">
                     <button 
