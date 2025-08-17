@@ -60,7 +60,7 @@ const startServer = async () => {
     console.log('🔌 Connecting to all databases...');
     console.log('📊 Environment:', process.env.NODE_ENV || 'development');
     console.log('🌐 Port:', process.env.PORT || 5000);
-    console.log('🔄 Version: 3.1 - MongoDB Connection Ready');
+    console.log('🔄 Version: 3.2 - JWT Secret & MongoDB Fixes');
     console.log('🌐 CORS Status: Enhanced for Vercel frontend');
     
     // Check if MongoDB URI is set (with fallback in database.js)

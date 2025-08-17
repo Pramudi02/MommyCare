@@ -13,8 +13,14 @@ const connectDB = async () => {
     let uri = process.env.MONGODB_URI;
     
     if (!uri) {
-      // console.log('⚠️  MONGODB_URI not found in environment, using hardcoded fallback');
+      console.log('⚠️  MONGODB_URI not found in environment, using hardcoded fallback');
       uri = 'mongodb+srv://pramupiyumika:Mommycare123new@mommycarecluster.noiaord.mongodb.net/mommycare?retryWrites=true&w=majority&appName=MommyCareCluster';
+    }
+    
+    // Set JWT secret fallback if not provided
+    if (!process.env.JWT_SECRET) {
+      console.log('⚠️  JWT_SECRET not found in environment, using fallback');
+      process.env.JWT_SECRET = 'fallback-secret-key-for-development-only';
     }
     
     // Enhanced connection options for Node.js 22 + MongoDB Atlas compatibility
