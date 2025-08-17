@@ -35,7 +35,9 @@ const app = express();
 const server = http.createServer(app);
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
-  process.env.FRONTEND_URL_ALT || 'http://localhost:5174'
+  process.env.FRONTEND_URL_ALT || 'http://localhost:5174',
+  // Allow Railway healthcheck
+  'https://mommycare-production-f0d0.up.railway.app'
 ];
 
 const io = socketIo(server, {
@@ -87,8 +89,16 @@ const startServer = async () => {
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests with no origin (like Railway healthcheck)
     if (!origin) return callback(null, true);
+    
+    // Allow Railway healthcheck
+    if (origin.includes('railway.app')) return callback(null, true);
+    
+    // Allow allowed origins
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    console.log('❌ CORS blocked origin:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
