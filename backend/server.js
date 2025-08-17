@@ -18,7 +18,7 @@ const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
-console.log('🔄 Version: 2.4 - Environment Variable & CORS Fix');
+console.log('🔄 Version: 2.5 - DEMO SERVER - Force Railway Redeploy');
 console.log('🌐 CORS Status: Enhanced for Railway deployment');
 
 // Environment variable validation
