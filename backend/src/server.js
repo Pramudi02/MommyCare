@@ -14,6 +14,7 @@ require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 const momRoutes = require('./routes/mom');
 const doctorRoutes = require('./routes/doctor');
 const midwifeRoutes = require('./routes/midwife');
@@ -22,6 +23,7 @@ const appointmentRoutes = require('./routes/appointments');
 const messageRoutes = require('./routes/messages');
 const chatRoutes = require('./routes/chat');
 const aiRoutes = require('./routes/ai');
+const permissionRequestRoutes = require('./routes/permissionRequests');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -51,9 +53,9 @@ const io = socketIo(server, {
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
-    console.log('🔌 Connecting to Auth database...');
+    console.log('🔌 Connecting to all databases...');
     await connectDB();
-    console.log('✅ Database connection established');
+    console.log('✅ All database connections established');
     
     const PORT = process.env.PORT || 5000;
     
@@ -124,6 +126,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/mom', protect, momRoutes);
 app.use('/api/doctor', protect, doctorRoutes);
 app.use('/api/midwife', protect, midwifeRoutes);
@@ -132,6 +135,7 @@ app.use('/api/appointments', protect, appointmentRoutes);
 app.use('/api/messages', protect, messageRoutes);
 app.use('/api/chat', protect, chatRoutes);
 app.use('/api/ai', protect, aiRoutes);
+app.use('/api/permission-requests', permissionRequestRoutes);
 
 // Import chat socket handler
 const { initializeChatSocket } = require('./socket/chatSocket');

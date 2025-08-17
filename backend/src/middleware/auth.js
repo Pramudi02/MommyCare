@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const getUserModel = require('../models/User');
 
 // Protect routes

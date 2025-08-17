@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './MedicalRecords.css';
+import { FaClipboardList, FaSearch } from 'react-icons/fa';
 
 const MedicalRecords = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -147,7 +148,7 @@ const MedicalRecords = () => {
           <p>Access and manage patient medical records and test results</p>
         </div>
         <button className="new-record-btn">
-          <span>📋</span>
+          <span><FaClipboardList /></span>
           New Record
         </button>
       </div>
@@ -161,7 +162,7 @@ const MedicalRecords = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><FaSearch /></span>
         </div>
         
         <div className="filters">

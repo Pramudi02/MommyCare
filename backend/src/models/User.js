@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['mom', 'doctor', 'midwife', 'service_provider'],
     required: [true, 'Role is required']
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

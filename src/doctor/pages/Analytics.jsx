@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import './Analytics.css';
+import { 
+  FaUsers, 
+  FaCalendarAlt, 
+  FaDollarSign, 
+  FaChartBar
+} from 'react-icons/fa';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('month'); // 'week', 'month', 'quarter', 'year'
@@ -145,197 +151,229 @@ const Analytics = () => {
 
   return (
     <div className="analytics-page">
+      {/* Header - Matching dashboard exactly */}
       <div className="analytics-header">
-        <div className="analytics-header__left">
-          <h1>Practice Analytics</h1>
-          <p>Comprehensive insights into your medical practice performance</p>
-        </div>
-        <div className="time-range-selector">
-          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="quarter">This Quarter</option>
-            <option value="year">This Year</option>
-          </select>
-        </div>
+        <h1>Practice Analytics</h1>
+        <p>Comprehensive insights into your medical practice performance</p>
+        <div className="doctor-dashboard-header-decoration"></div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="metrics-grid">
-        <div className="metric-card">
-          <div className="metric-icon">👥</div>
-          <div className="metric-content">
+      {/* Statistics Cards - Matching dashboard exactly */}
+      <div className="analytics-stats">
+        <div className="analytics-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
+          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
+            <FaUsers />
+          </div>
+          <div className="analytics-stat-card-content">
             <h3>{analyticsData.patientStats.total}</h3>
             <p>Total Patients</p>
-            <span className="metric-change positive">+{analyticsData.patientStats.newThisMonth} this month</span>
+            <span className="stat-change positive">+{analyticsData.patientStats.newThisMonth} this month</span>
           </div>
         </div>
-
-        <div className="metric-card">
-          <div className="metric-icon">📅</div>
-          <div className="metric-content">
+        <div className="analytics-stat-card" style={{ borderLeftColor: "#2196F3" }}>
+          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
+            <FaCalendarAlt />
+          </div>
+          <div className="analytics-stat-card-content">
             <h3>{analyticsData.appointmentStats.total}</h3>
             <p>Total Appointments</p>
-            <span className="metric-change positive">+{analyticsData.appointmentStats.completed} completed</span>
+            <span className="stat-change positive">+{analyticsData.appointmentStats.completed} completed</span>
           </div>
         </div>
-
-        <div className="metric-card">
-          <div className="metric-icon">💰</div>
-          <div className="metric-content">
+        <div className="analytics-stat-card" style={{ borderLeftColor: "#FF9800" }}>
+          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
+            <FaDollarSign />
+          </div>
+          <div className="analytics-stat-card-content">
             <h3>{formatCurrency(analyticsData.revenueStats.total)}</h3>
             <p>Total Revenue</p>
-            <span className="metric-change" style={{ color: getGrowthColor(analyticsData.revenueStats.growth) }}>
+            <span className="stat-change" style={{ color: getGrowthColor(analyticsData.revenueStats.growth) }}>
               {getGrowthIcon(analyticsData.revenueStats.growth)} {analyticsData.revenueStats.growth}%
             </span>
           </div>
         </div>
-
-        <div className="metric-card">
-          <div className="metric-icon">📊</div>
-          <div className="metric-content">
+        <div className="analytics-stat-card" style={{ borderLeftColor: "#F44336" }}>
+          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
+            <FaChartBar />
+          </div>
+          <div className="analytics-stat-card-content">
             <h3>{formatPercentage(85.4)}</h3>
             <p>Patient Satisfaction</p>
-            <span className="metric-change positive">+2.1% from last month</span>
+            <span className="stat-change positive">+2.1% from last month</span>
           </div>
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="charts-section">
-        <div className="chart-row">
-          {/* Revenue Trend */}
-          <div className="chart-card">
-            <h3>Revenue Trend</h3>
-            <div className="chart-content">
-              {renderBarChart(
-                analyticsData.monthlyTrends.slice(-6).map((item, index) => ({
-                  label: item.month,
-                  value: item.revenue,
-                  color: '#3b82f6'
-                }))
-              )}
-            </div>
-          </div>
-
-          {/* Patient Demographics */}
-          <div className="chart-card">
-            <h3>Patient Age Distribution</h3>
-            <div className="chart-content">
-              {renderPieChart(
-                analyticsData.patientDemographics.ageGroups.map((item, index) => ({
-                  label: item.range,
-                  value: item.count,
-                  color: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index]
-                }))
-              )}
-              <div className="pie-legend">
-                {analyticsData.patientDemographics.ageGroups.map((item, index) => (
-                  <div key={index} className="legend-item">
-                    <span 
-                      className="legend-color" 
-                      style={{ backgroundColor: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index] }}
-                    />
-                    <span className="legend-label">{item.range}: {item.count}</span>
-                  </div>
-                ))}
+      <div className="analytics-content">
+        {/* Left Column */}
+        <div className="analytics-left">
+          {/* Time Range Selector Section */}
+          <div className="analytics-section">
+            <div className="analytics-section-header">
+              <h2>Analytics Controls</h2>
+              <div className="time-range-selector">
+                <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="quarter">This Quarter</option>
+                  <option value="year">This Year</option>
+                </select>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="chart-row">
-          {/* Top Services */}
-          <div className="chart-card">
-            <h3>Top Services by Revenue</h3>
-            <div className="chart-content">
-              <div className="services-list">
-                {analyticsData.topServices.map((service, index) => (
-                  <div key={index} className="service-item">
-                    <div className="service-info">
-                      <span className="service-name">{service.name}</span>
-                      <span className="service-count">{service.count} patients</span>
+          {/* Charts Section */}
+          <div className="analytics-section">
+            <div className="analytics-section-header">
+              <h2>Performance Charts</h2>
+            </div>
+            <div className="charts-section">
+              <div className="chart-row">
+                {/* Revenue Trend */}
+                <div className="chart-card">
+                  <h3>Revenue Trend</h3>
+                  <div className="chart-content">
+                    {renderBarChart(
+                      analyticsData.monthlyTrends.slice(-6).map((item, index) => ({
+                        label: item.month,
+                        value: item.revenue,
+                        color: '#4f46e5'
+                      }))
+                    )}
+                  </div>
+                </div>
+
+                {/* Patient Demographics */}
+                <div className="chart-card">
+                  <h3>Patient Age Distribution</h3>
+                  <div className="chart-content">
+                    {renderPieChart(
+                      analyticsData.patientDemographics.ageGroups.map((item, index) => ({
+                        label: item.range,
+                        value: item.count,
+                        color: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index]
+                      }))
+                    )}
+                    <div className="pie-legend">
+                      {analyticsData.patientDemographics.ageGroups.map((item, index) => (
+                        <div key={index} className="legend-item">
+                          <span 
+                            className="legend-color" 
+                            style={{ backgroundColor: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index] }}
+                          />
+                          <span className="legend-label">{item.range}: {item.count}</span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="service-revenue">{formatCurrency(service.revenue)}</span>
                   </div>
-                ))}
+                </div>
+              </div>
+
+              <div className="chart-row">
+                {/* Top Services */}
+                <div className="chart-card">
+                  <h3>Top Services by Revenue</h3>
+                  <div className="chart-content">
+                    <div className="services-list">
+                      {analyticsData.topServices.map((service, index) => (
+                        <div key={index} className="service-item">
+                          <div className="service-info">
+                            <span className="service-name">{service.name}</span>
+                            <span className="service-count">{service.count} patients</span>
+                          </div>
+                          <span className="service-revenue">{formatCurrency(service.revenue)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Appointment Status */}
+                <div className="chart-card">
+                  <h3>Appointment Status</h3>
+                  <div className="chart-content">
+                    {renderPieChart(
+                      [
+                        { label: 'Completed', value: analyticsData.appointmentStats.completed, color: '#10b981' },
+                        { label: 'Cancelled', value: analyticsData.appointmentStats.cancelled, color: '#ef4444' },
+                        { label: 'No Show', value: analyticsData.appointmentStats.noShow, color: '#f59e0b' }
+                      ]
+                    )}
+                    <div className="pie-legend">
+                      <div className="legend-item">
+                        <span className="legend-color" style={{ backgroundColor: '#10b981' }} />
+                        <span className="legend-label">Completed: {analyticsData.appointmentStats.completed}</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-color" style={{ backgroundColor: '#ef4444' }} />
+                        <span className="legend-label">Cancelled: {analyticsData.appointmentStats.cancelled}</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-color" style={{ backgroundColor: '#f59e0b' }} />
+                        <span className="legend-label">No Show: {analyticsData.appointmentStats.noShow}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Appointment Status */}
-          <div className="chart-card">
-            <h3>Appointment Status</h3>
-            <div className="chart-content">
-              {renderPieChart(
-                [
-                  { label: 'Completed', value: analyticsData.appointmentStats.completed, color: '#10b981' },
-                  { label: 'Cancelled', value: analyticsData.appointmentStats.cancelled, color: '#ef4444' },
-                  { label: 'No Show', value: analyticsData.appointmentStats.noShow, color: '#f59e0b' }
-                ]
-              )}
-              <div className="pie-legend">
-                <div className="legend-item">
-                  <span className="legend-color" style={{ backgroundColor: '#10b981' }} />
-                  <span className="legend-label">Completed: {analyticsData.appointmentStats.completed}</span>
+          {/* Detailed Statistics */}
+          <div className="analytics-section">
+            <div className="analytics-section-header">
+              <h2>Detailed Statistics</h2>
+            </div>
+            <div className="detailed-stats">
+              <div className="stats-card">
+                <h3>Patient Conditions</h3>
+                <div className="conditions-list">
+                  {analyticsData.patientDemographics.conditions.map((condition, index) => (
+                    <div key={index} className="condition-item">
+                      <div className="condition-info">
+                        <span className="condition-name">{condition.name}</span>
+                        <span className="condition-percentage">{formatPercentage(condition.percentage)}</span>
+                      </div>
+                      <div className="condition-bar">
+                        <div 
+                          className="condition-progress" 
+                          style={{ 
+                            width: `${condition.percentage}%`,
+                            backgroundColor: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981'][index]
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="legend-item">
-                  <span className="legend-color" style={{ backgroundColor: '#ef4444' }} />
-                  <span className="legend-label">Cancelled: {analyticsData.appointmentStats.cancelled}</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color" style={{ backgroundColor: '#f59e0b' }} />
-                  <span className="legend-label">No Show: {analyticsData.appointmentStats.noShow}</span>
+              </div>
+
+              <div className="stats-card">
+                <h3>Monthly Performance</h3>
+                <div className="performance-table">
+                  <div className="table-header">
+                    <span>Month</span>
+                    <span>Patients</span>
+                    <span>Appointments</span>
+                    <span>Revenue</span>
+                  </div>
+                  {analyticsData.monthlyTrends.slice(-6).map((item, index) => (
+                    <div key={index} className="table-row">
+                      <span>{item.month}</span>
+                      <span>{item.patients}</span>
+                      <span>{item.appointments}</span>
+                      <span>{formatCurrency(item.revenue)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Detailed Statistics */}
-      <div className="detailed-stats">
-        <div className="stats-card">
-          <h3>Patient Conditions</h3>
-          <div className="conditions-list">
-            {analyticsData.patientDemographics.conditions.map((condition, index) => (
-              <div key={index} className="condition-item">
-                <div className="condition-info">
-                  <span className="condition-name">{condition.name}</span>
-                  <span className="condition-percentage">{formatPercentage(condition.percentage)}</span>
-                </div>
-                <div className="condition-bar">
-                  <div 
-                    className="condition-progress" 
-                    style={{ 
-                      width: `${condition.percentage}%`,
-                      backgroundColor: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'][index]
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="stats-card">
-          <h3>Monthly Performance</h3>
-          <div className="performance-table">
-            <div className="table-header">
-              <span>Month</span>
-              <span>Patients</span>
-              <span>Appointments</span>
-              <span>Revenue</span>
-            </div>
-            {analyticsData.monthlyTrends.slice(-6).map((item, index) => (
-              <div key={index} className="table-row">
-                <span>{item.month}</span>
-                <span>{item.patients}</span>
-                <span>{item.appointments}</span>
-                <span>{formatCurrency(item.revenue)}</span>
-              </div>
-            ))}
-          </div>
+        {/* Right Column - Empty for now */}
+        <div className="analytics-right">
+          {/* Empty right column - can be used for additional features later */}
         </div>
       </div>
     </div>

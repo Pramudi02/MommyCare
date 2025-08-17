@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Baby, Stethoscope, Heart, Store } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
 import './Signup.css';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -82,6 +84,8 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('Form data before validation:', formData);
+    
     if (!validateForm()) {
       return;
     }
@@ -89,41 +93,45 @@ const Signup = () => {
     setIsLoading(true);
     
     try {
+      // Debug: Log the data being sent
+      const requestData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        role: formData.role,
+        password: formData.password
+      };
+      console.log('Sending registration data:', requestData);
+      
       // Use the real registration endpoint
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          role: formData.role,
-          password: formData.password
-        })
+        body: JSON.stringify(requestData)
       });
 
       const data = await response.json();
+      console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Use AuthContext login function
+        login(data);
         
-        // Navigate based on user role for additional setup
+        // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
           case 'mom':
-            window.location.href = 'http://localhost:5173/mom';
+            navigate('/mom');
             break;
           case 'doctor':
-            navigate('/get-permission-doctor');
+            navigate('/doctor');
             break;
           case 'midwife':
-            navigate('/get-permission-midWife');
+            navigate('/midwife');
             break;
           case 'service_provider':
-            navigate('/get-permission-serviceProvider');
+            navigate('/service-provider');
             break;
           default:
             navigate('/');
@@ -132,6 +140,8 @@ const Signup = () => {
         // Database temporarily unavailable
         setErrors({ general: 'Service temporarily unavailable. Please try again in a moment.' });
       } else {
+        console.error('Registration failed:', { status: response.status, data });
+        console.error('Validation errors:', data.errors);
         setErrors({ general: data.message || 'Registration failed' });
       }
     } catch (error) {
@@ -154,23 +164,25 @@ const Signup = () => {
         
         const mockToken = 'local-mock-token-' + Date.now();
         
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+        // Use AuthContext for mock data
+        login({
+          token: mockToken,
+          user: mockUser
+        });
         
-        // Navigate based on user role
+        // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
           case 'mom':
-            window.location.href = 'http://localhost:5173/mom';
+            navigate('/mom');
             break;
           case 'doctor':
-            navigate('/get-permission-doctor');
+            navigate('/doctor');
             break;
           case 'midwife':
-            navigate('/get-permission-midWife');
+            navigate('/midwife');
             break;
           case 'service_provider':
-            navigate('/get-permission-serviceProvider');
+            navigate('/service-provider');
             break;
           default:
             navigate('/');
