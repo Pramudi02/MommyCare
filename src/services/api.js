@@ -112,5 +112,41 @@ export const clinicVisitRequestAPI = {
   },
 };
 
+// Doctor Visit Request API functions
+export const doctorVisitRequestAPI = {
+  // Create a new doctor visit request
+  create: async (requestData) => {
+    return apiRequest('/mom/doctor-visit-requests', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  // Get all doctor visit requests for the current mom
+  getAll: async () => {
+    return apiRequest('/mom/doctor-visit-requests');
+  },
+
+  // Get a specific doctor visit request by ID
+  getById: async (id) => {
+    return apiRequest(`/mom/doctor-visit-requests/${id}`);
+  },
+
+  // Update a doctor visit request
+  update: async (id, updateData) => {
+    return apiRequest(`/mom/doctor-visit-requests/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  // Cancel a doctor visit request
+  cancel: async (id) => {
+    return apiRequest(`/mom/doctor-visit-requests/${id}/cancel`, {
+      method: 'PATCH',
+    });
+  },
+};
+
 // Generic fetch function for backward compatibility
 export const fetchData = () => Promise.resolve('data'); 

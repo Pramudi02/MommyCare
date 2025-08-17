@@ -26,18 +26,23 @@ import {
   CheckCircle,
   Plus
 } from 'lucide-react';
-import { clinicVisitRequestAPI } from '../../../services/api';
+import { clinicVisitRequestAPI, doctorVisitRequestAPI } from '../../../services/api';
 import ClinicVisitRequestModal from '../../components/ClinicVisitRequestModal';
 import ClinicVisitRequestsList from '../../components/ClinicVisitRequestsList';
+import DoctorVisitRequestModal from '../../components/DoctorVisitRequestModal';
+import DoctorVisitRequestsList from '../../components/DoctorVisitRequestsList';
 import './MyAppointments.css';
 
 const AppointmentsDashboard = () => {
   const [currentMonth, setCurrentMonth] = useState('July 2025');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
   const [clinicRequests, setClinicRequests] = useState([]);
+  const [doctorRequests, setDoctorRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedClinicCategory, setSelectedClinicCategory] = useState(null);
+  const [selectedDoctorCategory, setSelectedDoctorCategory] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -88,30 +93,31 @@ const AppointmentsDashboard = () => {
   useEffect(() => {
     checkAuthStatus();
     fetchClinicRequests();
+    fetchDoctorRequests();
   }, []);
 
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (token) {
-      // Verify token is valid by checking if it's a real JWT token
-      try {
-        // Basic JWT token validation (check if it has 3 parts separated by dots)
-        const tokenParts = token.split('.');
-        if (tokenParts.length === 3) {
-          setIsAuthenticated(true);
-        } else {
-          // Invalid token format, clear it
-          localStorage.removeItem('token');
-          sessionStorage.removeItem('token');
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Token validation error:', error);
-        setIsAuthenticated(false);
-      }
-    } else {
-      setIsAuthenticated(false);
-    }
+
+    setIsAuthenticated(!!token);
+  };
+
+  // Demo function to simulate login (for testing purposes)
+  const demoLogin = () => {
+    localStorage.setItem('token', 'demo-token-123');
+    setIsAuthenticated(true);
+    fetchClinicRequests(); // Refresh requests after login
+    fetchDoctorRequests(); // Refresh doctor requests after login
+  };
+
+  const demoLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setSelectedClinicCategory(null);
+    setSelectedDoctorCategory(null);
+    setClinicRequests([]);
+    setDoctorRequests([]);
+
   };
 
   const fetchClinicRequests = async () => {
@@ -136,12 +142,33 @@ const AppointmentsDashboard = () => {
     }
   };
 
+  const fetchDoctorRequests = async () => {
+    try {
+      setIsLoading(true);
+      const response = await doctorVisitRequestAPI.getAll();
+      setDoctorRequests(response.data || []);
+    } catch (error) {
+      console.error('Error fetching doctor requests:', error);
+      
+      // Handle authentication errors silently for fetch requests
+      if (error.message.includes('Not authorized') || error.message.includes('no token')) {
+        // User is not authenticated, set empty requests array
+        setDoctorRequests([]);
+      } else {
+        // For other errors, show in console but don't alert user
+        console.warn('Could not fetch doctor requests:', error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmitRequest = async (requestData) => {
     try {
       setIsSubmitting(true);
       await clinicVisitRequestAPI.create(requestData);
       setIsModalOpen(false);
-      setSelectedCategory(null); // Reset selection after successful submission
+      setSelectedClinicCategory(null); // Reset selection after successful submission
       fetchClinicRequests(); // Refresh the list
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 5000); // Hide after 5 seconds
@@ -155,6 +182,31 @@ const AppointmentsDashboard = () => {
         alert('Unable to connect to the server. Please check your internet connection and try again.');
       } else {
         alert(`Failed to create clinic visit request: ${error.message}`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitDoctorRequest = async (requestData) => {
+    try {
+      setIsSubmitting(true);
+      await doctorVisitRequestAPI.create(requestData);
+      setIsDoctorModalOpen(false);
+      setSelectedDoctorCategory(null); // Reset selection after successful submission
+      fetchDoctorRequests(); // Refresh the list
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000); // Hide after 5 seconds
+    } catch (error) {
+      console.error('Error creating doctor request:', error);
+      
+      // Handle different types of errors
+      if (error.message.includes('Not authorized') || error.message.includes('no token')) {
+        alert('Please log in to create doctor visit requests. You need to be authenticated to use this feature.');
+      } else if (error.message.includes('Failed to fetch')) {
+        alert('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        alert(`Failed to create doctor visit request: ${error.message}`);
       }
     } finally {
       setIsSubmitting(false);
@@ -176,8 +228,29 @@ const AppointmentsDashboard = () => {
     }
   };
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
+  const handleCancelDoctorRequest = async (requestId) => {
+    if (window.confirm('Are you sure you want to cancel this doctor visit request?')) {
+      try {
+        setIsLoading(true);
+        await doctorVisitRequestAPI.cancel(requestId);
+        fetchDoctorRequests(); // Refresh the list
+      } catch (error) {
+        console.error('Error cancelling doctor request:', error);
+        alert('Failed to cancel doctor visit request. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleCategorySelect = (category, type) => {
+    if (type === 'clinic') {
+      setSelectedClinicCategory(category);
+      setSelectedDoctorCategory(null); // Clear doctor selection
+    } else if (type === 'doctor') {
+      setSelectedDoctorCategory(category);
+      setSelectedClinicCategory(null); // Clear clinic selection
+    }
   };
 
   const handleOpenModal = () => {
@@ -185,11 +258,23 @@ const AppointmentsDashboard = () => {
       alert('Please log in to create clinic visit requests');
       return;
     }
-    if (!selectedCategory) {
+    if (!selectedClinicCategory) {
       alert('Please select a clinic service category first');
       return;
     }
     setIsModalOpen(true);
+  };
+
+  const handleOpenDoctorModal = () => {
+    if (!isAuthenticated) {
+      alert('Please log in to create doctor visit requests');
+      return;
+    }
+    if (!selectedDoctorCategory) {
+      alert('Please select a doctor service category first');
+      return;
+    }
+    setIsDoctorModalOpen(true);
   };
 
   const upcomingAppointments = [
@@ -305,41 +390,114 @@ const AppointmentsDashboard = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
+
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
+                         <div className="flex items-center justify-between mb-6">
+               <div className="flex items-center">
+                 <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                   <Building2 className="text-pink-500 w-6 h-6" />
+                 </div>
+                 <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
+               </div>
+               {selectedClinicCategory && (
+                 <div className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">
+                   Selected: {selectedClinicCategory}
+                 </div>
+               )}
+             </div>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+               {clinicServices.map((service, index) => {
+                 const IconComponent = service.icon;
+                 const isSelected = selectedClinicCategory === service.name;
+                 return (
+                   <div 
+                     key={index} 
+                     onClick={() => isAuthenticated && handleCategorySelect(service.name, 'clinic')}
+                     className={`service-item flex flex-col items-center p-4 rounded-lg transition-all border ${
+                       isAuthenticated 
+                         ? isSelected 
+                           ? 'bg-pink-100 border-pink-300 shadow-md scale-105 cursor-pointer' 
+                           : 'hover:bg-gray-50 border-transparent hover:border-gray-200 cursor-pointer'
+                         : 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-60'
+                     }`}
+                   >
+                     <div className={`mb-2 ${isSelected ? 'text-pink-600' : 'text-gray-600'}`}>
+                       <IconComponent className="w-6 h-6" />
+                     </div>
+                     <span className={`text-sm text-center font-medium ${
+                       isSelected ? 'text-pink-700' : 'text-gray-700'
+                     }`}>
+                       {service.name}
+                     </span>
+                   </div>
+                 );
+               })}
+            </div>
+            <div className="flex gap-3">
+              <button 
+                onClick={handleOpenModal}
+                disabled={!selectedClinicCategory || !isAuthenticated}
+                className={`flex-1 font-medium py-3 rounded-full transition-colors ${
+                  selectedClinicCategory && isAuthenticated
+                    ? 'bg-pink-400 hover:bg-pink-500 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <Plus className="inline-block mr-2" size={18} /> 
+                {!isAuthenticated 
+                  ? 'Please log in first' 
+                  : selectedClinicCategory 
+                    ? `Request ${selectedClinicCategory}` 
+                    : 'Select a service first'
+                }
+              </button>
+              {selectedClinicCategory && isAuthenticated && (
+                <button 
+                  onClick={() => setSelectedClinicCategory(null)}
+                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Hospital will confirm your appointment
+            </p>
+          </div>
+
+          {/* Doctor Consultations Card */}
+
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
-                  <Building2 className="text-pink-500 w-6 h-6" />
+                <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mr-3">
+                  <Stethoscope className="text-cyan-500 w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Doctor Consultations</h2>
               </div>
-              {selectedCategory && (
-                <div className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Selected: {selectedCategory}
+              {selectedDoctorCategory && (
+                <div className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">
+                  Selected: {selectedDoctorCategory}
                 </div>
               )}
             </div>
             <div className="grid grid-cols-2 gap-4 mb-6">
-              {clinicServices.map((service, index) => {
+              {doctorServices.map((service, index) => {
                 const IconComponent = service.icon;
-                const isSelected = selectedCategory === service.name;
+                const isSelected = selectedDoctorCategory === service.name;
                 return (
                   <div 
                     key={index} 
-                    onClick={() => isAuthenticated && handleCategorySelect(service.name)}
-                    className={`service-item flex flex-col items-center p-4 rounded-lg transition-all border ${
-                      isAuthenticated 
-                        ? isSelected 
-                          ? 'bg-pink-100 border-pink-300 shadow-md scale-105 cursor-pointer' 
-                          : 'hover:bg-gray-50 border-transparent hover:border-gray-200 cursor-pointer'
-                        : 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-60'
+                    className={`service-item flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent ${
+                      isSelected ? 'bg-cyan-50 border-cyan-200 shadow-md scale-105' : ''
                     }`}
+                    onClick={() => handleCategorySelect(service.name, 'doctor')}
                   >
-                    <div className={`mb-2 ${isSelected ? 'text-pink-600' : 'text-gray-600'}`}>
+                    <div className={`mb-2 ${isSelected ? 'text-cyan-600' : 'text-gray-600'}`}>
                       <IconComponent className="w-6 h-6" />
                     </div>
                     <span className={`text-sm text-center font-medium ${
-                      isSelected ? 'text-pink-700' : 'text-gray-700'
+                      isSelected ? 'text-cyan-700' : 'text-gray-700'
                     }`}>
                       {service.name}
                     </span>
@@ -354,64 +512,35 @@ const AppointmentsDashboard = () => {
             </div>
             <div className="flex gap-3">
               <button 
-                onClick={handleOpenModal}
-                disabled={!selectedCategory || !isAuthenticated}
+                onClick={handleOpenDoctorModal}
+                disabled={!selectedDoctorCategory || !isAuthenticated}
                 className={`flex-1 font-medium py-3 rounded-full transition-colors ${
-                  selectedCategory && isAuthenticated
-                    ? 'bg-pink-400 hover:bg-pink-500 text-white' 
+                  selectedDoctorCategory && isAuthenticated
+                    ? 'bg-cyan-400 hover:bg-cyan-500 text-white' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
                 <Plus className="inline-block mr-2" size={18} /> 
                 {!isAuthenticated 
                   ? 'Please log in first' 
-                  : selectedCategory 
-                    ? `Request ${selectedCategory}` 
+                  : selectedDoctorCategory 
+                    ? `Request ${selectedDoctorCategory}` 
                     : 'Select a service first'
                 }
               </button>
-              {selectedCategory && isAuthenticated && (
+              {selectedDoctorCategory && isAuthenticated && (
                 <button 
-                  onClick={() => setSelectedCategory(null)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+
+                  onClick={() => setSelectedDoctorCategory(null)}
+                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+
                 >
                   Clear
                 </button>
               )}
             </div>
             <p className="text-xs text-gray-500 text-center mt-2">
-              {isAuthenticated 
-                ? 'Hospital will confirm your appointment' 
-                : 'Please log in to request clinic visits'
-              }
-            </p>
-          </div>
 
-          {/* Doctor Consultations Card */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mr-3">
-                <Stethoscope className="text-cyan-500 w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-semibold text-gray-800">Doctor Consultations</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {doctorServices.map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <div key={index} className="service-item flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent">
-                    <div className="mb-2">
-                      <IconComponent className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <span className="text-sm text-gray-700 text-center">{service.name}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <button className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-3 rounded-full transition-colors">
-              <Plus className="inline-block mr-2" size={18} /> Request Doctor Visit
-            </button>
-            <p className="text-xs text-gray-500 text-center mt-2">
               Doctor will confirm your appointment
             </p>
           </div>
@@ -579,20 +708,35 @@ const AppointmentsDashboard = () => {
           <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
             <div className="flex items-center text-green-800">
               <CheckCircle className="w-5 h-5 mr-2" />
-              <span className="font-medium">Clinic visit request created successfully!</span>
+              <span className="font-medium">Request created successfully!</span>
             </div>
             <p className="text-green-700 text-sm mt-1">Your request has been submitted and is pending approval.</p>
           </div>
         )}
 
-        {/* Clinic Visit Requests Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
-          <ClinicVisitRequestsList 
-            requests={clinicRequests}
-            onCancel={handleCancelRequest}
-            isLoading={isLoading}
-            isAuthenticated={isAuthenticated}
-          />
+        {/* Visit Requests Section - Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-8">
+          {/* Clinic Visit Requests */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+            <ClinicVisitRequestsList 
+              requests={clinicRequests}
+              onCancel={handleCancelRequest}
+              isLoading={isLoading}
+              isAuthenticated={isAuthenticated}
+            />
+          </div>
+
+          {/* Doctor Visit Requests */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Your Doctor Visit Requests</h3>
+            </div>
+            <DoctorVisitRequestsList 
+              requests={doctorRequests}
+              onCancelRequest={handleCancelDoctorRequest}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
       </div>
 
@@ -602,7 +746,16 @@ const AppointmentsDashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitRequest}
         isLoading={isSubmitting}
-        selectedCategory={selectedCategory}
+        selectedCategory={selectedClinicCategory}
+      />
+
+      {/* Doctor Visit Request Modal */}
+      <DoctorVisitRequestModal
+        isOpen={isDoctorModalOpen}
+        onClose={() => setIsDoctorModalOpen(false)}
+        onSubmit={handleSubmitDoctorRequest}
+        isLoading={isSubmitting}
+        selectedCategory={selectedDoctorCategory}
       />
     </div>
   );
