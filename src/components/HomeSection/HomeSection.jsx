@@ -3,15 +3,15 @@ import './HomeSection.css';
 
 const HomeSection = () => {
   const pregnancyWeeks = [
-    { week: 2, icon: '✨', color: '#FFE4B5' },
-    { week: 3, icon: '🌸', color: '#FFE4E1' },
-    { week: 4, icon: '⚫', color: '#E6E6FA' },
-    { week: 5, icon: '🟤', color: '#F0F8FF' },
-    { week: 6, icon: '🟡', color: '#FFFACD' },
-    { week: 7, icon: '🔵', color: '#E0F6FF' },
-    { week: 8, icon: '🌺', color: '#FFE4E1' },
-    { week: 9, icon: '🥒', color: '#F0FFF0' },
-    { week: 10, icon: '🍓', color: '#FFE4E1' }
+    { week: 2, icon: '🔬', color: '#FFE4B5', description: 'Fertilization' },
+    { week: 3, icon: '⚫', color: '#FFE4E1', description: 'Blastocyst' },
+    { week: 4, icon: '🫘', color: '#E6E6FA', description: 'Poppy seed' },
+    { week: 5, icon: '🫘', color: '#F0F8FF', description: 'Sesame seed' },
+    { week: 6, icon: '🫘', color: '#FFFACD', description: 'Lentil' },
+    { week: 7, icon: '🫘', color: '#E0F6FF', description: 'Blueberry' },
+    { week: 8, icon: '🫘', color: '#FFE4E1', description: 'Kidney bean' },
+    { week: 9, icon: '🫘', color: '#F0FFF0', description: 'Grape' },
+    { week: 10, icon: '🫘', color: '#FFE4E1', description: 'Kumquat' }
   ];
 
   const testimonials = [
@@ -23,15 +23,15 @@ const HomeSection = () => {
     },
     {
       id: 2,
-      name: "Sarah Johnson",
-      role: "New Mother", 
-      text: "Momy Care made my pregnancy journey so much easier. The tracker helped me stay on top of everything, and the vaccination reminders were a lifesaver!"
+      name: "Emily Davis",
+      role: "Expecting Mother", 
+      text: "The pregnancy tracker and appointment manager are incredible! I never miss any important check-ups now."
     },
     {
       id: 3,
-      name: "Sarah Johnson",
+      name: "Maria Rodriguez",
       role: "New Mother",
-      text: "Momy Care made my pregnancy journey so much easier. The tracker helped me stay on top of everything, and the vaccination reminders were a lifesaver!"
+      text: "The communication feature with healthcare providers is amazing. I get answers to all my questions quickly!"
     }
   ];
 
@@ -46,6 +46,7 @@ const HomeSection = () => {
               <div className="week-number">{week.week}</div>
               <div className="week-label">weeks pregnant</div>
               <div className="week-icon">{week.icon}</div>
+              <div className="week-description">{week.description}</div>
             </div>
           ))}
         </div>
@@ -65,7 +66,7 @@ const HomeSection = () => {
                     </div>
                     <div className="testimonial-author">
                       <div className="author-avatar">
-                        <div className="avatar-icon">👤</div>
+                        <div className="avatar-icon">👩</div>
                       </div>
                       <div className="author-info">
                         <div className="author-name">{testimonial.name}</div>
@@ -76,7 +77,6 @@ const HomeSection = () => {
                 ))}
               </div>
             </div>
-            {/* Removed testimonials-image with img */}
           </div>
         </div>
       </div>
