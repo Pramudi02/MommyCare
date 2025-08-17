@@ -71,16 +71,38 @@ body {
   
 }
 
-/* Hamburger toggle (hidden on desktop) */
+.main-navbar__item.active {
+  color: #fffdfd;
+  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
+  box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
+}
+
+/* Hamburger toggle button - HIDDEN on desktop */
 .main-navbar__toggle {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 4px;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.8);
   cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  position: relative;
+  z-index: 200;
+}
+
+.main-navbar__toggle:hover {
+  background: rgba(255,255,255,1);
+  transform: scale(1.05);
+}
+
+.main-navbar__toggle:active {
+  transform: scale(0.95);
 }
 
 .main-navbar__toggle .toggle-bar {
@@ -88,37 +110,76 @@ body {
   height: 2px;
   background: #1f2937;
   display: block;
+  transition: all 0.3s ease;
+  transform-origin: center;
 }
 
+/* Toggle button animations */
+.main-navbar__toggle .toggle-bar.rotate-45 {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.main-navbar__toggle .toggle-bar.opacity-0 {
+  opacity: 0;
+}
+
+.main-navbar__toggle .toggle-bar.rotate-negative-45 {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* MOBILE STYLES - Menu is HIDDEN by default on mobile */
 @media (max-width: 900px) {
   .main-navbar {
       flex-direction: column;
       align-items: stretch;
       padding: 10px 8px;
+      min-height: auto;
   }
+  
+  /* SHOW toggle button on mobile */
   .main-navbar__toggle {
-      display: inline-flex;
+      display: flex !important;
       align-self: flex-end;
+      margin-bottom: 10px;
   }
+  
   .main-navbar__logo {
       margin-bottom: 10px;
       margin-right: 0;
   }
+  
+  /* CRITICAL: Menu is HIDDEN by default on mobile */
   .main-navbar__menu {
-      display: none;
+      display: none !important; /* Force hide by default */
       width: 100%;
       flex-direction: column;
       gap: 10px;
       margin-top: 8px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 150;
   }
+  
+  /* ONLY show menu when .open class is present */
   .main-navbar__menu.open {
-      display: flex;
+      display: flex !important; /* Force show when open */
+      animation: slideDown 0.3s ease-out;
   }
+  
   .main-navbar__item {
       font-size: 14px;
       padding: 12px 16px;
       width: 100%;
       text-align: left;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+  }
+  
+  .main-navbar__item:hover {
+      transform: translateX(4px);
   }
 }
 
@@ -126,7 +187,9 @@ body {
   .main-navbar__menu {
       overflow-x: hidden;
       gap: 6px;
+      padding: 12px;
   }
+  
   .main-navbar__item {
       font-size: 13px;
       padding: 10px 12px;
@@ -136,5 +199,39 @@ body {
   .mx-4 {
     margin-left: 0;
     margin-right: 0;
+  }
+  
+  .main-navbar__toggle {
+      padding: 10px;
+      min-width: 40px;
+      min-height: 40px;
+  }
+  
+  .main-navbar__toggle .toggle-bar {
+      width: 20px;
+      height: 2px;
+  }
+}
+
+/* Animation for menu slide down */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure toggle button is always accessible and visible on mobile */
+@media (max-width: 900px) {
+  .main-navbar__toggle {
+    position: relative;
+    z-index: 200;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
