@@ -73,10 +73,10 @@ const Login = () => {
 
       if (response.ok) {
         // Use AuthContext login function
-        login(data);
+        login(data.data);
         
         // Navigate based on user role
-        switch (data.user.role) {
+        switch (data.data.user.role) {
           case 'mom':
             navigate('/mom');
             break;

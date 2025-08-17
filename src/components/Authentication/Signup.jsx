@@ -117,7 +117,7 @@ const Signup = () => {
 
       if (response.ok) {
         // Use AuthContext login function
-        login(data);
+        login(data.data);
         
         // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
