@@ -8,6 +8,7 @@ const users = new Map();
 
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
+console.log('🔄 Version: 2.0 - Enhanced CORS and Debugging');
 
 // CORS middleware - allow frontend to connect
 const allowedOrigins = [
@@ -98,7 +99,19 @@ app.get('/api/test-cors', (req, res) => {
     status: 'success',
     message: 'CORS test successful',
     origin: req.headers.origin,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    version: '2.0 - Enhanced CORS'
+  });
+});
+
+// Simple test endpoint
+app.get('/api/test', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Server is working!',
+    timestamp: new Date().toISOString(),
+    cors: 'enabled',
+    version: '2.0'
   });
 });
 
