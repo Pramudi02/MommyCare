@@ -114,3 +114,53 @@ export const clinicVisitRequestAPI = {
 
 // Generic fetch function for backward compatibility
 export const fetchData = () => Promise.resolve('data'); 
+
+// Midwife Appointment API functions
+export const midwifeAppointmentAPI = {
+  // Get appointments based on view mode (today, week, month, etc.)
+  getAppointments: async (viewMode = 'today') => {
+    return apiRequest(`/midwife/appointments?view=${viewMode}`);
+  },
+
+  // Get all clinic visit requests
+  getClinicVisitRequests: async () => {
+    return apiRequest('/midwife/clinic-visit-requests');
+  },
+
+  // Accept a clinic visit request
+  acceptClinicVisitRequest: async (requestId, appointmentData) => {
+    return apiRequest(`/midwife/clinic-visit-requests/${requestId}/accept`, {
+      method: 'PATCH',
+      body: JSON.stringify(appointmentData),
+    });
+  },
+
+  // Reject a clinic visit request
+  rejectClinicVisitRequest: async (requestId, reason) => {
+    return apiRequest(`/midwife/clinic-visit-requests/${requestId}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  // Get appointment details by ID
+  getAppointmentById: async (appointmentId) => {
+    return apiRequest(`/midwife/appointments/${appointmentId}`);
+  },
+
+  // Update appointment
+  updateAppointment: async (appointmentId, updateData) => {
+    return apiRequest(`/midwife/appointments/${appointmentId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  // Cancel appointment
+  cancelAppointment: async (appointmentId, reason) => {
+    return apiRequest(`/midwife/appointments/${appointmentId}/cancel`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    });
+  },
+}; 

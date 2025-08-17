@@ -2456,7 +2456,7 @@ const MedicalRecords = () => {
                         }}
                         disabled={!isEditing}
                       />
-                    </div>
+          </div>
                     <div className="followup-field">
                       <label>Health Education Session Participation</label>
                       <select 
