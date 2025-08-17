@@ -36,7 +36,12 @@ const app = express();
 const server = http.createServer(app);
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
-  process.env.FRONTEND_URL_ALT || 'http://localhost:5174'
+  process.env.FRONTEND_URL_ALT || 'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:8080',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000'
 ];
 
 const io = socketIo(server, {
@@ -73,13 +78,12 @@ const startServer = async () => {
 
 // Security middleware
 app.use(helmet());
+// For development, allow all origins
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
+  origin: true, // Allow all origins in development
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
 }));
 
 // Rate limiting
@@ -138,10 +142,10 @@ app.use('/api/ai', protect, aiRoutes);
 app.use('/api/permission-requests', permissionRequestRoutes);
 
 // Import chat socket handler
-const { initializeChatSocket } = require('./socket/chatSocket');
+const { setupChatSocket } = require('./socket/chatSocket');
 
 // Initialize chat socket functionality
-initializeChatSocket(io);
+setupChatSocket(io);
 
 // Legacy socket handlers for backward compatibility
 io.on('connection', (socket) => {
