@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers } from 'react-icons/fi';
+import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers, FiFileText } from 'react-icons/fi';
 import './Appointments.css';
 
 const Appointments = () => {
@@ -7,6 +7,50 @@ const Appointments = () => {
   const [viewMode, setViewMode] = useState('week');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [acceptFormData, setAcceptFormData] = useState({
+    appointmentDate: '',
+    appointmentTime: '',
+    notes: ''
+  });
+
+  // Handle appointment request actions
+  const handleAcceptRequest = (request) => {
+    setSelectedRequest(request);
+    setAcceptFormData({
+      appointmentDate: request.preferredDate,
+      appointmentTime: '',
+      notes: ''
+    });
+    setIsAcceptModalOpen(true);
+  };
+
+  const handleAcceptSubmit = () => {
+    if (!acceptFormData.appointmentDate || !acceptFormData.appointmentTime) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    console.log('Accepting request:', selectedRequest.id, 'with data:', acceptFormData);
+    // Here you would implement the logic to accept the request
+    // Update status, create appointment, etc.
+    
+    // Close modal and reset
+    setIsAcceptModalOpen(false);
+    setSelectedRequest(null);
+    setAcceptFormData({
+      appointmentDate: '',
+      appointmentTime: '',
+      notes: ''
+    });
+  };
+
+  const handleRemoveRequest = (requestId) => {
+    console.log('Removing request:', requestId);
+    // Here you would implement the logic to remove/reject the request
+    // Update status, send notification, etc.
+  };
 
   // Sample appointments data for the week matching the image
   const appointments = [
@@ -142,34 +186,37 @@ const Appointments = () => {
     }
   ];
 
-  // Sample appointment requests data
+  // Sample appointment requests data - updated to match ClinicVisitRequest structure
   const appointmentRequests = [
     {
       id: 1,
-      date: '2024-05-15',
-      time: '10:00 AM',
+      preferredDate: '2024-05-15',
+      preferredTime: 'Morning',
       mom: 'Jennifer Lee',
-      type: 'Prenatal Checkup',
-      description: 'First trimester visit',
-      status: 'pending'
+      requestType: 'Mom Weight Check',
+      notes: 'Regular prenatal weight monitoring',
+      status: 'pending',
+      location: 'Dehiwala Field Clinic'
     },
     {
       id: 2,
-      date: '2024-05-16',
-      time: '1:30 PM',
+      preferredDate: '2024-05-16',
+      preferredTime: 'Afternoon',
       mom: 'Aisha Khan',
-      type: 'Ultrasound',
-      description: 'Follow-up scan',
-      status: 'pending'
+      requestType: 'Ultrasound Scan',
+      notes: 'Follow-up scan for fetal development',
+      status: 'pending',
+      location: 'Dehiwala Hospital'
     },
     {
       id: 3,
-      date: '2024-05-17',
-      time: '3:00 PM',
+      preferredDate: '2024-05-17',
+      preferredTime: 'Evening',
       mom: 'Maria Garcia',
-      type: 'Emergency Consultation',
-      description: 'Severe morning sickness',
-      status: 'pending'
+      requestType: 'Blood Tests',
+      notes: 'Routine prenatal blood work',
+      status: 'pending',
+      location: 'Dehiwala Field Clinic'
     }
   ];
 
@@ -266,15 +313,7 @@ const Appointments = () => {
     setIsModalOpen(true);
   };
 
-  const handleAcceptRequest = (requestId) => {
-    // Here you would typically update the backend
-    console.log('Accepting request:', requestId);
-  };
 
-  const handleRemoveRequest = (requestId) => {
-    // Here you would typically update the backend
-    console.log('Removing request:', requestId);
-  };
 
   const renderTodayView = () => {
     const todayAppointments = getAppointmentsForDay('thursday'); // Current day
@@ -537,17 +576,29 @@ const Appointments = () => {
               {appointmentRequests.map(request => (
                 <div key={request.id} className="appointments-calendar__request-item">
                   <div className="appointments-calendar__request-date">
-                    {new Date(request.date).toLocaleDateString()}
+                    {new Date(request.preferredDate).toLocaleDateString()}
                   </div>
                   <div className="appointments-calendar__request-content">
                     <h4 className="appointments-calendar__request-mom">{request.mom}</h4>
-                    <p className="appointments-calendar__request-type">{request.type} • {request.time}</p>
-                    <p className="appointments-calendar__request-description">{request.description}</p>
+                    <p className="appointments-calendar__request-type">{request.requestType} • {request.preferredTime}</p>
+                    <p className="appointments-calendar__request-description">{request.notes}</p>
+                    <div className="appointments-calendar__request-details">
+                      <span className="appointments-calendar__request-location">
+                        <FiMapPin size={12} className="inline mr-1" />
+                        {request.location}
+                      </span>
+                      {request.notes && (
+                        <span className="appointments-calendar__request-notes">
+                          <FiFileText size={12} className="inline mr-1" />
+                          {request.notes}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="appointments-calendar__request-actions">
                     <button 
                       className="appointments-calendar__request-btn appointments-calendar__request-btn--accept"
-                      onClick={() => handleAcceptRequest(request.id)}
+                      onClick={() => handleAcceptRequest(request)}
                     >
                       <FiCheck size={14} />
                       Accept
@@ -598,6 +649,56 @@ const Appointments = () => {
               <div className="modal__actions">
                 <button className="modal__btn modal__btn--secondary">Reschedule</button>
                 <button className="modal__btn modal__btn--primary">Mark Complete</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Accept Request Modal */}
+        {isAcceptModalOpen && selectedRequest && (
+          <div className="modal-overlay" onClick={() => setIsAcceptModalOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h2>Accept Request</h2>
+                <button className="modal__close" onClick={() => setIsAcceptModalOpen(false)}>
+                  <FiX size={20} />
+                </button>
+              </div>
+              <div className="modal__content">
+                <div className="modal__section">
+                  <h3>Appointment Details</h3>
+                  <div className="modal__grid">
+                    <div className="modal__field">
+                      <label>Date</label>
+                      <input
+                        type="date"
+                        value={acceptFormData.appointmentDate}
+                        onChange={(e) => setAcceptFormData({ ...acceptFormData, appointmentDate: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="modal__field">
+                      <label>Time</label>
+                      <input
+                        type="time"
+                        value={acceptFormData.appointmentTime}
+                        onChange={(e) => setAcceptFormData({ ...acceptFormData, appointmentTime: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="modal__field">
+                      <label>Notes (Optional)</label>
+                      <textarea
+                        value={acceptFormData.notes}
+                        onChange={(e) => setAcceptFormData({ ...acceptFormData, notes: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal__actions">
+                <button className="modal__btn modal__btn--secondary" onClick={() => setIsAcceptModalOpen(false)}>Cancel</button>
+                <button className="modal__btn modal__btn--primary" onClick={handleAcceptSubmit}>Accept</button>
               </div>
             </div>
           </div>

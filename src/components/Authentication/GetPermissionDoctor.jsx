@@ -155,7 +155,7 @@ const GetPermissionDoctor = () => {
     
     try {
       // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:5000/api/doctor/permission-request', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/doctor/permission-request`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

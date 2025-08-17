@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Heart, 
   CheckCircle2, 
@@ -14,7 +14,9 @@ import {
   User, 
   MapPin, 
   BarChart3, 
-  MessageSquare 
+  MessageSquare,
+  Loader2,
+  AlertCircle as AlertCircleIcon
 } from 'lucide-react';
 import './Mothers.css';
 
@@ -22,79 +24,110 @@ const Mothers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedMothers, setSelectedMothers] = useState([]);
+  const [mothers, setMothers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    highRisk: 0,
+    dueThisMonth: 0
+  });
 
-  // Sample mothers data
-  const mothers = [
-    {
-      id: 1,
-      name: 'Priya Perera',
-      age: 28,
-      location: 'Colombo',
-      pregnancyStatus: 'Active',
-      weeksPregnant: 24,
-      dueDate: '2024-06-15',
-      riskLevel: 'Low',
-      assignedProvider: 'Dr. Silva Fernando',
-      lastVisit: '2024-01-20',
-      status: 'Active'
-    },
-    {
-      id: 2,
-      name: 'Anjali Patel',
-      age: 32,
-      location: 'Kandy',
-      pregnancyStatus: 'Active',
-      weeksPregnant: 18,
-      dueDate: '2024-07-10',
-      riskLevel: 'Medium',
-      assignedProvider: 'Dr. Rajesh Kumar',
-      lastVisit: '2024-01-18',
-      status: 'Active'
-    },
-    {
-      id: 3,
-      name: 'Samantha Johnson',
-      age: 25,
-      location: 'Galle',
-      pregnancyStatus: 'Active',
-      weeksPregnant: 32,
-      dueDate: '2024-04-05',
-      riskLevel: 'High',
-      assignedProvider: 'Nurse Kamala Dias',
-      lastVisit: '2024-01-15',
-      status: 'Active'
-    },
-    {
-      id: 4,
-      name: 'Nimali Fernando',
-      age: 29,
-      location: 'Jaffna',
-      pregnancyStatus: 'Active',
-      weeksPregnant: 12,
-      dueDate: '2024-08-20',
-      riskLevel: 'Low',
-      assignedProvider: 'Dr. Silva Fernando',
-      lastVisit: '2024-01-22',
-      status: 'Active'
-    },
-    {
-      id: 5,
-      name: 'Kamala Dias',
-      age: 35,
-      location: 'Matara',
-      pregnancyStatus: 'Active',
-      weeksPregnant: 28,
-      dueDate: '2024-05-12',
-      riskLevel: 'Medium',
-      assignedProvider: 'Dr. Rajesh Kumar',
-      lastVisit: '2024-01-19',
-      status: 'Active'
+  // Fetch mothers data from backend
+  const fetchMothers = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        throw new Error('No admin token found');
+      }
+
+      console.log('Fetching mothers data...');
+      
+      // Fetch users with role 'mom'
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users?role=mom&limit=100`,
+        {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          window.location.href = '/admin/login';
+          return;
+        }
+        throw new Error('Failed to fetch mothers data');
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      if (data.status === 'success') {
+        // Transform user data to mother format
+        const transformedMothers = data.data.users.map(user => ({
+          id: user.id,
+          name: user.name,
+          age: user.age || 'N/A',
+          location: user.location || 'Not specified',
+          pregnancyStatus: 'Active', // Default for mothers
+          weeksPregnant: user.weeksPregnant || 'N/A',
+          dueDate: user.dueDate || 'Not specified',
+          riskLevel: user.riskLevel || 'Low',
+          assignedProvider: user.assignedProvider || 'Not assigned',
+          lastVisit: user.lastVisit || 'Never',
+          status: user.status,
+          email: user.email,
+          phone: user.phone || 'Not specified',
+          joinDate: user.joinDate
+        }));
+
+        console.log('Transformed mothers:', transformedMothers);
+        setMothers(transformedMothers);
+        
+        // Calculate stats
+        const total = data.data.stats.mothers || transformedMothers.length;
+        const active = transformedMothers.filter(m => m.status === 'Active').length;
+        const inactive = transformedMothers.filter(m => m.status === 'Inactive').length;
+        const highRisk = transformedMothers.filter(m => m.riskLevel === 'High').length;
+        const dueThisMonth = transformedMothers.filter(m => {
+          if (!m.dueDate || m.dueDate === 'Not specified') return false;
+          const dueDate = new Date(m.dueDate);
+          const now = new Date();
+          return dueDate.getMonth() === now.getMonth() && dueDate.getFullYear() === now.getFullYear();
+        }).length;
+
+        console.log('Calculated stats:', { total, active, inactive, highRisk, dueThisMonth });
+        setStats({ total, active, inactive, highRisk, dueThisMonth });
+      } else {
+        throw new Error(data.message || 'Failed to fetch mothers data');
+      }
+    } catch (error) {
+      console.error('Error fetching mothers:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchMothers();
+  }, []);
 
   const filteredMothers = mothers.filter(mother => {
     const matchesSearch = mother.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         mother.location.toLowerCase().includes(searchTerm.toLowerCase());
+                         mother.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         mother.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || mother.status.toLowerCase() === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -133,103 +166,127 @@ const Mothers = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <main className="mothers-dashboard-main">
+        <div className="mothers-loading-container">
+          <Loader2 className="mothers-loading-spinner" />
+          <p>Loading mothers data...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="mothers-dashboard-main">
+        <div className="mothers-error-container">
+          <AlertCircleIcon className="mothers-error-icon" />
+          <h3>Error Loading Data</h3>
+          <p>{error}</p>
+          <button onClick={fetchMothers} className="mothers-retry-btn">
+            Try Again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="dashboard-main">
+    <main className="mothers-dashboard-main">
       {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon-container pink">
-            <Heart className="stat-icon" />
+      <div className="mothers-stats-grid">
+        <div className="mothers-stat-card">
+          <div className="mothers-stat-icon-container pink">
+            <Heart className="mothers-stat-icon" />
           </div>
-          <div className="stat-content">
-            <p className="stat-label">Total Mothers</p>
-            <p className="stat-value">456</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-container green">
-            <CheckCircle2 className="stat-icon" />
-          </div>
-          <div className="stat-content">
-            <p className="stat-label">Active Pregnancies</p>
-            <p className="stat-value">289</p>
+          <div className="mothers-stat-content">
+            <p className="mothers-stat-label">Total Mothers</p>
+            <p className="mothers-stat-value">{stats.total}</p>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon-container red">
-            <AlertCircle className="stat-icon" />
+        <div className="mothers-stat-card">
+          <div className="mothers-stat-icon-container green">
+            <CheckCircle2 className="mothers-stat-icon" />
           </div>
-          <div className="stat-content">
-            <p className="stat-label">High Risk</p>
-            <p className="stat-value">23</p>
+          <div className="mothers-stat-content">
+            <p className="mothers-stat-label">Active Mothers</p>
+            <p className="mothers-stat-value">{stats.active}</p>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon-container blue">
-            <Calendar className="stat-icon" />
+        <div className="mothers-stat-card">
+          <div className="mothers-stat-icon-container red">
+            <AlertCircle className="mothers-stat-icon" />
           </div>
-          <div className="stat-content">
-            <p className="stat-label">Due This Month</p>
-            <p className="stat-value">34</p>
+          <div className="mothers-stat-content">
+            <p className="mothers-stat-label">High Risk</p>
+            <p className="mothers-stat-value">{stats.highRisk}</p>
+          </div>
+        </div>
+        <div className="mothers-stat-card">
+          <div className="mothers-stat-icon-container blue">
+            <Calendar className="mothers-stat-icon" />
+          </div>
+          <div className="mothers-stat-content">
+            <p className="mothers-stat-label">Due This Month</p>
+            <p className="mothers-stat-value">{stats.dueThisMonth}</p>
           </div>
         </div>
       </div>
 
       {/* Filters and Search */}
-      <div className="filters-card">
-        <div className="filters-container">
-          <div className="search-filters">
-            <div className="search-container">
-              <Search className="search-icon" />
+      <div className="mothers-filters-card">
+        <div className="mothers-filters-container">
+          <div className="mothers-search-filters">
+            <div className="mothers-search-container">
+              <Search className="mothers-search-icon" />
               <input
                 type="text"
                 placeholder="Search mothers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
+                className="mothers-search-input"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="status-select"
+              className="mothers-status-select"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-              <option value="pending">Pending</option>
             </select>
-            <button className="filter-btn">
+            <button className="mothers-filter-btn">
               <Filter className="h-4 w-4 mr-2" />
               More Filters
             </button>
-            <button className="export-btn">
+            <button className="mothers-export-btn">
               <Download className="h-4 w-4 mr-2" />
               Export
             </button>
           </div>
           <div className="action-buttons">
             {selectedMothers.length > 0 && (
-              <button className="bulk-action-btn">
+              <button className="mothers-bulk-action-btn">
                 Bulk Actions ({selectedMothers.length})
               </button>
             )}
-            
           </div>
         </div>
       </div>
 
       {/* Mothers Table */}
-      <div className="table-card">
-        <div className="table-container">
+      <div className="mothers-table-card">
+        <div className="mothers-table-container">
           <table className="mothers-table">
-            <thead className="table-header">
-              <tr>
-                <th className="checkbox-cell">
+            <thead className="mothers-table-header">
+              <tr className="mothers-table-header-row">
+                <th className="mothers-checkbox-cell">
                   <input
                     type="checkbox"
-                    className="checkbox-input"
+                    className="mothers-checkbox-input"
                     onChange={(e) => {
                       if (e.target.checked) {
                         setSelectedMothers(filteredMothers.map(m => m.id));
@@ -239,135 +296,146 @@ const Mothers = () => {
                     }}
                   />
                 </th>
-                <th className="table-header-cell">Mother Details</th>
-                <th className="table-header-cell">Pregnancy Status</th>
-                <th className="table-header-cell">Risk Level</th>
-                <th className="table-header-cell">Assigned Provider</th>
-                <th className="table-header-cell">Last Visit</th>
-                <th className="table-header-cell">Status</th>
-                <th className="table-header-cell">Actions</th>
+                <th className="mothers-table-header-cell">Mother Details</th>
+                <th className="mothers-table-header-cell">Contact Info</th>
+                <th className="mothers-table-header-cell">Risk Level</th>
+                <th className="mothers-table-header-cell">Assigned Provider</th>
+                <th className="mothers-table-header-cell">Last Visit</th>
+                <th className="mothers-table-header-cell">Status</th>
+                <th className="mothers-table-header-cell">Actions</th>
               </tr>
             </thead>
-            <tbody className="table-body">
-              {filteredMothers.map((mother) => (
-                <tr key={mother.id} className="table-row">
-                  <td className="checkbox-cell">
+            <tbody className="mothers-table-body">
+              {filteredMothers.length > 0 ? (
+                filteredMothers.map((mother) => (
+                <tr key={mother.id} className="mothers-table-row">
+                  <td className="mothers-checkbox-cell">
                     <input
                       type="checkbox"
-                      className="checkbox-input"
+                      className="mothers-checkbox-input"
                       checked={selectedMothers.includes(mother.id)}
                       onChange={() => handleSelectMother(mother.id)}
                     />
                   </td>
-                  <td className="mother-details-cell">
-                    <div className="mother-info">
-                      <div className="mother-avatar">
+                  <td className="mothers-details-cell">
+                    <div className="mothers-info">
+                      <div className="mothers-avatar">
                         <User className="h-5 w-5" />
                       </div>
-                      <div className="mother-details">
-                        <div className="mother-name">{mother.name}</div>
-                        <div className="mother-age">Age: {mother.age}</div>
-                        <div className="mother-location">
+                      <div className="mothers-details">
+                        <div className="mothers-name">{mother.name}</div>
+                        <div className="mothers-age">Age: {mother.age}</div>
+                        <div className="mothers-location">
                           <MapPin className="h-3 w-3 mr-1" />
                           {mother.location}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="pregnancy-status-cell">
-                    <div className="pregnancy-info">
-                      <div className="pregnancy-status">{mother.pregnancyStatus}</div>
-                      <div className="pregnancy-weeks">{mother.weeksPregnant} weeks</div>
-                      <div className="pregnancy-due">Due: {mother.dueDate}</div>
+                    <td className="mothers-contact-cell">
+                      <div className="mothers-contact-info">
+                        <div className="mothers-contact-email">{mother.email}</div>
+                        <div className="mothers-contact-phone">{mother.phone}</div>
                     </div>
                   </td>
-                  <td className="risk-level-cell">
-                    <span className={`risk-badge ${getRiskBadge(mother.riskLevel)}`}>
+                  <td className="mothers-risk-level-cell">
+                    <span className={`mothers-risk-badge ${getRiskBadge(mother.riskLevel)}`}>
                       {mother.riskLevel} Risk
                     </span>
                   </td>
-                  <td className="provider-cell">
+                  <td className="mothers-provider-cell">
                     {mother.assignedProvider}
                   </td>
-                  <td className="last-visit-cell">
+                  <td className="mothers-last-visit-cell">
                     {mother.lastVisit}
                   </td>
-                  <td className="status-cell">
-                    <span className={`status-badge ${getStatusBadge(mother.status)}`}>
+                  <td className="mothers-status-cell">
+                    <span className={`mothers-status-badge ${getStatusBadge(mother.status)}`}>
                       {mother.status}
                     </span>
                   </td>
-                  <td className="actions-cell">
-                    <div className="action-buttons">
+                  <td className="mothers-actions-cell">
+                    <div className="mothers-action-buttons">
                       <a
-                        href={`/admin/users/mothers/${mother.id}`}
-                        className="action-btn view"
+                          href={`/admin/users/${mother.id}`}
+                        className="mothers-action-btn view"
                         title="View Profile"
                       >
-                        <Eye className="action-icon" />
+                        <Eye className="mothers-action-icon" />
                       </a>
                       <a
-                        href={`/admin/users/mothers/${mother.id}/edit`}
-                        className="action-btn edit"
+                          href={`/admin/users/${mother.id}/edit`}
+                        className="mothers-action-btn edit"
                         title="Edit"
                       >
-                        <Edit className="action-icon" />
+                        <Edit className="mothers-action-icon" />
                       </a>
-                      <button className="action-btn more">
-                        <MoreVertical className="action-icon" />
+                      <button className="mothers-action-btn more">
+                        <MoreVertical className="mothers-action-icon" />
                       </button>
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="mothers-empty-state">
+                    <div className="mothers-empty-content">
+                      <Heart className="mothers-empty-icon" />
+                      <h3 className="mothers-empty-title">No mothers found</h3>
+                      <p className="mothers-empty-description">Try adjusting your search or filter criteria</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container">
-          <div className="pagination-content">
-            <div className="pagination-info">
-              <p className="pagination-text">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">2</span> of{' '}
+        <div className="mothers-pagination-container">
+          <div className="mothers-pagination-content">
+            <div className="mothers-pagination-info">
+              <p className="mothers-pagination-text">
+                Showing <span className="font-medium">1</span> to <span className="font-medium">{filteredMothers.length}</span> of{' '}
                 <span className="font-medium">{filteredMothers.length}</span> results
               </p>
             </div>
-            <div className="pagination-nav">
-              <button className="pagination-btn">Previous</button>
-              <button className="pagination-btn active">1</button>
-              <button className="pagination-btn">Next</button>
+            <div className="mothers-pagination-nav">
+              <button className="mothers-pagination-btn" disabled>Previous</button>
+              <button className="mothers-pagination-btn active">1</button>
+              <button className="mothers-pagination-btn" disabled>Next</button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions Section */}
-      <div className="quick-actions-grid">
-        <a href="/admin/users/mothers/add" className="quick-action-card">
-          <div className="quick-action-content">
-            <Plus className="quick-action-icon blue" />
-            <div className="quick-action-text">
-              <p className="quick-action-title">Add New Mother</p>
-              <p className="quick-action-description">Register a new mother in the system</p>
+      <div className="mothers-quick-actions-grid">
+        <a href="/admin/users/add" className="mothers-quick-action-card">
+          <div className="mothers-quick-action-content">
+            <Plus className="mothers-quick-action-icon blue" />
+            <div className="mothers-quick-action-text">
+              <p className="mothers-quick-action-title">Add New Mother</p>
+              <p className="mothers-quick-action-description">Register a new mother in the system</p>
             </div>
           </div>
         </a>
-        <a href="/admin/reports/mothers" className="quick-action-card">
-          <div className="quick-action-content">
-            <BarChart3 className="quick-action-icon green" />
-            <div className="quick-action-text">
-              <p className="quick-action-title">Generate Report</p>
-              <p className="quick-action-description">Create mothers analytics report</p>
+        <a href="/admin/reports/mothers" className="mothers-quick-action-card">
+          <div className="mothers-quick-action-content">
+            <BarChart3 className="mothers-quick-action-icon green" />
+            <div className="mothers-quick-action-text">
+              <p className="mothers-quick-action-title">Generate Report</p>
+              <p className="mothers-quick-action-description">Create mothers analytics report</p>
             </div>
           </div>
         </a>
-        <a href="/admin/announcements/mothers" className="quick-action-card">
-          <div className="quick-action-content">
-            <MessageSquare className="quick-action-icon purple" />
-            <div className="quick-action-text">
-              <p className="quick-action-title">Send Announcement</p>
-              <p className="quick-action-description">Broadcast to all mothers</p>
+        <a href="/admin/announcements/mothers" className="mothers-quick-action-card">
+          <div className="mothers-quick-action-content">
+            <MessageSquare className="mothers-quick-action-icon purple" />
+            <div className="mothers-quick-action-text">
+              <p className="mothers-quick-action-title">Send Announcement</p>
+              <p className="mothers-quick-action-description">Broadcast to all mothers</p>
             </div>
           </div>
         </a>
@@ -376,4 +444,4 @@ const Mothers = () => {
   );
 };
 
-export default Mothers; 
+export default Mothers;

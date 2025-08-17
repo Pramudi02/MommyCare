@@ -757,6 +757,31 @@
   margin: 0;
 }
 
+.appointments-calendar__request-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.appointments-calendar__request-location,
+.appointments-calendar__request-notes {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+}
+
+.appointments-calendar__request-location svg,
+.appointments-calendar__request-notes svg {
+  color: #9ca3af;
+  margin-right: 0.25rem;
+}
+
 .appointments-calendar__request-actions {
   display: flex;
   gap: 0.5rem;
@@ -900,6 +925,42 @@
 }
 
 .modal__input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Form input styles for accept request modal */
+.modal__field input[type="date"],
+.modal__field input[type="time"] {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+  background: white;
+}
+
+.modal__field input[type="date"]:focus,
+.modal__field input[type="time"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal__field textarea {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+  background: white;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.modal__field textarea:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);

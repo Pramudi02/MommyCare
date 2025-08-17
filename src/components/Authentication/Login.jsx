@@ -58,7 +58,7 @@ const Login = () => {
     
     try {
       // Use the real login endpoint
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,10 +73,10 @@ const Login = () => {
 
       if (response.ok) {
         // Use AuthContext login function
-        login(data);
+        login(data.data);
         
         // Navigate based on user role
-        switch (data.user.role) {
+        switch (data.data.user.role) {
           case 'mom':
             navigate('/mom');
             break;

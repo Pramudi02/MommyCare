@@ -938,7 +938,21 @@ const MedicalRecords = () => {
                         value={selectedMom.currentWeight} 
                         disabled={!isEditing}
                       />
-                      </div>
+                    </div>
+                    <div className="overview-field">
+                      <label>Next Clinic Date</label>
+                      <input 
+                        type="date" 
+                        className="overview-input" 
+                        value={selectedMom.nextClinicDate || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicDate = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -2434,9 +2448,15 @@ const MedicalRecords = () => {
                         type="date" 
                         className="followup-input" 
                         value={selectedMom.babyFollowUps?.nextClinicDate || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          if (!updatedMom.babyFollowUps) updatedMom.babyFollowUps = {};
+                          updatedMom.babyFollowUps.nextClinicDate = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
                         disabled={!isEditing}
                       />
-          </div>
+                    </div>
                     <div className="followup-field">
                       <label>Health Education Session Participation</label>
                       <select 

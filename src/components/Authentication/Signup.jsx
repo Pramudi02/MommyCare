@@ -104,7 +104,7 @@ const Signup = () => {
       console.log('Sending registration data:', requestData);
       
       // Use the real registration endpoint
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ const Signup = () => {
 
       if (response.ok) {
         // Use AuthContext login function
-        login(data);
+        login(data.data);
         
         // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {

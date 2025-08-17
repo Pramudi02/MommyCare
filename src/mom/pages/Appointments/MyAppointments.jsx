@@ -98,6 +98,7 @@ const AppointmentsDashboard = () => {
 
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
     setIsAuthenticated(!!token);
   };
 
@@ -116,6 +117,7 @@ const AppointmentsDashboard = () => {
     setSelectedDoctorCategory(null);
     setClinicRequests([]);
     setDoctorRequests([]);
+
   };
 
   const fetchClinicRequests = async () => {
@@ -130,6 +132,7 @@ const AppointmentsDashboard = () => {
       if (error.message.includes('Not authorized') || error.message.includes('no token')) {
         // User is not authenticated, set empty requests array
         setClinicRequests([]);
+        setIsAuthenticated(false);
       } else {
         // For other errors, show in console but don't alert user
         console.warn('Could not fetch clinic requests:', error.message);
@@ -387,6 +390,7 @@ const AppointmentsDashboard = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Clinic Visits Card */}
+
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
                          <div className="flex items-center justify-between mb-6">
                <div className="flex items-center">
@@ -462,6 +466,7 @@ const AppointmentsDashboard = () => {
           </div>
 
           {/* Doctor Consultations Card */}
+
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
@@ -496,6 +501,11 @@ const AppointmentsDashboard = () => {
                     }`}>
                       {service.name}
                     </span>
+                    {!isAuthenticated && (
+                      <div className="text-xs text-gray-500 mt-1 text-center">
+                        Login required
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -520,14 +530,17 @@ const AppointmentsDashboard = () => {
               </button>
               {selectedDoctorCategory && isAuthenticated && (
                 <button 
+
                   onClick={() => setSelectedDoctorCategory(null)}
                   className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
+
                 >
                   Clear
                 </button>
               )}
             </div>
             <p className="text-xs text-gray-500 text-center mt-2">
+
               Doctor will confirm your appointment
             </p>
           </div>
