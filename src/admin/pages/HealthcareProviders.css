@@ -649,6 +649,457 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
+/* Providers Table */
+.providers-table-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.providers-table-container {
+  overflow-x: auto;
+}
+
+.providers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.providers-table-header {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.providers-table-header-row {
+  height: 60px;
+}
+
+.providers-table-header-cell {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 700;
+  color: #475569;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.providers-checkbox-cell {
+  width: 50px;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.providers-checkbox-input {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.providers-checkbox-input:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.providers-table-body {
+  background: white;
+}
+
+.providers-table-row {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.providers-table-row:hover {
+  background: #f8fafc;
+  transform: scale(1.001);
+}
+
+.providers-table-cell {
+  padding: 20px;
+  vertical-align: middle;
+}
+
+/* Provider Details Cell */
+.providers-details-cell {
+  padding: 20px;
+}
+
+.providers-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.providers-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.providers-avatar.doctor {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.providers-avatar.midwife {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.providers-details {
+  flex: 1;
+}
+
+.providers-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.providers-type {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px 0;
+}
+
+.providers-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Contact Info Cell */
+.providers-contact-cell {
+  padding: 20px;
+}
+
+.providers-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.providers-contact-email {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.providers-contact-email:hover {
+  color: #3b82f6;
+}
+
+.providers-contact-phone {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Specialization Cell */
+.providers-specialization-cell {
+  padding: 20px;
+}
+
+.providers-specialization {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.providers-qualifications {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Experience Cell */
+.providers-experience-cell {
+  padding: 20px;
+}
+
+.providers-experience {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.providers-availability {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Stats Cell */
+.providers-stats-cell {
+  padding: 20px;
+}
+
+.providers-stats-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.providers-stat-mini-item {
+  text-align: center;
+}
+
+.providers-stat-mini-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 2px 0;
+}
+
+.providers-stat-mini-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Status Cell */
+.providers-status-cell {
+  padding: 20px;
+}
+
+.providers-status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.providers-status-badge.verified {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #166534;
+}
+
+.providers-status-badge.pending {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+}
+
+/* Actions Cell */
+.providers-actions-cell {
+  padding: 20px;
+}
+
+.providers-action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.providers-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.providers-action-btn.view {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.providers-action-btn.view:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.providers-action-btn.edit {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.providers-action-btn.edit:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.providers-action-btn.more {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  color: #64748b;
+}
+
+.providers-action-btn.more:hover {
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  transform: translateY(-1px);
+}
+
+.providers-action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Pagination */
+.providers-pagination-container {
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  padding: 20px 24px;
+}
+
+.providers-pagination-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.providers-pagination-info {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.providers-pagination-text {
+  margin: 0;
+}
+
+.providers-pagination-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.providers-pagination-btn {
+  padding: 8px 16px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.providers-pagination-btn:hover:not(:disabled) {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.providers-pagination-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.providers-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Quick Actions */
+.providers-quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.providers-quick-action-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.providers-quick-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.providers-quick-action-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.providers-quick-action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.providers-quick-action-icon.blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.providers-quick-action-icon.green {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.providers-quick-action-icon.purple {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.providers-quick-action-text {
+  flex: 1;
+}
+
+.providers-quick-action-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.providers-quick-action-description {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .providers-stats-grid {

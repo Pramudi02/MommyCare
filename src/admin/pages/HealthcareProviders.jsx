@@ -77,33 +77,42 @@ const HealthcareProviders = () => {
 
       const data = await response.json();
       console.log('API Response:', data);
+      console.log('Raw users data:', data.data.users);
       
       if (data.status === 'success') {
         // Filter and transform user data to provider format
-        const allProviders = data.data.users
-          .filter(user => user.role === 'doctor' || user.role === 'midwife')
-          .map(user => ({
-            id: user.id,
-            name: user.name,
-            type: user.role,
-            specialization: user.specialization || (user.role === 'doctor' ? 'General Practitioner' : 'Community Midwife'),
-            email: user.email,
-            phone: user.phone || 'Not specified',
-            clinic: user.clinic || 'Not specified',
-            location: user.location || 'Not specified',
-            patients: user.patients || Math.floor(Math.random() * 50) + 10, // Random for demo
-            status: user.isActive ? 'verified' : 'pending',
-            joinDate: user.joinDate,
-            rating: user.rating || (Math.random() * 1 + 4).toFixed(1), // Random for demo
-            completedAppointments: user.completedAppointments || Math.floor(Math.random() * 200) + 50, // Random for demo
-            verificationStatus: user.isActive ? 'approved' : 'pending',
-            experience: user.experience || `${Math.floor(Math.random() * 15) + 2} years`, // Random for demo
-            qualifications: user.qualifications || (user.role === 'doctor' ? 'MBBS' : 'Diploma in Midwifery'),
-            availability: user.availability || 'Monday-Friday',
-            lastActive: user.lastLogin || 'Never'
-          }));
+        const allUsers = data.data.users;
+        console.log('All users:', allUsers);
+        
+        const doctorMidwifeUsers = allUsers.filter(user => user.role === 'doctor' || user.role === 'midwife');
+        console.log('Doctor and Midwife users:', doctorMidwifeUsers);
+        
+        const allProviders = doctorMidwifeUsers.map(user => ({
+          id: user.id,
+          name: user.name,
+          type: user.role,
+          specialization: user.specialization || (user.role === 'doctor' ? 'General Practitioner' : 'Community Midwife'),
+          email: user.email,
+          phone: user.phone || 'Not specified',
+          clinic: user.clinic || 'Not specified',
+          location: user.location || 'Not specified',
+          patients: user.patients || Math.floor(Math.random() * 50) + 10, // Random for demo
+          status: user.status === 'Active' ? 'verified' : 'pending',
+          joinDate: user.joinDate || 'Not specified',
+          rating: user.rating || (Math.random() * 1 + 4).toFixed(1), // Random for demo
+          completedAppointments: user.completedAppointments || Math.floor(Math.random() * 200) + 50, // Random for demo
+          verificationStatus: user.status === 'Active' ? 'approved' : 'pending',
+          experience: user.experience || `${Math.floor(Math.random() * 15) + 2} years`, // Random for demo
+          qualifications: user.qualifications || (user.role === 'doctor' ? 'MBBS' : 'Diploma in Midwifery'),
+          availability: user.availability || 'Monday-Friday',
+          lastActive: user.lastLogin || 'Never',
+          avatar: user.avatar || user.name.split(' ').map(n => n[0]).join('').toUpperCase(),
+          avatarColor: user.avatarColor || (user.role === 'doctor' ? 'blue' : 'green')
+        }));
 
         console.log('Transformed providers:', allProviders);
+        console.log('Doctors count:', allProviders.filter(p => p.type === 'doctor').length);
+        console.log('Midwives count:', allProviders.filter(p => p.type === 'midwife').length);
         setProviders(allProviders);
       } else {
         throw new Error(data.message || 'Failed to fetch providers data');
@@ -121,8 +130,9 @@ const HealthcareProviders = () => {
     fetchProviders();
   }, []);
 
-  // Filter providers based on active view
+  // Get current providers based on active view
   const currentProviders = providers.filter(provider => provider.type === activeView);
+  console.log('Current providers for view:', activeView, currentProviders);
 
   // Apply search and filters
   const filteredProviders = currentProviders.filter(provider => {
@@ -136,130 +146,21 @@ const HealthcareProviders = () => {
     
     return matchesSearch && matchesStatus && matchesSpecialization;
   });
+  console.log('Filtered providers:', filteredProviders);
 
   // Get unique specializations for current view
   const specializations = [...new Set(currentProviders.map(p => p.specialization))];
+  console.log('Available specializations:', specializations);
 
-  const StatusBadge = ({ status }) => {
-    const statusConfig = {
-      verified: { color: 'status-verified', text: 'Verified', icon: CheckCircle },
-      pending: { color: 'status-pending', text: 'Pending', icon: Clock },
-      rejected: { color: 'status-rejected', text: 'Rejected', icon: AlertCircle }
-    };
-    
-    const config = statusConfig[status] || statusConfig.pending;
-    const Icon = config.icon;
-    
-    return (
-      <span className={`status-badge ${config.color}`}>
-        <Icon className="status-icon" />
-        {config.text}
-      </span>
-    );
-  };
-
-  const ProviderCard = ({ provider }) => (
-    <div className="provider-card">
-      <div className="provider-header">
-        <div className="provider-info">
-          <div className={`provider-avatar ${provider.type === 'doctor' ? 'doctor' : 'midwife'}`}>
-            {provider.type === 'doctor' ? 
-              <Stethoscope className="provider-avatar-icon" /> : 
-              <Heart className="provider-avatar-icon" />
-            }
-          </div>
-          <div className="provider-details">
-            <h3 className="provider-name">{provider.name}</h3>
-            <p className="provider-specialization">{provider.specialization}</p>
-            <p className="provider-experience">{provider.experience} experience</p>
-          </div>
-        </div>
-        <div className="provider-actions">
-          <StatusBadge status={provider.status} />
-          <button className="more-btn">
-            <MoreVertical className="more-icon" />
-          </button>
-        </div>
-      </div>
-      
-      <div className="provider-contact">
-        <div className="contact-item">
-          <Mail className="contact-icon" />
-          {provider.email}
-        </div>
-        <div className="contact-item">
-          <Phone className="contact-icon" />
-          {provider.phone}
-        </div>
-        <div className="contact-item">
-          <Building className="contact-icon" />
-          {provider.clinic}
-        </div>
-        <div className="contact-item">
-          <MapPin className="contact-icon" />
-          {provider.location}
-        </div>
-        <div className="contact-item">
-          <Award className="contact-icon" />
-          {provider.qualifications}
-        </div>
-        <div className="contact-item">
-          <Calendar className="contact-icon" />
-          {provider.availability}
-        </div>
-      </div>
-      
-      <div className="provider-stats">
-        <div className="stat-item">
-          <p className="stat-value">{provider.patients}</p>
-          <p className="stat-label">Patients</p>
-        </div>
-        <div className="stat-item">
-          <div className="rating-container">
-            <Star className="rating-star" />
-            <p className="stat-value">{provider.rating}</p>
-          </div>
-          <p className="stat-label">Rating</p>
-        </div>
-        <div className="stat-item">
-          <p className="stat-value">{provider.completedAppointments}</p>
-          <p className="stat-label">Completed</p>
-        </div>
-      </div>
-      
-      <div className="provider-actions-bottom">
-        <a
-          href={`/admin/users/${provider.id}`}
-          className="action-btn view"
-        >
-          <Eye className="action-icon" />
-          View Profile
-        </a>
-        <a
-          href={`/admin/users/${provider.id}/edit`}
-          className="action-btn edit"
-        >
-          <Edit className="action-icon" />
-          Edit
-        </a>
-      </div>
-      
-      <div className="provider-footer">
-        <div className="footer-info">
-          <span className="footer-text">Last active: {provider.lastActive}</span>
-          <span className="footer-text">Joined: {provider.joinDate}</span>
-        </div>
-      </div>
-    </div>
-  );
-
+  // Calculate stats for current view
   const currentStats = {
     total: currentProviders.length,
     verified: currentProviders.filter(p => p.status === 'verified').length,
     pending: currentProviders.filter(p => p.status === 'pending').length,
     totalPatients: currentProviders.reduce((sum, p) => sum + p.patients, 0),
-    avgRating: currentProviders.length > 0 ? 
-      (currentProviders.reduce((sum, p) => sum + parseFloat(p.rating), 0) / currentProviders.length).toFixed(1) : '0.0'
+    avgRating: currentProviders.length > 0 
+      ? (currentProviders.reduce((sum, p) => sum + parseFloat(p.rating), 0) / currentProviders.length).toFixed(1)
+      : '0.0'
   };
 
   if (loading) {
@@ -287,17 +188,6 @@ const HealthcareProviders = () => {
       </main>
     );
   }
-
-  const currentProviders = providers.filter(provider => provider.type === activeView);
-  const currentStats = {
-    total: currentProviders.length,
-    verified: currentProviders.filter(p => p.status === 'verified').length,
-    pending: currentProviders.filter(p => p.status === 'pending').length,
-    totalPatients: currentProviders.reduce((sum, p) => sum + p.patients, 0),
-    avgRating: currentProviders.length > 0 
-      ? (currentProviders.reduce((sum, p) => sum + parseFloat(p.rating), 0) / currentProviders.length).toFixed(1)
-      : '0.0'
-  };
 
   return (
     <main className="providers-dashboard-main">
@@ -397,10 +287,9 @@ const HealthcareProviders = () => {
             className="providers-specialization-select"
           >
             <option value="all">All Specializations</option>
-            <option value="General Practitioner">General Practitioner</option>
-            <option value="Community Midwife">Community Midwife</option>
-            <option value="Obstetrician">Obstetrician</option>
-            <option value="Gynecologist">Gynecologist</option>
+            {specializations.map(spec => (
+              <option key={spec} value={spec}>{spec}</option>
+            ))}
           </select>
 
           <button className="providers-filter-btn">
@@ -414,100 +303,175 @@ const HealthcareProviders = () => {
         </div>
       </div>
 
-      {/* Providers Grid */}
-      <div className="providers-grid">
-        {currentProviders.length > 0 ? (
-          currentProviders.map((provider) => (
-            <div key={provider.id} className="providers-card">
-              <div className="providers-card-header">
-                <div className={`providers-avatar ${provider.type}`}>
-                  {provider.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </div>
-                <div className="providers-info">
-                  <div className="providers-name">{provider.name}</div>
-                  <div className="providers-type">{provider.type.toUpperCase()}</div>
-                  <div className="providers-specialization">{provider.specialization}</div>
-                </div>
-              </div>
+      {/* Providers Table */}
+      <div className="providers-table-card">
+        <div className="providers-table-container">
+          <table className="providers-table">
+            <thead className="providers-table-header">
+              <tr className="providers-table-header-row">
+                <th className="providers-checkbox-cell">
+                  <input
+                    type="checkbox"
+                    className="providers-checkbox-input"
+                    onChange={(e) => {
+                      // Handle select all
+                    }}
+                  />
+                </th>
+                <th className="providers-table-header-cell">Provider Details</th>
+                <th className="providers-table-header-cell">Contact Info</th>
+                <th className="providers-table-header-cell">Specialization</th>
+                <th className="providers-table-header-cell">Experience</th>
+                <th className="providers-table-header-cell">Patients</th>
+                <th className="providers-table-header-cell">Status</th>
+                <th className="providers-table-header-cell">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="providers-table-body">
+              {filteredProviders.length > 0 ? (
+                filteredProviders.map((provider) => (
+                  <tr key={provider.id} className="providers-table-row">
+                    <td className="providers-checkbox-cell">
+                      <input
+                        type="checkbox"
+                        className="providers-checkbox-input"
+                      />
+                    </td>
+                    <td className="providers-details-cell">
+                      <div className="providers-info">
+                        <div className={`providers-avatar ${provider.type}`}>
+                          {provider.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>
+                        <div className="providers-details">
+                          <div className="providers-name">{provider.name}</div>
+                          <div className="providers-type">{provider.type.toUpperCase()}</div>
+                          <div className="providers-location">
+                            <MapPin className="h-3 w-3 mr-1" />
+                            {provider.location}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="providers-contact-cell">
+                      <div className="providers-contact-info">
+                        <a href={`mailto:${provider.email}`} className="providers-contact-email">
+                          {provider.email}
+                        </a>
+                        <div className="providers-contact-phone">{provider.phone}</div>
+                      </div>
+                    </td>
+                    <td className="providers-specialization-cell">
+                      <div className="providers-specialization">{provider.specialization}</div>
+                      <div className="providers-qualifications">{provider.qualifications}</div>
+                    </td>
+                    <td className="providers-experience-cell">
+                      <div className="providers-experience">{provider.experience}</div>
+                      <div className="providers-availability">{provider.availability}</div>
+                    </td>
+                    <td className="providers-stats-cell">
+                      <div className="providers-stats-mini">
+                        <div className="providers-stat-mini-item">
+                          <div className="providers-stat-mini-number">{provider.patients}</div>
+                          <div className="providers-stat-mini-label">Patients</div>
+                        </div>
+                        <div className="providers-stat-mini-item">
+                          <div className="providers-stat-mini-number">{provider.rating}</div>
+                          <div className="providers-stat-mini-label">Rating</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="providers-status-cell">
+                      <span className={`providers-status-badge ${provider.status}`}>
+                        {provider.status === 'verified' ? 'Verified' : 'Pending Verification'}
+                      </span>
+                    </td>
+                    <td className="providers-actions-cell">
+                      <div className="providers-action-buttons">
+                        <a
+                          href={`/admin/users/${provider.id}`}
+                          className="providers-action-btn view"
+                          title="View Profile"
+                        >
+                          <Eye className="providers-action-icon" />
+                        </a>
+                        <a
+                          href={`/admin/users/${provider.id}/edit`}
+                          className="providers-action-btn edit"
+                          title="Edit"
+                        >
+                          <Edit className="providers-action-icon" />
+                        </a>
+                        <button className="providers-action-btn more">
+                          <MoreHorizontal className="providers-action-icon" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="providers-empty-state">
+                    <div className="providers-empty-content">
+                      <Stethoscope className="providers-empty-icon" />
+                      <h3 className="providers-empty-title">No {activeView} found</h3>
+                      <p className="providers-empty-description">
+                        Try adjusting your search or filter criteria to find {activeView}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-              <div className="providers-card-content">
-                <div className="providers-detail-group">
-                  <div className="providers-detail-label">Contact</div>
-                  <div className="providers-contact-info">
-                    <a href={`mailto:${provider.email}`} className="providers-contact-email">
-                      {provider.email}
-                    </a>
-                    <div className="providers-contact-phone">{provider.phone}</div>
-                  </div>
-                </div>
-
-                <div className="providers-detail-group">
-                  <div className="providers-detail-label">Location</div>
-                  <div className="providers-detail-value">{provider.location}</div>
-                </div>
-
-                <div className="providers-detail-group">
-                  <div className="providers-detail-label">Experience</div>
-                  <div className="providers-detail-value">{provider.experience}</div>
-                </div>
-
-                <div className="providers-detail-group">
-                  <div className="providers-detail-label">Qualifications</div>
-                  <div className="providers-detail-value">{provider.qualifications}</div>
-                </div>
-              </div>
-
-              <div className="providers-stats">
-                <div className="providers-stat-item">
-                  <div className="providers-stat-number">{provider.patients}</div>
-                  <div className="providers-stat-label">Patients</div>
-                </div>
-                <div className="providers-stat-item">
-                  <div className="providers-stat-number">{provider.completedAppointments}</div>
-                  <div className="providers-stat-label">Appointments</div>
-                </div>
-                <div className="providers-stat-item">
-                  <div className="providers-stat-number">{provider.rating}</div>
-                  <div className="providers-stat-label">Rating</div>
-                </div>
-              </div>
-
-              <div className={`providers-status-badge ${provider.status}`}>
-                {provider.status === 'verified' ? 'Verified' : 'Pending Verification'}
-              </div>
-
-              <div className="providers-card-actions">
-                <a
-                  href={`/admin/users/${provider.id}`}
-                  className="providers-action-btn view"
-                  title="View Profile"
-                >
-                  <Eye className="providers-action-icon" />
-                </a>
-                <a
-                  href={`/admin/users/${provider.id}/edit`}
-                  className="providers-action-btn edit"
-                  title="Edit"
-                >
-                  <Edit className="providers-action-icon" />
-                </a>
-                <button className="providers-action-btn more">
-                  <MoreHorizontal className="providers-action-icon" />
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="providers-empty-state">
-            <div className="providers-empty-content">
-              <Stethoscope className="providers-empty-icon" />
-              <h3 className="providers-empty-title">No {activeView} found</h3>
-              <p className="providers-empty-description">
-                Try adjusting your search or filter criteria to find {activeView}
+        {/* Pagination */}
+        <div className="providers-pagination-container">
+          <div className="providers-pagination-content">
+            <div className="providers-pagination-info">
+              <p className="providers-pagination-text">
+                Showing <span className="font-medium">1</span> to <span className="font-medium">{filteredProviders.length}</span> of{' '}
+                <span className="font-medium">{filteredProviders.length}</span> results
               </p>
             </div>
+            <div className="providers-pagination-nav">
+              <button className="providers-pagination-btn" disabled>Previous</button>
+              <button className="providers-pagination-btn active">1</button>
+              <button className="providers-pagination-btn" disabled>Next</button>
+            </div>
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="providers-quick-actions-grid">
+        <a href="/admin/users/add" className="providers-quick-action-card">
+          <div className="providers-quick-action-content">
+            <Plus className="providers-quick-action-icon blue" />
+            <div className="providers-quick-action-text">
+              <p className="providers-quick-action-title">Add New Provider</p>
+              <p className="providers-quick-action-description">Register a new healthcare provider</p>
+            </div>
+          </div>
+        </a>
+        <a href="/admin/reports/providers" className="providers-quick-action-card">
+          <div className="providers-quick-action-content">
+            <TrendingUp className="providers-quick-action-icon green" />
+            <div className="providers-quick-action-text">
+              <p className="providers-quick-action-title">Generate Report</p>
+              <p className="providers-quick-action-description">Create providers analytics report</p>
+            </div>
+          </div>
+        </a>
+        <a href="/admin/announcements/providers" className="providers-quick-action-card">
+          <div className="providers-quick-action-content">
+            <Mail className="providers-quick-action-icon purple" />
+            <div className="providers-quick-action-text">
+              <p className="providers-quick-action-title">Send Announcement</p>
+              <p className="providers-quick-action-description">Broadcast to all providers</p>
+            </div>
+          </div>
+        </a>
       </div>
     </main>
   );
