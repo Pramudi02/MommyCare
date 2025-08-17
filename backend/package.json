@@ -4,8 +4,8 @@
   "description": "MommyCare Backend API with multi-database support",
   "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "set NODE_OPTIONS=--tls-min-v1.0 && nodemon server.js",
+    "start": "node src/server.js",
+    "dev": "set NODE_OPTIONS=--tls-min-v1.0 && nodemon src/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src/",
