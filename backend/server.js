@@ -90,6 +90,60 @@ app.get('/api/auth/me', (req, res) => {
   });
 });
 
+// User registration endpoint
+app.post('/api/auth/register', (req, res) => {
+  console.log('📝 User registration called:', req.body);
+  res.status(201).json({
+    status: 'success',
+    message: 'User registered successfully',
+    data: {
+      user: {
+        _id: 'temp-user-' + Date.now(),
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        role: req.body.role,
+        isEmailVerified: true,
+        isActive: true
+      },
+      token: 'temp-token-' + Date.now()
+    }
+  });
+});
+
+// User login endpoint
+app.post('/api/auth/login', (req, res) => {
+  console.log('🔐 User login called:', req.body);
+  res.status(200).json({
+    status: 'success',
+    message: 'Login successful',
+    data: {
+      user: {
+        _id: 'temp-user-' + Date.now(),
+        firstName: 'Demo',
+        lastName: 'User',
+        email: req.body.email,
+        role: 'mom', // Default role for demo
+        isEmailVerified: true,
+        isActive: true
+      },
+      token: 'temp-token-' + Date.now()
+    }
+  });
+});
+
+// Forgot password endpoint
+app.post('/api/auth/forgot-password', (req, res) => {
+  console.log('🔑 Forgot password called:', req.body);
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset email sent (placeholder)',
+    data: {
+      message: 'This is a placeholder endpoint - implement email service later'
+    }
+  });
+});
+
 app.get('/api/mom/clinic-visit-requests', (req, res) => {
   console.log('🏥 Clinic visit requests endpoint called');
   res.status(200).json({
@@ -149,6 +203,9 @@ app.use('*', (req, res) => {
       '/health',
       '/api/health',
       '/api/auth/me',
+      '/api/auth/register',
+      '/api/auth/login',
+      '/api/auth/forgot-password',
       '/api/mom/clinic-visit-requests',
       '/api/doctor/appointments',
       '/api/midwife/appointments',
@@ -168,6 +225,9 @@ const server = app.listen(port, '0.0.0.0', () => {
   console.log('   - GET  /health');
   console.log('   - GET  /api/health');
   console.log('   - GET  /api/auth/me');
+  console.log('   - POST /api/auth/register');
+  console.log('   - POST /api/auth/login');
+  console.log('   - POST /api/auth/forgot-password');
   console.log('   - GET  /api/mom/clinic-visit-requests');
   console.log('   - POST /api/mom/clinic-visit-requests');
   console.log('   - GET  /api/doctor/appointments');
