@@ -3,6 +3,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Simple in-memory user store for demo purposes
+const users = new Map();
+
 console.log('🚀 Starting MommyCare Server...');
 console.log('📊 Port:', port);
 
@@ -60,6 +63,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Debug endpoint to see stored users (remove in production)
+app.get('/api/debug/users', (req, res) => {
+  const userList = Array.from(users.values()).map(user => ({
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
+    createdAt: user.createdAt
+  }));
+  
+  res.status(200).json({
+    status: 'success',
+    message: 'Stored users',
+    data: {
+      totalUsers: users.size,
+      users: userList
+    }
+  });
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
@@ -93,20 +116,47 @@ app.get('/api/auth/me', (req, res) => {
 // User registration endpoint
 app.post('/api/auth/register', (req, res) => {
   console.log('📝 User registration called:', req.body);
+  
+  // Check if user already exists
+  if (users.has(req.body.email)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'User with this email already exists'
+    });
+  }
+  
+  // Create new user
+  const newUser = {
+    _id: 'user-' + Date.now(),
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    role: req.body.role,
+    password: req.body.password, // In real app, this would be hashed
+    isEmailVerified: true,
+    isActive: true,
+    createdAt: new Date().toISOString()
+  };
+  
+  // Store user in memory
+  users.set(req.body.email, newUser);
+  
+  console.log('✅ User stored:', { email: newUser.email, role: newUser.role });
+  
   res.status(201).json({
     status: 'success',
     message: 'User registered successfully',
     data: {
       user: {
-        _id: 'temp-user-' + Date.now(),
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        role: req.body.role,
-        isEmailVerified: true,
-        isActive: true
+        _id: newUser._id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        role: newUser.role,
+        isEmailVerified: newUser.isEmailVerified,
+        isActive: newUser.isActive
       },
-      token: 'temp-token-' + Date.now()
+      token: 'token-' + Date.now()
     }
   });
 });
@@ -114,20 +164,41 @@ app.post('/api/auth/register', (req, res) => {
 // User login endpoint
 app.post('/api/auth/login', (req, res) => {
   console.log('🔐 User login called:', req.body);
+  
+  // Find user by email
+  const user = users.get(req.body.email);
+  
+  if (!user) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'User not found. Please register first.'
+    });
+  }
+  
+  // Check password (in real app, this would be hashed comparison)
+  if (user.password !== req.body.password) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Invalid password'
+    });
+  }
+  
+  console.log('✅ User logged in:', { email: user.email, role: user.role });
+  
   res.status(200).json({
     status: 'success',
     message: 'Login successful',
     data: {
       user: {
-        _id: 'temp-user-' + Date.now(),
-        firstName: 'Demo',
-        lastName: 'User',
-        email: req.body.email,
-        role: 'mom', // Default role for demo
-        isEmailVerified: true,
-        isActive: true
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive
       },
-      token: 'temp-token-' + Date.now()
+      token: 'token-' + Date.now()
     }
   });
 });
@@ -202,6 +273,7 @@ app.use('*', (req, res) => {
     availableEndpoints: [
       '/health',
       '/api/health',
+      '/api/debug/users',
       '/api/auth/me',
       '/api/auth/register',
       '/api/auth/login',
@@ -224,6 +296,7 @@ const server = app.listen(port, '0.0.0.0', () => {
   console.log('📝 Available endpoints:');
   console.log('   - GET  /health');
   console.log('   - GET  /api/health');
+  console.log('   - GET  /api/debug/users');
   console.log('   - GET  /api/auth/me');
   console.log('   - POST /api/auth/register');
   console.log('   - POST /api/auth/login');
