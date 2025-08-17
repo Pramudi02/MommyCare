@@ -72,8 +72,11 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Use AuthContext login function
-        login(data);
+        // Use AuthContext login function with correct format
+        login({
+          token: data.token,
+          user: data.user
+        });
         
         // Navigate based on user role
         switch (data.user.role) {
