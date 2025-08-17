@@ -60,14 +60,12 @@ const startServer = async () => {
     console.log('🔌 Connecting to all databases...');
     console.log('📊 Environment:', process.env.NODE_ENV || 'development');
     console.log('🌐 Port:', process.env.PORT || 5000);
-    console.log('🔄 Version: 3.0 - Production Backend with MongoDB');
+    console.log('🔄 Version: 3.1 - MongoDB Connection Ready');
     console.log('🌐 CORS Status: Enhanced for Vercel frontend');
     
-    // Check if MongoDB URI is set
+    // Check if MongoDB URI is set (with fallback in database.js)
     if (!process.env.MONGODB_URI) {
-      console.error('❌ MONGODB_URI environment variable is not set!');
-      console.error('💡 Please set MONGODB_URI in Railway environment variables');
-      process.exit(1);
+      console.log('⚠️  MONGODB_URI not set, using hardcoded fallback from database.js');
     }
     
     await connectDB();
