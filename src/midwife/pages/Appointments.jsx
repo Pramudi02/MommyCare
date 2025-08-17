@@ -646,15 +646,16 @@ const Appointments = () => {
       case 'week':
         const weekDates = getCurrentWeekDates(selectedDate);
         return weekDates.map((date, index) => {
-          const dayNames = ['SU', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THU', 'FR', 'SA'];
-          const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+          // Since getCurrentWeekDates returns Monday as first day, adjust day names accordingly
+          const dayNames = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THU', 'FR', 'SA', 'SU'];
+          const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
           
           return {
             name: dayNames[index],
             date: `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`,
             key: dayKeys[index],
             current: date.toDateString() === currentDateString,
-            weekend: index === 0 || index === 6,
+            weekend: index === 5 || index === 6, // Saturday and Sunday are now at indices 5 and 6
             fullDate: date
           };
         });
@@ -971,7 +972,8 @@ const Appointments = () => {
                   if (!day) return <div key={dayIndex} className="appointments-calendar__month-day-empty" />;
                   
                   const dayAppointments = getAppointmentsForDateString(day.toDateString());
-                  const isToday = day.toDateString() === new Date().toDateString();
+                  // Check if this day is the current date based on selectedDate, not actual current date
+                  const isToday = day.toDateString() === selectedDate.toDateString();
                   
                   console.log(`Day ${day.toDateString()}: ${dayAppointments.length} appointments`);
                   
