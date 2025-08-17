@@ -701,26 +701,29 @@ const AppointmentsDashboard = () => {
           </div>
         )}
 
-        {/* Clinic Visit Requests Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
-          <ClinicVisitRequestsList 
-            requests={clinicRequests}
-            onCancel={handleCancelRequest}
-            isLoading={isLoading}
-            isAuthenticated={isAuthenticated}
-          />
-        </div>
-
-        {/* Doctor Visit Requests Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Your Doctor Visit Requests</h3>
+        {/* Visit Requests Section - Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-8">
+          {/* Clinic Visit Requests */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+            <ClinicVisitRequestsList 
+              requests={clinicRequests}
+              onCancel={handleCancelRequest}
+              isLoading={isLoading}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
-          <DoctorVisitRequestsList 
-            requests={doctorRequests}
-            onCancelRequest={handleCancelDoctorRequest}
-            isLoading={isLoading}
-          />
+
+          {/* Doctor Visit Requests */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Your Doctor Visit Requests</h3>
+            </div>
+            <DoctorVisitRequestsList 
+              requests={doctorRequests}
+              onCancelRequest={handleCancelDoctorRequest}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
       </div>
 
