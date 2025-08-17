@@ -37,7 +37,10 @@ const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
   process.env.FRONTEND_URL_ALT || 'http://localhost:5174',
   // Allow Railway healthcheck
-  'https://mommycare-production-f0d0.up.railway.app'
+  'https://mommycare-production-f0d0.up.railway.app',
+  // Allow Vercel frontend
+  'https://mommy-care.vercel.app',
+  'https://mommy-care-git-main-pramudi02s-projects.vercel.app'
 ];
 
 const io = socketIo(server, {
@@ -57,6 +60,8 @@ const startServer = async () => {
     console.log('🔌 Connecting to all databases...');
     console.log('📊 Environment:', process.env.NODE_ENV || 'development');
     console.log('🌐 Port:', process.env.PORT || 5000);
+    console.log('🔄 Version: 3.0 - Production Backend with MongoDB');
+    console.log('🌐 CORS Status: Enhanced for Vercel frontend');
     
     // Check if MongoDB URI is set
     if (!process.env.MONGODB_URI) {
@@ -89,16 +94,28 @@ const startServer = async () => {
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
+    console.log('🔍 CORS check for origin:', origin);
+    
     // Allow requests with no origin (like Railway healthcheck)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
     
     // Allow Railway healthcheck
-    if (origin.includes('railway.app')) return callback(null, true);
+    if (origin.includes('railway.app')) {
+      console.log('✅ Allowing Railway origin:', origin);
+      return callback(null, true);
+    }
     
     // Allow allowed origins
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ Allowing origin:', origin);
+      return callback(null, true);
+    }
     
     console.log('❌ CORS blocked origin:', origin);
+    console.log('📋 Allowed origins:', allowedOrigins);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
