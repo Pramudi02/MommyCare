@@ -1,16 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const { protect } = require('../middleware/auth');
 const {
   getUserConversations,
   getConversationMessages,
   sendMessage,
   updateMessageStatus,
   markConversationAsRead,
-  deleteMessage,
-  getUnreadCount,
-  searchConversations
+  searchConversations,
+  toggleChatMute,
+  toggleChatPin,
+  getChatParticipants,
+  editMessage,
+  addMessageReaction,
+  removeMessageReaction,
+  getAllHealthcareProviders,
+  deleteMessage
 } = require('../controllers/chatController');
-const { uploadChatFile, handleFileUploadError, getFileInfo } = require('../middleware/fileUpload');
 
 /**
  * @swagger
@@ -19,105 +25,69 @@ const { uploadChatFile, handleFileUploadError, getFileInfo } = require('../middl
  *     ChatMessage:
  *       type: object
  *       properties:
- *         _id:
+ *         id:
  *           type: string
- *           description: Message ID
- *         sender:
- *           type: object
- *           properties:
- *             _id: { type: string }
- *             name: { type: string }
- *             avatar: { type: string }
- *             role: { type: string }
- *             specialty: { type: string }
- *         recipient:
- *           type: object
- *           properties:
- *             _id: { type: string }
- *             name: { type: string }
- *             avatar: { type: string }
- *             role: { type: string }
  *         content:
  *           type: string
- *           description: Message content
  *         messageType:
  *           type: string
- *           enum: [text, file, image]
- *           description: Type of message
- *         status:
+ *           enum: [text, image, file, audio, video]
+ *         timestamp:
  *           type: string
- *           enum: [sending, sent, delivered, read]
- *           description: Message status
+ *           format: date-time
+ *         sender:
+ *           type: string
+ *           enum: [user, provider]
+ *         senderId:
+ *           type: string
+ *         recipientId:
+ *           type: string
  *         read:
  *           type: boolean
- *           description: Whether message has been read
- *         readAt:
+ *         file:
+ *           type: object
+ *         attachments:
+ *           type: array
+ *         isEdited:
+ *           type: boolean
+ *         editedAt:
  *           type: string
  *           format: date-time
- *           description: When message was read
- *         conversationId:
+ *         reactions:
+ *           type: array
+ *         replyTo:
  *           type: string
- *           description: Generated conversation ID
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *     
  *     Conversation:
  *       type: object
  *       properties:
  *         id:
  *           type: string
- *           description: Chat ID
- *         conversationId:
+ *         type:
  *           type: string
- *           description: Generated conversation ID
- *         participant:
- *           type: object
- *           properties:
- *             _id: { type: string }
- *             name: { type: string }
- *             email: { type: string }
- *             role: { type: string }
- *             avatar: { type: string }
- *             specialty: { type: string }
+ *           enum: [direct, group]
+ *         participants:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               avatar:
+ *                 type: string
  *         lastMessage:
- *           type: object
- *           properties:
- *             content: { type: string }
- *             sender: { type: string }
- *             timestamp: { type: string, format: date-time }
- *             messageType: { type: string }
+ *           $ref: '#/components/schemas/ChatMessage'
  *         unreadCount:
  *           type: number
- *           description: Number of unread messages
- *         lastActivity:
- *           type: string
- *           format: date-time
- *         startedAt:
- *           type: string
- *           format: date-time
- *     
- *     FileUpload:
- *       type: object
- *       properties:
- *         filename:
- *           type: string
- *           description: Generated filename
- *         originalName:
- *           type: string
- *           description: Original file name
- *         mimetype:
- *           type: string
- *           description: File MIME type
- *         size:
- *           type: number
- *           description: File size in bytes
- *         path:
- *           type: string
- *           description: File storage path
+ *         isMuted:
+ *           type: boolean
+ *         isPinned:
+ *           type: boolean
+ *         metadata:
+ *           type: object
  */
 
 /**
@@ -125,38 +95,31 @@ const { uploadChatFile, handleFileUploadError, getFileInfo } = require('../middl
  * /api/chat/conversations:
  *   get:
  *     summary: Get user conversations
- *     description: Retrieve all conversations for the authenticated user
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Successfully retrieved conversations
+ *         description: List of user conversations
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Conversation'
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       500:
- *         description: Internal server error
  */
-router.get('/conversations', getUserConversations);
+router.get('/conversations', protect, getUserConversations);
 
 /**
  * @swagger
  * /api/chat/conversations/{conversationId}/messages:
  *   get:
  *     summary: Get conversation messages
- *     description: Retrieve all messages for a specific conversation
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -166,37 +129,47 @@ router.get('/conversations', getUserConversations);
  *         required: true
  *         schema:
  *           type: string
- *         description: The conversation identifier
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *           default: 0
  *     responses:
  *       200:
- *         description: Successfully retrieved messages
+ *         description: List of conversation messages
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/ChatMessage'
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       404:
- *         description: Conversation not found
- *       500:
- *         description: Internal server error
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     limit:
+ *                       type: integer
+ *                     skip:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
  */
-router.get('/conversations/:conversationId/messages', getConversationMessages);
+router.get('/conversations/:conversationId/messages', protect, getConversationMessages);
 
 /**
  * @swagger
- * /api/chat/send:
+ * /api/chat/messages:
  *   post:
  *     summary: Send a message
- *     description: Send a new message to a recipient
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -212,116 +185,36 @@ router.get('/conversations/:conversationId/messages', getConversationMessages);
  *             properties:
  *               recipientId:
  *                 type: string
- *                 description: ID of the recipient
  *               content:
  *                 type: string
- *                 description: Message content
  *               messageType:
  *                 type: string
- *                 enum: [text, file, image]
+ *                 enum: [text, image, file, audio, video]
  *                 default: text
- *                 description: Type of message
+ *               replyTo:
+ *                 type: string
  *               file:
  *                 type: object
- *                 description: File information (if messageType is file or image)
  *     responses:
- *       201:
+ *       200:
  *         description: Message sent successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 data:
  *                   $ref: '#/components/schemas/ChatMessage'
- *       400:
- *         description: Bad request - Invalid input
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       404:
- *         description: Recipient not found
- *       500:
- *         description: Internal server error
  */
-router.post('/send', sendMessage);
-
-/**
- * @swagger
- * /api/chat/upload:
- *   post:
- *     summary: Upload file for chat
- *     description: Upload a file (image or document) for chat messaging
- *     tags: [Chat]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             required:
- *               - file
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *                 description: File to upload (max 10MB)
- *     responses:
- *       200:
- *         description: File uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   $ref: '#/components/schemas/FileUpload'
- *       400:
- *         description: Bad request - No file or invalid file type
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       413:
- *         description: File too large - Maximum size is 10MB
- *       500:
- *         description: Internal server error
- */
-router.post('/upload', uploadChatFile, (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'No file uploaded'
-      });
-    }
-
-    const fileInfo = getFileInfo(req.file);
-    
-    res.json({
-      status: 'success',
-      data: fileInfo
-    });
-  } catch (error) {
-    console.error('Error in file upload:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to upload file'
-    });
-  }
-});
+router.post('/messages', protect, sendMessage);
 
 /**
  * @swagger
  * /api/chat/messages/{messageId}/status:
  *   patch:
  *     summary: Update message status
- *     description: Update the status of a message (delivered, read)
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -331,7 +224,6 @@ router.post('/upload', uploadChatFile, (req, res) => {
  *         required: true
  *         schema:
  *           type: string
- *         description: The message identifier
  *     requestBody:
  *       required: true
  *       content:
@@ -343,38 +235,32 @@ router.post('/upload', uploadChatFile, (req, res) => {
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [delivered, read]
- *                 description: New message status
+ *                 enum: [sent, delivered, read]
  *     responses:
  *       200:
- *         description: Message status updated successfully
+ *         description: Message status updated
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/ChatMessage'
- *       400:
- *         description: Bad request - Invalid status
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       404:
- *         description: Message not found
- *       500:
- *         description: Internal server error
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     status:
+ *                       type: string
  */
-router.patch('/messages/:messageId/status', updateMessageStatus);
+router.patch('/messages/:messageId/status', protect, updateMessageStatus);
 
 /**
  * @swagger
  * /api/chat/conversations/{conversationId}/read:
  *   patch:
  *     summary: Mark conversation as read
- *     description: Mark all messages in a conversation as read
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -384,115 +270,26 @@ router.patch('/messages/:messageId/status', updateMessageStatus);
  *         required: true
  *         schema:
  *           type: string
- *         description: The conversation identifier
  *     responses:
  *       200:
- *         description: Conversation marked as read successfully
+ *         description: Conversation marked as read
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 message:
  *                   type: string
- *                   example: Conversation marked as read
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       404:
- *         description: Conversation not found
- *       500:
- *         description: Internal server error
  */
-router.patch('/conversations/:conversationId/read', markConversationAsRead);
-
-/**
- * @swagger
- * /api/chat/messages/{messageId}:
- *   delete:
- *     summary: Delete a message
- *     description: Delete a message (only sender can delete)
- *     tags: [Chat]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: messageId
- *         required: true
- *         schema:
- *           type: string
- *         description: The message identifier
- *     responses:
- *       200:
- *         description: Message deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Message deleted successfully
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       404:
- *         description: Message not found or unauthorized
- *       500:
- *         description: Internal server error
- */
-router.delete('/messages/:messageId', deleteMessage);
-
-/**
- * @swagger
- * /api/chat/unread-count:
- *   get:
- *     summary: Get unread message count
- *     description: Get the total unread message count and count by conversation
- *     tags: [Chat]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successfully retrieved unread count
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   type: object
- *                   properties:
- *                     totalUnread:
- *                       type: number
- *                       description: Total unread messages
- *                       example: 5
- *                     unreadByConversation:
- *                       type: object
- *                       description: Unread count by conversation ID
- *                       example:
- *                         user1_user2: 2
- *                         user1_user3: 3
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       500:
- *         description: Internal server error
- */
-router.get('/unread-count', getUnreadCount);
+router.patch('/conversations/:conversationId/read', protect, markConversationAsRead);
 
 /**
  * @swagger
  * /api/chat/search:
  *   get:
- *     summary: Search conversations
- *     description: Search for users to start conversations with
+ *     summary: Search for users to start conversations
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -502,48 +299,352 @@ router.get('/unread-count', getUnreadCount);
  *         required: true
  *         schema:
  *           type: string
- *         description: Search term for name, specialty, or email
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [mom, doctor, midwife, service_provider]
  *     responses:
  *       200:
- *         description: Successfully retrieved search results
+ *         description: List of users matching search criteria
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: success
+ *                 success:
+ *                   type: boolean
  *                 data:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       user:
- *                         type: object
- *                         properties:
- *                           _id: { type: string }
- *                           name: { type: string }
- *                           email: { type: string }
- *                           role: { type: string }
- *                           avatar: { type: string }
- *                           specialty: { type: string }
- *                       hasExistingChat:
- *                         type: boolean
- *                         description: Whether user has existing chat
- *                       conversationId:
+ *                       id:
  *                         type: string
- *                         description: Existing conversation ID if any
- *       400:
- *         description: Bad request - Missing search query
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       500:
- *         description: Internal server error
+ *                       name:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                       avatar:
+ *                         type: string
  */
-router.get('/search', searchConversations);
+router.get('/search', protect, searchConversations);
 
-// Error handling for file upload
-router.use(handleFileUploadError);
+/**
+ * @swagger
+ * /api/chat/providers:
+ *   get:
+ *     summary: Get all healthcare providers (doctors and midwives)
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [doctor, midwife]
+ *         description: Filter by specific role (optional)
+ *     responses:
+ *       200:
+ *         description: List of healthcare providers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                       specialty:
+ *                         type: string
+ *                       avatar:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                       rating:
+ *                         type: number
+ *                       experience:
+ *                         type: string
+ *                       location:
+ *                         type: string
+ *                       availability:
+ *                         type: string
+ *                 total:
+ *                   type: number
+ */
+router.get('/providers', protect, getAllHealthcareProviders);
+
+/**
+ * @swagger
+ * /api/chat/conversations/{conversationId}/mute:
+ *   patch:
+ *     summary: Toggle chat mute
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: conversationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Chat mute toggled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     isMuted:
+ *                       type: boolean
+ */
+router.patch('/conversations/:conversationId/mute', protect, toggleChatMute);
+
+/**
+ * @swagger
+ * /api/chat/conversations/{conversationId}/pin:
+ *   patch:
+ *     summary: Toggle chat pin
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: conversationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Chat pin toggled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     isPinned:
+ *                       type: boolean
+ */
+router.patch('/conversations/:conversationId/pin', protect, toggleChatPin);
+
+/**
+ * @swagger
+ * /api/chat/conversations/{conversationId}/participants:
+ *   get:
+ *     summary: Get chat participants
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: conversationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of chat participants
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                       avatar:
+ *                         type: string
+ */
+router.get('/conversations/:conversationId/participants', protect, getChatParticipants);
+
+/**
+ * @swagger
+ * /api/chat/messages/{messageId}/edit:
+ *   patch:
+ *     summary: Edit a message
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Message edited successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     isEdited:
+ *                       type: boolean
+ *                     editedAt:
+ *                       type: string
+ *                       format: date-time
+ */
+router.patch('/messages/:messageId/edit', protect, editMessage);
+
+/**
+ * @swagger
+ * /api/chat/messages/{messageId}/reactions:
+ *   post:
+ *     summary: Add reaction to message
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - emoji
+ *             properties:
+ *               emoji:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reaction added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reactions:
+ *                       type: array
+ */
+router.post('/messages/:messageId/reactions', protect, addMessageReaction);
+
+/**
+ * @swagger
+ * /api/chat/messages/{messageId}/reactions:
+ *   delete:
+ *     summary: Remove reaction from message
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Reaction removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reactions:
+ *                       type: array
+ */
+router.delete('/messages/:messageId/reactions', protect, removeMessageReaction);
+
+/**
+ * @swagger
+ * /api/chat/messages/{messageId}:
+ *   delete:
+ *     summary: Delete a message permanently
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Message deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Message not found
+ *       403:
+ *         description: Unauthorized to delete this message
+ */
+router.delete('/messages/:messageId', protect, deleteMessage);
 
 module.exports = router;
