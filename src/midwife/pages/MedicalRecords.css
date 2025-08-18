@@ -1226,18 +1226,22 @@
   border-radius: 15px;
   max-width: 500px;
   width: 100%;
+  min-height: 400px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 25px 0 25px;
+  padding: 20px 25px;
   border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -1264,11 +1268,17 @@
 }
 
 .modal-content {
-  padding: 0 25px;
+  padding: 20px 25px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 300px;
 }
 
 .form-group {
   margin-bottom: 20px;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .form-group label {
@@ -1287,6 +1297,9 @@
   font-size: 0.9rem;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .form-input:focus {
@@ -1307,6 +1320,7 @@ textarea.form-input {
   padding: 25px;
   border-top: 1px solid #e2e8f0;
   margin-top: 20px;
+  flex-shrink: 0;
 }
 
 .modal-btn {
@@ -2443,4 +2457,114 @@ textarea.form-input {
   max-width: 100%;
   overflow-x: hidden;
   word-wrap: break-word;
+}
+
+.overview-header,
+.general-header,
+.pregnancy-header,
+.antenatal-header,
+.delivery-header,
+.postnatal-header,
+.field-care-header,
+.clinic-care-header,
+.vitals-header,
+.medications-header,
+.birth-header,
+.baby-info-section,
+.growth-header,
+.development-header,
+.neonatal-header,
+.immunization-header,
+.nutrition-header,
+.followups-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-left h3,
+.overview-header h3,
+.general-header h3,
+.pregnancy-header h3,
+.antenatal-header h3,
+.delivery-header h3,
+.postnatal-header h3,
+.field-care-header h3,
+.clinic-care-header h3,
+.vitals-header h3,
+.medications-header h3,
+.birth-header h3,
+.baby-info-section h3,
+.growth-header h3,
+.development-header h3,
+.neonatal-header h3,
+.immunization-header h3,
+.nutrition-header h3,
+.followups-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pregnancy-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.pregnancy-field.full-width textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.vitals-current {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.vitals-current h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.vitals-current-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.vitals-current-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vitals-current-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.vitals-current-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
 }
