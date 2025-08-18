@@ -169,9 +169,9 @@ const MainNavbar = () => {
           {/* Spacer - removed search field */}
           <div className="flex flex-1"></div>
           
-          {/* Auth Section - Show Profile Dropdown if logged in, otherwise show Login/Signup */}
+          {/* Auth Section - Show Profile Dropdown ONLY when authenticated AND we have real user data; otherwise Login/Signup */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            {isAuthenticated ? (
+            {(isAuthenticated && (userProfile || user?.user)) ? (
               // Profile Dropdown
               <div className="relative">
                 <button
