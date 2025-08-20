@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
-const ClinicVisitRequest = require('../models/ClinicVisitRequest');
+
+const getClinicVisitRequestModel = require('../models/ClinicVisitRequest');
+const DoctorVisitRequest = require('../models/DoctorVisitRequest');
+
 
 /**
  * @swagger
@@ -52,6 +55,8 @@ router.post('/clinic-visit-requests', protect, async (req, res, next) => {
 			});
 		}
 
+		const ClinicVisitRequest = getClinicVisitRequestModel();
+
 		// Create the request
 		const request = await ClinicVisitRequest.create({
 			mom: req.user._id,
@@ -79,6 +84,7 @@ router.post('/clinic-visit-requests', protect, async (req, res, next) => {
 // Get all clinic visit requests for the current mom
 router.get('/clinic-visit-requests', protect, async (req, res, next) => {
 	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const requests = await ClinicVisitRequest.find({ mom: req.user._id })
 			.sort({ createdAt: -1 })
 			.populate('mom', 'firstName lastName email');
@@ -95,6 +101,7 @@ router.get('/clinic-visit-requests', protect, async (req, res, next) => {
 // Get a specific clinic visit request by ID
 router.get('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const request = await ClinicVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
@@ -121,6 +128,7 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 	try {
 		const { requestType, preferredDate, preferredTime, notes, location } = req.body;
 		
+		const ClinicVisitRequest = getClinicVisitRequestModel();
 		const request = await ClinicVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
@@ -130,6 +138,173 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 			return res.status(404).json({
 				status: 'error',
 				message: 'Clinic visit request not found'
+			});
+		}
+
+		// Only allow updates if status is pending
+		if (request.status !== 'pending') {
+			return res.status(400).json({
+				status: 'error',
+				message: 'Cannot update request that is not pending'
+			});
+		}
+
+		// Update the request
+		const updatedRequest = await ClinicVisitRequest.findByIdAndUpdate(
+			req.params.id,
+			{
+				requestType: requestType || request.requestType,
+				preferredDate: preferredDate ? new Date(preferredDate) : request.preferredDate,
+				preferredTime: preferredTime || request.preferredTime,
+				notes: notes !== undefined ? notes : request.notes,
+				location: location || request.location
+			},
+			{ new: true, runValidators: true }
+		).populate('mom', 'firstName lastName email');
+
+		res.json({
+			status: 'success',
+			message: 'Clinic visit request updated successfully',
+			data: updatedRequest
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+// Cancel a clinic visit request
+router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next) => {
+	try {
+		const ClinicVisitRequest = getClinicVisitRequestModel();
+		const request = await ClinicVisitRequest.findOne({
+			_id: req.params.id,
+			mom: req.user._id
+		});
+
+		if (!request) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Clinic visit request not found'
+			});
+		}
+
+		// Only allow cancellation if status is pending
+		if (request.status !== 'pending') {
+			return res.status(400).json({
+				status: 'error',
+				message: 'Cannot cancel request that is not pending'
+			});
+		}
+
+		// Update status to cancelled
+		const updatedRequest = await ClinicVisitRequest.findByIdAndUpdate(
+			req.params.id,
+			{ status: 'cancelled' },
+			{ new: true, runValidators: true }
+		).populate('mom', 'firstName lastName email');
+
+		res.json({
+			status: 'success',
+			message: 'Clinic visit request cancelled successfully',
+			data: updatedRequest
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+// Doctor Visit Requests (Mom)
+// Create a new doctor visit request
+router.post('/doctor-visit-requests', protect, async (req, res, next) => {
+	try {
+		const { requestType, preferredDate, preferredTime, notes, location } = req.body;
+		
+		// Validate required fields
+		if (!requestType || !preferredDate || !preferredTime || !location) {
+			return res.status(400).json({
+				status: 'error',
+				message: 'Missing required fields: requestType, preferredDate, preferredTime, location'
+			});
+		}
+
+		// Create the request
+		const request = await DoctorVisitRequest.create({
+			mom: req.user._id,
+			requestType,
+			preferredDate: new Date(preferredDate),
+			preferredTime,
+			notes: notes || '',
+			location,
+			status: 'pending'
+		});
+
+		// Populate mom details for response
+		await request.populate('mom', 'firstName lastName email');
+
+		res.status(201).json({
+			status: 'success',
+			message: 'Doctor visit request created successfully',
+			data: request
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+// Get all doctor visit requests for the current mom
+router.get('/doctor-visit-requests', protect, async (req, res, next) => {
+	try {
+		const requests = await DoctorVisitRequest.find({ mom: req.user._id })
+			.sort({ createdAt: -1 })
+			.populate('mom', 'firstName lastName email');
+
+		res.json({
+			status: 'success',
+			data: requests
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+// Get a specific doctor visit request by ID
+router.get('/doctor-visit-requests/:id', protect, async (req, res, next) => {
+	try {
+		const request = await DoctorVisitRequest.findOne({
+			_id: req.params.id,
+			mom: req.user._id
+		}).populate('mom', 'firstName lastName email');
+
+		if (!request) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Doctor visit request not found'
+			});
+		}
+
+		res.json({
+			status: 'success',
+			data: request
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+// Update a doctor visit request
+router.put('/doctor-visit-requests/:id', protect, async (req, res, next) => {
+	try {
+		const { requestType, preferredDate, preferredTime, notes, location } = req.body;
+		
+		const request = await DoctorVisitRequest.findOne({
+			_id: req.params.id,
+			mom: req.user._id
+		});
+
+		if (!request) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Doctor visit request not found'
 			});
 		}
 
@@ -153,7 +328,7 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 
 		res.json({
 			status: 'success',
-			message: 'Clinic visit request updated successfully',
+			message: 'Doctor visit request updated successfully',
 			data: request
 		});
 	} catch (err) {
@@ -161,10 +336,10 @@ router.put('/clinic-visit-requests/:id', protect, async (req, res, next) => {
 	}
 });
 
-// Cancel a clinic visit request
-router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next) => {
+// Cancel a doctor visit request
+router.patch('/doctor-visit-requests/:id/cancel', protect, async (req, res, next) => {
 	try {
-		const request = await ClinicVisitRequest.findOne({
+		const request = await DoctorVisitRequest.findOne({
 			_id: req.params.id,
 			mom: req.user._id
 		});
@@ -172,7 +347,7 @@ router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next
 		if (!request) {
 			return res.status(404).json({
 				status: 'error',
-				message: 'Clinic visit request not found'
+				message: 'Doctor visit request not found'
 			});
 		}
 
@@ -189,7 +364,7 @@ router.patch('/clinic-visit-requests/:id/cancel', protect, async (req, res, next
 
 		res.json({
 			status: 'success',
-			message: 'Clinic visit request cancelled successfully',
+			message: 'Doctor visit request cancelled successfully',
 			data: request
 		});
 	} catch (err) {

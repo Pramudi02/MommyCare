@@ -104,7 +104,11 @@ const Signup = () => {
       console.log('Sending registration data:', requestData);
       
       // Use the real registration endpoint
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/register`;
+      console.log('📝 Attempting registration to:', apiUrl);
+      console.log('📧 Registration data:', { ...requestData, password: '***' });
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,8 +120,12 @@ const Signup = () => {
       console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
+        const payload = data?.data ?? { token: data?.token, user: data?.user };
+        if (!payload?.token || !payload?.user) {
+          throw new TypeError('Malformed registration response: missing token or user');
+        }
         // Use AuthContext login function
-        login(data);
+        login(payload);
         
         // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
@@ -147,49 +155,19 @@ const Signup = () => {
     } catch (error) {
       console.error('Backend registration error:', error);
       
-      // Fallback: Local mock registration when backend is not available
-      try {
-        console.log('Using local mock registration...');
-        
-        // Create mock user data
-        const mockUser = {
-          _id: 'local-mock-user-' + Date.now(),
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          role: formData.role,
-          isEmailVerified: true,
-          isActive: true
-        };
-        
-        const mockToken = 'local-mock-token-' + Date.now();
-        
-        // Use AuthContext for mock data
-        login({
-          token: mockToken,
-          user: mockUser
+      // Show specific error based on the type of failure
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setErrors({ 
+          general: 'Cannot connect to server. Please check your internet connection and try again.' 
         });
-        
-        // Navigate directly to role-specific dashboard (no admin approval needed)
-        switch (formData.role) {
-          case 'mom':
-            navigate('/mom');
-            break;
-          case 'doctor':
-            navigate('/doctor');
-            break;
-          case 'midwife':
-            navigate('/midwife');
-            break;
-          case 'service_provider':
-            navigate('/service-provider');
-            break;
-          default:
-            navigate('/');
-        }
-      } catch (localError) {
-        console.error('Local mock registration error:', localError);
-        setErrors({ general: 'Registration failed. Please try again.' });
+      } else if (error.name === 'TypeError' && error.message.includes('Unexpected token')) {
+        setErrors({ 
+          general: 'Server response error. Please try again later.' 
+        });
+      } else {
+        setErrors({ 
+          general: 'Registration failed. Please check your information and try again.' 
+        });
       }
     } finally {
       setIsLoading(false);

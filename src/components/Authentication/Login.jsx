@@ -58,7 +58,11 @@ const Login = () => {
     
     try {
       // Use the real login endpoint
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/login`;
+      console.log('🔐 Attempting login to:', apiUrl);
+      console.log('📧 Login data:', { email: formData.emailOrUsername, password: '***' });
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,27 +76,43 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Backend returns { status, token, user } (no nested data)
+        const payload = data?.data ?? { token: data?.token, user: data?.user };
+        console.log('✅ Login successful:', payload);
+
+        // Guard: ensure we have token and user
+        if (!payload?.token || !payload?.user) {
+          throw new TypeError('Malformed login response: missing token or user');
+        }
+
+        console.log('👤 User role:', payload.user.role);
+        
         // Use AuthContext login function with correct format
         login({
           token: data.token,
-          user: data.user
+          user: payload.user
         });
         
         // Navigate based on user role
-        switch (data.user.role) {
+        switch (payload.user.role) {
           case 'mom':
+            console.log('🚀 Navigating to /mom');
             navigate('/mom');
             break;
           case 'doctor':
+            console.log('🚀 Navigating to /doctor');
             navigate('/doctor');
             break;
           case 'midwife':
+            console.log('🚀 Navigating to /midwife');
             navigate('/midwife');
             break;
           case 'service_provider':
+            console.log('🚀 Navigating to /service-provider');
             navigate('/service-provider');
             break;
           default:
+            console.log('⚠️ Unknown role, navigating to /');
             navigate('/');
         }
       } else if (response.status === 503) {
@@ -104,33 +124,19 @@ const Login = () => {
     } catch (error) {
       console.error('Backend login error:', error);
       
-      // Fallback: Local mock login when backend is not available
-      try {
-        console.log('Using local mock login...');
-        
-        // For demo purposes, accept any email/password combination
-        const mockUser = {
-          _id: 'local-mock-user-' + Date.now(),
-          firstName: 'Demo',
-          lastName: 'User',
-          email: formData.emailOrUsername,
-          role: 'mom', // Default to mom role for demo
-          isEmailVerified: true,
-          isActive: true
-        };
-        
-        const mockToken = 'local-mock-token-' + Date.now();
-        
-        // Store mock data
-        // localStorage.setItem('token', mockToken); // Removed as per new_code
-        // localStorage.setItem('user', JSON.stringify(mockUser)); // Removed as per new_code
-        
-        // Navigate to mom dashboard for demo
-        login(mockUser); // Use AuthContext login for mock
-        navigate('/mom');
-      } catch (localError) {
-        console.error('Local mock login error:', localError);
-        setErrors({ general: 'Login failed. Please try again.' });
+      // Show specific error based on the type of failure
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setErrors({ 
+          general: 'Cannot connect to server. Please check your internet connection and try again.' 
+        });
+      } else if (error.name === 'TypeError' && error.message.includes('Unexpected token')) {
+        setErrors({ 
+          general: 'Server response error. Please try again later.' 
+        });
+      } else {
+        setErrors({ 
+          general: 'Login failed. Please check your credentials and try again.' 
+        });
       }
     } finally {
       setIsLoading(false);

@@ -37,11 +37,11 @@ const server = http.createServer(app);
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
   process.env.FRONTEND_URL_ALT || 'http://localhost:5174',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:8080',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:3000'
+  // Allow Railway healthcheck
+  'https://mommycare-production-f0d0.up.railway.app',
+  // Allow Vercel frontend
+  'https://mommy-care.vercel.app',
+  'https://mommy-care-git-main-pramudi02s-projects.vercel.app'
 ];
 
 const io = socketIo(server, {
@@ -59,19 +59,32 @@ const io = socketIo(server, {
 const startServer = async () => {
   try {
     console.log('🔌 Connecting to all databases...');
+    console.log('📊 Environment:', process.env.NODE_ENV || 'development');
+    console.log('🌐 Port:', process.env.PORT || 5000);
+    console.log('🔄 Version: 3.2 - JWT Secret & MongoDB Fixes');
+    console.log('🌐 CORS Status: Enhanced for Vercel frontend');
+    
+    // Check if MongoDB URI is set (with fallback in database.js)
+    if (!process.env.MONGODB_URI) {
+      console.log('⚠️  MONGODB_URI not set, using hardcoded fallback from database.js');
+    }
+    
     await connectDB();
     console.log('✅ All database connections established');
     
     const PORT = process.env.PORT || 5000;
     
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 MommyCare Backend Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔗 Railway health check: http://localhost:${PORT}/api/health`);
       console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+      console.log('✅ Server is ready to accept connections');
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
+    console.error('🔍 Error details:', error);
     process.exit(1);
   }
 };
@@ -80,10 +93,32 @@ const startServer = async () => {
 app.use(helmet());
 // For development, allow all origins
 app.use(cors({
-  origin: true, // Allow all origins in development
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
+  origin: (origin, callback) => {
+    console.log('🔍 CORS check for origin:', origin);
+    
+    // Allow requests with no origin (like Railway healthcheck)
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
+    
+    // Allow Railway healthcheck
+    if (origin.includes('railway.app')) {
+      console.log('✅ Allowing Railway origin:', origin);
+      return callback(null, true);
+    }
+    
+    // Allow allowed origins
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ Allowing origin:', origin);
+      return callback(null, true);
+    }
+    
+    console.log('❌ CORS blocked origin:', origin);
+    console.log('📋 Allowed origins:', allowedOrigins);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
 }));
 
 // Rate limiting
@@ -118,8 +153,33 @@ app.get('/health', (req, res) => {
     status: 'success',
     message: 'MommyCare API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    database: 'connected' // We'll enhance this later
   });
+});
+
+// Enhanced health check for Railway
+app.get('/api/health', (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'MommyCare API is running',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      database: 'connected'
+    });
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Health check failed',
+      error: error.message
+    });
+  }
 });
 
 // Swagger API Documentation
@@ -199,6 +259,15 @@ process.on('uncaughtException', (err) => {
 });
 
 // Start the server
-startServer();
+console.log('🚀 Starting MommyCare server...');
+console.log('📁 Current working directory:', process.cwd());
+console.log('🔧 Node version:', process.version);
+console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
+
+startServer().catch(error => {
+  console.error('❌ Failed to start server:', error);
+  console.error('🔍 Full error details:', error);
+  process.exit(1);
+});
 
 module.exports = { app, server, io };

@@ -78,16 +78,10 @@ const HeroSection = () => {
             <div className="text-content">
               <h1>Your Journey to Motherhood,Beautifully Guided</h1>
               <p>Track your pregnancy, manage appointments, monitor vaccinations, and connect with healthcare providers - all in one caring platform designed forexpecting mothers.</p>
-              <div className="hero-buttons">
-                <button className="btnn-primary">MORE</button>
-              </div>
+              {/* Removed action button as requested */}
             </div>
           </div>
-          <div className="hero-indicators">
-            <div className="indicator active"></div>
-            <div className="indicator"></div>
-            <div className="indicator"></div>
-          </div>
+          {/* Indicators removed as requested */}
         </div>
       </div>
 

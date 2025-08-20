@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, MapPin, FileText, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory }) => {
   const [formData, setFormData] = useState({
@@ -10,17 +10,8 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
     notes: ''
   });
   const [errors, setErrors] = useState({});
-
-  const requestTypes = [
-    'Prenatal Care',
-    'Ultrasound',
-    'Blood Tests',
-    'Vaccination',
-    'Emergency Care',
-    'Regular Checkup',
-    'Laboratory Services',
-    'Consultation'
-  ];
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const timeSlots = ['Morning', 'Afternoon', 'Evening', 'Any Time'];
 
@@ -33,6 +24,22 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
       }));
     }
   }, [selectedCategory]);
+
+  // Reset form each time modal opens to avoid stale values
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        requestType: selectedCategory || '',
+        preferredDate: '',
+        preferredTime: '',
+        location: '',
+        notes: ''
+      });
+      setErrors({});
+      setShowCalendar(false);
+      setCurrentDate(new Date());
+    }
+  }, [isOpen, selectedCategory]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,9 +60,6 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.requestType) {
-      newErrors.requestType = 'Please select a request type';
-    }
     if (!formData.preferredDate) {
       newErrors.preferredDate = 'Please select a preferred date';
     }
@@ -87,7 +91,83 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
       notes: ''
     });
     setErrors({});
+    setShowCalendar(false);
     onClose();
+  };
+
+  // Calendar functions
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    const days = [];
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startingDay; i++) {
+      days.push(null);
+    }
+    
+    // Add all days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(i);
+    }
+    
+    return days;
+  };
+
+  const handleDateSelect = (day) => {
+    if (day) {
+      // Format as YYYY-MM-DD in local time to avoid timezone shift
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(day).padStart(2, '0');
+      const ymd = `${year}-${month}-${dayStr}`;
+      setFormData(prev => ({ ...prev, preferredDate: ymd }));
+      setShowCalendar(false);
+    }
+  };
+
+  const navigateMonth = (direction) => {
+    setCurrentDate(prev => {
+      const newDate = new Date(prev);
+      if (direction === 'next') {
+        newDate.setMonth(prev.getMonth() + 1);
+      } else {
+        newDate.setMonth(prev.getMonth() - 1);
+      }
+      return newDate;
+    });
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
+  const isToday = (day) => {
+    if (!day) return false;
+    const today = new Date();
+    return day === today.getDate() && 
+           currentDate.getMonth() === today.getMonth() && 
+           currentDate.getFullYear() === today.getFullYear();
+  };
+
+  const isSelected = (day) => {
+    if (!day || !formData.preferredDate) return false;
+    const selectedDate = new Date(formData.preferredDate);
+    return day === selectedDate.getDate() && 
+           currentDate.getMonth() === selectedDate.getMonth() && 
+           currentDate.getFullYear() === selectedDate.getFullYear();
+  };
+
+  const isPastDate = (day) => {
+    if (!day) return false;
+    const today = new Date();
+    const checkDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    return checkDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
   };
 
   if (!isOpen) return null;
@@ -111,41 +191,88 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
           {/* Request Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Request Type *
+              Request Type <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              name="requestType"
-              value={formData.requestType}
-              disabled
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed"
-            />
-            {errors.requestType && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
-                <AlertCircle size={16} className="mr-1" />
-                {errors.requestType}
-              </p>
-            )}
+            <div className="w-full px-4 py-3 bg-pink-50 border border-pink-200 rounded-lg text-pink-700 font-medium">
+              {selectedCategory || 'No category selected'}
+            </div>
           </div>
 
           {/* Preferred Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Preferred Date *
+              Preferred Date <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
-                type="date"
+                type="text"
                 name="preferredDate"
-                value={formData.preferredDate}
-                onChange={handleInputChange}
-                min={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+                value={formData.preferredDate ? (() => { const [y,m,d] = formData.preferredDate.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(); })() : ''}
+                onClick={() => setShowCalendar(!showCalendar)}
+                readOnly
+                placeholder="Click to select date"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent cursor-pointer ${
                   errors.preferredDate ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             </div>
+            
+            {/* Calendar Popup */}
+            {showCalendar && (
+              <div className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80">
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth('prev')}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <h3 className="text-lg font-semibold">{formatDate(currentDate)}</h3>
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth('next')}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-2">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-7 gap-1">
+                  {getDaysInMonth(currentDate).map((day, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleDateSelect(day)}
+                      disabled={!day || isPastDate(day)}
+                      className={`p-2 text-sm rounded transition-colors ${
+                        !day 
+                          ? 'invisible' 
+                          : isPastDate(day)
+                          ? 'text-gray-300 cursor-not-allowed'
+                          : isToday(day)
+                          ? 'bg-pink-500 text-white font-bold'
+                          : isSelected(day)
+                          ? 'bg-pink-200 text-pink-800 font-medium'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {errors.preferredDate && (
               <p className="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle size={16} className="mr-1" />
@@ -157,7 +284,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
           {/* Preferred Time */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Preferred Time *
+              Preferred Time <span className="text-red-500">*</span>
             </label>
             <select
               name="preferredTime"
@@ -185,7 +312,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
           {/* Location */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Location *
+              Location <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input

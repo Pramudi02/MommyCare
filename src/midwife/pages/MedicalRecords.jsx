@@ -6,6 +6,7 @@ const MedicalRecords = () => {
   const [selectedMom, setSelectedMom] = useState(null);
   const [activeTab, setActiveTab] = useState('mom-overview');
   const [showAddRecord, setShowAddRecord] = useState(false);
+  const [recordType, setRecordType] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const moms = [
@@ -793,12 +794,6 @@ const MedicalRecords = () => {
                     Delivery
                   </button>
                   <button 
-                    className={`sub-tab ${activeTab === 'mom-postnatal' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('mom-postnatal')}
-                  >
-                    Postnatal Care
-                  </button>
-                  <button 
                     className={`sub-tab ${activeTab === 'mom-field-care' ? 'active' : ''}`}
                     onClick={() => setActiveTab('mom-field-care')}
                   >
@@ -884,6 +879,9 @@ const MedicalRecords = () => {
               {/* Mom Overview Tab */}
               {activeTab === 'mom-overview' && (
                 <div className="overview-content">
+                  <div className="overview-header">
+                    <h3>Overview</h3>
+                  </div>
                   <div className="overview-grid">
                     <div className="overview-field">
                       <label>Name</label>
@@ -893,7 +891,7 @@ const MedicalRecords = () => {
                         value={selectedMom.name} 
                         disabled={!isEditing}
                       />
-                      </div>
+                    </div>
                     <div className="overview-field">
                       <label>Age</label>
                       <input 
@@ -938,7 +936,30 @@ const MedicalRecords = () => {
                         value={selectedMom.currentWeight} 
                         disabled={!isEditing}
                       />
-                      </div>
+                    </div>
+                    <div className="overview-field">
+                      <label>Current BMI</label>
+                      <input 
+                        type="number" 
+                        className="overview-input" 
+                        value={selectedMom.bmi || ''} 
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="overview-field">
+                      <label>Next Clinic Date</label>
+                      <input 
+                        type="date" 
+                        className="overview-input" 
+                        value={selectedMom.nextClinicDate || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicDate = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -948,10 +969,6 @@ const MedicalRecords = () => {
                 <div className="general-content">
                   <div className="general-header">
                     <h3>General & Pre-pregnancy Data</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Record
-                    </button>
                   </div>
                   <div className="general-grid">
                     <div className="general-field">
@@ -1147,6 +1164,9 @@ const MedicalRecords = () => {
               {/* Mom Pregnancy History Tab */}
               {activeTab === 'mom-pregnancy' && (
                 <div className="pregnancy-content">
+                  <div className="pregnancy-header">
+                    <h3>Pregnancy History</h3>
+                  </div>
                   <div className="pregnancy-grid">
                     <div className="pregnancy-field">
                       <label>Gravida</label>
@@ -1156,7 +1176,7 @@ const MedicalRecords = () => {
                         value={selectedMom.gravida || ''} 
                         disabled={!isEditing}
                       />
-                          </div>
+                    </div>
                     <div className="pregnancy-field">
                       <label>Parity</label>
                       <input 
@@ -1165,7 +1185,7 @@ const MedicalRecords = () => {
                         value={selectedMom.parity || ''} 
                         disabled={!isEditing}
                       />
-                          </div>
+                    </div>
                     <div className="pregnancy-field">
                       <label>Miscarriages</label>
                       <input 
@@ -1174,7 +1194,7 @@ const MedicalRecords = () => {
                         value={selectedMom.miscarriages || ''} 
                         disabled={!isEditing}
                       />
-                        </div>
+                    </div>
                     <div className="pregnancy-field">
                       <label>Stillbirths</label>
                       <input 
@@ -1183,7 +1203,7 @@ const MedicalRecords = () => {
                         value={selectedMom.stillbirths || ''} 
                         disabled={!isEditing}
                       />
-                      </div>
+                    </div>
                     <div className="pregnancy-field">
                       <label>Due Date</label>
                       <input 
@@ -1205,20 +1225,34 @@ const MedicalRecords = () => {
                         <option value="high">High</option>
                       </select>
                     </div>
+                    <div className="pregnancy-field full-width">
+                      <label>Additional Notes</label>
+                      <textarea 
+                        className="pregnancy-input" 
+                        value={selectedMom.pregnancyNotes || ''} 
+                        disabled={!isEditing}
+                        rows="3"
+                        placeholder="Enter any additional notes about pregnancy history..."
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Mom Antenatal Care Tab */}
-              {activeTab === 'mom-antenatal' && (
-                <div className="antenatal-content">
-                  <div className="antenatal-header">
-                    <h3>Antenatal Visits</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Visit
-                    </button>
-                  </div>
+                             {/* Mom Antenatal Care Tab */}
+               {activeTab === 'mom-antenatal' && (
+                 <div className="antenatal-content">
+                   <div className="antenatal-header">
+                     <div className="header-left">
+                       <h3>Antenatal Visits</h3>
+                     </div>
+                     <div className="header-right">
+                       <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
+                         <FiPlus size={16} />
+                         Add Visit
+                       </button>
+                     </div>
+                   </div>
                   {selectedMom.antenatalVisits && selectedMom.antenatalVisits.length > 0 ? (
                     selectedMom.antenatalVisits.map((visit, index) => (
                       <div key={index} className="visit-record">
@@ -1270,8 +1304,8 @@ const MedicalRecords = () => {
                     ))
                   ) : (
                     <p>No antenatal visits recorded yet.</p>
-                          )}
-                        </div>
+                  )}
+                </div>
               )}
 
               {/* Mom Delivery Tab */}
@@ -1279,11 +1313,7 @@ const MedicalRecords = () => {
                 <div className="delivery-content">
                   <div className="delivery-header">
                     <h3>Delivery Details</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Record
-                    </button>
-                    </div>
+                  </div>
                   {selectedMom.delivery ? (
                     <div className="delivery-grid">
                       <div className="delivery-field">
@@ -1294,7 +1324,7 @@ const MedicalRecords = () => {
                           value={selectedMom.delivery.laborOnset || ''} 
                           disabled={!isEditing}
                         />
-                  </div>
+                      </div>
                       <div className="delivery-field">
                         <label>Delivery Time</label>
                         <input 
@@ -1356,19 +1386,15 @@ const MedicalRecords = () => {
                 <div className="field-care-content">
                   <div className="field-care-header">
                     <h3>Postpartum Field Care</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Record
-                    </button>
                   </div>
                   <div className="field-care-grid">
                     <div className="field-care-field">
                       <label>Identified Postpartum Morbidities</label>
-                          <textarea
+                      <textarea
                         className="field-care-input" 
                         value={selectedMom.postpartumFieldCare?.identifiedMorbidities || ''} 
                         disabled={!isEditing}
-                            rows="3"
+                        rows="3"
                       />
                     </div>
                     <div className="field-care-field">
@@ -1420,16 +1446,20 @@ const MedicalRecords = () => {
                 </div>
               )}
 
-              {/* Mom Postnatal Clinic Care Tab */}
-              {activeTab === 'mom-clinic-care' && (
-                <div className="clinic-care-content">
-                  <div className="clinic-care-header">
-                    <h3>Postnatal Clinic Care</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Visit
-                    </button>
-                      </div>
+                             {/* Mom Postnatal Clinic Care Tab */}
+               {activeTab === 'mom-clinic-care' && (
+                 <div className="clinic-care-content">
+                   <div className="clinic-care-header">
+                     <div className="header-left">
+                       <h3>Postnatal Clinic Care</h3>
+                     </div>
+                     <div className="header-right">
+                       <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
+                         <FiPlus size={16} />
+                         Add Visit
+                       </button>
+                     </div>
+                   </div>
                   {selectedMom.postnatalClinicCare && selectedMom.postnatalClinicCare.length > 0 ? (
                     selectedMom.postnatalClinicCare.map((visit, index) => (
                       <div key={index} className="clinic-visit-record">
@@ -1438,7 +1468,7 @@ const MedicalRecords = () => {
                           <button className="edit-visit-btn">
                             <FiEdit size={14} />
                           </button>
-                  </div>
+                        </div>
                         <div className="clinic-visit-grid">
                           <div className="clinic-field">
                             <label>Breast Problems</label>
@@ -1575,115 +1605,53 @@ const MedicalRecords = () => {
                 </div>
               )}
 
-              {/* Mom Postnatal Care Tab */}
-              {activeTab === 'mom-postnatal' && (
-                <div className="postnatal-content">
-                  <div className="postnatal-header">
-                    <h3>Postnatal Care</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Visit
-                    </button>
-                          </div>
-                  <div className="postnatal-visits">
-                    <div className="postnatal-grid">
-                      <div className="postnatal-field">
-                        <label>Postnatal Visits</label>
-                        <input 
-                          type="number" 
-                          className="postnatal-input" 
-                          value="3" 
-                          disabled={!isEditing}
-                        />
-                          </div>
-                      <div className="postnatal-field">
-                        <label>Last Visit Date</label>
-                        <input 
-                          type="date" 
-                          className="postnatal-input" 
-                          value="2024-03-20" 
-                          disabled={!isEditing}
-                        />
-                        </div>
-                      <div className="postnatal-field">
-                        <label>Recovery Status</label>
-                        <select 
-                          className="postnatal-input" 
-                          value="good" 
-                          disabled={!isEditing}
-                        >
-                          <option value="excellent">Excellent</option>
-                          <option value="good">Good</option>
-                          <option value="fair">Fair</option>
-                          <option value="poor">Poor</option>
-                        </select>
+              {/* Mom Vitals Tab */}
+              {activeTab === 'mom-vitals' && (
+                <div className="vitals-content">
+                  <div className="vitals-header">
+                    <h3>Vital Signs</h3>
+                  </div>
+                  <div className="vitals-current">
+                    <h4>Current Vitals</h4>
+                    <div className="vitals-current-grid">
+                      <div className="vitals-current-field">
+                        <label>Current Blood Pressure</label>
+                        <span className="vitals-current-value">120/80 mmHg</span>
+                      </div>
+                      <div className="vitals-current-field">
+                        <label>Current Pulse Rate</label>
+                        <span className="vitals-current-value">72 bpm</span>
+                      </div>
+                      <div className="vitals-current-field">
+                        <label>Current Temperature</label>
+                        <span className="vitals-current-value">36.8°C</span>
+                      </div>
+                      <div className="vitals-current-field">
+                        <label>Current Respiratory Rate</label>
+                        <span className="vitals-current-value">16/min</span>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Mom Vitals Tab */}
-              {activeTab === 'mom-vitals' && (
-                <div className="vitals-content">
-                  <div className="vitals-header">
-                    <h3>Vital Signs</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Vitals
-                    </button>
-                  </div>
-                  <div className="vitals-grid">
-                    <div className="vitals-field">
-                      <label>Blood Pressure</label>
-                      <input 
-                        type="text" 
-                        className="vitals-input" 
-                        value="120/80" 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="vitals-field">
-                      <label>Pulse Rate</label>
-                      <input 
-                        type="number" 
-                        className="vitals-input" 
-                        value="72" 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="vitals-field">
-                      <label>Temperature</label>
-                      <input 
-                        type="number" 
-                        className="vitals-input" 
-                        value="36.8" 
-                        disabled={!isEditing}
-                      />
-                        </div>
-                    <div className="vitals-field">
-                      <label>Respiratory Rate</label>
-                      <input 
-                        type="number" 
-                        className="vitals-input" 
-                        value="16" 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Mom Medications Tab */}
-              {activeTab === 'mom-medications' && (
-                <div className="medications-content">
-                  <div className="medications-header">
-                    <h3>Medications</h3>
-                    <button className="add-record-btn" onClick={() => setShowAddRecord(true)}>
-                      <FiPlus size={16} />
-                      Add Medication
-                    </button>
-                  </div>
+                             {/* Mom Medications Tab */}
+               {activeTab === 'mom-medications' && (
+                 <div className="medications-content">
+                   <div className="medications-header">
+                     <div className="header-left">
+                       <h3>Medications</h3>
+                     </div>
+                     <div className="header-right">
+                       <button className="add-record-btn" onClick={() => {
+                         setRecordType('medication');
+                         setShowAddRecord(true);
+                       }}>
+                         <FiPlus size={16} />
+                         Add Medication
+                       </button>
+                     </div>
+                   </div>
                   <div className="medications-list">
                     <div className="medication-item">
                       <div className="medication-header">
@@ -2434,6 +2402,12 @@ const MedicalRecords = () => {
                         type="date" 
                         className="followup-input" 
                         value={selectedMom.babyFollowUps?.nextClinicDate || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          if (!updatedMom.babyFollowUps) updatedMom.babyFollowUps = {};
+                          updatedMom.babyFollowUps.nextClinicDate = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
                         disabled={!isEditing}
                       />
           </div>
@@ -2520,45 +2494,94 @@ const MedicalRecords = () => {
         </div>
       )}
 
-      {/* Add Record Modal (unchanged) */}
-      {showAddRecord && (
-        <div className="modal-overlay" onClick={() => setShowAddRecord(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Add Medical Record</h2>
-              <button className="close-btn" onClick={() => setShowAddRecord(false)}>✕</button>
-            </div>
-            <div className="modal-content">
-              <div className="form-group">
-                <label>Record Type</label>
-                <select className="form-input">
-                  <option value="">Select type...</option>
-                  <option value="prenatal">Prenatal Checkup</option>
-                  <option value="ultrasound">Ultrasound</option>
-                  <option value="blood-test">Blood Test</option>
-                  <option value="vitals">Vitals Check</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Date</label>
-                <input type="date" className="form-input" />
-              </div>
-              <div className="form-group">
-                <label>Findings</label>
-                <textarea className="form-input" rows="4" placeholder="Enter medical findings..."></textarea>
-              </div>
-              <div className="form-group">
-                <label>Recommendations</label>
-                <textarea className="form-input" rows="3" placeholder="Enter recommendations..."></textarea>
-              </div>
-            </div>
-            <div className="modal-actions">
-              <button className="modal-btn secondary" onClick={() => setShowAddRecord(false)}>Cancel</button>
-              <button className="modal-btn primary">Add Record</button>
-            </div>
-          </div>
-        </div>
-      )}
+             {/* Add Record Modal */}
+       {showAddRecord && (
+         <div className="modal-overlay" onClick={() => {
+           setShowAddRecord(false);
+           setRecordType('');
+         }}>
+           <div className="modal" onClick={(e) => e.stopPropagation()}>
+             <div className="modal-header">
+               <h2>
+                 {recordType === 'medication' && 'Add Medication'}
+                 {!recordType && 'Add Medical Record'}
+               </h2>
+               <button className="close-btn" onClick={() => {
+                 setShowAddRecord(false);
+                 setRecordType('');
+               }}>✕</button>
+             </div>
+             <div className="modal-content">
+               {recordType === 'medication' ? (
+                 <>
+                   <div className="form-group">
+                     <label>Medication Name</label>
+                     <input type="text" className="form-input" placeholder="Enter medication name..." />
+                   </div>
+                   <div className="form-group">
+                     <label>Dosage</label>
+                     <input type="text" className="form-input" placeholder="e.g., 1 tablet daily" />
+                   </div>
+                   <div className="form-group">
+                     <label>Start Date</label>
+                     <input type="date" className="form-input" />
+                   </div>
+                   <div className="form-group">
+                     <label>Duration</label>
+                     <input type="text" className="form-input" placeholder="e.g., Throughout pregnancy" />
+                   </div>
+                   <div className="form-group">
+                     <label>Status</label>
+                     <select className="form-input">
+                       <option value="active">Active</option>
+                       <option value="completed">Completed</option>
+                       <option value="discontinued">Discontinued</option>
+                     </select>
+                   </div>
+                   <div className="form-group">
+                     <label>Notes</label>
+                     <textarea className="form-input" rows="3" placeholder="Enter any additional notes..."></textarea>
+                   </div>
+                 </>
+               ) : (
+                 <>
+                   <div className="form-group">
+                     <label>Record Type</label>
+                     <select className="form-input">
+                       <option value="">Select type...</option>
+                       <option value="prenatal">Prenatal Checkup</option>
+                       <option value="ultrasound">Ultrasound</option>
+                       <option value="blood-test">Blood Test</option>
+                       <option value="vitals">Vitals Check</option>
+                     </select>
+                   </div>
+                   <div className="form-group">
+                     <label>Date</label>
+                     <input type="date" className="form-input" />
+                   </div>
+                   <div className="form-group">
+                     <label>Findings</label>
+                     <textarea className="form-input" rows="4" placeholder="Enter medical findings..."></textarea>
+                   </div>
+                   <div className="form-group">
+                     <label>Recommendations</label>
+                     <textarea className="form-input" rows="3" placeholder="Enter recommendations..."></textarea>
+                   </div>
+                 </>
+               )}
+             </div>
+             <div className="modal-actions">
+               <button className="modal-btn secondary" onClick={() => {
+                 setShowAddRecord(false);
+                 setRecordType('');
+               }}>Cancel</button>
+               <button className="modal-btn primary">
+                 {recordType === 'medication' ? 'Add Medication' : 'Add Record'}
+               </button>
+             </div>
+           </div>
+         </div>
+       )}
         </div>
       </div>
     </div>

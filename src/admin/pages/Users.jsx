@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Search, 
@@ -19,7 +19,9 @@ import {
   Stethoscope,
   Baby,
   ChevronDown,
-  Download
+  Download,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import './Users.css';
 
@@ -27,84 +29,226 @@ const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    mothers: 0,
+    doctors: 0,
+    midwives: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalUsers: 0,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
 
-  // Sample user data
-  const users = [
-    {
-      id: 1,
-      name: 'Priya Perera',
-      email: 'priya.perera@email.com',
-      role: 'Mother',
-      status: 'Active',
-      lastLogin: '2024-06-10',
-      location: 'Colombo',
-      phone: '+94 77 123 4567',
-      joinDate: '2024-01-15',
-      avatar: 'PP',
-      avatarColor: 'pink'
-    },
-    {
-      id: 2,
-      name: 'Dr. Anura Silva',
-      email: 'anura.silva@moh.lk',
-      role: 'Doctor',
-      status: 'Active',
-      lastLogin: '2024-06-11',
-      location: 'Kandy',
-      phone: '+94 71 234 5678',
-      joinDate: '2024-02-20',
-      avatar: 'AS',
-      avatarColor: 'blue'
-    },
-    {
-      id: 3,
-      name: 'Midwife Kumari Perera',
-      email: 'kumari.perera@moh.lk',
-      role: 'Midwife',
-      status: 'Active',
-      lastLogin: '2024-06-09',
-      location: 'Gampaha',
-      phone: '+94 75 345 6789',
-      joinDate: '2024-03-10',
-      avatar: 'KP',
-      avatarColor: 'green'
-    },
-    {
-      id: 4,
-      name: 'Nimali Fernando',
-      email: 'nimali.fernando@email.com',
-      role: 'Mother',
-      status: 'Inactive',
-      lastLogin: '2024-05-28',
-      location: 'Jaffna',
-      phone: '+94 76 456 7890',
-      joinDate: '2024-01-08',
-      avatar: 'NF',
-      avatarColor: 'orange'
-    },
-    {
-      id: 5,
-      name: 'Dr. Chaminda Perera',
-      email: 'chaminda.perera@moh.lk',
-      role: 'Doctor',
-      status: 'Active',
-      lastLogin: '2024-06-11',
-      location: 'Matara',
-      phone: '+94 77 567 8901',
-      joinDate: '2024-02-15',
-      avatar: 'CP',
-      avatarColor: 'purple'
+  // Fetch users from API
+  const fetchUsers = async (page = 1, search = '', filter = 'all') => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        throw new Error('No admin token found');
+      }
+
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10'
+      });
+
+      if (search) params.append('search', search);
+      if (filter !== 'all') params.append('status', filter);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users?${params}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid, redirect to login
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          window.location.href = '/admin/login';
+          return;
+        }
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        setUsers(data.data.users);
+        setStats(data.data.stats);
+        setPagination(data.data.pagination);
+      } else {
+        throw new Error(data.message || 'Failed to fetch users');
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Update user status
+  const updateUserStatus = async (userId, isActive) => {
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        throw new Error('No admin token found');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users/${userId}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ isActive })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update user status');
+      }
+
+      // Update local state
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId 
+            ? { ...user, status: isActive ? 'Active' : 'Inactive' }
+            : user
+        )
+      );
+
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        active: prevStats.active + (isActive ? 1 : -1),
+        inactive: prevStats.inactive + (isActive ? -1 : 1)
+      }));
+
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      setError(error.message);
+    }
+  };
+
+  // Delete user
+  const deleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        throw new Error('No admin token found');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/admin/users/${userId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      // Remove user from local state
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        total: prevStats.total - 1,
+        active: prevStats.active - (users.find(u => u.id === userId)?.status === 'Active' ? 1 : 0),
+        inactive: prevStats.inactive - (users.find(u => u.id === userId)?.status === 'Inactive' ? 1 : 0)
+      }));
+
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError(error.message);
+    }
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    
+    // Debounce search
+    clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      fetchUsers(1, value, selectedFilter);
+    }, 500);
+  };
+
+  // Handle filter change
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    setSelectedFilter(value);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    fetchUsers(1, searchTerm, value);
+  };
+
+  // Handle pagination
+  const handlePageChange = (page) => {
+    setPagination(prev => ({ ...prev, currentPage: page }));
+    fetchUsers(page, searchTerm, selectedFilter);
+  };
+
+  // Search timeout ref
+  const searchTimeout = React.useRef(null);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+    };
+  }, []);
 
   const getRoleIcon = (role) => {
     switch (role.toLowerCase()) {
-      case 'mother':
+      case 'mom':
         return Heart;
       case 'doctor':
         return Stethoscope;
       case 'midwife':
         return Baby;
+      case 'service_provider':
+        return Shield;
       default:
         return Users;
     }
@@ -112,12 +256,14 @@ const UsersPage = () => {
 
   const getRoleColor = (role) => {
     switch (role.toLowerCase()) {
-      case 'mother':
+      case 'mom':
         return 'pink';
       case 'doctor':
         return 'blue';
       case 'midwife':
         return 'green';
+      case 'service_provider':
+        return 'purple';
       default:
         return 'gray';
     }
@@ -127,22 +273,31 @@ const UsersPage = () => {
     return status === 'Active' ? 'green' : 'red';
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === 'all' || user.status.toLowerCase() === selectedFilter;
-    return matchesSearch && matchesFilter;
-  });
+  if (loading && users.length === 0) {
+    return (
+      <main className="dashboard-main">
+        <div className="loading-container">
+          <Loader2 className="loading-spinner" />
+          <p>Loading users...</p>
+        </div>
+      </main>
+    );
+  }
 
-  const stats = {
-    total: users.length,
-    active: users.filter(u => u.status === 'Active').length,
-    inactive: users.filter(u => u.status === 'Inactive').length,
-    mothers: users.filter(u => u.role === 'Mother').length,
-    doctors: users.filter(u => u.role === 'Doctor').length,
-    midwives: users.filter(u => u.role === 'Midwife').length
-  };
+  if (error && users.length === 0) {
+    return (
+      <main className="dashboard-main">
+        <div className="error-container">
+          <AlertCircle className="error-icon" />
+          <h3>Error loading users</h3>
+          <p>{error}</p>
+          <button onClick={() => fetchUsers()} className="retry-btn">
+            Try Again
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="dashboard-main">
@@ -234,13 +389,13 @@ const UsersPage = () => {
                 type="text"
                 placeholder="Search users..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
                 className="search-input"
               />
             </div>
             <select
               value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
+              onChange={handleFilterChange}
               className="status-select"
             >
               <option value="all">All Status</option>
@@ -253,9 +408,9 @@ const UsersPage = () => {
             </button>
           </div>
           <div className="action-buttons">
-            {filteredUsers.length > 0 && (
+            {users.length > 0 && (
               <button className="bulk-action-btn">
-                Bulk Actions ({filteredUsers.length})
+                Bulk Actions ({users.length})
               </button>
             )}
             <button className="export-btn">
@@ -268,7 +423,7 @@ const UsersPage = () => {
 
       {/* Users Grid */}
       <div className="users-grid">
-        {filteredUsers.map(user => (
+        {users.map(user => (
           <div key={user.id} className="user-card">
             <div className="user-header">
               <div className="user-info">
@@ -329,15 +484,51 @@ const UsersPage = () => {
                 <div className={`status-dot ${user.status.toLowerCase()}`}></div>
                 <span className="status-text">{user.status}</span>
               </div>
-              <div className="user-joined">
-                Member since {user.joinDate}
+              <div className="user-actions-footer">
+                <button
+                  className={`status-toggle-btn ${user.status === 'Active' ? 'deactivate' : 'activate'}`}
+                  onClick={() => updateUserStatus(user.id, user.status !== 'Active')}
+                >
+                  {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteUser(user.id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {filteredUsers.length === 0 && (
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            disabled={!pagination.hasPrevPage}
+            onClick={() => handlePageChange(pagination.currentPage - 1)}
+          >
+            Previous
+          </button>
+          
+          <div className="pagination-info">
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </div>
+          
+          <button
+            className="pagination-btn"
+            disabled={!pagination.hasNextPage}
+            onClick={() => handlePageChange(pagination.currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {users.length === 0 && !loading && (
         <div className="empty-state">
           <Users className="empty-icon" />
           <h3 className="empty-title">No users found</h3>
