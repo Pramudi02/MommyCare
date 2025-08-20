@@ -169,8 +169,7 @@ const MainNavbar = () => {
             <img src="/mommy.png" alt="MommyCare Logo" className="logo-mammy h-24" />
           </div>
           
-          {/* Spacer - removed search field */}
-          <div className="flex flex-1"></div>
+
           
           {/* Auth Section - Show Profile Dropdown ONLY when authenticated AND we have real user data; otherwise Login/Signup */}
           <div className="flex items-center space-x-2 sm:space-x-3">
