@@ -195,13 +195,21 @@ const sendMessage = async (req, res) => {
 
     // Emit to recipient via socket
     try {
+      console.log(`📤 Attempting to emit message to recipient: ${recipientId}`);
+      console.log(`📤 Message data:`, {
+        conversationId: chat._id,
+        messageId: formattedMessage.id,
+        content: formattedMessage.content,
+        senderId: formattedMessage.senderId
+      });
+      
       emitToUser(recipientId.toString(), 'new_message', {
         conversationId: chat._id,
         message: formattedMessage
       });
-      console.log('Message emitted to recipient:', recipientId);
+      console.log('✅ Message emitted to recipient:', recipientId);
     } catch (socketError) {
-      console.error('Socket emission failed:', socketError);
+      console.error('❌ Socket emission failed:', socketError);
       // Don't fail the request if socket emission fails
     }
 
