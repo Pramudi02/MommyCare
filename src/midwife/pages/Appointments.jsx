@@ -1213,34 +1213,31 @@ const Appointments = () => {
     <div className="appointments-calendar">
       <div className="appointments-calendar-container">
         <div className="appointments-calendar-content">
-          <div className="appointments-calendar__main">
-        <div className="appointments-calendar__header">
-          <div className="appointments-calendar__header-icon">
-            <FiCalendar className="w-6 h-6" />
-          </div>
-          <div className="appointments-calendar__title">
-            <h1>Appointments</h1>
-            <p>Manage and schedule appointments with your moms efficiently</p>
-          </div>
-        </div>
-
-        {/* Success Message */}
-        {showSuccessMessage && (
-          <div className="appointments-calendar__success-message">
-            <div className="appointments-calendar__success-content">
-              <FiCheck size={20} />
-              <span>{successMessage}</span>
-              <button 
-                className="appointments-calendar__success-close"
-                onClick={() => setShowSuccessMessage(false)}
-              >
-                <FiX size={16} />
-              </button>
+          <div className="appointments-calendar__header">
+            <div className="appointments-calendar__header-icon">
+              <FiCalendar className="w-6 h-6" />
+            </div>
+            <div className="appointments-calendar__title">
+              <h1>Appointments</h1>
+              <p>Manage and schedule appointments with your moms efficiently</p>
             </div>
           </div>
-        )}
 
-        </div>
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <div className="appointments-calendar__success-message">
+              <div className="appointments-calendar__success-content">
+                <FiCheck size={20} />
+                <span>{successMessage}</span>
+                <button 
+                  className="appointments-calendar__success-close"
+                  onClick={() => setShowSuccessMessage(false)}
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+            </div>
+          )}
 
         <div className="appointments-calendar__filters">
           <div className="appointments-calendar__week-selector">
