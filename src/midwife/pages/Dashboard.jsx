@@ -38,13 +38,6 @@ const Dashboard = () => {
     { type: 'Analytics', description: 'Monthly health metrics report generated', time: '2 days ago', status: 'completed' }
   ];
 
-  // Pregnancy stages based on actual moms data
-  const pregnancyStages = [
-    { stage: 'First Trimester', count: 6, percentage: 30 },
-    { stage: 'Second Trimester', count: 10, percentage: 50 },
-    { stage: 'Third Trimester', count: 4, percentage: 20 }
-  ];
-
   // Upcoming appointments based on actual appointments page
   const upcomingAppointments = [
     { name: 'Jennifer Lee', time: '09:00 AM', type: 'Prenatal Checkup' },
@@ -64,8 +57,9 @@ const Dashboard = () => {
     completed: 142,
     cancelled: 8,
     pending: 6,
-    averageAge: 28.5,
-    mostCommonBloodType: "O+"
+    activePregnancies: 20,
+    deliveriesThisMonth: 4,
+    mostCommonBloodType: 'O+'
   };
 
   const handleQuickAction = (action) => {
@@ -118,144 +112,133 @@ const Dashboard = () => {
       <div className="midwife-dashboard-container">
         <div className="midwife-dashboard">
           <div className="midwife-dashboard__header">
-        <div className="midwife-dashboard__header-icon">
-          <FiUsers className="w-6 h-6" />
-        </div>
-        <div className="midwife-dashboard__welcome">
-          <h1>Welcome back, Sarah</h1>
-          <p>Here's what's happening with your moms today</p>
-        </div>
-      </div>
-
-      <div className="midwife-dashboard__stats">
-        {stats.map((stat, index) => {
-          const IconComponent = stat.icon;
-          return (
-            <div key={index} className={`midwife-stat-card midwife-stat-card--${stat.color}`}>
-              <div className="midwife-stat-card__icon">
-                <IconComponent size={24} />
-              </div>
-              <div className="midwife-stat-card__content">
-                <h3 className="midwife-stat-card__title">{stat.title}</h3>
-                <div className="midwife-stat-card__value">{stat.value}</div>
-                <div className={`midwife-stat-card__change midwife-stat-card__change--${stat.change.includes('+') ? 'positive' : stat.change.includes('-') ? 'negative' : 'neutral'}`}>
-                  {stat.change}
-                </div>
-              </div>
+            <div className="midwife-dashboard__header-icon">
+              <FiUsers className="w-6 h-6" />
             </div>
-          );
-        })}
-      </div>
-
-      <div className="midwife-dashboard__main-content">
-        <div className="midwife-dashboard__left">
-          <div className="midwife-dashboard__section">
-            <h2>Recent Activities</h2>
-            <div className="midwife-activities-list">
-              {recentActivities.map((activity, index) => (
-                <div key={index} className={`midwife-activity-item midwife-activity-item--${activity.status}`}>
-                  <div className="midwife-activity-item__icon">
-                    {activity.type === 'Appointment' && <FiCalendar size={16} />}
-                    {activity.type === 'Medical Record' && <FiFileText size={16} />}
-                    {activity.type === 'Emergency' && <FiAlertTriangle size={16} />}
-                    {activity.type === 'Education' && <FiBookOpen size={16} />}
-                        {activity.type === 'Analytics' && <FiBarChart2 size={16} />}
-                  </div>
-                  <div className="midwife-activity-item__content">
-                    <p className="midwife-activity-item__description">{activity.description}</p>
-                    <span className="midwife-activity-item__time">{activity.time}</span>
-                  </div>
-                  <div className={`midwife-activity-item__status midwife-activity-item__status--${activity.status}`}>
-                    {activity.status}
-                  </div>
-                </div>
-              ))}
+            <div className="midwife-dashboard__welcome">
+              <h1>Welcome back, Sarah</h1>
+              <p>Here's what's happening with your moms today</p>
             </div>
           </div>
 
-          <div className="midwife-dashboard__section">
-            <h2>Pregnancy Stages Overview</h2>
-            <div className="midwife-pregnancy-stages">
-              {pregnancyStages.map((stage, index) => (
-                <div key={index} className="midwife-pregnancy-stage">
-                  <div className="midwife-pregnancy-stage__header">
-                    <h3>{stage.stage}</h3>
-                    <span className="midwife-pregnancy-stage__count">{stage.count} moms</span>
+          <div className="midwife-dashboard__stats">
+            {stats.map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <div key={index} className={`midwife-stat-card midwife-stat-card--${stat.color}`}>
+                  <div className="midwife-stat-card__icon">
+                    <IconComponent size={24} />
                   </div>
-                  <div className="midwife-pregnancy-stage__progress">
-                    <div 
-                      className="midwife-pregnancy-stage__bar" 
-                      style={{ width: `${stage.percentage}%` }}
-                    ></div>
+                  <div className="midwife-stat-card__content">
+                    <h3 className="midwife-stat-card__title">{stat.title}</h3>
+                    <div className="midwife-stat-card__value">{stat.value}</div>
+                    <div className={`midwife-stat-card__change midwife-stat-card__change--${stat.change.includes('+') ? 'positive' : stat.change.includes('-') ? 'negative' : 'neutral'}`}>
+                      {stat.change}
+                    </div>
                   </div>
-                  <span className="midwife-pregnancy-stage__percentage">{stage.percentage}%</span>
                 </div>
-              ))}
-            </div>
-            
-            <div className="midwife-dashboard-summary">
-                  <h3>Analytics Summary</h3>
-              <div className="midwife-summary-stats">
-                <div className="midwife-summary-stat">
+              );
+            })}
+          </div>
+
+          <div className="midwife-dashboard__main-content">
+            <div className="midwife-dashboard__left">
+              <div className="midwife-dashboard__section">
+                <h2>Key Analytics</h2>
+                <div className="midwife-dashboard-summary">
+                  <div className="midwife-summary-stats">
+                    <div className="midwife-summary-stat">
                       <div className="midwife-summary-stat__value">{analyticsSummary.totalAppointments}</div>
                       <div className="midwife-summary-stat__label">Total Appointments</div>
-                </div>
-                <div className="midwife-summary-stat">
+                    </div>
+                    <div className="midwife-summary-stat">
                       <div className="midwife-summary-stat__value">{analyticsSummary.completed}</div>
                       <div className="midwife-summary-stat__label">Completed</div>
-                </div>
-                <div className="midwife-summary-stat">
+                    </div>
+                    <div className="midwife-summary-stat">
                       <div className="midwife-summary-stat__value">{analyticsSummary.pending}</div>
                       <div className="midwife-summary-stat__label">Pending</div>
-                </div>
-                <div className="midwife-summary-stat">
+                    </div>
+                    <div className="midwife-summary-stat">
+                      <div className="midwife-summary-stat__value">{analyticsSummary.activePregnancies}</div>
+                      <div className="midwife-summary-stat__label">Active Pregnancies</div>
+                    </div>
+                    <div className="midwife-summary-stat">
+                      <div className="midwife-summary-stat__value">{analyticsSummary.deliveriesThisMonth}</div>
+                      <div className="midwife-summary-stat__label">Deliveries This Month</div>
+                    </div>
+                    <div className="midwife-summary-stat">
                       <div className="midwife-summary-stat__value">{analyticsSummary.mostCommonBloodType}</div>
                       <div className="midwife-summary-stat__label">Most Common Blood Type</div>
                     </div>
                   </div>
-            </div>
-          </div>
-        </div>
+                </div>
+              </div>
 
-        <div className="midwife-dashboard__right">
-          <div className="midwife-dashboard__section">
-            <h2>Quick Actions</h2>
-            <div className="midwife-quick-actions">
-              {quickActions.map((action, index) => {
-                const IconComponent = action.icon;
-                return (
+              <div className="midwife-dashboard__section">
+                <h2>Recent Activities</h2>
+                <div className="midwife-activities-list">
+                  {recentActivities.map((activity, index) => (
+                    <div key={index} className={`midwife-activity-item midwife-activity-item--${activity.status}`}>
+                      <div className="midwife-activity-item__icon">
+                        {activity.type === 'Appointment' && <FiCalendar size={16} />}
+                        {activity.type === 'Medical Record' && <FiFileText size={16} />}
+                        {activity.type === 'Emergency' && <FiAlertTriangle size={16} />}
+                        {activity.type === 'Education' && <FiBookOpen size={16} />}
+                        {activity.type === 'Analytics' && <FiBarChart2 size={16} />}
+                      </div>
+                      <div className="midwife-activity-item__content">
+                        <p className="midwife-activity-item__description">{activity.description}</p>
+                        <span className="midwife-activity-item__time">{activity.time}</span>
+                      </div>
+                      <div className={`midwife-activity-item__status midwife-activity-item__status--${activity.status}`}>
+                        {activity.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="midwife-dashboard__right">
+              <div className="midwife-dashboard__section">
+                <h2>Quick Actions</h2>
+                <div className="midwife-quick-actions">
+                  {quickActions.map((action, index) => {
+                    const IconComponent = action.icon;
+                    return (
                       <button 
                         key={index} 
                         className={`midwife-quick-action midwife-quick-action--${action.color}`}
                         onClick={() => handleQuickAction(action.action)}
                       >
-                    <div className="midwife-quick-action__icon">
-                      <IconComponent size={20} />
-                    </div>
-                    <span className="midwife-quick-action__title">{action.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="midwife-dashboard__section">
-            <h2>Upcoming Appointments</h2>
-            <div className="midwife-appointments-list">
-              {upcomingAppointments.map((appointment, index) => (
-                <div key={index} className="midwife-appointment-item">
-                  <div className="midwife-appointment-item__time">{appointment.time}</div>
-                  <div className="midwife-appointment-item__content">
-                    <h4 className="midwife-appointment-item__name">{appointment.name}</h4>
-                    <p className="midwife-appointment-item__type">{appointment.type}</p>
-                  </div>
-                  <button className="midwife-appointment-item__action">View</button>
+                        <div className="midwife-quick-action__icon">
+                          <IconComponent size={20} />
+                        </div>
+                        <span className="midwife-quick-action__title">{action.title}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          <div className="midwife-dashboard__section">
+              <div className="midwife-dashboard__section">
+                <h2>Upcoming Appointments</h2>
+                <div className="midwife-appointments-list">
+                  {upcomingAppointments.map((appointment, index) => (
+                    <div key={index} className="midwife-appointment-item">
+                      <div className="midwife-appointment-item__time">{appointment.time}</div>
+                      <div className="midwife-appointment-item__content">
+                        <h4 className="midwife-appointment-item__name">{appointment.name}</h4>
+                        <p className="midwife-appointment-item__type">{appointment.type}</p>
+                      </div>
+                      <button className="midwife-appointment-item__action">View</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="midwife-dashboard__section">
                 <h2>Emergency Alerts</h2>
                 <div className="midwife-emergency-alerts">
                   {emergencyAlerts.map((alert, index) => (
@@ -272,81 +255,83 @@ const Dashboard = () => {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="midwife-dashboard__section">
-                <div className="midwife-emergency-contacts-header">
-            <h2>Emergency Contacts</h2>
-                  <button 
-                    className="midwife-edit-contacts-btn"
-                    onClick={() => setIsEditingContacts(!isEditingContacts)}
-                  >
-                    {isEditingContacts ? <FiSave size={16} /> : <FiEdit size={16} />}
-                  </button>
-                </div>
+          <div className="midwife-dashboard__section">
+            <div className="midwife-emergency-contacts-header">
+              <h2>Emergency Contacts</h2>
+              <button 
+                className="midwife-edit-contacts-btn"
+                onClick={() => setIsEditingContacts(!isEditingContacts)}
+              >
+                {isEditingContacts ? <FiSave size={16} /> : <FiEdit size={16} />}
+              </button>
+            </div>
             <div className="midwife-emergency-contacts">
-              {emergencyContacts.map((contact, index) => (
-                    <div key={contact.id} className="midwife-emergency-contact">
+              {emergencyContacts.map((contact) => (
+                <div key={contact.id} className="midwife-emergency-contact">
                   <div className="midwife-emergency-contact__info">
-                        {editingContact && editingContact.id === contact.id ? (
-                          <div className="midwife-contact-edit-form">
-                            <input
-                              type="text"
-                              value={editingContact.name}
-                              onChange={(e) => handleContactChange('name', e.target.value)}
-                              className="midwife-contact-edit-input"
-                            />
-                            <input
-                              type="text"
-                              value={editingContact.role}
-                              onChange={(e) => handleContactChange('role', e.target.value)}
-                              className="midwife-contact-edit-input"
-                            />
-                            <input
-                              type="text"
-                              value={editingContact.phone}
-                              onChange={(e) => handleContactChange('phone', e.target.value)}
-                              className="midwife-contact-edit-input"
-                            />
-                          </div>
-                        ) : (
-                          <>
-                    <h4 className="midwife-emergency-contact__name">{contact.name}</h4>
-                    <p className="midwife-emergency-contact__role">{contact.role}</p>
-                    <p className="midwife-emergency-contact__phone">{contact.phone}</p>
-                          </>
-                        )}
-                  </div>
-                      <div className="midwife-emergency-contact__actions">
-                        {isEditingContacts && !editingContact && (
-                          <button 
-                            className="midwife-contact-edit-btn"
-                            onClick={() => handleEditContact(contact)}
-                          >
-                            <FiEdit size={14} />
-                          </button>
-                        )}
-                        {editingContact && editingContact.id === contact.id && (
-                          <>
-                            <button 
-                              className="midwife-contact-save-btn"
-                              onClick={handleSaveContact}
-                            >
-                              <FiSave size={14} />
-                            </button>
-                            <button 
-                              className="midwife-contact-cancel-btn"
-                              onClick={handleCancelEdit}
-                            >
-                              <FiX size={14} />
-                            </button>
-                          </>
-                        )}
-                        {!isEditingContacts && (
-                  <button className="midwife-emergency-contact__call">
-                    <FiPhone size={16} />
-                  </button>
-                        )}
+                    {editingContact && editingContact.id === contact.id ? (
+                      <div className="midwife-contact-edit-form">
+                        <input
+                          type="text"
+                          value={editingContact.name}
+                          onChange={(e) => handleContactChange('name', e.target.value)}
+                          className="midwife-contact-edit-input"
+                        />
+                        <input
+                          type="text"
+                          value={editingContact.role}
+                          onChange={(e) => handleContactChange('role', e.target.value)}
+                          className="midwife-contact-edit-input"
+                        />
+                        <input
+                          type="text"
+                          value={editingContact.phone}
+                          onChange={(e) => handleContactChange('phone', e.target.value)}
+                          className="midwife-contact-edit-input"
+                        />
                       </div>
+                    ) : (
+                      <>
+                        <h4 className="midwife-emergency-contact__name">{contact.name}</h4>
+                        <p className="midwife-emergency-contact__role">{contact.role}</p>
+                        <p className="midwife-emergency-contact__phone">{contact.phone}</p>
+                      </>
+                    )}
+                  </div>
+                  <div className="midwife-emergency-contact__actions">
+                    {isEditingContacts && !editingContact && (
+                      <button 
+                        className="midwife-contact-edit-btn"
+                        onClick={() => handleEditContact(contact)}
+                      >
+                        <FiEdit size={14} />
+                      </button>
+                    )}
+                    {editingContact && editingContact.id === contact.id && (
+                      <>
+                        <button 
+                          className="midwife-contact-save-btn"
+                          onClick={handleSaveContact}
+                        >
+                          <FiSave size={14} />
+                        </button>
+                        <button 
+                          className="midwife-contact-cancel-btn"
+                          onClick={handleCancelEdit}
+                        >
+                          <FiX size={14} />
+                        </button>
+                      </>
+                    )}
+                    {!isEditingContacts && (
+                      <button className="midwife-emergency-contact__call">
+                        <FiPhone size={16} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -354,8 +339,6 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  </div>
-</div>
   );
 };
 
