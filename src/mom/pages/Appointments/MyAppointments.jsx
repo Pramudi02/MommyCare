@@ -172,6 +172,8 @@ const AppointmentsDashboard = () => {
       fetchClinicRequests(); // Refresh the list
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 5000); // Hide after 5 seconds
+      // Clear any lingering state in case modal reopens quickly
+      // (modal components themselves reset on open via their effect)
     } catch (error) {
       console.error('Error creating clinic request:', error);
       
@@ -197,6 +199,7 @@ const AppointmentsDashboard = () => {
       fetchDoctorRequests(); // Refresh the list
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 5000); // Hide after 5 seconds
+      // Ensure state is clean before next open
     } catch (error) {
       console.error('Error creating doctor request:', error);
       

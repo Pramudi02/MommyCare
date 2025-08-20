@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 
-const ClinicVisitRequest = require('../models/ClinicVisitRequest');
+const getClinicVisitRequestModel = require('../models/ClinicVisitRequest');
 const DoctorVisitRequest = require('../models/DoctorVisitRequest');
 
 
