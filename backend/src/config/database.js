@@ -1,14 +1,24 @@
 const mongoose = require('mongoose');
 
+// ⚠️  SECURITY WARNING: This file contains hardcoded database credentials
+// This is NOT recommended for production. Use environment variables instead.
+// TODO: Remove hardcoded credentials and use only environment variables
+
 // Single database connection
 let connection = null;
 
 const connectDB = async () => {
   try {
+    // Use environment variable for MongoDB URI
     const uri = process.env.MONGODB_URI;
     
     if (!uri) {
       throw new Error('MONGODB_URI environment variable is required');
+    }
+    
+    // Check if JWT secret is provided
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is required');
     }
     
     // Enhanced connection options for Node.js 22 + MongoDB Atlas compatibility

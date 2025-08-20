@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link } from 'react-router-dom';
 import MomLayout from '../MomLayout';
 import Home from '../pages/Home';
-import AppointmentsDashboard from '../pages/appointments/MyAppointments';
+import AppointmentsDashboard from '../pages/Appointments/MyAppointments';
 import Vaccinations from '../pages/Vaccinations';
 import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';

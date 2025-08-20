@@ -424,6 +424,7 @@ const Appointments = () => {
       return;
     }
 
+
     try {
       setIsLoading(true);
       await midwifeAppointmentAPI.rejectClinicVisitRequest(selectedRequest._id, rejectFormData.reason);
@@ -514,6 +515,7 @@ const Appointments = () => {
     
     console.log('Transformed appointment:', transformed);
     return transformed;
+
   };
 
   const getAppointmentIcon = (type) => {
@@ -1220,6 +1222,7 @@ const Appointments = () => {
           {/* Appointment Requests Section */}
           <div className="appointments-calendar__requests-section">
             <h3>Appointment Requests</h3>
+
             {isLoading ? (
               <div className="appointments-calendar__loading">
                 Loading requests...
@@ -1237,6 +1240,7 @@ const Appointments = () => {
                       <h4 className="appointments-calendar__request-mom">
                         {request.mom?.firstName} {request.mom?.lastName}
                       </h4>
+
                       <p className="appointments-calendar__request-type">{request.requestType} • {request.preferredTime}</p>
                       <p className="appointments-calendar__request-description">{request.notes}</p>
                       <div className="appointments-calendar__request-details">
@@ -1244,6 +1248,7 @@ const Appointments = () => {
                           <FiMapPin size={12} className="inline mr-1" />
                           {request.location}
                         </span>
+
                         <span className="appointments-calendar__request-date-label">
                           <FiCalendar size={12} className="inline mr-1" />
                           Preferred date: {new Date(request.preferredDate).toLocaleDateString()}
@@ -1308,6 +1313,7 @@ const Appointments = () => {
                 )}
               </>
             )}
+
           </div>
         </div>
 

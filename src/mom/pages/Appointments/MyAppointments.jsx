@@ -541,7 +541,6 @@ const AppointmentsDashboard = () => {
             </div>
             <p className="text-xs text-gray-500 text-center mt-2">
 
-
               Doctor will confirm your appointment
             </p>
           </div>

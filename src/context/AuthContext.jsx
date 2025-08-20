@@ -30,16 +30,28 @@ export const AuthProvider = ({ children }) => {
 
   // Login function
   const login = (userData) => {
+    console.log('🔐 AuthContext login called with:', userData);
+    
+    // Normalize payload from either {token, user} or nested in data
+    const normalized = userData?.data ? userData.data : userData;
+    if (!normalized?.token || !normalized?.user) {
+      console.error('❌ Invalid login payload. Expected { token, user }');
+      return;
+    }
+
     // Store both token and user data
     const userInfo = {
-      token: userData.token,
-      user: userData.user || userData
+      token: normalized.token,
+      user: normalized.user
     };
+    
+    console.log('👤 Setting user info:', userInfo);
     setUser(userInfo);
     
     // Store token in localStorage
-    if (userData.token) {
-      localStorage.setItem('token', userData.token);
+    if (normalized.token) {
+      localStorage.setItem('token', normalized.token);
+      console.log('💾 Token stored in localStorage');
     }
   };
 

@@ -27,12 +27,14 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           
+          {/* Admin Routes - No Navbar/Footer */}
+          {AdminRoutes}
+          
           {/* Other Routes - With Navbar/Footer */}
           <Route path="/*" element={
             <>
               <MainNavbar />
               <Routes>
-                {AdminRoutes}
                 {MomRoutes}
                 {MidwifeRoutes}
                 {DoctorRoutes}
