@@ -1,15 +1,15 @@
 /* Footer.css */
-.footer {
+.mommycare-footer {
   background: linear-gradient(135deg, #1e293b 0%, #2d3748 50%, #1e293b 100%);
   color: #ffffff;
-  padding: 3rem 0 1.5rem;
+  padding: 1rem 0 1rem; /* reduced top padding to pull logo up */
   margin-top: auto;
   position: relative;
   width: 100%;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.footer::before {
+.mommycare-footer::before {
   content: '';
   position: absolute;
   top: 0;
@@ -19,76 +19,86 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
-.footer-container {
+.mommycare-footer-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
 /* Header Section */
-.footer-header {
+.mommycare-footer-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem; /* tighter space below header block */
 }
 
-.footer-logo {
+.mommycare-footer-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.125rem; /* minimal space under logo */
 }
 
-.footer-description {
-  font-size: 1rem;
+.mommycare-logo-image {
+  height: 110px;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.mommycare-logo-image:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.mommycare-footer-description {
+  font-size: 0.85rem;
   color: #cbd5e1;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 /* Main Content Layout */
-.footer-main {
+.mommycare-footer-main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 3rem;
-  margin-bottom: 2rem;
+  gap: 2rem;
+  margin-bottom: 1rem;
 }
 
 /* Links Section */
-.footer-links {
+.mommycare-footer-links {
   display: flex;
-  gap: 3rem;
+  gap: 2rem;
   flex: 1;
 }
 
-.footer-column {
+.mommycare-footer-column {
   flex: 1;
-  min-width: 180px;
+  min-width: 150px;
   background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem 1rem;
-  border-radius: 12px;
+  padding: 0.75rem 0.5rem;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   text-align: center;
 }
 
-.footer-column:hover {
+.mommycare-footer-column:hover {
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
 }
 
-.footer-column-title {
-  font-size: 1.1rem;
+.mommycare-footer-column-title {
+  font-size: 0.95rem;
   font-weight: 600;
   color: #60a5fa;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   position: relative;
   padding-bottom: 0.5rem;
 }
 
-.footer-column-title::after {
+.mommycare-footer-column-title::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -100,31 +110,31 @@
   border-radius: 1px;
 }
 
-.footer-list {
+.mommycare-footer-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.footer-list li {
-  margin-bottom: 0.5rem;
+.mommycare-footer-list li {
+  margin-bottom: 0.3rem;
 }
 
-.footer-link {
+.mommycare-footer-link {
   color: #e2e8f0;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: all 0.3s ease;
   position: relative;
   display: inline-block;
 }
 
-.footer-link:hover {
+.mommycare-footer-link:hover {
   color: #60a5fa;
   transform: translateX(2px);
 }
 
-.footer-link::before {
+.mommycare-footer-link::before {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -135,27 +145,27 @@
   transition: width 0.3s ease;
 }
 
-.footer-link:hover::before {
+.mommycare-footer-link:hover::before {
   width: 100%;
 }
 
 /* Stats Section */
-.footer-stats {
+.mommycare-footer-stats {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(236, 72, 153, 0.1));
-  padding: 2rem 1.5rem;
-  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
   border: 1px solid rgba(59, 130, 246, 0.2);
-  min-width: 220px;
+  min-width: 180px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
   transition: all 0.3s ease;
 }
 
-.footer-stats::before {
+.mommycare-footer-stats::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -167,13 +177,13 @@
   pointer-events: none;
 }
 
-.footer-stats:hover {
+.mommycare-footer-stats:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-.stat-item {
+.mommycare-stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -183,8 +193,8 @@
   z-index: 1;
 }
 
-.stat-number {
-  font-size: 2.25rem;
+.mommycare-stat-number {
+  font-size: 1.75rem;
   font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #ec4899, #8b5cf6);
   background-clip: text;
@@ -195,8 +205,8 @@
   filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
 }
 
-.stat-label {
-  font-size: 0.9rem;
+.mommycare-stat-label {
+  font-size: 0.8rem;
   color: #cbd5e1;
   font-weight: 600;
   text-transform: uppercase;
@@ -204,96 +214,104 @@
 }
 
 /* Bottom Section */
-.footer-bottom {
+.mommycare-footer-bottom {
   text-align: center;
-  padding-top: 1.5rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.footer-copyright {
+.mommycare-footer-copyright {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .footer-container {
+  .mommycare-footer-container {
     padding: 0 1.5rem;
   }
   
-  .footer-main {
-    gap: 2rem;
+  .mommycare-footer-main {
+    gap: 1.5rem;
   }
   
-  .footer-links {
-    gap: 2rem;
+  .mommycare-footer-links {
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .footer {
-    padding: 2rem 0 1rem;
+  .mommycare-footer {
+    padding: 1.5rem 0 1rem;
   }
   
-  .footer-container {
+  .mommycare-footer-container {
     padding: 0 1rem;
   }
   
-  .footer-header {
-    margin-bottom: 1.5rem;
+  .mommycare-footer-header {
+    margin-bottom: 1rem;
   }
   
-  .footer-description {
-    font-size: 0.95rem;
+  .mommycare-logo-image {
+    height: 75px;
   }
   
-  .footer-main {
-    flex-direction: column;
-    gap: 2rem;
+  .mommycare-footer-description {
+    font-size: 0.85rem;
   }
   
-  .footer-links {
-    justify-content: space-between;
-  }
-  
-  .footer-stats {
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 1.5rem 1rem;
-  }
-  
-  .stat-number {
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer-container {
-    padding: 0 1rem;
-  }
-  
-  .footer-links {
+  .mommycare-footer-main {
     flex-direction: column;
     gap: 1.5rem;
   }
   
-  .footer-stats {
+  .mommycare-footer-links {
+    justify-content: space-between;
+  }
+  
+  .mommycare-footer-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem 0.75rem;
+  }
+  
+  .mommycare-stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mommycare-footer-container {
+    padding: 0 1rem;
+  }
+  
+  .mommycare-footer-links {
     flex-direction: column;
     gap: 1rem;
   }
   
-  .stat-number {
-    font-size: 1.5rem;
+  .mommycare-footer-stats {
+    flex-direction: column;
+    gap: 0.75rem;
   }
   
-  .stat-label {
+  .mommycare-stat-number {
+    font-size: 1.25rem;
+  }
+  
+  .mommycare-stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .mommycare-footer-copyright {
     font-size: 0.8rem;
   }
   
-  .footer-copyright {
-    font-size: 0.85rem;
+  .mommycare-logo-image {
+    height: 35px;
   }
 }
 
@@ -309,7 +327,7 @@
   }
 }
 
-.footer-container > * {
+.mommycare-footer-container > * {
   animation: fadeInUp 0.6s ease-out;
 }
 
