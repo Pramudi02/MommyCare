@@ -57,13 +57,24 @@ const AppointmentsDashboard = () => {
     { number: 8, label: 'Completed This Month', color: 'text-green-500', icon: <CheckCircle size={28} className="text-green-400 mb-1" /> }
   ];
 
-  const clinicServices = [
-    { icon: Scale, name: 'Mom Weight Check' },
-    { icon: Baby, name: 'Baby Weight Check' },
+  const [activeTab, setActiveTab] = useState('mom');
+
+  const momServices = [
+    { icon: Stethoscope, name: 'General Checkup' },
+    { icon: Calendar, name: 'Prenatal Checkup' },
     { icon: Search, name: 'Ultrasound Scan' },
-    { icon: TestTube, name: 'Blood Tests' },
+    { icon: TestTube, name: 'Glucose Screening' },
+    { icon: Baby, name: 'Breastfeeding Support' },
+    { icon: Brain, name: 'Mental Health Check' }
+  ];
+
+  const babyServices = [
+    { icon: Scale, name: 'Baby Weight Check' },
     { icon: Syringe, name: 'Vaccinations' },
-    { icon: Stethoscope, name: 'General Checkup' }
+    { icon: Stethoscope, name: 'Newborn Screening' },
+    { icon: Baby, name: 'Feeding Assessment' },
+    { icon: Calendar, name: 'Developmental Check' },
+    { icon: AlertTriangle, name: 'Jaundice Monitoring' }
   ];
 
   const doctorServices = [
@@ -445,21 +456,52 @@ const AppointmentsDashboard = () => {
           {/* Clinic Visits Card */}
 
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-2 border-pink-200">
-                         <div className="flex items-center justify-between mb-6">
-               <div className="flex items-center">
-                 <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
-                   <Building2 className="text-pink-500 w-6 h-6" />
-                 </div>
-                 <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
-               </div>
-               {selectedClinicCategory && (
-                 <div className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">
-                   Selected: {selectedClinicCategory}
-                 </div>
-               )}
-             </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                  <Building2 className="text-pink-500 w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-800">Clinic Visits</h2>
+              </div>
+              
+              {/* Tabs */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => {
+                    setActiveTab('mom');
+                    setSelectedClinicCategory(null);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === 'mom'
+                      ? 'bg-white text-pink-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  Mom
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('baby');
+                    setSelectedClinicCategory(null);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === 'baby'
+                      ? 'bg-white text-pink-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  Baby
+                </button>
+              </div>
+            </div>
+            
+            {selectedClinicCategory && (
+              <div className="mb-4 bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
+                Selected: {selectedClinicCategory}
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4 mb-6">
-               {clinicServices.map((service, index) => {
+               {(activeTab === 'mom' ? momServices : babyServices).map((service, index) => {
                  const IconComponent = service.icon;
                  const isSelected = selectedClinicCategory === service.name;
                  return (
