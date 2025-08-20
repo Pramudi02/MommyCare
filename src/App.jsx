@@ -16,6 +16,7 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import ForgotPassword from './components/Authentication/ForgotPassword';
 import FloatingChatWidget from './components/FloatingChatWidget';
+import DoctorFloatingChatWidget from './components/DoctorFloatingChatWidget';
 
 function App() {
 
@@ -56,6 +57,7 @@ function App() {
               </Routes>
               <Footer/>
               <FloatingChatWidget />
+              <DoctorFloatingChatWidget />
             </>
           } />
         </Routes>

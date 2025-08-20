@@ -133,6 +133,30 @@
   border-color: rgba(239, 68, 68, 0.5);
 }
 
+/* Doctor Floating Chat Button Styles */
+.doctor-floating-chat {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.doctor-floating-chat:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 12px 35px rgba(124, 58, 237, 0.6);
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+}
+
+.doctor-floating-chat.has-new-messages {
+  animation: bounce 0.6s ease-in-out;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.doctor-floating-chat.has-new-messages:hover {
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
 @keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);
