@@ -163,14 +163,14 @@ let Appointment = null;
 
 const getAppointmentModel = () => {
   if (!Appointment) {
-    const { getMommyCareDataConnection } = require('../config/database');
-    const mommyCareDataConnection = getMommyCareDataConnection();
+    const { getConnection } = require('../config/database');
+    const conn = getConnection();
     
-    if (!mommyCareDataConnection) {
-      throw new Error('MommyCareData database connection not available');
+    if (!conn) {
+      throw new Error('Database connection not available');
     }
     
-    Appointment = mommyCareDataConnection.model('Appointment', appointmentSchema);
+    Appointment = conn.model('Appointment', appointmentSchema);
   }
   return Appointment;
 };

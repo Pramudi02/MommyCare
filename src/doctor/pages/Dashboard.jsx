@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
 import { 
   FaUsers, 
@@ -10,11 +10,35 @@ import {
   FaChartBar
 } from 'react-icons/fa';
 
+import { doctorAPI } from '../../services/api';
+
 const Dashboard = () => {
+  const [doctorName, setDoctorName] = useState('');
+  const [todayCount, setTodayCount] = useState(0);
+  const [upcoming, setUpcoming] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      try {
+        const res = await doctorAPI.getDashboard();
+        const doc = res?.data?.doctor || res?.doctor;
+        const upcomingAppointments = res?.data?.upcomingAppointments || [];
+        if (isMounted) {
+          if (doc) setDoctorName(`Dr. ${doc.firstName} ${doc.lastName}`);
+          setUpcoming(upcomingAppointments);
+          const today = new Date().toDateString();
+          setTodayCount(upcomingAppointments.filter(a => new Date(a.startTime).toDateString() === today).length);
+        }
+      } catch (e) {}
+    })();
+    return () => { isMounted = false; };
+  }, []);
+
   // Sample data for the dashboard
   const stats = [
-    { title: "Total Patients", value: "156", icon: <FaUsers />, color: "#4CAF50" },
-    { title: "Today's Appointments", value: "8", icon: <FaCalendarAlt />, color: "#2196F3" },
+    { title: "Total Patients", value: "-", icon: <FaUsers />, color: "#4CAF50" },
+    { title: "Today's Appointments", value: String(todayCount), icon: <FaCalendarAlt />, color: "#2196F3" },
     { title: "Pending Reports", value: "12", icon: <FaClipboardList />, color: "#FF9800" },
     { title: "Emergency Cases", value: "2", icon: <FaExclamationTriangle />, color: "#F44336" }
   ];
@@ -44,7 +68,7 @@ const Dashboard = () => {
     <div className="doctor-dashboard-container">
      
       <div className="doctor-dashboard-header">
-        <h1>Welcome back, Dr. Sarah Johnson</h1>
+        <h1>Welcome back, {doctorName || 'Doctor'}</h1>
         <p>Here's what's happening today in your practice</p>
         <div className="doctor-dashboard-header-decoration"></div>
       </div>
@@ -74,12 +98,12 @@ const Dashboard = () => {
               <button className="doctor-view-all-btn">View All</button>
             </div>
             <div className="doctor-appointments-list">
-              {recentAppointments.map(appointment => (
+              {(upcoming.length ? upcoming : recentAppointments).map(appointment => (
                 <div key={appointment.id} className="doctor-appointment-item">
-                  <div className="doctor-appointment-time">{appointment.time}</div>
+                  <div className="doctor-appointment-time">{appointment.time || new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   <div className="doctor-appointment-details">
-                    <h4>{appointment.patient}</h4>
-                    <p>{appointment.type}</p>
+                    <h4>{appointment.patient?.firstName ? `${appointment.patient.firstName} ${appointment.patient.lastName}` : appointment.patient}</h4>
+                    <p>{appointment.type || 'Consultation'}</p>
                   </div>
                   <div className={`doctor-appointment-status ${appointment.status.toLowerCase()}`}>
                     {appointment.status}

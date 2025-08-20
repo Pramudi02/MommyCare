@@ -1992,3 +1992,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+.no-appointments {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6b7280;
+}
+
+.no-appointments p {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+  font-style: italic;
+}

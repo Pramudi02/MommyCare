@@ -4,6 +4,9 @@ import DoctorLayout from '../DoctorLayout';
 import Dashboard from '../pages/Dashboard';
 import Patients from '../pages/Patients';
 import Appointments from '../pages/Appointments';
+import NewAppointment from '../pages/NewAppointment';
+import ViewAllAppointments from '../pages/ViewAllAppointments';
+import AppointmentRequests from '../pages/AppointmentRequests';
 import Prescriptions from '../pages/Prescriptions';
 import MedicalRecords from '../pages/MedicalRecords';
 import Analytics from '../pages/Analytics';
@@ -15,6 +18,9 @@ export default (
     <Route index element={<Dashboard />} />
     <Route path="patients" element={<Patients />} />
     <Route path="appointments" element={<Appointments />} />
+    <Route path="appointments/new" element={<NewAppointment />} />
+    <Route path="appointments/view-all" element={<ViewAllAppointments />} />
+    <Route path="appointment-requests" element={<AppointmentRequests />} />
     <Route path="prescriptions" element={<Prescriptions />} />
     <Route path="medical-records" element={<MedicalRecords />} />
     <Route path="analytics" element={<Analytics />} />

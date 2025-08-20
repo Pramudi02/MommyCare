@@ -6,6 +6,7 @@ const menuItems = [
   { name: "Dashboard", path: "/doctor" },
   { name: "Patients", path: "/doctor/patients" },
   { name: "Appointments", path: "/doctor/appointments" },
+  { name: "Appointment Requests", path: "/doctor/appointment-requests" },
   { name: "Prescriptions", path: "/doctor/prescriptions" },
   { name: "Medical Records", path: "/doctor/medical-records" },
   { name: "Analytics", path: "/doctor/analytics" }
@@ -41,7 +42,6 @@ const DoctorNavbar = () => {
 
   return (
     <nav className="doctor-navbar">
-      
       <div className="doctor-navbar__menu">
         {menuItems.map((item, idx) => (
           <button
@@ -53,9 +53,6 @@ const DoctorNavbar = () => {
           </button>
         ))}
       </div>
-
-      
-      
     </nav>
   );
 };
