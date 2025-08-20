@@ -16,12 +16,26 @@ const DoctorVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 
   const timeSlots = ['Morning', 'Afternoon', 'Any Time'];
 
+  // Default notes for each category
+  const getDefaultNotes = (category) => {
+    const notesMap = {
+      'Gynecologist': 'Women\'s health and pregnancy care',
+      'Pediatrician': 'Child health and development',
+      'Nutritionist': 'Diet and nutrition guidance',
+      'Mental Health': 'Psychological support and counseling',
+      'Lactation Consultant': 'Breastfeeding support and guidance',
+      'Emergency': 'Urgent medical attention needed'
+    };
+    return notesMap[category] || '';
+  };
+
   // Update form when selected category changes
   useEffect(() => {
     if (selectedCategory) {
       setFormData(prev => ({
         ...prev,
-        requestType: selectedCategory
+        requestType: selectedCategory,
+        notes: getDefaultNotes(selectedCategory)
       }));
     }
   }, [selectedCategory]);
@@ -34,7 +48,7 @@ const DoctorVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
         preferredDate: '',
         preferredTime: '',
         location: '',
-        notes: ''
+        notes: selectedCategory ? getDefaultNotes(selectedCategory) : ''
       });
       setErrors({});
       setShowCalendar(false);

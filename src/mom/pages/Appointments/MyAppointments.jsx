@@ -495,11 +495,7 @@ const AppointmentsDashboard = () => {
               </div>
             </div>
             
-            {selectedClinicCategory && (
-              <div className="mb-4 bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
-                Selected: {selectedClinicCategory}
-              </div>
-            )}
+
             <div className="grid grid-cols-2 gap-4 mb-6">
                {(activeTab === 'mom' ? momServices : babyServices).map((service, index) => {
                  const IconComponent = service.icon;
@@ -855,6 +851,7 @@ const AppointmentsDashboard = () => {
         onSubmit={handleSubmitRequest}
         isLoading={isSubmitting}
         selectedCategory={selectedClinicCategory}
+        activeTab={activeTab}
       />
 
       {/* Doctor Visit Request Modal */}

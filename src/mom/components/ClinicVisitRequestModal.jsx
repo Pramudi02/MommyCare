@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, MapPin, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory }) => {
+const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory, activeTab }) => {
   const [formData, setFormData] = useState({
     requestType: selectedCategory || '',
     preferredDate: '',
@@ -16,12 +16,32 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 
   const timeSlots = ['Morning', 'Afternoon', 'Any Time'];
 
+  // Default notes for each category
+  const getDefaultNotes = (category) => {
+    const notesMap = {
+      'General Checkup': 'Weight, blood pressure, blood tests, iron levels',
+      'Prenatal Checkup': 'Regular pregnancy monitoring',
+      'Ultrasound Scan': 'Fetal development monitoring',
+      'Glucose Screening': 'Gestational diabetes testing',
+      'Breastfeeding Support': 'Lactation consultation',
+      'Mental Health Check': 'Postpartum depression screening',
+      'Baby Weight Check': 'Growth monitoring',
+      'Vaccinations': 'Immunization schedule',
+      'Newborn Screening': 'Health assessment',
+      'Feeding Assessment': 'Breastfeeding/formula guidance',
+      'Developmental Check': 'Milestone tracking',
+      'Jaundice Monitoring': 'Newborn health'
+    };
+    return notesMap[category] || '';
+  };
+
   // Update form when selected category changes
   useEffect(() => {
     if (selectedCategory) {
       setFormData(prev => ({
         ...prev,
-        requestType: selectedCategory
+        requestType: selectedCategory,
+        notes: getDefaultNotes(selectedCategory)
       }));
     }
   }, [selectedCategory]);
@@ -34,7 +54,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
         preferredDate: '',
         preferredTime: '',
         location: '',
-        notes: ''
+        notes: selectedCategory ? getDefaultNotes(selectedCategory) : ''
       });
       setErrors({});
       setShowCalendar(false);
@@ -209,7 +229,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
               Request Type <span className="text-red-500">*</span>
             </label>
             <div className="w-full px-4 py-3 bg-pink-50 border border-pink-200 rounded-lg text-pink-700 font-medium">
-              {selectedCategory || 'No category selected'}
+              {selectedCategory ? `${activeTab === 'mom' ? 'Mom' : 'Baby'} - ${selectedCategory}` : 'No category selected'}
             </div>
           </div>
 
