@@ -1,5 +1,5 @@
 // MommyCare/src/mom/pages/Appointments/MyAppointments.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar, 
   Scale, 
@@ -41,6 +41,11 @@ const AppointmentsDashboard = () => {
   const [doctorRequests, setDoctorRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const clinicRequestsRef = useRef(null);
+  const doctorRequestsRef = useRef(null);
+  const upcomingRef = useRef(null);
+  const missedRef = useRef(null);
+  const completedRef = useRef(null);
   const [selectedClinicCategory, setSelectedClinicCategory] = useState(null);
   const [selectedDoctorCategory, setSelectedDoctorCategory] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -357,6 +362,51 @@ const AppointmentsDashboard = () => {
     console.log(`Navigate ${direction}`);
   };
 
+  const scrollToClinicRequests = () => {
+    if (clinicRequestsRef.current) {
+      const y = clinicRequestsRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const header = document.querySelector('nav');
+      const offset = (header?.offsetHeight || 80) + 12;
+      window.scrollTo({ top: y - offset, behavior: 'smooth' });
+    }
+  };
+
+  const scrollToDoctorRequests = () => {
+    if (doctorRequestsRef.current) {
+      const y = doctorRequestsRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const header = document.querySelector('nav');
+      const offset = (header?.offsetHeight || 80) + 12;
+      window.scrollTo({ top: y - offset, behavior: 'smooth' });
+    }
+  };
+
+  const scrollToUpcoming = () => {
+    if (upcomingRef.current) {
+      const y = upcomingRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const header = document.querySelector('nav');
+      const offset = (header?.offsetHeight || 80) + 12;
+      window.scrollTo({ top: y - offset, behavior: 'smooth' });
+    }
+  };
+
+  const scrollToMissed = () => {
+    if (missedRef.current) {
+      const y = missedRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const header = document.querySelector('nav');
+      const offset = (header?.offsetHeight || 80) + 12;
+      window.scrollTo({ top: y - offset, behavior: 'smooth' });
+    }
+  };
+
+  const scrollToCompleted = () => {
+    if (completedRef.current) {
+      const y = completedRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const header = document.querySelector('nav');
+      const offset = (header?.offsetHeight || 80) + 12;
+      window.scrollTo({ top: y - offset, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4">
       <div className="max-w-7xl mx-auto">
@@ -373,21 +423,21 @@ const AppointmentsDashboard = () => {
 
         {/* Stats Cards */}
         <div className="stats-grid-appointments">
-          <div className="stat-card-appointments stat-card-upcoming">
+          <button onClick={scrollToUpcoming} className="stat-card-appointments stat-card-upcoming text-left">
             <div className="stat-number-appointments text-blue-600">3</div>
             <div className="stat-label-appointments">Upcoming</div>
             <div className="stat-subtitle-appointments">Appointments</div>
-          </div>
-          <div className="stat-card-appointments stat-card-missed">
+          </button>
+          <button onClick={scrollToMissed} className="stat-card-appointments stat-card-missed text-left">
             <div className="stat-number-appointments text-red-600">2</div>
             <div className="stat-label-appointments">Missed</div>
             <div className="stat-subtitle-appointments">Appointments</div>
-          </div>
-          <div className="stat-card-appointments stat-card-completed">
+          </button>
+          <button onClick={scrollToCompleted} className="stat-card-appointments stat-card-completed text-left">
             <div className="stat-number-appointments text-green-600">8</div>
             <div className="stat-label-appointments">Completed</div>
             <div className="stat-subtitle-appointments">This Month</div>
-          </div>
+          </button>
         </div>
 
         {/* Main Content Grid */}
@@ -463,6 +513,13 @@ const AppointmentsDashboard = () => {
                 </button>
               )}
             </div>
+            <button
+              type="button"
+              onClick={scrollToClinicRequests}
+              className="mt-3 w-full font-medium py-3 rounded-full border border-pink-300 text-pink-600 hover:bg-pink-50 transition-colors"
+            >
+              See All Requests
+            </button>
             <p className="text-xs text-gray-500 text-center mt-2">
               Hospital will confirm your appointment
             </p>
@@ -542,10 +599,14 @@ const AppointmentsDashboard = () => {
                 </button>
               )}
             </div>
-            <p className="text-xs text-gray-500 text-center mt-2">
-
-              Doctor will confirm your appointment
-            </p>
+            <button
+              type="button"
+              onClick={scrollToDoctorRequests}
+              className="mt-3 w-full font-medium py-3 rounded-full border border-cyan-300 text-cyan-600 hover:bg-cyan-50 transition-colors"
+            >
+              See All Requests
+            </button>
+            <p className="text-xs text-gray-500 text-center mt-2">Doctor will confirm your appointment</p>
           </div>
 
           {/* Calendar Card */}
@@ -625,7 +686,7 @@ const AppointmentsDashboard = () => {
         {/* Appointments and Reminders Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Appointments */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div ref={upcomingRef} className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
               <Zap className="text-yellow-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Upcoming Appointments</h3>
@@ -649,7 +710,7 @@ const AppointmentsDashboard = () => {
           </div>
 
           {/* Missed Appointments */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div ref={missedRef} className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
               <X className="text-red-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Missed Appointments</h3>
@@ -681,27 +742,25 @@ const AppointmentsDashboard = () => {
             </div>
           </div>
 
-          {/* Health Reminders */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+          {/* Completed Appointments */}
+          <div ref={completedRef} className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center mb-4">
-              <Bell className="text-blue-500 w-5 h-5 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">Health Reminders</h3>
+              <CheckCircle className="text-green-500 w-5 h-5 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-800">Completed Appointments</h3>
             </div>
             <div className="space-y-3">
-              {healthReminders.map((reminder) => {
-                const IconComponent = reminder.icon;
-                return (
-                  <div key={reminder.id} className="flex items-center p-3 rounded-lg border-l-4 border-blue-400">
-                    <div className={`w-10 h-10 ${reminder.color} rounded-full flex items-center justify-center mr-3`}>
-                      <IconComponent className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800 text-sm">{reminder.type}</div>
-                      <div className="text-gray-600 text-xs">{reminder.frequency}</div>
-                    </div>
+              {/* Placeholder completed list; hook this to real data when available */}
+              {[{ id: 1, type: 'General Checkup', date: 'July 5, 10:00 AM' }, { id: 2, type: 'Blood Test', date: 'July 8, 11:30 AM' }].map((item) => (
+                <div key={item.id} className="flex items-center p-3 rounded-lg border-l-4 border-green-400">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
-                );
-              })}
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800 text-sm">{item.type}</div>
+                    <div className="text-gray-600 text-xs">{item.date}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -720,25 +779,29 @@ const AppointmentsDashboard = () => {
         {/* Visit Requests Section - Side by Side */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-8">
           {/* Clinic Visit Requests */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
-            <ClinicVisitRequestsList 
-              requests={clinicRequests}
-              onCancel={handleCancelRequest}
-              isLoading={isLoading}
-              isAuthenticated={isAuthenticated}
-            />
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200" ref={clinicRequestsRef}>
+            <div className="request-list-scroll max-h-[60vh] overflow-y-auto pr-1">
+              <ClinicVisitRequestsList 
+                requests={clinicRequests}
+                onCancel={handleCancelRequest}
+                isLoading={isLoading}
+                isAuthenticated={isAuthenticated}
+              />
+            </div>
           </div>
 
           {/* Doctor Visit Requests */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200" ref={doctorRequestsRef}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Your Doctor Visit Requests</h3>
             </div>
-            <DoctorVisitRequestsList 
-              requests={doctorRequests}
-              onCancelRequest={handleCancelDoctorRequest}
-              isLoading={isLoading}
-            />
+            <div className="request-list-scroll max-h-[60vh] overflow-y-auto pr-1">
+              <DoctorVisitRequestsList 
+                requests={doctorRequests}
+                onCancelRequest={handleCancelDoctorRequest}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
         </div>
       </div>
