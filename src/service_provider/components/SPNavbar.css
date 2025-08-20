@@ -26,29 +26,13 @@ body {
   gap: 15px;
 }
 
-.sp-navbar__brand {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #7f56d9;
-  margin-right: 48px;
-  letter-spacing: 0.04em;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  user-select: none;
-}
-
-.sp-navbar__brand h2 {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #7f56d9;
-  letter-spacing: 0.04em;
-}
-
 .sp-navbar__menu {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
   align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .sp-navbar__item {
@@ -66,9 +50,7 @@ body {
       box-shadow 0.18s,
       transform 0.18s;
   letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-block;
   margin: 0 2px;
   border: none;
   cursor: pointer;
@@ -87,13 +69,9 @@ body {
   box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
 }
 
-.sp-navbar__item span {
-  font-weight: 700;
-}
-
 .sp-navbar__profile {
-  margin-left: auto;
-  position: relative;
+  position: absolute;
+  right: 32px;
 }
 
 .sp-profile-button {
@@ -166,11 +144,7 @@ body {
   .sp-navbar {
     padding: 0 16px;
     min-height: 80px;
-    justify-content: space-between;
-  }
-  
-  .sp-navbar__brand {
-    margin-right: 0;
+    justify-content: center;
   }
   
   .sp-navbar__menu {
@@ -205,6 +179,11 @@ body {
     font-size: 16px;
     justify-content: center;
   }
+  
+  .sp-navbar__profile {
+    position: absolute;
+    right: 16px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -220,5 +199,9 @@ body {
   .sp-navbar__item {
     padding: 10px 12px;
     font-size: 15px;
+  }
+  
+  .sp-navbar__profile {
+    right: 12px;
   }
 }

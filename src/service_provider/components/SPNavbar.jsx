@@ -3,17 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   User, 
   Settings, 
-  LogOut, 
-  Plus,
-  Package,
-  BarChart3
+  LogOut
 } from "lucide-react";
 import "./SPNavbar.css";
 
 const menuItems = [
-  { name: "Dashboard", path: "/service-provider", icon: <BarChart3 className="w-4 h-4" /> },
-  { name: "Products", path: "/service-provider/products", icon: <Package className="w-4 h-4" /> },
-  { name: "Add Product", path: "/service-provider/products/add", icon: <Plus className="w-4 h-4" /> }
+  { name: "Dashboard", path: "/service-provider" },
+  { name: "Products", path: "/service-provider/products" },
+  { name: "Add Product", path: "/service-provider/products/add" }
 ];
 
 const SPNavbar = () => {
@@ -47,10 +44,6 @@ const SPNavbar = () => {
 
   return (
     <nav className="sp-navbar">
-      <div className="sp-navbar__brand">
-        <h2>Service Provider</h2>
-      </div>
-
       <div className="sp-navbar__menu">
         {menuItems.map((item, idx) => (
           <button
@@ -58,8 +51,7 @@ const SPNavbar = () => {
             onClick={() => handleNavClick(item.path)}
             className={`sp-navbar__item ${isActive(item.path) ? 'active' : ''}`}
           >
-            {item.icon}
-            <span>{item.name}</span>
+            {item.name}
           </button>
         ))}
       </div>
