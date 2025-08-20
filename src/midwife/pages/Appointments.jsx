@@ -35,15 +35,15 @@ const Appointments = () => {
     console.log('Accepting request:', selectedRequest.id, 'with data:', acceptFormData);
     // Here you would implement the logic to accept the request
     // Update status, create appointment, etc.
-    
-    // Close modal and reset
-    setIsAcceptModalOpen(false);
-    setSelectedRequest(null);
-    setAcceptFormData({
-      appointmentDate: '',
+      
+      // Close modal and reset
+      setIsAcceptModalOpen(false);
+      setSelectedRequest(null);
+      setAcceptFormData({
+        appointmentDate: '',
       appointmentTime: '',
-      notes: ''
-    });
+        notes: ''
+      });
   };
 
   const handleRemoveRequest = (requestId) => {
@@ -572,48 +572,48 @@ const Appointments = () => {
           {/* Appointment Requests Section */}
           <div className="appointments-calendar__requests-section">
             <h3>Appointment Requests</h3>
-            <div className="appointments-calendar__requests-list">
+              <div className="appointments-calendar__requests-list">
               {appointmentRequests.map(request => (
                 <div key={request.id} className="appointments-calendar__request-item">
                   <div className="appointments-calendar__request-date">
                     {new Date(request.preferredDate).toLocaleDateString()}
                   </div>
-                  <div className="appointments-calendar__request-content">
+                    <div className="appointments-calendar__request-content">
                     <h4 className="appointments-calendar__request-mom">{request.mom}</h4>
-                    <p className="appointments-calendar__request-type">{request.requestType} • {request.preferredTime}</p>
-                    <p className="appointments-calendar__request-description">{request.notes}</p>
-                    <div className="appointments-calendar__request-details">
-                      <span className="appointments-calendar__request-location">
-                        <FiMapPin size={12} className="inline mr-1" />
-                        {request.location}
-                      </span>
+                      <p className="appointments-calendar__request-type">{request.requestType} • {request.preferredTime}</p>
+                      <p className="appointments-calendar__request-description">{request.notes}</p>
+                      <div className="appointments-calendar__request-details">
+                        <span className="appointments-calendar__request-location">
+                          <FiMapPin size={12} className="inline mr-1" />
+                          {request.location}
+                        </span>
                       {request.notes && (
                         <span className="appointments-calendar__request-notes">
                           <FiFileText size={12} className="inline mr-1" />
                           {request.notes}
-                        </span>
+                          </span>
                       )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="appointments-calendar__request-actions">
-                    <button 
-                      className="appointments-calendar__request-btn appointments-calendar__request-btn--accept"
-                      onClick={() => handleAcceptRequest(request)}
-                    >
-                      <FiCheck size={14} />
+                    <div className="appointments-calendar__request-actions">
+                      <button 
+                        className="appointments-calendar__request-btn appointments-calendar__request-btn--accept"
+                        onClick={() => handleAcceptRequest(request)}
+                      >
+                        <FiCheck size={14} />
                       Accept
-                    </button>
-                    <button 
+                      </button>
+                      <button 
                       className="appointments-calendar__request-btn appointments-calendar__request-btn--remove"
                       onClick={() => handleRemoveRequest(request.id)}
-                    >
-                      <FiX size={14} />
+                      >
+                        <FiX size={14} />
                       Remove
-                    </button>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
           </div>
         </div>
 
