@@ -6,13 +6,16 @@ import { getUserProfile } from '../../services/api';
 
 const MainNavbar = () => {
   const navigate = useNavigate();
-  const { user, logout, isAuthenticated, updateUserProfile } = useAuth();
+  // Guard against undefined context (e.g., during hot reload or provider init)
+  const authCtx = useAuth && typeof useAuth === 'function' ? useAuth() : {};
+  const { user, logout, isAuthenticated, updateUserProfile } = authCtx || {};
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Fetch user profile when component mounts or when authentication status changes
   useEffect(() => {
+    if (isAuthenticated == null) return; // context not ready
     console.log('🔍 MainNavbar useEffect - Auth status:', { isAuthenticated, hasToken: !!user?.token, user });
     
     if (isAuthenticated && user?.token) {

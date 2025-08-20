@@ -120,8 +120,12 @@ const Signup = () => {
       console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
+        const payload = data?.data ?? { token: data?.token, user: data?.user };
+        if (!payload?.token || !payload?.user) {
+          throw new TypeError('Malformed registration response: missing token or user');
+        }
         // Use AuthContext login function
-        login(data.data);
+        login(payload);
         
         // Navigate directly to role-specific dashboard (no admin approval needed)
         switch (formData.role) {
