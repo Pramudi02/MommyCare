@@ -40,7 +40,7 @@ import {
 } from 'lucide-react';
 import './chat.css';
 
-const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
+const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false }) => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -829,8 +829,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="chat-overlay" onClick={onClose}>
-      <div className="chat-container" onClick={(e) => e.stopPropagation()}>
+    <div className={`chat-overlay ${isFloating ? 'chat-overlay-floating' : ''}`} onClick={onClose}>
+      <div className={`chat-container ${isFloating ? 'chat-container-floating' : ''}`} onClick={(e) => e.stopPropagation()}>
         {/* Chat Sidebar */}
         <div className="chat-sidebar">
           {/* Header */}
@@ -839,9 +839,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               <MessageCircle size={24} />
               <h2>Healthcare Chat</h2>
             </div>
-            <button className="chat-header-menu-btn" onClick={onClose}>
-              <X size={20} />
-            </button>
+            {!isFloating && (
+              <button className="chat-header-menu-btn" onClick={onClose}>
+                <X size={20} />
+              </button>
+            )}
           </div>
 
           {/* Search and Filter */}
