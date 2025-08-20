@@ -93,7 +93,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
       });
 
       newSocket.on('connect', () => {
-        console.log('Connected to chat server');
+        console.log('✅ Mom connected to chat server');
+        console.log('🔗 Socket ID:', newSocket.id);
         setIsConnected(true);
       });
 
@@ -119,6 +120,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
     socket.off('new_message');
     socket.off('typing_indicator');
     socket.off('message_status_update');
+    socket.off('conversation_joined');
 
     socket.on('new_message', (data) => {
       const msg = data.message || {};
@@ -182,10 +184,15 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
       ));
     });
 
+    socket.on('conversation_joined', (data) => {
+      console.log('✅ Mom joined conversation:', data.conversationId);
+    });
+
     return () => {
       socket.off('new_message');
       socket.off('typing_indicator');
       socket.off('message_status_update');
+      socket.off('conversation_joined');
     };
   }, [socket, selectedChat, currentUser]);
 
@@ -439,8 +446,9 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
         const messageToSend = message.trim();
         setMessage('');
       
-        console.log('Sending message to:', selectedChat);
-        console.log('Message content:', messageToSend);
+        console.log('📤 Sending message to:', selectedChat);
+        console.log('📤 Message content:', messageToSend);
+        console.log('📤 Current user ID:', currentUser?._id);
         
         // Send message to backend
         const response = await fetch('http://localhost:5000/api/chat/messages', {
