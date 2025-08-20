@@ -220,28 +220,28 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
             
             {/* Calendar Popup */}
             {showCalendar && (
-              <div className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80">
-                <div className="flex items-center justify-between mb-4">
+              <div className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64">
+                <div className="flex items-center justify-between mb-3">
                   <button
                     type="button"
                     onClick={() => navigateMonth('prev')}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={16} />
                   </button>
-                  <h3 className="text-lg font-semibold">{formatDate(currentDate)}</h3>
+                  <h3 className="text-sm font-semibold">{formatDate(currentDate)}</h3>
                   <button
                     type="button"
                     onClick={() => navigateMonth('next')}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={16} />
                   </button>
                 </div>
                 
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-2">
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-1">
                       {day}
                     </div>
                   ))}
@@ -254,7 +254,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                       type="button"
                       onClick={() => handleDateSelect(day)}
                       disabled={!day || isPastDate(day)}
-                      className={`p-2 text-sm rounded transition-colors ${
+                      className={`p-1 text-xs rounded transition-colors ${
                         !day 
                           ? 'invisible' 
                           : isPastDate(day)
