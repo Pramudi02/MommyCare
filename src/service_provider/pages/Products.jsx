@@ -9,10 +9,13 @@ import {
   Star,
   Package,
   TrendingUp,
-  DollarSign,
-  ShoppingCart,
+  ExternalLink,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Link,
+  Globe,
+  Calendar,
+  Tag
 } from 'lucide-react';
 import './Products.css';
 
@@ -33,13 +36,14 @@ const Products = () => {
       name: 'Premium Baby Carrier',
       category: 'Travel',
       price: 89.99,
-      stock: 45,
       status: 'active',
       rating: 4.8,
-      sales: 156,
-      revenue: 14039.44,
+      views: 156,
+      clicks: 23,
+      clickRate: '14.7%',
       image: '👶',
       description: 'Ergonomic baby carrier with multiple carrying positions and adjustable straps for maximum comfort.',
+      externalLink: 'https://example-store.com/baby-carrier',
       tags: ['Ergonomic', 'Adjustable', 'Comfortable'],
       createdAt: '2024-01-15',
       lastUpdated: '2024-01-20'
@@ -49,13 +53,14 @@ const Products = () => {
       name: 'Organic Cotton Diaper Bag',
       category: 'Travel',
       price: 45.50,
-      stock: 23,
       status: 'active',
       rating: 4.6,
-      sales: 89,
-      revenue: 4049.50,
+      views: 89,
+      clicks: 12,
+      clickRate: '13.5%',
       image: '👜',
       description: 'Spacious diaper bag made from organic cotton with multiple compartments and changing pad.',
+      externalLink: 'https://example-store.com/diaper-bag',
       tags: ['Organic', 'Spacious', 'Eco-friendly'],
       createdAt: '2024-01-10',
       lastUpdated: '2024-01-18'
@@ -65,13 +70,14 @@ const Products = () => {
       name: 'Electric Breast Pump',
       category: 'Feeding',
       price: 129.99,
-      stock: 12,
-      status: 'low-stock',
+      status: 'active',
       rating: 4.9,
-      sales: 67,
-      revenue: 8709.33,
+      views: 67,
+      clicks: 8,
+      clickRate: '11.9%',
       image: '🍼',
       description: 'Double electric breast pump with adjustable suction levels and comfortable breast shields.',
+      externalLink: 'https://example-store.com/breast-pump',
       tags: ['Electric', 'Adjustable', 'Comfortable'],
       createdAt: '2024-01-05',
       lastUpdated: '2024-01-22'
@@ -81,13 +87,14 @@ const Products = () => {
       name: 'Lightweight Baby Stroller',
       category: 'Travel',
       price: 299.99,
-      stock: 8,
-      status: 'low-stock',
+      status: 'pending',
       rating: 4.7,
-      sales: 34,
-      revenue: 10199.66,
+      views: 34,
+      clicks: 5,
+      clickRate: '14.7%',
       image: '🚼',
       description: 'Ultra-lightweight stroller with one-hand fold mechanism and all-terrain wheels.',
+      externalLink: 'https://example-store.com/baby-stroller',
       tags: ['Lightweight', 'Compact', 'Durable'],
       createdAt: '2024-01-12',
       lastUpdated: '2024-01-19'
@@ -97,32 +104,17 @@ const Products = () => {
       name: 'Baby Sleep Sack',
       category: 'Comfort',
       price: 29.99,
-      stock: 67,
       status: 'active',
       rating: 4.5,
-      sales: 123,
-      revenue: 3688.77,
-      image: '😴',
-      description: 'Soft, breathable sleep sack with zipper closure and adjustable sizing.',
+      views: 45,
+      clicks: 6,
+      clickRate: '13.3%',
+      image: '🛏️',
+      description: 'Soft and breathable sleep sack for safe and comfortable sleep.',
+      externalLink: 'https://example-store.com/sleep-sack',
       tags: ['Soft', 'Breathable', 'Safe'],
       createdAt: '2024-01-08',
-      lastUpdated: '2024-01-17'
-    },
-    {
-      id: 6,
-      name: 'Baby Safety Gate',
-      category: 'Safety',
-      price: 79.99,
-      stock: 15,
-      status: 'active',
-      rating: 4.4,
-      sales: 45,
-      revenue: 3599.55,
-      image: '🚪',
-      description: 'Adjustable safety gate with easy installation and secure locking mechanism.',
-      tags: ['Adjustable', 'Secure', 'Easy Install'],
-      createdAt: '2024-01-14',
-      lastUpdated: '2024-01-21'
+      lastUpdated: '2024-01-16'
     }
   ];
 
@@ -135,38 +127,9 @@ const Products = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active':
-        return 'text-green-600 bg-green-100';
-      case 'low-stock':
-        return 'text-orange-600 bg-orange-100';
-      case 'out-of-stock':
-        return 'text-red-600 bg-red-100';
-      case 'discontinued':
-        return 'text-gray-600 bg-gray-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="w-4 h-4" />;
-      case 'low-stock':
-        return <AlertCircle className="w-4 h-4" />;
-      case 'out-of-stock':
-        return <Package className="w-4 h-4" />;
-      case 'discontinued':
-        return <TrendingUp className="w-4 h-4" />;
-      default:
-        return <Package className="w-4 h-4" />;
-    }
-  };
-
-  const handleAddProduct = () => {
-    setShowAddModal(true);
+  const handleViewProduct = (product) => {
+    setSelectedProduct(product);
+    setShowViewModal(true);
   };
 
   const handleEditProduct = (product) => {
@@ -174,187 +137,152 @@ const Products = () => {
     setShowEditModal(true);
   };
 
-  const handleViewProduct = (product) => {
-    setSelectedProduct(product);
-    setShowViewModal(true);
+  const handleDeleteProduct = (productId) => {
+    // Handle delete logic here
+    console.log('Delete product:', productId);
   };
 
-  const handleDeleteProduct = (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      console.log('Deleting product:', productId);
-      // Handle delete logic here
-    }
+  const handleExternalLink = (link) => {
+    window.open(link, '_blank');
   };
 
   return (
-    <div className="products-page">
-      {/* Header */}
-      <div className="products-header">
-        <div className="products-header__left">
-          <h1>Product Management 🛍️</h1>
-          <p>Manage your baby products inventory, pricing, and availability</p>
+    <div className="sp-products-page">
+      <div className="sp-products-header">
+        <div className="sp-products-title">
+          <h1>Product Listings</h1>
+          <p>Manage your product listings with external links</p>
         </div>
-        <div className="products-header__right">
-          <button className="add-product-btn" onClick={handleAddProduct}>
-            <Plus className="w-5 h-5" />
-            Add New Product
+        <div className="sp-products-actions">
+          <button 
+            className="sp-btn sp-btn-primary"
+            onClick={() => setShowAddModal(true)}
+          >
+            <Plus className="sp-btn-icon" />
+            Add Product
           </button>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="products-stats">
-        <div className="stat-item">
-          <div className="stat-icon">
-            <Package className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{products.length}</div>
-            <div className="stat-label">Total Products</div>
-          </div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-icon">
-            <ShoppingCart className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{products.reduce((sum, p) => sum + p.sales, 0)}</div>
-            <div className="stat-label">Total Sales</div>
-          </div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-icon">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">${products.reduce((sum, p) => sum + p.revenue, 0).toLocaleString()}</div>
-            <div className="stat-label">Total Revenue</div>
-          </div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-icon">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{products.filter(p => p.status === 'active').length}</div>
-            <div className="stat-label">Active Products</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="products-controls">
-        <div className="search-section">
-          <div className="search-box">
-            <Search className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+      {/* Filters */}
+      <div className="sp-filters-section">
+        <div className="sp-search-box">
+          <Search className="sp-search-icon" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="sp-search-input"
+          />
         </div>
         
-        <div className="filter-section">
-          <div className="filter-group">
-            <label>Category:</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              {categories.map(category => (
-                <option key={category} value={category === 'All Categories' ? 'all' : category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="sp-filter-controls">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="sp-filter-select"
+          >
+            {categories.map(category => (
+              <option key={category} value={category === 'All Categories' ? 'all' : category}>
+                {category}
+              </option>
+            ))}
+          </select>
           
-          <div className="filter-group">
-            <label>Status:</label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="low-stock">Low Stock</option>
-              <option value="out-of-stock">Out of Stock</option>
-              <option value="discontinued">Discontinued</option>
-            </select>
-          </div>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="sp-filter-select"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
       </div>
 
       {/* Products Grid */}
-      <div className="products-grid">
+      <div className="sp-products-grid">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="product-card">
-            <div className="product-card__header">
-              <div className="product-image">{product.image}</div>
-              <div className="product-status">
-                <span className={`status-badge ${getStatusColor(product.status)}`}>
-                  {getStatusIcon(product.status)}
-                  {product.status.replace('-', ' ')}
+          <div key={product.id} className="sp-product-card">
+            <div className="sp-product-header">
+              <div className="sp-product-image">
+                <span className="sp-product-emoji">{product.image}</span>
+              </div>
+              <div className="sp-product-status">
+                <span className={`sp-status-badge sp-status-${product.status}`}>
+                  {product.status}
                 </span>
               </div>
             </div>
             
-            <div className="product-card__content">
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-description">{product.description}</p>
+            <div className="sp-product-content">
+              <h3 className="sp-product-name">{product.name}</h3>
+              <p className="sp-product-category">{product.category}</p>
+              <p className="sp-product-description">{product.description}</p>
               
-              <div className="product-meta">
-                <div className="product-category">{product.category}</div>
-                <div className="product-rating">
-                  <Star className="w-4 h-4 fill-current" />
+              <div className="sp-product-price">
+                <span className="sp-price">${product.price}</span>
+                <div className="sp-rating">
+                  <Star className="sp-star-icon" />
                   <span>{product.rating}</span>
                 </div>
               </div>
               
-              <div className="product-stats">
-                <div className="stat">
-                  <span className="stat-label">Price:</span>
-                  <span className="stat-value">${product.price}</span>
+              <div className="sp-product-stats">
+                <div className="sp-stat">
+                  <Eye className="sp-stat-icon" />
+                  <span>{product.views} views</span>
                 </div>
-                <div className="stat">
-                  <span className="stat-label">Stock:</span>
-                  <span className="stat-value">{product.stock}</span>
+                <div className="sp-stat">
+                  <ExternalLink className="sp-stat-icon" />
+                  <span>{product.clicks} clicks</span>
                 </div>
-                <div className="stat">
-                  <span className="stat-label">Sales:</span>
-                  <span className="stat-value">{product.sales}</span>
+                <div className="sp-stat">
+                  <TrendingUp className="sp-stat-icon" />
+                  <span>{product.clickRate}</span>
                 </div>
               </div>
               
-              <div className="product-tags">
+              <div className="sp-product-tags">
                 {product.tags.map((tag, index) => (
-                  <span key={index} className="tag">{tag}</span>
+                  <span key={index} className="sp-tag">
+                    <Tag className="sp-tag-icon" />
+                    {tag}
+                  </span>
                 ))}
               </div>
             </div>
             
-            <div className="product-card__actions">
+            <div className="sp-product-actions">
               <button 
-                className="action-btn view-btn"
+                className="sp-btn sp-btn-secondary"
                 onClick={() => handleViewProduct(product)}
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="sp-btn-icon" />
                 View
               </button>
               <button 
-                className="action-btn edit-btn"
+                className="sp-btn sp-btn-primary"
+                onClick={() => handleExternalLink(product.externalLink)}
+              >
+                <ExternalLink className="sp-btn-icon" />
+                Visit Store
+              </button>
+              <button 
+                className="sp-btn sp-btn-outline"
                 onClick={() => handleEditProduct(product)}
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="sp-btn-icon" />
                 Edit
               </button>
               <button 
-                className="action-btn delete-btn"
+                className="sp-btn sp-btn-danger"
                 onClick={() => handleDeleteProduct(product.id)}
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="sp-btn-icon" />
                 Delete
               </button>
             </div>
@@ -362,106 +290,143 @@ const Products = () => {
         ))}
       </div>
 
-      {/* Add Product Modal */}
-      {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Add New Product</h2>
-              <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
-            </div>
-            <div className="modal-content">
-              <p>Add new product form will go here...</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Product Modal */}
-      {showEditModal && selectedProduct && (
-        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Edit Product: {selectedProduct.name}</h2>
-              <button className="close-btn" onClick={() => setShowEditModal(false)}>×</button>
-            </div>
-            <div className="modal-content">
-              <p>Edit product form will go here...</p>
-            </div>
-          </div>
+      {/* Empty State */}
+      {filteredProducts.length === 0 && (
+        <div className="sp-empty-state">
+          <Package className="sp-empty-icon" />
+          <h3>No products found</h3>
+          <p>Try adjusting your search or filters to find what you're looking for.</p>
+          <button 
+            className="sp-btn sp-btn-primary"
+            onClick={() => setShowAddModal(true)}
+          >
+            <Plus className="sp-btn-icon" />
+            Add Your First Product
+          </button>
         </div>
       )}
 
       {/* View Product Modal */}
       {showViewModal && selectedProduct && (
-        <div className="modal-overlay" onClick={() => setShowViewModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Product Details: {selectedProduct.name}</h2>
-              <button className="close-btn" onClick={() => setShowViewModal(false)}>×</button>
+        <div className="sp-modal-overlay">
+          <div className="sp-modal">
+            <div className="sp-modal-header">
+              <h2>Product Details</h2>
+              <button 
+                className="sp-modal-close"
+                onClick={() => setShowViewModal(false)}
+              >
+                ×
+              </button>
             </div>
-            <div className="modal-content">
-              <div className="product-detail-view">
-                <div className="product-detail-header">
-                  <div className="product-detail-image">{selectedProduct.image}</div>
-                  <div className="product-detail-info">
+            <div className="sp-modal-content">
+              <div className="sp-product-detail">
+                <div className="sp-product-detail-header">
+                  <span className="sp-product-detail-emoji">{selectedProduct.image}</span>
+                  <div>
                     <h3>{selectedProduct.name}</h3>
-                    <p className="product-detail-category">{selectedProduct.category}</p>
-                    <div className="product-detail-rating">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span>{selectedProduct.rating}</span>
+                    <p className="sp-product-detail-category">{selectedProduct.category}</p>
+                  </div>
+                </div>
+                
+                <div className="sp-product-detail-info">
+                  <div className="sp-detail-row">
+                    <span className="sp-detail-label">Price:</span>
+                    <span className="sp-detail-value">${selectedProduct.price}</span>
+                  </div>
+                  <div className="sp-detail-row">
+                    <span className="sp-detail-label">Rating:</span>
+                    <span className="sp-detail-value">
+                      <Star className="sp-star-icon" />
+                      {selectedProduct.rating}
+                    </span>
+                  </div>
+                  <div className="sp-detail-row">
+                    <span className="sp-detail-label">Status:</span>
+                    <span className={`sp-status-badge sp-status-${selectedProduct.status}`}>
+                      {selectedProduct.status}
+                    </span>
+                  </div>
+                  <div className="sp-detail-row">
+                    <span className="sp-detail-label">External Link:</span>
+                    <a 
+                      href={selectedProduct.externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="sp-external-link"
+                    >
+                      <Globe className="sp-link-icon" />
+                      Visit Store
+                    </a>
+                  </div>
+                </div>
+                
+                <div className="sp-product-detail-stats">
+                  <h4>Performance</h4>
+                  <div className="sp-stats-grid">
+                    <div className="sp-stat-item">
+                      <Eye className="sp-stat-icon" />
+                      <div>
+                        <span className="sp-stat-value">{selectedProduct.views}</span>
+                        <span className="sp-stat-label">Views</span>
+                      </div>
+                    </div>
+                    <div className="sp-stat-item">
+                      <ExternalLink className="sp-stat-icon" />
+                      <div>
+                        <span className="sp-stat-value">{selectedProduct.clicks}</span>
+                        <span className="sp-stat-label">Clicks</span>
+                      </div>
+                    </div>
+                    <div className="sp-stat-item">
+                      <TrendingUp className="sp-stat-icon" />
+                      <div>
+                        <span className="sp-stat-value">{selectedProduct.clickRate}</span>
+                        <span className="sp-stat-label">Click Rate</span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="product-detail-description">
+                <div className="sp-product-detail-description">
                   <h4>Description</h4>
                   <p>{selectedProduct.description}</p>
                 </div>
                 
-                <div className="product-detail-stats">
-                  <div className="detail-stat">
-                    <span className="detail-stat-label">Price:</span>
-                    <span className="detail-stat-value">${selectedProduct.price}</span>
-                  </div>
-                  <div className="detail-stat">
-                    <span className="detail-stat-label">Stock:</span>
-                    <span className="detail-stat-value">{selectedProduct.stock}</span>
-                  </div>
-                  <div className="detail-stat">
-                    <span className="detail-stat-label">Sales:</span>
-                    <span className="detail-stat-value">{selectedProduct.sales}</span>
-                  </div>
-                  <div className="detail-stat">
-                    <span className="detail-stat-label">Revenue:</span>
-                    <span className="detail-stat-value">${selectedProduct.revenue.toLocaleString()}</span>
-                  </div>
-                </div>
-                
-                <div className="product-detail-tags">
+                <div className="sp-product-detail-tags">
                   <h4>Tags</h4>
-                  <div className="tags-list">
+                  <div className="sp-tags-list">
                     {selectedProduct.tags.map((tag, index) => (
-                      <span key={index} className="detail-tag">{tag}</span>
+                      <span key={index} className="sp-tag">
+                        <Tag className="sp-tag-icon" />
+                        {tag}
+                      </span>
                     ))}
-                  </div>
-                </div>
-                
-                <div className="product-detail-dates">
-                  <div className="detail-date">
-                    <span className="detail-date-label">Created:</span>
-                    <span className="detail-date-value">{selectedProduct.createdAt}</span>
-                  </div>
-                  <div className="detail-date">
-                    <span className="detail-date-label">Last Updated:</span>
-                    <span className="detail-date-value">{selectedProduct.lastUpdated}</span>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="sp-modal-footer">
+              <button 
+                className="sp-btn sp-btn-secondary"
+                onClick={() => setShowViewModal(false)}
+              >
+                Close
+              </button>
+              <button 
+                className="sp-btn sp-btn-primary"
+                onClick={() => handleExternalLink(selectedProduct.externalLink)}
+              >
+                <ExternalLink className="sp-btn-icon" />
+                Visit Store
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Add/Edit Product Modal would go here */}
+      {/* This would be a separate component for the form */}
     </div>
   );
 };
