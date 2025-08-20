@@ -117,6 +117,12 @@ const login = async (req, res) => {
 			return res.status(400).json({ status: 'error', message: 'Please provide email and password' });
 		}
 
+		// Ensure JWT secret is configured
+		if (!process.env.JWT_SECRET) {
+			console.error('Login error: JWT_SECRET not configured');
+			return res.status(500).json({ status: 'error', message: 'Server configuration error' });
+		}
+
 		// Check for user
 		const User = getUserModel();
 		const user = await User.findOne({ email }).select('+password');
@@ -125,16 +131,41 @@ const login = async (req, res) => {
 			return res.status(401).json({ status: 'error', message: 'Invalid credentials' });
 		}
 
-		// Check if password matches
-		const isMatch = await user.matchPassword(password);
+		// Check if password matches, handle malformed legacy hashes
+		let isMatch = false;
+		try {
+			isMatch = await user.matchPassword(password);
+		} catch (cmpErr) {
+			console.error('Password compare error:', cmpErr?.message);
+			const looksHashed = typeof user.password === 'string' && user.password.startsWith('$2');
+			if (!looksHashed && user.password === password) {
+				// Migrate plaintext → hashed
+				try {
+					user.password = password; // triggers pre-save hashing
+					await user.save();
+					isMatch = true;
+				} catch (rehashErr) {
+					console.error('Password migration error:', rehashErr?.message);
+					return res.status(500).json({ status: 'error', message: 'Server error during login' });
+				}
+			}
+		}
+
 		if (!isMatch) {
 			return res.status(401).json({ status: 'error', message: 'Invalid credentials' });
 		}
 
-		const response = signTokenResponse(user);
+		// Safe token generation
+		let response;
+		try {
+			response = signTokenResponse(user);
+		} catch (tokenErr) {
+			console.error('Token generation error:', tokenErr?.message);
+			return res.status(500).json({ status: 'error', message: 'Server error during login' });
+		}
 		return res.status(200).json({ status: 'success', ...response });
 	} catch (error) {
-		console.error('Login error:', error);
+		console.error('Login error:', error?.message || error);
 		return res.status(500).json({ status: 'error', message: 'Server error during login' });
 	}
 };
