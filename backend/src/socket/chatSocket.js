@@ -10,8 +10,12 @@ const userConversations = new Map(); // userId -> Set of conversationIds
 // Helper function to emit to a specific user
 const emitToUser = (userId, event, data) => {
   const socketId = activeUsers.get(userId);
+  console.log(`Emitting ${event} to user ${userId}, socketId: ${socketId}`);
   if (socketId && global.io) {
     global.io.to(socketId).emit(event, data);
+    console.log(`✅ Emitted ${event} to user ${userId}`);
+  } else {
+    console.log(`❌ Failed to emit ${event} to user ${userId} - socketId: ${socketId}, io: ${!!global.io}`);
   }
 };
 
@@ -93,6 +97,8 @@ const setupChatSocket = (io) => {
 
     // Store active user
     activeUsers.set(userId, socket.id);
+    console.log(`✅ User ${userId} connected with socket ${socket.id}`);
+    console.log(`📊 Active users: ${activeUsers.size}`);
 
     // Update user online status
     User().findByIdAndUpdate(userId, { 
@@ -136,6 +142,7 @@ const setupChatSocket = (io) => {
         // Mark conversation as read
         await Message.markAllAsRead(conversationId, userId);
 
+        console.log(`✅ User ${userId} joined conversation ${conversationId}`);
         socket.emit('conversation_joined', { conversationId });
       } catch (error) {
         console.error('Error joining conversation:', error);
@@ -416,11 +423,12 @@ const setupChatSocket = (io) => {
 
     // Handle disconnection
     socket.on('disconnect', async () => {
-      console.log(`User ${userId} disconnected`);
+      console.log(`❌ User ${userId} disconnected from socket ${socket.id}`);
 
       // Remove from active users
       activeUsers.delete(userId);
       userConversations.delete(userId);
+      console.log(`📊 Active users after disconnect: ${activeUsers.size}`);
 
       // Update user offline status
       User().findByIdAndUpdate(userId, { 
