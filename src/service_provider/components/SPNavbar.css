@@ -1,12 +1,12 @@
 /* SPNavbar.css - Matching mom navbar styles */
 
 html {
-  background-color: #dedede !important;
+  background-color: #f8fafc !important;
   min-height: 100vh;
 }
 
 body {
-  background-color: #dedede !important;
+  background-color: #f8fafc !important;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -19,8 +19,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(90deg, #edd4ed 0%, #bcd9eb 100%);
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
   box-shadow: 0 4px 24px rgba(67, 67, 73, 0.08);
   backdrop-filter: blur(8px);
   min-height: 100px;
@@ -69,15 +69,15 @@ body {
 
 .sp-navbar__item:hover {
   color: #fffdfd;
-  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
-  box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
   transform: translateY(-2px);
 }
 
 .sp-navbar__item.active {
   color: #fffdfd;
-  background: linear-gradient(90deg, #2d83ed 0%, #1761bb 100%);
-  box-shadow: 0 4px 16px rgba(46, 46, 46, 0.13);
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
 }
 
 .sp-navbar__profile {
@@ -108,13 +108,13 @@ body {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   color: white;
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
 }
 
 .profile-info {
@@ -181,7 +181,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #8b5cf6, #a855f7, #ec4899);
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8, #1e40af);
 }
 
 .dropdown-item {
@@ -201,13 +201,13 @@ body {
 }
 
 .dropdown-item:hover {
-  background: rgba(139, 92, 246, 0.08);
-  color: #8b5cf6;
+  background: rgba(59, 130, 246, 0.08);
+  color: #3b82f6;
   transform: translateX(5px);
 }
 
 .dropdown-item:active {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(59, 130, 246, 0.12);
   transform: translateX(3px);
 }
 

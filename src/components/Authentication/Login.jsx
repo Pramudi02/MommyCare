@@ -87,8 +87,11 @@ const Login = () => {
 
         console.log('👤 User role:', payload.user.role);
         
-        // Use AuthContext login function
-        login(payload);
+        // Use AuthContext login function with correct format
+        login({
+          token: data.token,
+          user: payload.user
+        });
         
         // Navigate based on user role
         switch (payload.user.role) {

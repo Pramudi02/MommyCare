@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import { 
   MessageCircle, 
   Send, 
@@ -28,11 +29,14 @@ import {
   Check,
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   Shield,
   Calendar,
   FileText,
   VideoIcon,
-  PhoneCall
+  PhoneCall,
+  Heart,
+  Share
 } from 'lucide-react';
 import './chat.css';
 
@@ -47,165 +51,310 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   const [showVoiceCall, setShowVoiceCall] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
   
+  // State for healthcare providers and messages
+  const [healthcareProviders, setHealthcareProviders] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [activeConversationId, setActiveConversationId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  // State for message context menu
+  const [contextMenu, setContextMenu] = useState({
+    isOpen: false,
+    messageId: null,
+    x: 0,
+    y: 0
+  });
+  const [hoveredMessage, setHoveredMessage] = useState(null);
+  
+  // State for reply functionality
+  const [replyingTo, setReplyingTo] = useState(null);
+  
+  // Socket.IO connection
+  const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  
+  // User authentication (you'll need to get this from your auth context)
+  const [currentUser, setCurrentUser] = useState(null);
+  
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
-  // Mock data for healthcare providers
-  const healthcareProviders = [
-    {
-      id: 1,
-      name: 'Dr. Sarah Johnson',
-      type: 'doctor',
-      specialty: 'Cardiology',
-      status: 'online',
-      lastMessage: 'How are you feeling today? Any chest discomfort?',
-      lastMessageTime: '2 min ago',
-      unreadCount: 2,
-      rating: 4.9,
-      experience: '15+ years',
-      location: 'Downtown Medical Center',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
-      isTyping: false,
-      availability: 'Available now',
-      nextAppointment: 'Tomorrow, 2:30 PM'
-    },
-    {
-      id: 2,
-      name: 'Dr. Michael Chen',
-      type: 'doctor',
-      specialty: 'Pediatrics',
-      status: 'online',
-      lastMessage: 'The vaccination schedule looks perfect for your baby',
-      lastMessageTime: '1 hour ago',
-      unreadCount: 0,
-      rating: 4.8,
-      experience: '12+ years',
-      location: 'Children\'s Hospital',
-      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
-      isTyping: true,
-      availability: 'Available now',
-      nextAppointment: 'Friday, 11:00 AM'
-    },
-    {
-      id: 3,
-      name: 'Emma Rodriguez',
-      type: 'midwife',
-      specialty: 'Prenatal Care',
-      status: 'online',
-      lastMessage: 'Your next appointment is scheduled for next week',
-      lastMessageTime: '3 hours ago',
-      unreadCount: 1,
-      rating: 4.9,
-      experience: '8+ years',
-      location: 'Women\'s Health Clinic',
-      avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face',
-      isTyping: false,
-      availability: 'Available now',
-      nextAppointment: 'Next Tuesday, 3:00 PM'
-    },
-    {
-      id: 4,
-      name: 'Dr. David Kim',
-      type: 'doctor',
-      specialty: 'Obstetrics',
-      status: 'away',
-      lastMessage: 'The ultrasound results are completely normal',
-      lastMessageTime: '1 day ago',
-      unreadCount: 0,
-      rating: 4.7,
-      experience: '20+ years',
-      location: 'Maternity Care Center',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      isTyping: false,
-      availability: 'Back in 30 min',
-      nextAppointment: 'Next Monday, 10:00 AM'
-    },
-    {
-      id: 5,
-      name: 'Lisa Thompson',
-      type: 'midwife',
-      specialty: 'Postpartum Care',
-      status: 'offline',
-      lastMessage: 'Remember to take your vitamins daily',
-      lastMessageTime: '2 days ago',
-      unreadCount: 0,
-      rating: 4.8,
-      experience: '10+ years',
-      location: 'Family Care Center',
-      avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face',
-      isTyping: false,
-      availability: 'Offline until tomorrow',
-      nextAppointment: 'Wednesday, 2:00 PM'
-    },
-    {
-      id: 6,
-      name: 'Dr. Jennifer Lee',
-      type: 'doctor',
-      specialty: 'Gynecology',
-      status: 'online',
-      lastMessage: 'Your annual checkup is due next month',
-      lastMessageTime: '3 days ago',
-      unreadCount: 0,
-      rating: 4.9,
-      experience: '14+ years',
-      location: 'Women\'s Wellness Center',
-      avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face',
-      isTyping: false,
-      availability: 'Available now',
-      nextAppointment: 'Next month, TBD'
-    }
-  ];
+  // Initialize Socket.IO connection
+  useEffect(() => {
+    // Get user token from localStorage or auth context
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    if (token) {
+      const newSocket = io('http://localhost:5000', {
+        auth: { token },
+        transports: ['websocket']
+      });
 
-  // Mock messages for selected chat
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      sender: 'user',
-      message: 'Hello Dr. Sarah, I have some questions about my heart health',
-      timestamp: '10:30 AM',
-      type: 'text',
-      status: 'read'
-    },
-    {
-      id: 2,
-      sender: 'provider',
-      message: 'Hello! I\'m here to help. What specific concerns do you have?',
-      timestamp: '10:32 AM',
-      type: 'text',
-      status: 'read'
-    },
-    {
-      id: 3,
-      sender: 'user',
-      message: 'I\'ve been experiencing some chest discomfort lately',
-      timestamp: '10:33 AM',
-      type: 'text',
-      status: 'read'
-    },
-    {
-      id: 4,
-      sender: 'provider',
-      message: 'I understand your concern. Can you describe the type of discomfort? Is it sharp, dull, or pressure-like?',
-      timestamp: '10:35 AM',
-      type: 'text',
-      status: 'read'
-    },
-    {
-      id: 5,
-      sender: 'user',
-      message: 'It feels like pressure, especially when I\'m stressed',
-      timestamp: '10:36 AM',
-      type: 'text',
-      status: 'delivered'
+      newSocket.on('connect', () => {
+        console.log('Connected to chat server');
+        setIsConnected(true);
+      });
+
+      newSocket.on('disconnect', () => {
+        console.log('Disconnected from chat server');
+        setIsConnected(false);
+      });
+
+      // listeners will be attached in another effect to avoid stale closures
+
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.close();
+      };
     }
-  ]);
+  }, []);
+
+  // Re-bind socket listeners whenever selection/current user changes
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.off('new_message');
+    socket.off('typing_indicator');
+    socket.off('message_status_update');
+
+    socket.on('new_message', (data) => {
+      const msg = data.message || {};
+      const conversationId = data.conversationId;
+      
+      console.log('🔔 New message received:', {
+        conversationId,
+        activeConversationId,
+        messageContent: msg.content,
+        senderId: msg.senderId,
+        currentUserId: currentUser?._id
+      });
+      
+      // Only append messages for the currently active conversation
+      if (activeConversationId && conversationId === activeConversationId) {
+        console.log('✅ Message belongs to active conversation - adding to chat');
+        const newMessage = {
+          id: msg.id,
+          // Determine sender based on current user vs message sender
+          sender: msg.senderId === currentUser?._id ? 'user' : 'provider',
+          message: msg.content,
+          timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
+          type: msg.messageType,
+          status: msg.status || 'delivered',
+          replyTo: msg.replyTo ? {
+            sender: msg.replyTo.sender,
+            message: msg.replyTo.content
+          } : null
+        };
+        
+        // Add new message and sort by timestamp to maintain correct order
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
+      } else {
+        console.log('❌ Message does not belong to active conversation - ignoring');
+      }
+    });
+
+    socket.on('typing_indicator', (data) => {
+      const { conversationId, userId, isTyping: typing } = data || {};
+      // Only show typing for the currently active conversation
+      if (activeConversationId && conversationId === activeConversationId && userId !== currentUser?._id) {
+        setIsTyping(!!typing);
+      } else {
+        setIsTyping(false);
+      }
+    });
+
+    socket.on('message_status_update', (data) => {
+      setChatMessages(prev => prev.map(msg => 
+        msg.id === data.messageId 
+          ? { ...msg, status: data.status }
+          : msg
+      ));
+    });
+
+    return () => {
+      socket.off('new_message');
+      socket.off('typing_indicator');
+      socket.off('message_status_update');
+    };
+  }, [socket, selectedChat, currentUser]);
+
+  // Get current user info
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        console.log('🔑 Token found:', !!token);
+        console.log('🔑 Token value:', token ? token.substring(0, 20) + '...' : 'None');
+        
+        if (token) {
+          const response = await fetch('http://localhost:5000/api/auth/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          console.log('👤 User info response status:', response.status);
+          
+          if (response.ok) {
+            const userData = await response.json();
+            console.log('✅ User data received:', userData);
+            setCurrentUser(userData.user);
+          } else {
+            console.error('❌ Failed to get user info:', response.status);
+            const errorData = await response.text();
+            console.error('❌ Error data:', errorData);
+          }
+        } else {
+          console.error('❌ No token found in localStorage or sessionStorage');
+        }
+      } catch (error) {
+        console.error('❌ Error fetching user info:', error);
+      }
+    };
+
+    getUserInfo();
+  }, []);
+
+  // Fetch healthcare providers (doctors/midwives)
+  const fetchHealthcareProviders = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      if (!token) {
+        console.error('No authentication token found');
+        setHealthcareProviders([]);
+        return;
+      }
+      
+      console.log('🏥 Fetching healthcare providers...');
+      console.log('🔑 Using token:', token.substring(0, 20) + '...');
+      
+      // Use the new providers endpoint to get all doctors and midwives
+      const response = await fetch('http://localhost:5000/api/chat/providers', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Healthcare providers data received:', data);
+        console.log('📊 Data structure:', {
+          success: data.success,
+          hasData: !!data.data,
+          isArray: Array.isArray(data.data),
+          dataLength: data.data?.length || 0
+        });
+        
+        if (data.success && data.data && Array.isArray(data.data)) {
+          setHealthcareProviders(data.data);
+          console.log('✅ Set healthcare providers:', data.data.length, 'providers');
+        } else {
+          console.error('❌ Invalid data format:', data);
+          setHealthcareProviders([]);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Failed to fetch healthcare providers:', response.status, errorText);
+        setHealthcareProviders([]);
+      }
+    } catch (error) {
+      console.error('Error fetching healthcare providers:', error);
+      setHealthcareProviders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch user conversations
+  const fetchConversations = async () => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5000/api/chat/conversations', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setConversations(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+    }
+  };
+
+  // Fetch messages for a conversation
+  const fetchMessages = async (conversationId) => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const response = await fetch(`http://localhost:5000/api/chat/conversations/${conversationId}/messages`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📨 Raw messages from API:', data.data);
+        
+        // Transform API messages to match frontend structure and sort by timestamp
+        const messages = data.data
+          .map(msg => ({
+            id: msg.id,
+            sender: msg.sender,
+            message: msg.content,
+            timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
+            type: msg.messageType,
+            status: msg.read ? 'read' : 'delivered',
+            replyTo: msg.replyTo ? {
+              sender: msg.replyTo.sender,
+              message: msg.replyTo.content
+            } : null
+          }))
+          .sort((a, b) => a.originalTimestamp - b.originalTimestamp); // Sort by timestamp (oldest first)
+        
+        console.log('📨 Sorted messages:', messages.length, 'messages');
+        setChatMessages(messages);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  // Load initial data
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🚀 Chat opened - fetching initial data...');
+      fetchHealthcareProviders();
+      fetchConversations();
+    }
+  }, [isOpen]);
 
   // Filter providers based on search and type
   const filteredProviders = healthcareProviders.filter(provider => {
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          provider.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || provider.type === filterType;
+    const matchesType = filterType === 'all' || provider.role === filterType;
     return matchesSearch && matchesType;
   });
 
@@ -213,6 +362,25 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
+
+  // Debug activeConversationId changes
+  useEffect(() => {
+    console.log('🔄 activeConversationId changed:', activeConversationId);
+  }, [activeConversationId]);
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (contextMenu.isOpen) {
+        closeContextMenu();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [contextMenu.isOpen]);
 
   // Set selected chat when provider is passed from Communication page
   useEffect(() => {
@@ -222,73 +390,274 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
   }, [selectedProvider]);
 
   // Handle sending message
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim() && selectedChat) {
-      const newMessage = {
-        id: Date.now(),
-        sender: 'user',
-        message: message.trim(),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: 'text',
-        status: 'sending'
-      };
+      // Check if user is authenticated
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        alert('Please log in to send messages');
+        return;
+      }
       
-      setChatMessages(prev => [...prev, newMessage]);
-      setMessage('');
-      
-      // Simulate provider typing and response
-      setTimeout(() => {
-        setIsTyping(true);
-      }, 1000);
-      
-      setTimeout(() => {
-        setIsTyping(false);
-        const providerResponse = {
-          id: Date.now() + 1,
-          sender: 'provider',
-          message: 'Thank you for sharing that. Based on your description, it sounds like stress-related chest tightness, which is common. However, I\'d recommend scheduling an appointment for a thorough evaluation.',
+      if (!currentUser) {
+        console.error('Current user not loaded');
+        alert('Please wait while we load your profile');
+        return;
+      }
+      try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        
+        // Find the provider to send message to
+        const provider = healthcareProviders.find(p => p.id === selectedChat);
+        if (!provider) return;
+
+        // Create message object for frontend
+        const newMessage = {
+          id: Date.now(),
+          sender: 'user',
+          message: message.trim(),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(), // Keep original timestamp for sorting
           type: 'text',
-          status: 'read'
+          status: 'sending',
+          replyTo: replyingTo ? {
+            sender: replyingTo.sender,
+            message: replyingTo.message
+          } : null
         };
-        setChatMessages(prev => [...prev, providerResponse]);
-      }, 3000);
+      
+        // Add message to frontend immediately and sort by timestamp
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
+        const messageToSend = message.trim();
+        setMessage('');
+      
+        console.log('Sending message to:', selectedChat);
+        console.log('Message content:', messageToSend);
+        
+        // Send message to backend
+        const response = await fetch('http://localhost:5000/api/chat/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            recipientId: selectedChat,
+            content: messageToSend,
+            messageType: 'text',
+            replyTo: replyingTo ? replyingTo.id : null
+          })
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Message sent successfully:', data);
+          
+          // Update message status to sent
+          setChatMessages(prev => prev.map(msg => 
+            msg.id === newMessage.id 
+              ? { ...msg, status: 'sent', id: data.data.id }
+              : msg
+          ));
+
+          // Clear reply state after sending
+          setReplyingTo(null);
+          
+          // Ensure we know the conversationId by refetching conversations
+          try {
+            console.log('🔄 Refreshing conversations after sending message...');
+            const convRes = await fetch('http://localhost:5000/api/chat/conversations', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (convRes.ok) {
+              const convData = await convRes.json();
+              setConversations(convData.data);
+              const conversation = convData.data.find(c => c.participants.some(p => p.id === selectedChat));
+              if (conversation) {
+                console.log('✅ Found conversation after sending:', conversation.id);
+                setActiveConversationId(conversation.id);
+                if (socket) {
+                  console.log('🔌 Joining conversation after sending:', conversation.id);
+                  socket.emit('join_conversation', conversation.id);
+                }
+              } else {
+                console.log('❌ No conversation found after sending message');
+              }
+            }
+          } catch (e) {
+            console.error('Error refreshing conversations:', e);
+          }
+        } else {
+          const errorData = await response.text();
+          console.error('Failed to send message:', response.status, errorData);
+          
+          // Show user-friendly error message
+          let errorMessage = 'Failed to send message';
+          try {
+            const errorJson = JSON.parse(errorData);
+            errorMessage = errorJson.message || errorMessage;
+          } catch (e) {
+            // If not JSON, use the raw error text
+            errorMessage = errorData || errorMessage;
+          }
+          
+          alert(`Error: ${errorMessage}`);
+          
+          // If failed, update status to error
+          setChatMessages(prev => prev.map(msg => 
+            msg.id === newMessage.id 
+              ? { ...msg, status: 'error' }
+              : msg
+          ));
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        // Update message status to error
+        setChatMessages(prev => prev.map(msg => 
+          msg.id === Date.now()
+            ? { ...msg, status: 'error' }
+            : msg
+        ));
+      }
+    }
+  };
+
+  // Handle typing indicator
+  const handleTyping = (isTyping) => {
+    if (socket && activeConversationId) {
+      socket.emit(isTyping ? 'typing_start' : 'typing_stop', {
+        conversationId: activeConversationId,
+        userId: currentUser?._id
+      });
     }
   };
 
   // Handle file upload
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    if (file && selectedChat) {
+    if (file && selectedChat && currentUser) {
+      try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        
+        // Create FormData for file upload
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('recipientId', selectedChat);
+        formData.append('messageType', 'file');
+        formData.append('content', file.name);
+
+        // Add message to frontend immediately
       const newMessage = {
         id: Date.now(),
         sender: 'user',
         message: file.name,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        originalTimestamp: new Date(), // Keep original timestamp for sorting
         type: 'file',
         file: file,
         status: 'sending'
       };
-      setChatMessages(prev => [...prev, newMessage]);
-      setShowFileUpload(false);
+        
+      setChatMessages(prev => {
+        const updatedMessages = [...prev, newMessage];
+        return updatedMessages.sort((a, b) => {
+          const timeA = a.originalTimestamp || new Date(a.timestamp);
+          const timeB = b.originalTimestamp || new Date(b.timestamp);
+          return timeA - timeB; // Oldest first
+        });
+      });
+
+        // Send file message to backend
+        const response = await fetch('http://localhost:5000/api/chat/messages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Update message status to sent
+          setChatMessages(prev => prev.map(msg => 
+            msg.id === newMessage.id 
+              ? { ...msg, status: 'sent', id: data.data.id }
+              : msg
+          ));
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      }
     }
   };
 
   // Handle image upload
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
-    if (file && selectedChat) {
+    if (file && selectedChat && currentUser) {
+      try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        
+        // Create FormData for image upload
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('recipientId', selectedChat);
+        formData.append('messageType', 'image');
+        formData.append('content', 'Image');
+
+        // Add message to frontend immediately
       const newMessage = {
         id: Date.now(),
         sender: 'user',
         message: 'Image',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        originalTimestamp: new Date(), // Keep original timestamp for sorting
         type: 'image',
         file: file,
         status: 'sending'
       };
-      setChatMessages(prev => [...prev, newMessage]);
-      setShowFileUpload(false);
+        
+      setChatMessages(prev => {
+        const updatedMessages = [...prev, newMessage];
+        return updatedMessages.sort((a, b) => {
+          const timeA = a.originalTimestamp || new Date(a.timestamp);
+          const timeB = b.originalTimestamp || new Date(b.timestamp);
+          return timeA - timeB; // Oldest first
+        });
+      });
+
+        // Send image message to backend
+        const response = await fetch('http://localhost:5000/api/chat/messages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Update message status to sent
+          setChatMessages(prev => prev.map(msg => 
+            msg.id === newMessage.id 
+              ? { ...msg, status: 'sent', id: data.data.id }
+              : msg
+          ));
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
   };
 
@@ -330,6 +699,125 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
     }
   };
 
+  // Handle message hover for context menu
+  const handleMessageHover = (messageId) => {
+    setHoveredMessage(messageId);
+  };
+
+  const handleMessageLeave = () => {
+    setHoveredMessage(null);
+  };
+
+  // Handle context menu open
+  const handleContextMenu = (e, messageId) => {
+    e.preventDefault();
+    
+    // Get message element position
+    const messageElement = e.currentTarget;
+    const rect = messageElement.getBoundingClientRect();
+    
+    // Position context menu to the left of the message
+    let menuX = rect.left - 300; // 300px to the left of message
+    let menuY = rect.top;
+    
+    // Ensure menu doesn't go off-screen
+    if (menuX < 10) {
+      menuX = 10; // Keep at least 10px from left edge
+    }
+    
+    if (menuY < 10) {
+      menuY = 10; // Keep at least 10px from top edge
+    }
+    
+    setContextMenu({
+      isOpen: true,
+      messageId,
+      x: menuX,
+      y: menuY
+    });
+  };
+
+  // Handle context menu close
+  const closeContextMenu = () => {
+    setContextMenu({
+      isOpen: false,
+      messageId: null,
+      x: 0,
+      y: 0
+    });
+  };
+
+  // Handle context menu actions
+  const handleContextMenuAction = (action, messageId) => {
+    const message = chatMessages.find(msg => msg.id === messageId);
+    
+    switch (action) {
+      case 'like':
+        // Toggle like status
+        setChatMessages(prev => prev.map(msg => 
+          msg.id === messageId 
+            ? { ...msg, isLiked: !msg.isLiked }
+            : msg
+        ));
+        break;
+      case 'reply':
+        // Set message to reply to
+        setReplyingTo(message);
+        closeContextMenu();
+        break;
+      case 'copy':
+        // Copy message to clipboard
+        navigator.clipboard.writeText(message.message);
+        break;
+      case 'forward':
+        // Forward message (you can implement this later)
+        console.log('Forward message:', message.message);
+        break;
+              case 'delete':
+          // Delete message permanently from database and frontend
+          const deleteMessage = async () => {
+            try {
+              const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+              
+              const response = await fetch(`http://localhost:5000/api/chat/messages/${messageId}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+
+              if (response.ok) {
+                // Remove from frontend after successful database deletion
+                setChatMessages(prev => prev.filter(msg => msg.id !== messageId));
+                console.log('Message deleted permanently from database:', message.message);
+              } else {
+                console.error('Failed to delete message from database');
+                alert('Failed to delete message. Please try again.');
+              }
+            } catch (error) {
+              console.error('Error deleting message:', error);
+              alert('Error deleting message. Please try again.');
+            }
+          };
+          
+          deleteMessage();
+          break;
+      case 'share':
+        // Share message (you can implement this later)
+        console.log('Share message:', message.message);
+        break;
+      default:
+        break;
+    }
+    
+    closeContextMenu();
+  };
+
+  // Handle cancel reply
+  const handleCancelReply = () => {
+    setReplyingTo(null);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -347,8 +835,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               <X size={20} />
             </button>
           </div>
-
-
 
           {/* Search and Filter */}
           <div className="chat-search-section">
@@ -389,11 +875,40 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
 
           {/* Provider List */}
           <div className="chat-provider-list">
-            {filteredProviders.map(provider => (
+            {loading ? (
+              <div className="chat-loading">
+                <p>Loading healthcare providers...</p>
+              </div>
+            ) : filteredProviders.length > 0 ? (
+              filteredProviders.map(provider => (
               <div
                 key={provider.id}
                 className={`chat-provider-item ${selectedChat === provider.id ? 'active' : ''}`}
-                onClick={() => setSelectedChat(provider.id)}
+                onClick={() => {
+                  console.log('👆 Provider selected:', provider.name, provider.id);
+                  setSelectedChat(provider.id);
+                  
+                  // Clear current messages when switching providers
+                  setChatMessages([]);
+                  
+                  // Fetch messages for this conversation
+                  const conversation = conversations.find(c => 
+                    c.participants.some(p => p.id === provider.id)
+                  );
+                  
+                  if (conversation) {
+                    console.log('✅ Found existing conversation:', conversation.id);
+                    setActiveConversationId(conversation.id);
+                    if (socket) {
+                      console.log('🔌 Joining conversation via socket:', conversation.id);
+                      socket.emit('join_conversation', conversation.id);
+                    }
+                    fetchMessages(conversation.id);
+                  } else {
+                    console.log('❌ No existing conversation found - setting activeConversationId to null');
+                    setActiveConversationId(null);
+                  }
+                }}
               >
                 <div className="chat-provider-avatar">
                   <img src={provider.avatar} alt={provider.name} />
@@ -407,15 +922,15 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                   <div className="chat-provider-header">
                     <h3>{provider.name}</h3>
                     <div className="chat-provider-type">
-                      {getProviderIcon(provider.type)}
+                      {getProviderIcon(provider.role)}
                       <span>{provider.specialty}</span>
                     </div>
                   </div>
                   
                   <div className="chat-provider-meta">
-                    <p className="chat-last-message">{provider.lastMessage}</p>
+                    <p className="chat-last-message">{provider.lastMessage || 'No messages yet'}</p>
                     <div className="chat-message-meta">
-                      <span className="chat-time">{provider.lastMessageTime}</span>
+                      <span className="chat-time">{provider.lastMessageTime || 'New'}</span>
                       {provider.unreadCount > 0 && (
                         <span className="chat-unread-badge">{provider.unreadCount}</span>
                       )}
@@ -429,7 +944,15 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                   )}
                 </div>
               </div>
-            ))}
+              ))
+            ) : (
+              <div className="chat-no-providers">
+                <p>No healthcare providers found</p>
+                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                  {healthcareProviders.length === 0 ? 'No providers loaded from database' : 'No providers match your search'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -484,28 +1007,71 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               {/* Chat Messages */}
               <div className="chat-messages-container">
                 <div className="chat-messages">
-                  {chatMessages.map(msg => (
-                    <div key={msg.id} className={`chat-message ${msg.sender}`}>
+                  {chatMessages.length > 0 ? (
+                    chatMessages.map(msg => (
+                    <div 
+                      key={msg.id} 
+                      className={`chat-message ${msg.sender}`}
+                      onMouseEnter={() => handleMessageHover(msg.id)}
+                      onMouseLeave={handleMessageLeave}
+                      onContextMenu={(e) => handleContextMenu(e, msg.id)}
+                    >
                       <div className="chat-message-content">
                         {msg.type === 'text' && (
-                          <p>{msg.message}</p>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <p>{msg.message}</p>
+                          </>
                         )}
                         {msg.type === 'file' && (
-                          <div className="chat-file-message">
-                            <File size={20} />
-                            <div className="chat-file-info">
-                              <span className="chat-file-name">{msg.message}</span>
-                              <span className="chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="chat-file-message">
+                              <File size={20} />
+                              <div className="chat-file-info">
+                                <span className="chat-file-name">{msg.message}</span>
+                                <span className="chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                              </div>
+                              <button className="chat-download-btn">
+                                <Download size={16} />
+                              </button>
                             </div>
-                            <button className="chat-download-btn">
-                              <Download size={16} />
-                            </button>
-                          </div>
+                          </>
                         )}
                         {msg.type === 'image' && (
-                          <div className="chat-image-message">
-                            <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
-                          </div>
+                          <>
+                            {msg.replyTo && (
+                              <div className="chat-reply-context">
+                                <div className="chat-reply-indicator">
+                                  <span className="chat-reply-sender-name">
+                                    {msg.replyTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}
+                                  </span>
+                                  <span className="chat-reply-message-text">{msg.replyTo.message}</span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="chat-image-message">
+                              <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
+                            </div>
+                          </>
                         )}
                         
                         <div className="chat-message-meta">
@@ -513,14 +1079,34 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                           {msg.sender === 'user' && (
                             <span className={`chat-message-status ${msg.status}`}>
                               {msg.status === 'sending' && <Clock size={12} />}
+                                {msg.status === 'sent' && <Check size={12} />}
                               {msg.status === 'delivered' && <Check size={12} />}
                               {msg.status === 'read' && <Check size={12} className="double-check" />}
+                                {msg.status === 'error' && <AlertCircle size={12} />}
                             </span>
                           )}
                         </div>
+                        
+                        {/* Like icon that appears on hover */}
+                        {hoveredMessage === msg.id && (
+                          <div className="chat-message-actions">
+                            <button 
+                              className={`chat-like-btn ${msg.isLiked ? 'liked' : ''}`}
+                              onClick={() => handleContextMenuAction('like', msg.id)}
+                              title="Message options"
+                            >
+                              ⋮
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
+                    ))
+                  ) : (
+                    <div className="chat-no-messages">
+                      <p>No messages yet. Start the conversation!</p>
+                    </div>
+                  )}
                   
                   {isTyping && (
                     <div className="chat-message provider">
@@ -540,6 +1126,28 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
 
               {/* Chat Input */}
               <div className="chat-input-container">
+                {/* Reply Preview */}
+                {replyingTo && (
+                  <div className="chat-reply-preview">
+                    <div className="chat-reply-content">
+                      <div className="chat-reply-sender">
+                        <span className="chat-reply-label">Replying to:</span>
+                        <span className="chat-reply-name">{replyingTo.sender === 'user' ? 'You' : getProviderById(selectedChat)?.name}</span>
+                      </div>
+                      <div className="chat-reply-message">
+                        {replyingTo.message}
+                      </div>
+                    </div>
+                    <button 
+                      className="chat-reply-cancel"
+                      onClick={handleCancelReply}
+                      title="Cancel reply"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+                
                 <div className="chat-input-wrapper">
                   <div className="chat-input-actions">
                     <button 
@@ -575,8 +1183,17 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                     <textarea
                       placeholder="Type your message..."
                       value={message}
-                      onChange={(e) => setMessage(e.target.value)}
+                      onChange={(e) => {
+                        setMessage(e.target.value);
+                        // Handle typing indicator
+                        if (e.target.value.length > 0) {
+                          handleTyping(true);
+                        } else {
+                          handleTyping(false);
+                        }
+                      }}
                       onKeyPress={handleKeyPress}
+                      onBlur={() => handleTyping(false)}
                       rows={1}
                       className="chat-textarea"
                     />
@@ -657,7 +1274,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
                 <img src={getProviderById(selectedChat)?.avatar} alt="Provider" />
                 <h4>{getProviderById(selectedChat)?.name}</h4>
                 <p className="chat-info-specialty">
-                  {getProviderIcon(getProviderById(selectedChat)?.type)}
+                  {getProviderIcon(getProviderById(selectedChat)?.role)}
                   {getProviderById(selectedChat)?.specialty}
                 </p>
                 <div className="chat-info-rating">
@@ -686,7 +1303,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
               </div>
               
               <div className="chat-info-actions">
-                
                 <button className="chat-info-action-btn secondary">
                   <FileText size={16} />
                   View Profile
@@ -738,7 +1354,57 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null }) => {
           </div>
         )}
 
-        
+        {/* Context Menu */}
+        {contextMenu.isOpen && (
+          <div 
+            className="chat-context-menu"
+            style={{
+              position: 'fixed',
+              top: contextMenu.y,
+              left: contextMenu.x,
+              zIndex: 10001
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="context-menu-actions">
+              <button 
+                className="context-action-btn"
+                onClick={() => handleContextMenuAction('reply', contextMenu.messageId)}
+              >
+                <ArrowLeft size={16} />
+                Reply
+              </button>
+              <button 
+                className="context-action-btn"
+                onClick={() => handleContextMenuAction('copy', contextMenu.messageId)}
+              >
+                <FileText size={16} />
+                Copy
+              </button>
+              <button 
+                className="context-action-btn"
+                onClick={() => handleContextMenuAction('forward', contextMenu.messageId)}
+              >
+                <ArrowRight size={16} />
+                Forward
+              </button>
+              <button 
+                className="context-action-btn"
+                onClick={() => handleContextMenuAction('delete', contextMenu.messageId)}
+              >
+                <Trash2 size={16} />
+                Delete for me
+              </button>
+              <button 
+                className="context-action-btn"
+                onClick={() => handleContextMenuAction('share', contextMenu.messageId)}
+              >
+                <Share size={16} />
+                Share
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
