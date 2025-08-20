@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiX } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiX, FiMessageCircle, FiBarChart2, FiBell, FiFileText } from 'react-icons/fi';
 import './MomsList.css';
 
 const MomsList = () => {
@@ -115,6 +115,14 @@ const MomsList = () => {
     return status === 'active' ? 'green' : 'blue';
   };
 
+  // Stats for the sidebar
+  const stats = {
+    totalMoms: moms.length,
+    activePregnancies: moms.filter(mom => mom.status === 'active').length,
+    delivered: moms.filter(mom => mom.status === 'delivered').length,
+    upcomingThisWeek: moms.filter(mom => mom.status === 'active').length // This would be calculated based on actual dates
+  };
+
   return (
     <div className="moms-list-page">
       <div className="moms-list-container">
@@ -150,58 +158,141 @@ const MomsList = () => {
             </select>
           </div>
 
-          <div className="moms-list__content">
-            {filteredMoms.map((mom) => (
-              <div key={mom.id} className="moms-list__mom-card">
-                <div className="moms-list__mom-card-avatar">
-                  <FiUser size={24} />
+          <div className="moms-list__main-content">
+            <div className="moms-list__content">
+              {filteredMoms.map((mom) => (
+                <div key={mom.id} className="moms-list__mom-card">
+                  <div className="moms-list__mom-card-avatar">
+                    <FiUser size={24} />
+                  </div>
+                  <div className="moms-list__mom-card-info">
+                    <div className="moms-list__mom-card-name-age">
+                      <h3>{mom.name}</h3>
+                      <span>{mom.age} years old</span>
+                    </div>
+                    <div className={`moms-list__mom-card-status moms-list__mom-card-status--${getStatusColor(mom.status)}`}>
+                      {getStatusText(mom.status)}
+                    </div>
+                  </div>
+                  <div className="moms-list__mom-card-details">
+                    <div className="moms-list__mom-card-detail">
+                      <span className="moms-list__mom-card-label">DUE DATE</span>
+                      <span className="moms-list__mom-card-value">{mom.dueDate}</span>
+                    </div>
+                    <div className="moms-list__mom-card-detail">
+                      <span className="moms-list__mom-card-label">
+                        {mom.status === 'delivered' ? 'BABY NAME' : 'WEEK'}
+                      </span>
+                      <span className="moms-list__mom-card-value">
+                        {mom.status === 'delivered' ? mom.babyName : mom.week}
+                      </span>
+                    </div>
+                    <div className="moms-list__mom-card-detail">
+                      <span className="moms-list__mom-card-label">PHONE</span>
+                      <span className="moms-list__mom-card-value">{mom.phone}</span>
+                    </div>
+                    <div className="moms-list__mom-card-detail">
+                      <span className="moms-list__mom-card-label">
+                        {mom.status === 'delivered' ? 'DELIVERY DATE' : 'NEXT VISIT'}
+                      </span>
+                      <span className="moms-list__mom-card-value">
+                        {mom.status === 'delivered' ? mom.deliveryDate : mom.nextVisit}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="moms-list__mom-card-actions">
+                    <button 
+                      className="moms-list__mom-card-btn moms-list__mom-card-btn--view"
+                      onClick={() => handleViewDetails(mom)}
+                    >
+                      <FiEye size={16} />
+                      View Details
+                    </button>
+                    <button className="moms-list__mom-card-btn moms-list__mom-card-btn--chat">
+                      <FiMessageCircle size={16} />
+                      Chat
+                    </button>
+                  </div>
                 </div>
-                <div className="moms-list__mom-card-info">
-                  <div className="moms-list__mom-card-name-age">
-                    <h3>{mom.name}</h3>
-                    <span>{mom.age} years old</span>
+              ))}
+            </div>
+
+            <div className="moms-list__sidebar">
+              <div className="moms-list__sidebar-section">
+                <h3>Quick Stats</h3>
+                <div className="moms-list__stats-grid">
+                  <div className="moms-list__stat-card">
+                    <div className="moms-list__stat-icon moms-list__stat-icon--blue">
+                      <FiUser size={20} />
+                    </div>
+                    <div className="moms-list__stat-content">
+                      <div className="moms-list__stat-value">{stats.totalMoms}</div>
+                      <div className="moms-list__stat-label">Total Moms</div>
+                    </div>
                   </div>
-                  <div className={`moms-list__mom-card-status moms-list__mom-card-status--${getStatusColor(mom.status)}`}>
-                    {getStatusText(mom.status)}
+                  <div className="moms-list__stat-card">
+                    <div className="moms-list__stat-icon moms-list__stat-icon--green">
+                      <FiUser size={20} />
+                    </div>
+                    <div className="moms-list__stat-content">
+                      <div className="moms-list__stat-value">{stats.activePregnancies}</div>
+                      <div className="moms-list__stat-label">Active Pregnancies</div>
+                    </div>
                   </div>
-                </div>
-                <div className="moms-list__mom-card-details">
-                  <div className="moms-list__mom-card-detail">
-                    <span className="moms-list__mom-card-label">DUE DATE</span>
-                    <span className="moms-list__mom-card-value">{mom.dueDate}</span>
+                  <div className="moms-list__stat-card">
+                    <div className="moms-list__stat-icon moms-list__stat-icon--purple">
+                      <FiUser size={20} />
+                    </div>
+                    <div className="moms-list__stat-content">
+                      <div className="moms-list__stat-value">{stats.delivered}</div>
+                      <div className="moms-list__stat-label">Delivered</div>
+                    </div>
                   </div>
-                  <div className="moms-list__mom-card-detail">
-                    <span className="moms-list__mom-card-label">WEEK</span>
-                    <span className="moms-list__mom-card-value">{mom.week}</span>
+                  <div className="moms-list__stat-card">
+                    <div className="moms-list__stat-icon moms-list__stat-icon--orange">
+                      <FiCalendar size={20} />
+                    </div>
+                    <div className="moms-list__stat-content">
+                      <div className="moms-list__stat-value">{stats.upcomingThisWeek}</div>
+                      <div className="moms-list__stat-label">Upcoming This Week</div>
+                    </div>
                   </div>
-                  <div className="moms-list__mom-card-detail">
-                    <span className="moms-list__mom-card-label">PHONE</span>
-                    <span className="moms-list__mom-card-value">{mom.phone}</span>
-                  </div>
-                  <div className="moms-list__mom-card-detail">
-                    <span className="moms-list__mom-card-label">NEXT VISIT</span>
-                    <span className="moms-list__mom-card-value">{mom.nextVisit}</span>
-                  </div>
-                </div>
-                <div className="moms-list__mom-card-actions">
-                  <button 
-                    className="moms-list__mom-card-btn moms-list__mom-card-btn--view"
-                    onClick={() => handleViewDetails(mom)}
-                  >
-                    <FiEye size={16} />
-                    View Details
-                  </button>
-                  <button className="moms-list__mom-card-btn moms-list__mom-card-btn--contact">
-                    <FiPhone size={16} />
-                    Contact
-                  </button>
-                  <button className="moms-list__mom-card-btn moms-list__mom-card-btn--schedule">
-                    <FiCalendar size={16} />
-                    Schedule
-                  </button>
                 </div>
               </div>
-            ))}
+
+              <div className="moms-list__sidebar-section">
+                <h3>Recent Activity</h3>
+                <div className="moms-list__activity-list">
+                  <div className="moms-list__activity-item">
+                    <div className="moms-list__activity-icon">
+                      <FiUser size={14} />
+                    </div>
+                    <div className="moms-list__activity-content">
+                      <p>Emma Wilson - Prenatal checkup completed</p>
+                      <span>2 hours ago</span>
+                    </div>
+                  </div>
+                  <div className="moms-list__activity-item">
+                    <div className="moms-list__activity-icon">
+                      <FiCalendar size={14} />
+                    </div>
+                    <div className="moms-list__activity-content">
+                      <p>Sarah Davis - Appointment scheduled</p>
+                      <span>4 hours ago</span>
+                    </div>
+                  </div>
+                  <div className="moms-list__activity-item">
+                    <div className="moms-list__activity-icon">
+                      <FiUser size={14} />
+                    </div>
+                    <div className="moms-list__activity-content">
+                      <p>Jennifer Lee - Delivery completed</p>
+                      <span>1 day ago</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Modal */}

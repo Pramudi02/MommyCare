@@ -1,9 +1,8 @@
 .settings-page {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #f8fafc;
   min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #eff6ff;
+  color: #1f2937;
 }
 
 .settings-header {

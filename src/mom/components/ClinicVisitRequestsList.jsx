@@ -122,27 +122,44 @@ const ClinicVisitRequestsList = ({ requests, onCancel, isLoading, isAuthenticate
             </div>
           )}
 
-          {/* Admin Notes */}
-          {request.adminNotes && (
-            <div className="mb-3 p-3 bg-blue-50 rounded-lg">
-              <div className="flex items-start space-x-2 text-sm">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
-                <div>
-                  <span className="font-medium text-blue-800">Admin Note:</span>
-                  <p className="text-blue-700 mt-1">{request.adminNotes}</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Midwife Note - Combined appointment details and admin notes */}
+          {(((request.status === 'approved') && (request.appointmentDate || request.appointmentTime)) || request.adminNotes) && (
+            <div className="mc-midwife-note mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-medium text-blue-800 mb-2">Midwife Note</h4>
 
-          {/* Confirmed Appointment */}
-          {request.appointmentDate && request.appointmentTime && (
-            <div className="mb-3 p-3 bg-green-50 rounded-lg">
-              <div className="flex items-center space-x-2 text-sm text-green-800">
-                <CheckCircle className="w-4 h-4" />
-                <span className="font-medium">Confirmed Appointment:</span>
-                <span>{formatDate(request.appointmentDate)} at {request.appointmentTime}</span>
-              </div>
+              {/* Appointment Details (if approved) */}
+              {request.status === 'approved' && (request.appointmentDate || request.appointmentTime) && (
+                <div className="mb-3 pb-3 border-b border-blue-200">
+                  <div className="text-sm text-blue-700 mb-2">Appointment Confirmed:</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-700">
+                    {request.appointmentDate && (
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{formatDate(request.appointmentDate)}</span>
+                      </div>
+                    )}
+                    {request.appointmentTime && (
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4" />
+                        <span>{formatTime(request.appointmentTime)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Admin Notes */}
+              {request.adminNotes && (
+                <div className="text-sm text-blue-700">
+                  <div className="flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                    <div>
+                      <div className="font-medium mb-1">Notes:</div>
+                      <p>{request.adminNotes}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
