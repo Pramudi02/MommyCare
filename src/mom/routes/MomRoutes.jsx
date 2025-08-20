@@ -8,6 +8,7 @@ import MedicalReports from '../pages/MedicalReports';
 import Predictions from '../pages/Predictions';
 import BabyProduct from '../pages/BabyProduct';
 import Communication from '../pages/Communication';
+import ChatPage from '../pages/ChatPage';
 import VaccinationSchedule from '../pages/vaccinationschedule/VaccinationSchedule';
 
 // Pregnancy Tracker Tools
@@ -60,6 +61,7 @@ export default (
     <Route path="predictions" element={<Predictions />} />
     <Route path="baby-product" element={<BabyProduct />} />
     <Route path="communication" element={<Communication />} />
+    <Route path="chat" element={<ChatPage />} />
 
   </Route>
 ); 
