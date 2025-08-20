@@ -79,7 +79,7 @@ const DoctorVisitRequestsList = ({ requests, onCancelRequest, isLoading }) => {
           className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
         >
           {/* Header */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start mb-3">
             <div className="flex items-center space-x-2">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
                 {getStatusIcon(request.status)}
@@ -89,15 +89,6 @@ const DoctorVisitRequestsList = ({ requests, onCancelRequest, isLoading }) => {
                 Requested {formatDate(request.createdAt)}
               </span>
             </div>
-            {request.status === 'pending' && (
-              <button
-                onClick={() => onCancelRequest(request._id)}
-                className="text-red-500 hover:text-red-700 transition-colors p-1"
-                title="Cancel request"
-              >
-                <X size={16} />
-              </button>
-            )}
           </div>
 
           {/* Request Details */}
@@ -134,35 +125,55 @@ const DoctorVisitRequestsList = ({ requests, onCancelRequest, isLoading }) => {
               </div>
             )}
 
-            {/* Appointment Details (if approved) */}
-            {request.status === 'approved' && (request.appointmentDate || request.appointmentTime) && (
-              <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                <h4 className="font-medium text-green-800 mb-2">Appointment Confirmed</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700">
-                  {request.appointmentDate && (
-                    <div className="flex items-center space-x-2">
-                      <Calendar size={16} />
-                      <span>{formatDate(request.appointmentDate)}</span>
-                    </div>
-                  )}
-                  {request.appointmentTime && (
-                    <div className="flex items-center space-x-2">
-                      <Clock size={16} />
-                      <span>{request.appointmentTime}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Admin Notes (if any) */}
-            {request.adminNotes && (
+            {/* Midwife Note - Combined appointment details and admin notes */}
+            {(request.status === 'approved' && (request.appointmentDate || request.appointmentTime)) || request.adminNotes ? (
               <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-medium text-blue-800 mb-1">Admin Notes</h4>
-                <p className="text-sm text-blue-700">{request.adminNotes}</p>
+                <h4 className="font-medium text-blue-800 mb-2">Midwife Note</h4>
+                
+                {/* Appointment Details (if approved) */}
+                {request.status === 'approved' && (request.appointmentDate || request.appointmentTime) && (
+                  <div className="mb-3 pb-3 border-b border-blue-200">
+                    <div className="text-sm text-blue-700 mb-2">Appointment Confirmed:</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-700">
+                      {request.appointmentDate && (
+                        <div className="flex items-center space-x-2">
+                          <Calendar size={16} />
+                          <span>{formatDate(request.appointmentDate)}</span>
+                        </div>
+                      )}
+                      {request.appointmentTime && (
+                        <div className="flex items-center space-x-2">
+                          <Clock size={16} />
+                          <span>{formatTime(request.appointmentTime)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Admin Notes */}
+                {request.adminNotes && (
+                  <div className="text-sm text-blue-700">
+                    <div className="font-medium mb-1">Notes:</div>
+                    <p>{request.adminNotes}</p>
+                  </div>
+                )}
               </div>
-            )}
+            ) : null}
           </div>
+
+          {/* Actions */}
+          {request.status === 'pending' && (
+            <div className="flex justify-end pt-2 mt-2 border-t border-gray-100">
+              <button
+                onClick={() => onCancelRequest(request._id)}
+                disabled={isLoading}
+                className="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+              >
+                Cancel Request
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>
