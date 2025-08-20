@@ -68,13 +68,18 @@ const DoctorChat = () => {
       });
 
       newSocket.on('connect', () => {
-        console.log('Connected to chat server');
+        console.log('✅ Doctor connected to chat server');
+        console.log('🔗 Socket ID:', newSocket.id);
         setIsConnected(true);
       });
 
       newSocket.on('disconnect', () => {
-        console.log('Disconnected from chat server');
+        console.log('Doctor disconnected from chat server');
         setIsConnected(false);
+      });
+
+      newSocket.on('error', (error) => {
+        console.error('Socket error:', error);
       });
 
       // listeners will be attached in a separate effect to avoid stale state
@@ -94,38 +99,71 @@ const DoctorChat = () => {
     socket.off('new_message');
     socket.off('typing_indicator');
     socket.off('message_status_update');
+    socket.off('conversation_joined');
 
     socket.on('new_message', (data) => {
       const msg = data.message || {};
       const conversationId = data.conversationId;
       
+      console.log('🔔 Doctor received new message:', {
+        messageId: msg.id,
+        content: msg.content,
+        senderId: msg.senderId,
+        conversationId: conversationId,
+        activeConversationId: activeConversationId,
+        currentUserId: currentUser?._id
+      });
+      
       // Only append messages for the currently active conversation
       if (activeConversationId && conversationId === activeConversationId) {
-        setChatMessages(prev => [...prev, {
+        const newMessage = {
           id: msg.id,
           // Determine sender based on current user vs message sender
           sender: msg.senderId === currentUser?._id ? 'doctor' : 'mom',
           message: msg.content,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
           type: msg.messageType,
           status: msg.status || 'delivered'
-        }]);
+        };
+        
+        console.log('Adding message to active conversation:', newMessage);
+        
+        // Add new message and sort by timestamp to maintain correct order
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
       } else if (!selectedChat && conversationId) {
         // Auto-select the mom who sent the message and load conversation messages
         const momId = msg.senderId === currentUser?._id ? msg.recipientId : msg.senderId;
         const momExists = moms.some(m => m.id === momId);
         if (momExists) {
+          console.log('Auto-selecting mom:', momId);
           setSelectedChat(momId);
           setActiveConversationId(conversationId);
           fetchMessages(conversationId);
-          setChatMessages(prev => [...prev, {
+          const newMessage = {
             id: msg.id,
             sender: 'mom',
             message: msg.content,
             timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
             type: msg.messageType,
             status: msg.status || 'delivered'
-          }]);
+          };
+          setChatMessages(prev => {
+            const updatedMessages = [...prev, newMessage];
+            return updatedMessages.sort((a, b) => {
+              const timeA = a.originalTimestamp || new Date(a.timestamp);
+              const timeB = b.originalTimestamp || new Date(b.timestamp);
+              return timeA - timeB; // Oldest first
+            });
+          });
         }
       }
     });
@@ -148,10 +186,15 @@ const DoctorChat = () => {
       ));
     });
 
+    socket.on('conversation_joined', (data) => {
+      console.log('✅ Doctor joined conversation:', data.conversationId);
+    });
+
     return () => {
       socket.off('new_message');
       socket.off('typing_indicator');
       socket.off('message_status_update');
+      socket.off('conversation_joined');
     };
   }, [socket, selectedChat, currentUser]);
 
@@ -233,6 +276,7 @@ const DoctorChat = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched conversations:', data.data);
         setConversations(data.data);
       }
     } catch (error) {
@@ -245,6 +289,8 @@ const DoctorChat = () => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
+      console.log('Fetching messages for conversation:', conversationId);
+      
       const response = await fetch(`http://localhost:5000/api/chat/conversations/${conversationId}/messages`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -253,15 +299,20 @@ const DoctorChat = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched messages data:', data);
+        
         const messages = data.data.map(msg => ({
           id: msg.id,
           sender: msg.sender === 'user' ? 'doctor' : 'mom',
           message: msg.content,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
           type: msg.messageType,
           status: msg.read ? 'read' : 'delivered'
-        }));
+        }))
+        .sort((a, b) => a.originalTimestamp - b.originalTimestamp); // Sort by timestamp (oldest first)
         
+        console.log('Processed messages:', messages);
         setChatMessages(messages);
       }
     } catch (error) {
@@ -301,11 +352,20 @@ const DoctorChat = () => {
           sender: 'doctor',
           message: message.trim(),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(), // Keep original timestamp for sorting
           type: 'text',
           status: 'sending'
         };
         
-        setChatMessages(prev => [...prev, newMessage]);
+        // Add message to frontend immediately and sort by timestamp
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
         setMessage('');
 
         const response = await fetch('http://localhost:5000/api/chat/messages', {
@@ -392,12 +452,21 @@ const DoctorChat = () => {
           sender: 'doctor',
           message: file.name,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(), // Keep original timestamp for sorting
           type: 'file',
           file: file,
           status: 'sending'
         };
         
-        setChatMessages(prev => [...prev, newMessage]);
+        // Add message to frontend immediately and sort by timestamp
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
 
         const response = await fetch('http://localhost:5000/api/chat/messages', {
           method: 'POST',
@@ -439,12 +508,21 @@ const DoctorChat = () => {
           sender: 'doctor',
           message: 'Image',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(), // Keep original timestamp for sorting
           type: 'image',
           file: file,
           status: 'sending'
         };
         
-        setChatMessages(prev => [...prev, newMessage]);
+        // Add message to frontend immediately and sort by timestamp
+        setChatMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          return updatedMessages.sort((a, b) => {
+            const timeA = a.originalTimestamp || new Date(a.timestamp);
+            const timeB = b.originalTimestamp || new Date(b.timestamp);
+            return timeA - timeB; // Oldest first
+          });
+        });
 
         const response = await fetch('http://localhost:5000/api/chat/messages', {
           method: 'POST',
@@ -569,15 +647,26 @@ const DoctorChat = () => {
                 key={mom.id}
                 className={`doctor-chat-mom-item ${selectedChat === mom.id ? 'active' : ''}`}
                 onClick={() => {
+                  console.log('Selecting mom:', mom.id);
                   setSelectedChat(mom.id);
+                  setChatMessages([]); // Clear messages when selecting new chat
+                  
                   const conversation = conversations.find(c => 
                     c.participants.some(p => p.id === mom.id)
                   );
+                  
+                  console.log('Found conversation:', conversation);
+                  
                   if (conversation) {
+                    console.log('✅ Found conversation for mom:', conversation.id);
                     setActiveConversationId(conversation.id);
-                    if (socket) socket.emit('join_conversation', conversation.id);
+                    if (socket) {
+                      console.log('🔌 Joining conversation via socket:', conversation.id);
+                      socket.emit('join_conversation', conversation.id);
+                    }
                     fetchMessages(conversation.id);
                   } else {
+                    console.log('❌ No conversation found for mom:', mom.id);
                     setActiveConversationId(null);
                   }
                 }}
