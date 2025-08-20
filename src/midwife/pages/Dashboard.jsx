@@ -5,10 +5,10 @@ import './Dashboard.css';
 const Dashboard = () => {
   const [isEditingContacts, setIsEditingContacts] = useState(false);
   const [emergencyContacts, setEmergencyContacts] = useState([
-    { id: 1, name: 'Emergency Services', role: 'Emergency', phone: '911' },
-    { id: 2, name: 'Hospital Emergency', role: 'Hospital', phone: '(555) 123-4567' },
-    { id: 3, name: 'OB/GYN On-Call', role: 'Doctor', phone: '(555) 234-5678' },
-    { id: 4, name: 'Ambulance Service', role: 'Ambulance', phone: '(555) 345-6789' }
+    { id: 1, name: 'MOH Office', role: 'Medical Officer of Health', phone: '011 269 1111' },
+    { id: 2, name: 'PHM Unit', role: 'Public Health Midwife', phone: '011 269 2222' },
+    { id: 3, name: 'PHI Office', role: 'Public Health Inspector', phone: '011 269 3333' },
+    { id: 4, name: '1990 Suwaseriya', role: 'Ambulance Service', phone: '1990' }
   ]);
 
   const [editingContact, setEditingContact] = useState(null);

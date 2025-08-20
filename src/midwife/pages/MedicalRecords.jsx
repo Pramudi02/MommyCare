@@ -2456,7 +2456,7 @@ const MedicalRecords = () => {
       </div>
 
       {/* Emergency Contact Information Section */}
-      {selectedMom && (
+      {false && selectedMom && (
         <div className="emergency-contacts-section">
           <h3>Emergency Contact Information</h3>
           <div className="emergency-contacts-grid">
