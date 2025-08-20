@@ -410,6 +410,357 @@ socket.on('appointment_updated', (data) => {
 
 ---
 
+## Chat API Endpoints
+
+### Get User Conversations
+**GET** `/chat/conversations`
+
+Get all conversations for the authenticated user.
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "chat_id",
+      "conversationId": "user1_user2",
+      "participant": {
+        "_id": "user_id",
+        "name": "Dr. Sarah Johnson",
+        "email": "sarah@example.com",
+        "role": "doctor",
+        "avatar": "avatar_url",
+        "specialty": "Cardiology"
+      },
+      "lastMessage": {
+        "content": "How are you feeling today?",
+        "sender": "user_id",
+        "timestamp": "2024-01-15T10:30:00Z",
+        "messageType": "text"
+      },
+      "unreadCount": 2,
+      "lastActivity": "2024-01-15T10:30:00Z",
+      "startedAt": "2024-01-10T09:00:00Z"
+    }
+  ]
+}
+```
+
+### Get Conversation Messages
+**GET** `/chat/conversations/:conversationId/messages`
+
+Get all messages for a specific conversation.
+
+**Parameters:**
+- `conversationId` (string): The conversation identifier
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "_id": "message_id",
+      "sender": {
+        "_id": "user_id",
+        "name": "Dr. Sarah Johnson",
+        "avatar": "avatar_url",
+        "role": "doctor",
+        "specialty": "Cardiology"
+      },
+      "recipient": {
+        "_id": "user_id",
+        "name": "Jane Doe",
+        "avatar": "avatar_url",
+        "role": "mom"
+      },
+      "content": "Hello! How can I help you today?",
+      "messageType": "text",
+      "status": "read",
+      "read": true,
+      "readAt": "2024-01-15T10:35:00Z",
+      "conversationId": "user1_user2",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:35:00Z"
+    }
+  ]
+}
+```
+
+### Send Message
+**POST** `/chat/send`
+
+Send a new message to a recipient.
+
+**Request Body:**
+```json
+{
+  "recipientId": "recipient_user_id",
+  "content": "Hello doctor, I have a question about my pregnancy.",
+  "messageType": "text"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "message_id",
+    "sender": "sender_user_id",
+    "recipient": "recipient_user_id",
+    "content": "Hello doctor, I have a question about my pregnancy.",
+    "messageType": "text",
+    "status": "sent",
+    "conversationId": "user1_user2",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+### Upload File
+**POST** `/chat/upload`
+
+Upload a file (image or document) for chat.
+
+**Request:**
+- Content-Type: `multipart/form-data`
+- Body: `file` field containing the file
+
+**Supported File Types:**
+- Images: `image/*`
+- Documents: `application/pdf`, `application/msword`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `text/plain`
+- Maximum file size: 10MB
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "filename": "chat-1705312200000-123456789.pdf",
+    "originalName": "medical_report.pdf",
+    "mimetype": "application/pdf",
+    "size": 2048576,
+    "path": "uploads/chat/chat-1705312200000-123456789.pdf"
+  }
+}
+```
+
+### Update Message Status
+**PATCH** `/chat/messages/:messageId/status`
+
+Update the status of a message (delivered, read).
+
+**Parameters:**
+- `messageId` (string): The message identifier
+
+**Request Body:**
+```json
+{
+  "status": "read"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "message_id",
+    "status": "read",
+    "readAt": "2024-01-15T10:35:00Z"
+  }
+}
+```
+
+### Mark Conversation as Read
+**PATCH** `/chat/conversations/:conversationId/read`
+
+Mark all messages in a conversation as read.
+
+**Parameters:**
+- `conversationId` (string): The conversation identifier
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Conversation marked as read"
+}
+```
+
+### Delete Message
+**DELETE** `/chat/messages/:messageId`
+
+Delete a message (only sender can delete).
+
+**Parameters:**
+- `messageId` (string): The message identifier
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Message deleted successfully"
+}
+```
+
+### Get Unread Count
+**GET** `/chat/unread-count`
+
+Get the total unread message count and count by conversation.
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "totalUnread": 5,
+    "unreadByConversation": {
+      "user1_user2": 2,
+      "user1_user3": 3
+    }
+  }
+}
+```
+
+### Search Conversations
+**GET** `/chat/search?query=search_term`
+
+Search for users to start conversations with.
+
+**Query Parameters:**
+- `query` (string): Search term for name, specialty, or email
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "user": {
+        "_id": "user_id",
+        "name": "Dr. Michael Chen",
+        "email": "michael@example.com",
+        "role": "doctor",
+        "avatar": "avatar_url",
+        "specialty": "Pediatrics"
+      },
+      "hasExistingChat": true,
+      "conversationId": "user1_user2"
+    }
+  ]
+}
+```
+
+---
+
+## Chat Socket.IO Events
+
+### Client to Server Events
+
+#### Join Chat
+```javascript
+socket.emit('join', userId);
+```
+
+#### Leave Chat
+```javascript
+socket.emit('leave', userId);
+```
+
+#### Join Conversation
+```javascript
+socket.emit('join_conversation', conversationId);
+```
+
+#### Leave Conversation
+```javascript
+socket.emit('leave_conversation', conversationId);
+```
+
+#### Typing Start
+```javascript
+socket.emit('typing_start', {
+  conversationId: 'user1_user2',
+  userId: 'user_id'
+});
+```
+
+#### Typing Stop
+```javascript
+socket.emit('typing_stop', {
+  conversationId: 'user1_user2',
+  userId: 'user_id'
+});
+```
+
+#### Message Delivered
+```javascript
+socket.emit('message_delivered', {
+  messageId: 'message_id',
+  conversationId: 'user1_user2'
+});
+```
+
+#### Message Read
+```javascript
+socket.emit('message_read', {
+  messageId: 'message_id',
+  conversationId: 'user1_user2'
+});
+```
+
+#### User Away
+```javascript
+socket.emit('user_away', userId);
+```
+
+#### User Back
+```javascript
+socket.emit('user_back', userId);
+```
+
+### Server to Client Events
+
+#### New Message
+```javascript
+socket.on('new_message', (data) => {
+  console.log('New message:', data.message);
+  console.log('Conversation:', data.conversationId);
+  console.log('Unread count:', data.unreadCount);
+});
+```
+
+#### Typing Indicator
+```javascript
+socket.on('typing_indicator', (data) => {
+  console.log('User typing:', data.userId);
+  console.log('Conversation:', data.conversationId);
+  console.log('Is typing:', data.isTyping);
+});
+```
+
+#### Message Status Update
+```javascript
+socket.on('message_status_update', (data) => {
+  console.log('Message status updated:', data.messageId);
+  console.log('New status:', data.status);
+});
+```
+
+#### User Status Change
+```javascript
+socket.on('user_status_change', (data) => {
+  console.log('User status changed:', data.userId);
+  console.log('New status:', data.status);
+});
+```
+
+---
+
 ## Testing the API
 
 You can test the API using tools like:

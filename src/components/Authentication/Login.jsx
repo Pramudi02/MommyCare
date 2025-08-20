@@ -76,14 +76,25 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('✅ Login successful:', data.data);
-        console.log('👤 User role:', data.data.user.role);
+        // Backend returns { status, token, user } (no nested data)
+        const payload = data?.data ?? { token: data?.token, user: data?.user };
+        console.log('✅ Login successful:', payload);
+
+        // Guard: ensure we have token and user
+        if (!payload?.token || !payload?.user) {
+          throw new TypeError('Malformed login response: missing token or user');
+        }
+
+        console.log('👤 User role:', payload.user.role);
         
-        // Use AuthContext login function
-        login(data.data);
+        // Use AuthContext login function with correct format
+        login({
+          token: data.token,
+          user: payload.user
+        });
         
         // Navigate based on user role
-        switch (data.data.user.role) {
+        switch (payload.user.role) {
           case 'mom':
             console.log('🚀 Navigating to /mom');
             navigate('/mom');

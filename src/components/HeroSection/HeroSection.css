@@ -169,6 +169,7 @@ body {
   .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
   }
   
   .feature-icon {
@@ -364,30 +365,62 @@ body {
   
   /* Responsive Design */
   @media (max-width: 768px) {
-    .hero-content {
-      flex-direction: column;
-      gap: 40px;
-      text-align: center;
-    }
-    
-    .text-card {
-      padding: 30px 25px;
-    }
-    
-    .text-card h1 {
-      font-size: 2rem;
-    }
-    
-    .hero-buttons {
+    /* Keep the baby in view; place text block below the baby with same visual style */
+    .hero-main {
+      min-height: 460px; /* reduce overall section height */
+      padding: 20px 16px 16px; /* slightly tighter padding */
       justify-content: center;
+      align-items: flex-start; /* place text above the baby */
+      background-position: 50% 35%; /* lift the baby higher in frame */
     }
-    
-    .features-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
+
+    .hero-content {
+      max-width: 820px; /* allow wider card */
+      width: 100%;
+      text-align: center;
+      margin: 0 auto;
     }
-    
-    .features-title {
-      font-size: 1.8rem;
+
+    .text-content {
+      width: 92%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 12px 16px; /* decrease height via padding */
     }
+
+    .text-content h1 {
+      font-size: 1.5rem; /* slightly smaller heading */
+      margin-bottom: 10px;
+    }
+    .text-content p {
+      font-size: 0.82rem; /* slightly smaller body text */
+      margin-bottom: 12px;
+    }
+
+    .btnn-primary {
+      padding: 10px 22px; /* smaller button for compact height */
+      font-size: 0.85rem;
+    }
+
+    .hero-buttons { 
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    /* Center the three dots under the text */
+    .hero-indicators {
+      justify-content: center;
+      margin: 10px auto 0 auto;
+    }
+
+    .features-grid { grid-template-columns: 1fr; gap: 20px; }
+    .features-title { font-size: 1.8rem; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-main { min-height: 400px; background-position: 50% 30%; align-items: flex-start; }
+    .text-content { width: 94%; padding: 10px 12px; }
+    .text-content h1 { font-size: 1.3rem; }
+    .text-content p { font-size: 0.78rem; }
+    .btnn-primary { padding: 9px 18px; font-size: 0.8rem; }
   }

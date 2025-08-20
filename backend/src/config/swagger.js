@@ -68,6 +68,87 @@ const options = {
             read: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' }
           }
+        },
+        ChatMessage: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', description: 'Message ID' },
+            sender: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string' },
+                name: { type: 'string' },
+                avatar: { type: 'string' },
+                role: { type: 'string' },
+                specialty: { type: 'string' }
+              }
+            },
+            recipient: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string' },
+                name: { type: 'string' },
+                avatar: { type: 'string' },
+                role: { type: 'string' }
+              }
+            },
+            content: { type: 'string', description: 'Message content' },
+            messageType: { 
+              type: 'string', 
+              enum: ['text', 'file', 'image'],
+              description: 'Type of message'
+            },
+            status: { 
+              type: 'string', 
+              enum: ['sending', 'sent', 'delivered', 'read'],
+              description: 'Message status'
+            },
+            read: { type: 'boolean', description: 'Whether message has been read' },
+            readAt: { type: 'string', format: 'date-time', description: 'When message was read' },
+            conversationId: { type: 'string', description: 'Generated conversation ID' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        Conversation: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Chat ID' },
+            conversationId: { type: 'string', description: 'Generated conversation ID' },
+            participant: {
+              type: 'object',
+              properties: {
+                _id: { type: 'string' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+                role: { type: 'string' },
+                avatar: { type: 'string' },
+                specialty: { type: 'string' }
+              }
+            },
+            lastMessage: {
+              type: 'object',
+              properties: {
+                content: { type: 'string' },
+                sender: { type: 'string' },
+                timestamp: { type: 'string', format: 'date-time' },
+                messageType: { type: 'string' }
+              }
+            },
+            unreadCount: { type: 'number', description: 'Number of unread messages' },
+            lastActivity: { type: 'string', format: 'date-time' },
+            startedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        FileUpload: {
+          type: 'object',
+          properties: {
+            filename: { type: 'string', description: 'Generated filename' },
+            originalName: { type: 'string', description: 'Original file name' },
+            mimetype: { type: 'string', description: 'File MIME type' },
+            size: { type: 'number', description: 'File size in bytes' },
+            path: { type: 'string', description: 'File storage path' }
+          }
         }
       }
     },

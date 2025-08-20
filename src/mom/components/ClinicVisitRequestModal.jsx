@@ -25,6 +25,22 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
     }
   }, [selectedCategory]);
 
+  // Reset form each time modal opens to avoid stale values
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        requestType: selectedCategory || '',
+        preferredDate: '',
+        preferredTime: '',
+        location: '',
+        notes: ''
+      });
+      setErrors({});
+      setShowCalendar(false);
+      setCurrentDate(new Date());
+    }
+  }, [isOpen, selectedCategory]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -105,9 +121,12 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 
   const handleDateSelect = (day) => {
     if (day) {
-      const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const formattedDate = selectedDate.toISOString().split('T')[0];
-      setFormData(prev => ({ ...prev, preferredDate: formattedDate }));
+      // Format as YYYY-MM-DD in local time to avoid timezone shift
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(day).padStart(2, '0');
+      const ymd = `${year}-${month}-${dayStr}`;
+      setFormData(prev => ({ ...prev, preferredDate: ymd }));
       setShowCalendar(false);
     }
   };
@@ -188,7 +207,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
               <input
                 type="text"
                 name="preferredDate"
-                value={formData.preferredDate ? new Date(formData.preferredDate).toLocaleDateString() : ''}
+                value={formData.preferredDate ? (() => { const [y,m,d] = formData.preferredDate.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(); })() : ''}
                 onClick={() => setShowCalendar(!showCalendar)}
                 readOnly
                 placeholder="Click to select date"

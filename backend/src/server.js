@@ -21,6 +21,7 @@ const midwifeRoutes = require('./routes/midwife');
 const serviceProviderRoutes = require('./routes/serviceProvider');
 const appointmentRoutes = require('./routes/appointments');
 const messageRoutes = require('./routes/messages');
+const chatRoutes = require('./routes/chat');
 const aiRoutes = require('./routes/ai');
 const permissionRequestRoutes = require('./routes/permissionRequests');
 
@@ -90,6 +91,7 @@ const startServer = async () => {
 
 // Security middleware
 app.use(helmet());
+// For development, allow all origins
 app.use(cors({
   origin: (origin, callback) => {
     console.log('🔍 CORS check for origin:', origin);
@@ -195,10 +197,17 @@ app.use('/api/midwife', protect, midwifeRoutes);
 app.use('/api/service-provider', protect, serviceProviderRoutes);
 app.use('/api/appointments', protect, appointmentRoutes);
 app.use('/api/messages', protect, messageRoutes);
+app.use('/api/chat', protect, chatRoutes);
 app.use('/api/ai', protect, aiRoutes);
 app.use('/api/permission-requests', permissionRequestRoutes);
 
-// Socket.io connection handling
+// Import chat socket handler
+const { setupChatSocket } = require('./socket/chatSocket');
+
+// Initialize chat socket functionality
+setupChatSocket(io);
+
+// Legacy socket handlers for backward compatibility
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 

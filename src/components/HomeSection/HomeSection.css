@@ -81,6 +81,14 @@ body {
     margin-top: auto;
   }
   
+  .week-description {
+    font-size: 0.7rem;
+    color: #666;
+    text-align: center;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+  
   /* Testimonials Section */
   .testimonials-section {
     width: 97.5%;
