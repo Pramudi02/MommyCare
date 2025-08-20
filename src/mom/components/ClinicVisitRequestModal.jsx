@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, MapPin, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory }) => {
+const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory, activeTab }) => {
   const [formData, setFormData] = useState({
     requestType: selectedCategory || '',
     preferredDate: '',
@@ -12,15 +12,36 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
   const [errors, setErrors] = useState({});
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const calendarRef = useRef(null);
 
-  const timeSlots = ['Morning', 'Afternoon', 'Evening', 'Any Time'];
+  const timeSlots = ['Morning', 'Afternoon', 'Any Time'];
+
+  // Default notes for each category
+  const getDefaultNotes = (category) => {
+    const notesMap = {
+      'General Checkup': 'Weight, blood pressure, blood tests, iron levels',
+      'Prenatal Checkup': 'Regular pregnancy monitoring',
+      'Ultrasound Scan': 'Fetal development monitoring',
+      'Glucose Screening': 'Gestational diabetes testing',
+      'Breastfeeding Support': 'Lactation consultation',
+      'Mental Health Check': 'Postpartum depression screening',
+      'Baby Weight Check': 'Growth monitoring',
+      'Vaccinations': 'Immunization schedule',
+      'Newborn Screening': 'Health assessment',
+      'Feeding Assessment': 'Breastfeeding/formula guidance',
+      'Developmental Check': 'Milestone tracking',
+      'Jaundice Monitoring': 'Newborn health'
+    };
+    return notesMap[category] || '';
+  };
 
   // Update form when selected category changes
   useEffect(() => {
     if (selectedCategory) {
       setFormData(prev => ({
         ...prev,
-        requestType: selectedCategory
+        requestType: selectedCategory,
+        notes: getDefaultNotes(selectedCategory)
       }));
     }
   }, [selectedCategory]);
@@ -33,13 +54,27 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
         preferredDate: '',
         preferredTime: '',
         location: '',
-        notes: ''
+        notes: selectedCategory ? getDefaultNotes(selectedCategory) : ''
       });
       setErrors({});
       setShowCalendar(false);
       setCurrentDate(new Date());
     }
   }, [isOpen, selectedCategory]);
+
+  // Handle click outside calendar to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showCalendar && calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCalendar]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -173,8 +208,8 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 pt-20">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800">Request Clinic Visit</h2>
@@ -194,7 +229,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
               Request Type <span className="text-red-500">*</span>
             </label>
             <div className="w-full px-4 py-3 bg-pink-50 border border-pink-200 rounded-lg text-pink-700 font-medium">
-              {selectedCategory || 'No category selected'}
+              {selectedCategory ? `${activeTab === 'mom' ? 'Mom' : 'Baby'} - ${selectedCategory}` : 'No category selected'}
             </div>
           </div>
 
@@ -220,28 +255,28 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
             
             {/* Calendar Popup */}
             {showCalendar && (
-              <div className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80">
-                <div className="flex items-center justify-between mb-4">
+              <div ref={calendarRef} className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64">
+                <div className="flex items-center justify-between mb-3">
                   <button
                     type="button"
                     onClick={() => navigateMonth('prev')}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={16} />
                   </button>
-                  <h3 className="text-lg font-semibold">{formatDate(currentDate)}</h3>
+                  <h3 className="text-sm font-semibold">{formatDate(currentDate)}</h3>
                   <button
                     type="button"
                     onClick={() => navigateMonth('next')}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={16} />
                   </button>
                 </div>
                 
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-2">
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-1">
                       {day}
                     </div>
                   ))}
@@ -254,7 +289,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
                       type="button"
                       onClick={() => handleDateSelect(day)}
                       disabled={!day || isPastDate(day)}
-                      className={`p-2 text-sm rounded transition-colors ${
+                      className={`p-1 text-xs rounded transition-colors ${
                         !day 
                           ? 'invisible' 
                           : isPastDate(day)
@@ -290,7 +325,7 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
               name="preferredTime"
               value={formData.preferredTime}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+              className={`mc-preferred-time-select w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
                 errors.preferredTime ? 'border-red-500' : 'border-gray-300'
               }`}
             >
