@@ -18,7 +18,9 @@ import {
   Droplets,
   Car,
   Link,
-  Users
+  Users,
+  ArrowUpRight,
+  Clock
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -31,32 +33,32 @@ const Dashboard = () => {
       value: '24',
       change: '+3',
       changeType: 'positive',
-      icon: <Package className="sp-stat-icon" />,
-      color: 'sp-bg-blue'
+      icon: <Package className="sp-stat-card__icon" />,
+      color: 'sp-stat-card--blue'
     },
     {
       title: 'Product Views',
       value: '1,247',
       change: '+15.2%',
       changeType: 'positive',
-      icon: <Eye className="sp-stat-icon" />,
-      color: 'sp-bg-green'
+      icon: <Eye className="sp-stat-card__icon" />,
+      color: 'sp-stat-card--green'
     },
     {
       title: 'External Clicks',
       value: '89',
       change: '+8.7%',
       changeType: 'positive',
-      icon: <ExternalLink className="sp-stat-icon" />,
-      color: 'sp-bg-purple'
+      icon: <ExternalLink className="sp-stat-card__icon" />,
+      color: 'sp-stat-card--purple'
     },
     {
       title: 'Active Products',
       value: '22',
       change: '+2',
       changeType: 'positive',
-      icon: <CheckCircle className="sp-stat-icon" />,
-      color: 'sp-bg-orange'
+      icon: <CheckCircle className="sp-stat-card__icon" />,
+      color: 'sp-stat-card--orange'
     }
   ];
 
@@ -109,21 +111,24 @@ const Dashboard = () => {
       views: 156,
       clicks: 23,
       clickRate: '14.7%',
-      category: 'Travel'
+      category: 'Travel',
+      rank: 1
     },
     {
       name: 'Organic Cotton Diaper Bag',
       views: 89,
       clicks: 12,
       clickRate: '13.5%',
-      category: 'Travel'
+      category: 'Travel',
+      rank: 2
     },
     {
       name: 'Electric Breast Pump',
       views: 67,
       clicks: 8,
       clickRate: '11.9%',
-      category: 'Feeding'
+      category: 'Feeding',
+      rank: 3
     }
   ];
 
@@ -131,190 +136,229 @@ const Dashboard = () => {
     {
       title: 'Add New Product',
       description: 'Post a new product with external link',
-      icon: <Plus className="sp-action-icon" />,
-      color: 'sp-bg-blue',
+      icon: <Plus className="sp-quick-action__icon" />,
       link: '/service-provider/products/add'
     },
     {
       title: 'View Analytics',
       description: 'Check product performance',
-      icon: <BarChart3 className="sp-action-icon" />,
-      color: 'sp-bg-green',
+      icon: <BarChart3 className="sp-quick-action__icon" />,
       link: '/service-provider/products'
     },
     {
       title: 'Update Profile',
       description: 'Manage your business profile',
-      icon: <Settings className="sp-action-icon" />,
-      color: 'sp-bg-purple',
+      icon: <Settings className="sp-quick-action__icon" />,
       link: '/service-provider/profile'
     }
   ];
 
+  const recentActivities = [
+    {
+      type: 'completed',
+      icon: <CheckCircle />,
+      title: 'New product "Baby Carrier" added',
+      time: '2 hours ago'
+    },
+    {
+      type: 'updated',
+      icon: <Eye />,
+      title: 'Product "Diaper Bag" received 12 views',
+      time: '4 hours ago'
+    },
+    {
+      type: 'new',
+      icon: <ExternalLink />,
+      title: 'External link clicked for "Breast Pump"',
+      time: '6 hours ago'
+    }
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active':
+        return 'sp-product-status--active';
+      case 'pending':
+        return 'sp-product-status--pending';
+      case 'inactive':
+        return 'sp-product-status--inactive';
+      default:
+        return 'sp-product-status--pending';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'active':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'pending':
+        return <Clock className="w-4 h-4" />;
+      case 'inactive':
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
+
   return (
-    <div className="sp-dashboard">
-      <div className="sp-dashboard-header">
-        <div className="sp-dashboard-title">
-          <h1>Service Provider Dashboard</h1>
-          <p>Manage your product listings and track performance</p>
-        </div>
-        <div className="sp-dashboard-actions">
-          <button className="sp-btn sp-btn-primary">
-            <Plus className="sp-btn-icon" />
-            Add Product
-          </button>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="sp-stats-grid">
-        {stats.map((stat, index) => (
-          <div key={index} className={`sp-stat-card ${stat.color}`}>
-            <div className="sp-stat-icon-wrapper">
-              {stat.icon}
+    <div className="sp-dashboard-page">
+      <div className="sp-dashboard-container">
+        <div className="sp-dashboard">
+          {/* Header */}
+          <div className="sp-dashboard__header">
+            <div className="sp-dashboard__header-icon">
+              <BarChart3 />
             </div>
-            <div className="sp-stat-content">
-              <h3 className="sp-stat-title">{stat.title}</h3>
-              <p className="sp-stat-value">{stat.value}</p>
-              <span className={`sp-stat-change sp-stat-change-${stat.changeType}`}>
-                {stat.change}
-              </span>
+            <div className="sp-dashboard__welcome">
+              <h1>Service Provider Dashboard</h1>
+              <p>Manage your product listings and track performance</p>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="sp-dashboard-content">
-        <div className="sp-dashboard-main">
-          {/* Recent Products */}
-          <div className="sp-card">
-            <div className="sp-card-header">
-              <h3>Recent Products</h3>
-              <a href="/service-provider/products" className="sp-link">View All</a>
-            </div>
-            <div className="sp-table-container">
-              <table className="sp-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Views</th>
-                    <th>Clicks</th>
-                    <th>Updated</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentProducts.map((product) => (
-                    <tr key={product.id}>
-                      <td>
-                        <div className="sp-product-info">
-                          <span className="sp-product-emoji">{product.image}</span>
-                          <span className="sp-product-name">{product.name}</span>
-                        </div>
-                      </td>
-                      <td>{product.category}</td>
-                      <td>
-                        <span className={`sp-status sp-status-${product.status}`}>
-                          {product.status}
-                        </span>
-                      </td>
-                      <td>{product.views}</td>
-                      <td>{product.clicks}</td>
-                      <td>{product.lastUpdated}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="sp-dashboard__filter">
+              <select 
+                value={selectedPeriod} 
+                onChange={(e) => setSelectedPeriod(e.target.value)}
+              >
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+              </select>
             </div>
           </div>
 
-          {/* Top Performing Products */}
-          <div className="sp-card">
-            <div className="sp-card-header">
-              <h3>Top Performing Products</h3>
-            </div>
-            <div className="sp-performance-list">
-              {topPerformingProducts.map((product, index) => (
-                <div key={index} className="sp-performance-item">
-                  <div className="sp-performance-info">
-                    <h4>{product.name}</h4>
-                    <p className="sp-performance-category">{product.category}</p>
-                  </div>
-                  <div className="sp-performance-stats">
-                    <div className="sp-performance-stat">
-                      <span className="sp-stat-label">Views</span>
-                      <span className="sp-stat-value">{product.views}</span>
-                    </div>
-                    <div className="sp-performance-stat">
-                      <span className="sp-stat-label">Clicks</span>
-                      <span className="sp-stat-value">{product.clicks}</span>
-                    </div>
-                    <div className="sp-performance-stat">
-                      <span className="sp-stat-label">Click Rate</span>
-                      <span className="sp-stat-value">{product.clickRate}</span>
-                    </div>
+          {/* Stats Cards */}
+          <div className="sp-dashboard__stats">
+            {stats.map((stat, index) => (
+              <div key={index} className={`sp-stat-card ${stat.color}`}>
+                <div className="sp-stat-card__icon">
+                  {stat.icon}
+                </div>
+                <div className="sp-stat-card__content">
+                  <div className="sp-stat-card__title">{stat.title}</div>
+                  <div className="sp-stat-card__value">{stat.value}</div>
+                  <div className={`sp-stat-card__change sp-stat-card__change--${stat.changeType}`}>
+                    {stat.change}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </div>
 
-        <div className="sp-dashboard-sidebar">
           {/* Quick Actions */}
-          <div className="sp-card">
-            <div className="sp-card-header">
-              <h3>Quick Actions</h3>
+          <div className="sp-quick-actions">
+            {quickActions.map((action, index) => (
+              <a key={index} href={action.link} className="sp-quick-action">
+                <div className="sp-quick-action__icon">
+                  {action.icon}
+                </div>
+                <div className="sp-quick-action__text">
+                  {action.title}
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <div className="sp-dashboard__main-content">
+            {/* Recent Products */}
+            <div className="sp-dashboard__section">
+              <h2>Recent Products</h2>
+              <div className="sp-recent-products">
+                <div className="sp-recent-products__header">
+                  <h3>Latest Product Activity</h3>
+                </div>
+                <table className="sp-recent-products__table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Status</th>
+                      <th>Views</th>
+                      <th>Clicks</th>
+                      <th>Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentProducts.map((product) => (
+                      <tr key={product.id}>
+                        <td>
+                          <div className="sp-product-info">
+                            <span className="sp-product-emoji">{product.image}</span>
+                            <span className="sp-product-name">{product.name}</span>
+                          </div>
+                        </td>
+                        <td>{product.category}</td>
+                        <td>
+                          <span className={`sp-product-status ${getStatusColor(product.status)}`}>
+                            {getStatusIcon(product.status)}
+                            {product.status}
+                          </span>
+                        </td>
+                        <td>{product.views}</td>
+                        <td>{product.clicks}</td>
+                        <td>{product.lastUpdated}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="sp-quick-actions">
-              {quickActions.map((action, index) => (
-                <a key={index} href={action.link} className="sp-quick-action">
-                  <div className={`sp-action-icon-wrapper ${action.color}`}>
-                    {action.icon}
-                  </div>
-                  <div className="sp-action-content">
-                    <h4>{action.title}</h4>
-                    <p>{action.description}</p>
-                  </div>
-                </a>
-              ))}
+
+            {/* Top Performing Products */}
+            <div className="sp-dashboard__section">
+              <h2>Top Performing Products</h2>
+              <div className="sp-top-performing">
+                <div className="sp-top-performing__header">
+                  <h3>Best Performers</h3>
+                </div>
+                <div className="sp-top-performing__list">
+                  {topPerformingProducts.map((product, index) => (
+                    <div key={index} className="sp-top-performing__item">
+                      <div className={`sp-top-performing__rank ${
+                        index === 0 ? 'sp-top-performing__rank--gold' :
+                        index === 1 ? 'sp-top-performing__rank--silver' :
+                        'sp-top-performing__rank--bronze'
+                      }`}>
+                        {product.rank}
+                      </div>
+                      <div className="sp-top-performing__content">
+                        <div className="sp-top-performing__name">{product.name}</div>
+                        <div className="sp-top-performing__metrics">
+                          <div className="sp-top-performing__metric">
+                            <Eye className="w-3 h-3" />
+                            {product.views}
+                          </div>
+                          <div className="sp-top-performing__metric">
+                            <ExternalLink className="w-3 h-3" />
+                            {product.clicks}
+                          </div>
+                          <div className="sp-top-performing__metric">
+                            <TrendingUp className="w-3 h-3" />
+                            {product.clickRate}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="sp-card">
-            <div className="sp-card-header">
-              <h3>Recent Activity</h3>
-            </div>
-            <div className="sp-activity-list">
-              <div className="sp-activity-item">
-                <div className="sp-activity-icon sp-activity-success">
-                  <CheckCircle />
+          <div className="sp-dashboard__section">
+            <h2>Recent Activity</h2>
+            <div className="sp-activities-list">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className={`sp-activity-item sp-activity-item--${activity.type}`}>
+                  <div className="sp-activity-item__icon">
+                    {activity.icon}
+                  </div>
+                  <div className="sp-activity-item__content">
+                    <div className="sp-activity-item__title">{activity.title}</div>
+                    <div className="sp-activity-item__time">{activity.time}</div>
+                  </div>
                 </div>
-                <div className="sp-activity-content">
-                  <p>New product "Baby Carrier" added</p>
-                  <span>2 hours ago</span>
-                </div>
-              </div>
-              <div className="sp-activity-item">
-                <div className="sp-activity-icon sp-activity-info">
-                  <Eye />
-                </div>
-                <div className="sp-activity-content">
-                  <p>Product "Diaper Bag" received 12 views</p>
-                  <span>4 hours ago</span>
-                </div>
-              </div>
-              <div className="sp-activity-item">
-                <div className="sp-activity-icon sp-activity-warning">
-                  <ExternalLink />
-                </div>
-                <div className="sp-activity-content">
-                  <p>External link clicked for "Breast Pump"</p>
-                  <span>6 hours ago</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

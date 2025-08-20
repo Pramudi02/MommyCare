@@ -163,40 +163,165 @@
   margin-top: 0.25rem;
 }
 
-.sp-emoji-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 1rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-}
-
-.sp-emoji-option {
+/* Price Input Wrapper */
+.sp-price-input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.5rem;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.5rem;
+}
+
+.sp-price-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #6b7280;
+  width: 1rem;
+  height: 1rem;
+  z-index: 1;
+}
+
+.sp-price-input-wrapper .sp-form-input {
+  padding-left: 2.5rem;
+}
+
+/* Link Input Wrapper */
+.sp-link-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sp-link-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #6b7280;
+  width: 1rem;
+  height: 1rem;
+  z-index: 1;
+}
+
+.sp-link-input-wrapper .sp-form-input {
+  padding-left: 2.5rem;
+}
+
+.sp-help-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Image Upload Styles */
+.sp-image-upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: #f9fafb;
+  position: relative;
 }
 
-.sp-emoji-option:hover {
-  border-color: #3b82f6;
-  transform: scale(1.1);
-}
-
-.sp-emoji-option.selected {
+.sp-image-upload-area:hover {
   border-color: #3b82f6;
   background: #eff6ff;
+}
+
+.sp-image-upload-area.drag-active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: scale(1.02);
+}
+
+.sp-image-upload-area.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.sp-file-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.sp-upload-content {
+  pointer-events: none;
+}
+
+.sp-upload-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #6b7280;
+  margin: 0 auto 1rem auto;
+}
+
+.sp-upload-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.sp-upload-content p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Image Preview */
+.sp-image-preview-container {
+  text-align: center;
+}
+
+.sp-image-preview {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.sp-remove-image-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 auto;
+}
+
+.sp-remove-image-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.sp-remove-image-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Tags Input Container */
+.sp-tags-input-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.sp-tag-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-add-tag-btn {
+  white-space: nowrap;
+  padding: 0.75rem 1rem;
 }
 
 .sp-tags-container {
@@ -235,6 +360,8 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .sp-tag-remove:hover {
@@ -242,19 +369,7 @@
   color: #1e3a8a;
 }
 
-.sp-tag-input {
-  border: none;
-  background: none;
-  outline: none;
-  font-size: 0.875rem;
-  color: #374151;
-  min-width: 100px;
-}
-
-.sp-tag-input::placeholder {
-  color: #9ca3af;
-}
-
+/* Form Actions */
 .sp-form-actions {
   display: flex;
   justify-content: flex-end;
@@ -377,14 +492,14 @@
     gap: 1rem;
   }
   
-  .sp-emoji-selector {
-    grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+  .sp-tags-input-container {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .sp-emoji-option {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
+  .sp-add-tag-btn {
+    width: 100%;
+    justify-content: center;
   }
   
   .sp-form-actions {
@@ -414,14 +529,16 @@
     gap: 1rem;
   }
   
-  .sp-emoji-selector {
-    grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-    gap: 0.25rem;
+  .sp-image-upload-area {
+    padding: 1.5rem;
   }
   
-  .sp-emoji-option {
-    width: 2rem;
-    height: 2rem;
+  .sp-upload-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .sp-upload-content h4 {
     font-size: 1rem;
   }
 }

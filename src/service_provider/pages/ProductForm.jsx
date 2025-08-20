@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Save, 
@@ -11,7 +11,10 @@ import {
   FileText,
   Globe,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Image,
+  Trash2,
+  Camera
 } from 'lucide-react';
 import './ProductForm.css';
 
@@ -19,6 +22,7 @@ const ProductForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -28,12 +32,14 @@ const ProductForm = () => {
     externalLink: '',
     tags: [],
     status: 'pending',
-    image: '👶'
+    image: null,
+    imagePreview: null
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newTag, setNewTag] = useState('');
+  const [dragActive, setDragActive] = useState(false);
 
   const categories = [
     'Feeding',
@@ -54,11 +60,6 @@ const ProductForm = () => {
     { value: 'inactive', label: 'Inactive', icon: <X className="w-4 h-4" /> }
   ];
 
-  const emojiOptions = [
-    '👶', '🍼', '🛏️', '🚼', '👜', '🧸', '🛁', '👕', '🚪', '🎯',
-    '🏥', '🌡️', '💊', '🧴', '🪑', '🚗', '🎨', '📚', '🎵', '🎪'
-  ];
-
   useEffect(() => {
     if (isEditing) {
       // Load product data for editing
@@ -71,7 +72,8 @@ const ProductForm = () => {
         externalLink: 'https://example-store.com/baby-carrier',
         tags: ['Ergonomic', 'Adjustable', 'Comfortable'],
         status: 'active',
-        image: '👶'
+        image: null,
+        imagePreview: null
       };
       setFormData(mockProduct);
     }
@@ -102,6 +104,10 @@ const ProductForm = () => {
       newErrors.externalLink = 'Please enter a valid URL';
     }
 
+    if (!formData.image && !formData.imagePreview) {
+      newErrors.image = 'Product image is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -128,6 +134,84 @@ const ProductForm = () => {
         ...prev,
         [name]: ''
       }));
+    }
+  };
+
+  const handleImageUpload = (file) => {
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({
+          ...prev,
+          image: 'Please select a valid image file'
+        }));
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors(prev => ({
+          ...prev,
+          image: 'Image size should be less than 5MB'
+        }));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({
+          ...prev,
+          image: file,
+          imagePreview: e.target.result
+        }));
+      };
+      reader.readAsDataURL(file);
+
+      // Clear any previous image errors
+      if (errors.image) {
+        setErrors(prev => ({
+          ...prev,
+          image: ''
+        }));
+      }
+    }
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      image: null,
+      imagePreview: null
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -176,44 +260,29 @@ const ProductForm = () => {
 
   return (
     <div className="sp-product-form-page">
-      <div className="sp-form-header">
-        <div className="sp-form-title">
+      <div className="sp-product-form-header">
+        <div className="sp-product-form-header-icon">
+          <Package />
+        </div>
+        <div className="sp-product-form-title">
           <h1>{isEditing ? 'Edit Product' : 'Add New Product'}</h1>
           <p>{isEditing ? 'Update your product information' : 'Create a new product listing with external link'}</p>
         </div>
-        <div className="sp-form-actions">
-          <button 
-            className="sp-btn sp-btn-secondary"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            <X className="sp-btn-icon" />
-            Cancel
-          </button>
-          <button 
-            className="sp-btn sp-btn-primary"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            <Save className="sp-btn-icon" />
-            {isSubmitting ? 'Saving...' : (isEditing ? 'Update Product' : 'Create Product')}
-          </button>
-        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="sp-product-form">
-        <div className="sp-form-grid">
+      <div className="sp-product-form-container">
+        <form onSubmit={handleSubmit} className="sp-form">
           {/* Basic Information */}
           <div className="sp-form-section">
-            <h3 className="sp-section-title">
-              <Package className="sp-section-icon" />
+            <h3>
+              <Package />
               Basic Information
             </h3>
             
             <div className="sp-form-row">
               <div className="sp-form-group">
-                <label htmlFor="name" className="sp-label">
-                  Product Name *
+                <label htmlFor="name" className="sp-form-label required">
+                  Product Name
                 </label>
                 <input
                   type="text"
@@ -221,38 +290,38 @@ const ProductForm = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className={`sp-input ${errors.name ? 'sp-input-error' : ''}`}
+                  className={`sp-form-input ${errors.name ? 'error' : ''}`}
                   placeholder="Enter product name"
                 />
-                {errors.name && <span className="sp-error">{errors.name}</span>}
+                {errors.name && <span className="sp-form-error">{errors.name}</span>}
               </div>
               
               <div className="sp-form-group">
-                <label htmlFor="category" className="sp-label">
-                  Category *
+                <label htmlFor="category" className="sp-form-label required">
+                  Category
                 </label>
                 <select
                   id="category"
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className={`sp-select ${errors.category ? 'sp-select-error' : ''}`}
+                  className={`sp-form-input sp-form-select ${errors.category ? 'error' : ''}`}
                 >
                   <option value="">Select category</option>
                   {categories.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
-                {errors.category && <span className="sp-error">{errors.category}</span>}
+                {errors.category && <span className="sp-form-error">{errors.category}</span>}
               </div>
             </div>
 
             <div className="sp-form-row">
               <div className="sp-form-group">
-                <label htmlFor="price" className="sp-label">
-                  Price *
+                <label htmlFor="price" className="sp-form-label required">
+                  Price
                 </label>
-                <div className="sp-price-input">
+                <div className="sp-price-input-wrapper">
                   <DollarSign className="sp-price-icon" />
                   <input
                     type="number"
@@ -260,17 +329,17 @@ const ProductForm = () => {
                     name="price"
                     value={formData.price}
                     onChange={handleInputChange}
-                    className={`sp-input ${errors.price ? 'sp-input-error' : ''}`}
+                    className={`sp-form-input ${errors.price ? 'error' : ''}`}
                     placeholder="0.00"
                     step="0.01"
                     min="0"
                   />
                 </div>
-                {errors.price && <span className="sp-error">{errors.price}</span>}
+                {errors.price && <span className="sp-form-error">{errors.price}</span>}
               </div>
               
               <div className="sp-form-group">
-                <label htmlFor="status" className="sp-label">
+                <label htmlFor="status" className="sp-form-label">
                   Status
                 </label>
                 <select
@@ -278,7 +347,7 @@ const ProductForm = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
-                  className="sp-select"
+                  className="sp-form-input sp-form-select"
                 >
                   {statusOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -289,35 +358,35 @@ const ProductForm = () => {
               </div>
             </div>
 
-            <div className="sp-form-group">
-              <label htmlFor="description" className="sp-label">
-                Description *
+            <div className="sp-form-group full-width">
+              <label htmlFor="description" className="sp-form-label required">
+                Description
               </label>
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className={`sp-textarea ${errors.description ? 'sp-textarea-error' : ''}`}
+                className={`sp-form-input sp-form-textarea ${errors.description ? 'error' : ''}`}
                 placeholder="Describe your product..."
                 rows="4"
               />
-              {errors.description && <span className="sp-error">{errors.description}</span>}
+              {errors.description && <span className="sp-form-error">{errors.description}</span>}
             </div>
           </div>
 
           {/* External Link */}
           <div className="sp-form-section">
-            <h3 className="sp-section-title">
-              <Globe className="sp-section-icon" />
+            <h3>
+              <Globe />
               External Link
             </h3>
             
-            <div className="sp-form-group">
-              <label htmlFor="externalLink" className="sp-label">
-                Product URL *
+            <div className="sp-form-group full-width">
+              <label htmlFor="externalLink" className="sp-form-label required">
+                Product URL
               </label>
-              <div className="sp-link-input">
+              <div className="sp-link-input-wrapper">
                 <Link className="sp-link-icon" />
                 <input
                   type="url"
@@ -325,11 +394,11 @@ const ProductForm = () => {
                   name="externalLink"
                   value={formData.externalLink}
                   onChange={handleInputChange}
-                  className={`sp-input ${errors.externalLink ? 'sp-input-error' : ''}`}
+                  className={`sp-form-input ${errors.externalLink ? 'error' : ''}`}
                   placeholder="https://your-store.com/product"
                 />
               </div>
-              {errors.externalLink && <span className="sp-error">{errors.externalLink}</span>}
+              {errors.externalLink && <span className="sp-form-error">{errors.externalLink}</span>}
               <p className="sp-help-text">
                 This is the link where customers will be redirected to purchase your product
               </p>
@@ -338,49 +407,80 @@ const ProductForm = () => {
 
           {/* Product Image */}
           <div className="sp-form-section">
-            <h3 className="sp-section-title">
-              <Upload className="sp-section-icon" />
+            <h3>
+              <Image />
               Product Image
             </h3>
             
-            <div className="sp-form-group">
-              <label className="sp-label">Choose Emoji</label>
-              <div className="sp-emoji-grid">
-                {emojiOptions.map((emoji, index) => (
+            <div className="sp-form-group full-width">
+              <label className="sp-form-label required">
+                Upload Product Image
+              </label>
+              
+              {formData.imagePreview ? (
+                <div className="sp-image-preview-container">
+                  <img 
+                    src={formData.imagePreview} 
+                    alt="Product preview" 
+                    className="sp-image-preview"
+                  />
                   <button
-                    key={index}
                     type="button"
-                    className={`sp-emoji-option ${formData.image === emoji ? 'sp-emoji-selected' : ''}`}
-                    onClick={() => setFormData(prev => ({ ...prev, image: emoji }))}
+                    className="sp-remove-image-btn"
+                    onClick={removeImage}
                   >
-                    {emoji}
+                    <Trash2 />
+                    Remove Image
                   </button>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <div 
+                  className={`sp-image-upload-area ${dragActive ? 'drag-active' : ''} ${errors.image ? 'error' : ''}`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="sp-file-input"
+                  />
+                  <div className="sp-upload-content">
+                    <Camera className="sp-upload-icon" />
+                    <h4>Click to upload or drag and drop</h4>
+                    <p>PNG, JPG, GIF up to 5MB</p>
+                  </div>
+                </div>
+              )}
+              
+              {errors.image && <span className="sp-form-error">{errors.image}</span>}
             </div>
           </div>
 
           {/* Tags */}
           <div className="sp-form-section">
-            <h3 className="sp-section-title">
-              <Tag className="sp-section-icon" />
+            <h3>
+              <Tag />
               Tags
             </h3>
             
-            <div className="sp-form-group">
-              <label className="sp-label">Product Tags</label>
-              <div className="sp-tag-input">
+            <div className="sp-form-group full-width">
+              <label className="sp-form-label">Product Tags</label>
+              <div className="sp-tags-input-container">
                 <input
                   type="text"
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
-                  className="sp-input"
+                  className="sp-form-input sp-tag-input"
                   placeholder="Add a tag..."
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                 />
                 <button
                   type="button"
-                  className="sp-btn sp-btn-secondary"
+                  className="sp-btn sp-btn-secondary sp-add-tag-btn"
                   onClick={handleAddTag}
                 >
                   Add
@@ -388,10 +488,9 @@ const ProductForm = () => {
               </div>
               
               {formData.tags.length > 0 && (
-                <div className="sp-tags-list">
+                <div className="sp-tags-container">
                   {formData.tags.map((tag, index) => (
                     <span key={index} className="sp-tag">
-                      <Tag className="sp-tag-icon" />
                       {tag}
                       <button
                         type="button"
@@ -406,28 +505,37 @@ const ProductForm = () => {
               )}
             </div>
           </div>
-        </div>
 
-        {/* Form Actions */}
-        <div className="sp-form-footer">
-          <button 
-            type="button"
-            className="sp-btn sp-btn-secondary"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
-          <button 
-            type="submit"
-            className="sp-btn sp-btn-primary"
-            disabled={isSubmitting}
-          >
-            <Save className="sp-btn-icon" />
-            {isSubmitting ? 'Saving...' : (isEditing ? 'Update Product' : 'Create Product')}
-          </button>
-        </div>
-      </form>
+          {/* Form Actions */}
+          <div className="sp-form-actions">
+            <button 
+              type="button"
+              className="sp-btn sp-btn-secondary"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="sp-btn sp-btn-primary"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="sp-loading"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save />
+                  {isEditing ? 'Update Product' : 'Create Product'}
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
