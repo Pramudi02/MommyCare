@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import MomNavbar from './components/MomNavbar';
-import Footer from '../components/shared/Footer';
 import BabyToolsHeader from './components/BabyToolsHeader';
 import PregnancyTool from './components/PregnancyToolHeader';
 
