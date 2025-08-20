@@ -10,6 +10,28 @@ const Appointments = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+  const [rescheduleForm, setRescheduleForm] = useState({
+    date: '',
+    startTime: '',
+    endTime: ''
+  });
+
+  const todayDateString = () => new Date().toISOString().split('T')[0];
+
+  const generateTimeSlotsBetween = (minTime = '07:00', maxTime = '15:00', stepMinutes = 15) => {
+    const [minH, minM] = minTime.split(':').map(Number);
+    const [maxH, maxM] = maxTime.split(':').map(Number);
+    const minTotal = minH * 60 + minM;
+    const maxTotal = maxH * 60 + maxM;
+    const slots = [];
+    for (let t = minTotal; t <= maxTotal; t += stepMinutes) {
+      const h = Math.floor(t / 60).toString().padStart(2, '0');
+      const m = (t % 60).toString().padStart(2, '0');
+      slots.push(`${h}:${m}`);
+    }
+    return slots;
+  };
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isMomDetailsModalOpen, setIsMomDetailsModalOpen] = useState(false);
@@ -124,6 +146,18 @@ const Appointments = () => {
       setIsLoading(false);
     }
   };
+
+  // Local helpers (do not modify api.js)
+  const buildApiBaseUrl = () => {
+    let base = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    base = base.replace(/\/$/, '');
+    if (!/\/api$/i.test(base) && !/\/api\//i.test(base)) {
+      base = `${base}/api`;
+    }
+    return base;
+  };
+
+  const getAuthToken = () => localStorage.getItem('token') || sessionStorage.getItem('token');
 
   const fetchClinicVisitRequests = async () => {
     try {
@@ -381,7 +415,22 @@ const Appointments = () => {
 
     try {
       setIsLoading(true);
-      await midwifeAppointmentAPI.acceptClinicVisitRequest(selectedRequest._id, acceptFormData);
+      // Use POST (backend expects POST, not PATCH)
+      const base = buildApiBaseUrl();
+      const token = getAuthToken();
+      const res = await fetch(`${base}/midwife/clinic-visit-requests/${selectedRequest._id}/accept`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(acceptFormData)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to accept request (${res.status})`);
+      }
+      await res.json().catch(() => ({}));
       
       // Close modal and reset
       setIsAcceptModalOpen(false);
@@ -427,7 +476,22 @@ const Appointments = () => {
 
     try {
       setIsLoading(true);
-      await midwifeAppointmentAPI.rejectClinicVisitRequest(selectedRequest._id, rejectFormData.reason);
+      // Use POST (backend expects POST, not PATCH)
+      const base = buildApiBaseUrl();
+      const token = getAuthToken();
+      const res = await fetch(`${base}/midwife/clinic-visit-requests/${selectedRequest._id}/reject`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ reason: rejectFormData.reason })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to reject request (${res.status})`);
+      }
+      await res.json().catch(() => ({}));
       
       // Close modal and reset
       setIsRejectModalOpen(false);
@@ -859,6 +923,80 @@ const Appointments = () => {
     setIsModalOpen(true);
   };
 
+  const openReschedule = () => {
+    if (!selectedAppointment) return;
+    const start = selectedAppointment.originalData?.startTime
+      ? new Date(selectedAppointment.originalData.startTime)
+      : null;
+    const dateStr = start ? start.toISOString().split('T')[0] : '';
+    setRescheduleForm({
+      date: dateStr,
+      startTime: selectedAppointment.startTime || '',
+      endTime: selectedAppointment.endTime || ''
+    });
+    setIsRescheduleModalOpen(true);
+  };
+
+  const handleRescheduleSubmit = async () => {
+    if (!rescheduleForm.date || !rescheduleForm.startTime || !rescheduleForm.endTime) {
+      alert('Please select date, start and end time');
+      return;
+    }
+    if (rescheduleForm.startTime >= rescheduleForm.endTime) {
+      alert('Start time must be before end time');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const start = new Date(rescheduleForm.date);
+      const [sh, sm] = rescheduleForm.startTime.split(':').map(Number);
+      start.setHours(sh, sm, 0, 0);
+      const end = new Date(rescheduleForm.date);
+      const [eh, em] = rescheduleForm.endTime.split(':').map(Number);
+      end.setHours(eh, em, 0, 0);
+
+      await midwifeAppointmentAPI.updateAppointment(selectedAppointment.id, {
+        startTime: start.toISOString(),
+        endTime: end.toISOString(),
+      });
+
+      setIsRescheduleModalOpen(false);
+      setIsModalOpen(false);
+      await fetchAppointments();
+      setSuccessMessage('Appointment rescheduled successfully.');
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setSuccessMessage('');
+      }, 4000);
+    } catch (err) {
+      console.error('Error rescheduling appointment:', err);
+      alert('Failed to reschedule appointment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkComplete = async () => {
+    try {
+      setIsLoading(true);
+      await midwifeAppointmentAPI.updateAppointment(selectedAppointment.id, { status: 'completed' });
+      setIsModalOpen(false);
+      await fetchAppointments();
+      setSuccessMessage('Appointment marked as completed.');
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setSuccessMessage('');
+      }, 3000);
+    } catch (err) {
+      console.error('Error marking appointment complete:', err);
+      alert('Failed to mark appointment as completed.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Update appointments when view mode changes
   useEffect(() => {
     fetchAppointments();
@@ -900,7 +1038,7 @@ const Appointments = () => {
                   {timeAppointments.map(appointment => (
                     <div 
                       key={appointment.id} 
-                      className={`appointments-calendar__today-event appointments-calendar__event--${appointment.color}`}
+                      className={`appointments-calendar__today-event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
                       onClick={() => handleAppointmentClick(appointment)}
                     >
                        <div className="appointments-calendar__today-event-icon">
@@ -909,6 +1047,9 @@ const Appointments = () => {
                        <div className="appointments-calendar__today-event-mom">
                          {appointment.mom?.firstName} {appointment.mom?.lastName}
                       </div>
+                      {appointment.status === 'completed' && (
+                        <div className="appointments-calendar__completed-badge">✓ Completed</div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1029,7 +1170,7 @@ const Appointments = () => {
                   {dayAppointments.map(appointment => (
                     <div 
                       key={appointment.id} 
-                      className={`appointments-calendar__event appointments-calendar__event--${appointment.color}`}
+                      className={`appointments-calendar__event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
                       style={{
                         gridRow: `span ${calculateAppointmentSpan(appointment.startTime, appointment.endTime)}`
                       }}
@@ -1041,6 +1182,9 @@ const Appointments = () => {
                       <div className="appointments-calendar__event-mom">
                         {appointment.mom?.firstName} {appointment.mom?.lastName}
                         </div>
+                      {appointment.status === 'completed' && (
+                        <div className="appointments-calendar__completed-badge">✓</div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1323,6 +1467,9 @@ const Appointments = () => {
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <div className="modal__header">
                 <h2>Appointment Details</h2>
+                {selectedAppointment.status === 'completed' && (
+                  <span className="modal__badge modal__badge--completed">Completed</span>
+                )}
                 <button className="modal__close" onClick={() => setIsModalOpen(false)}>
                   <FiX size={20} />
                 </button>
@@ -1364,9 +1511,77 @@ const Appointments = () => {
                   </div>
                 </div>
               </div>
+              {selectedAppointment.status !== 'completed' && (
+                <div className="modal__actions">
+                  <button className="modal__btn modal__btn--secondary" onClick={openReschedule}>Reschedule</button>
+                  <button className="modal__btn modal__btn--primary" onClick={handleMarkComplete}>Mark Complete</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Reschedule Modal */}
+        {isRescheduleModalOpen && selectedAppointment && (
+          <div className="modal-overlay" onClick={() => setIsRescheduleModalOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h2>Reschedule Appointment</h2>
+                <button className="modal__close" onClick={() => setIsRescheduleModalOpen(false)}>
+                  <FiX size={20} />
+                </button>
+              </div>
+              <div className="modal__content">
+                <div className="modal__section">
+                  <div className="modal__grid">
+                    <div className="modal__field">
+                      <label>Date</label>
+                      <input
+                        className="modal__input"
+                        type="date"
+                        min={todayDateString()}
+                        value={rescheduleForm.date}
+                        onChange={(e) => setRescheduleForm({ ...rescheduleForm, date: e.target.value })}
+                      />
+                    </div>
+                    <div className="modal__field">
+                      <label>Start Time</label>
+                      <select
+                        className="modal__input"
+                        value={rescheduleForm.startTime}
+                        onChange={(e) => setRescheduleForm({ ...rescheduleForm, startTime: e.target.value, endTime: '' })}
+                      >
+                        <option value="">Select start time</option>
+                        {generateTimeSlotsBetween('07:00', '15:00').map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="modal__field">
+                      <label>End Time</label>
+                      <select
+                        className="modal__input"
+                        value={rescheduleForm.endTime}
+                        onChange={(e) => setRescheduleForm({ ...rescheduleForm, endTime: e.target.value })}
+                        disabled={!rescheduleForm.startTime}
+                      >
+                        <option value="">Select end time</option>
+                        {generateTimeSlotsBetween(
+                          rescheduleForm.startTime ? rescheduleForm.startTime : '07:00',
+                          '15:00'
+                        )
+                          .filter(t => rescheduleForm.startTime ? t > rescheduleForm.startTime : true)
+                          .map(t => (
+                            <option key={t} value={t}>{t}</option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="modal__actions">
-                <button className="modal__btn modal__btn--secondary">Reschedule</button>
-                <button className="modal__btn modal__btn--primary">Mark Complete</button>
+                <button className="modal__btn modal__btn--secondary" onClick={() => setIsRescheduleModalOpen(false)}>Cancel</button>
+                <button className="modal__btn modal__btn--primary" onClick={handleRescheduleSubmit}>Save</button>
               </div>
             </div>
           </div>
