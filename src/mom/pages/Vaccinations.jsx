@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
 import { Calendar, Bell, FileText, BarChart3, Syringe, Shield, Clock, MapPin, User, Hash, Plus, MoreHorizontal } from 'lucide-react';
 import './Vaccination.css';
-import { useNavigate } from 'react-router-dom';
+ 
 
 const Vaccinations= () => {
   const [notifications, setNotifications] = useState(2);
   const [activeTab, setActiveTab] = useState('upcoming');
-  const navigate = useNavigate();
-
+ 
   const handleStatCardClick = (tab) => {
-    navigate('/mom/vaccinationschedule', { state: { tab } });
-  };
-
-  const handleScheduleAppointment = (vaccineName) => {
-    alert(`Scheduling appointment for: ${vaccineName}`);
-    // Navigate to appointment scheduling page
-    // navigate('/mom/schedule-appointment', { state: { vaccine: vaccineName } });
+    setActiveTab(tab);
   };
 
   const StatCard = ({ number, label }) => (
@@ -99,7 +92,7 @@ const Vaccinations= () => {
     );
   };
 
-  const TimelineCard = ({ vaccine, age, status, dueDate, batchNo, adverseEffects, bcgScar }) => {
+  const TimelineCard = ({ vaccine, age, status, dueDate, batchNo, adverseEffects, bcgScar, onSchedule, showScheduleButton }) => {
     const getStatusColor = (status) => {
       switch (status) {
         case 'completed':
@@ -130,20 +123,8 @@ const Vaccinations= () => {
       }
     };
 
-    const getStatusBadgeColor = (status) => {
-      switch (status) {
-        case 'completed':
-          return 'bg-green-100 text-green-800';
-        case 'upcoming':
-          return 'bg-blue-100 text-blue-800';
-        case 'overdue':
-          return 'bg-red-100 text-red-800';
-        case 'due':
-          return 'bg-yellow-100 text-yellow-800';
-        default:
-          return 'bg-gray-100 text-gray-800';
-      }
-    };
+    const isUpcomingOrMissed = status === 'upcoming' || status === 'missed';
+    const effectsLabel = isUpcomingOrMissed ? 'Possible Effects' : 'Effects';
 
     return (
       <div className={`border-l-4 rounded-r-xl p-4 mb-4 shadow-sm transition-all duration-300 hover:shadow-md ${getStatusColor(status)}`}>
@@ -157,7 +138,7 @@ const Vaccinations= () => {
               <span className="font-medium">Due:</span> {dueDate}
             </div>
           )}
-          {batchNo && (
+          {batchNo && !isUpcomingOrMissed && (
             <div className="text-xs text-gray-600 mb-1">
               <span className="font-medium">Batch:</span> {batchNo}
             </div>
@@ -169,13 +150,29 @@ const Vaccinations= () => {
           )}
           {adverseEffects && (
             <div className="text-xs text-gray-600 mb-1">
-              <span className="font-medium">Effects:</span> {adverseEffects}
+              <span className="font-medium">{effectsLabel}:</span> {adverseEffects}
             </div>
           )}
         </div>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(status)}`}>
+        <div className="flex items-center justify-between">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            status === 'completed' ? 'bg-green-100 text-green-800' :
+            status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+            status === 'overdue' ? 'bg-red-100 text-red-800' :
+            status === 'due' ? 'bg-yellow-100 text-yellow-800' :
+            'bg-gray-100 text-gray-800'
+          }`}>
           {getStatusText(status)}
-        </span>
+          </span>
+          {showScheduleButton && (
+            <button
+              onClick={() => onSchedule && onSchedule(vaccine)}
+              className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 transition-colors"
+            >
+              Schedule Appointment
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -385,6 +382,10 @@ const Vaccinations= () => {
     }
   };
 
+  const handleScheduleAppointment = (vaccineName) => {
+    alert(`Scheduling appointment for: ${vaccineName}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-5">
       <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -499,6 +500,8 @@ const Vaccinations= () => {
                   batchNo={immunization.batchNo}
                   adverseEffects={immunization.adverseEffects}
                   bcgScar={immunization.bcgScar}
+                  onSchedule={handleScheduleAppointment}
+                  showScheduleButton={immunization.status === 'upcoming' || immunization.status === 'missed'}
                 />
               ))}
             </div>
