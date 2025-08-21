@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiMessageCircle } from 'react-icons/fi';
 import './Patients.css';
-import { FaSearch } from 'react-icons/fa';
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,30 +98,24 @@ const Patients = () => {
       email: "charlotte.davis@email.com",
       phone: "+1 (555) 678-9012",
       status: "Active",
-      lastVisit: "2024-12-11",
-      nextVisit: "2024-12-18",
+      lastVisit: "2024-12-06",
+      nextVisit: "2024-12-13",
       condition: "Pregnancy - 16 weeks",
       bloodType: "A-",
       emergencyContact: "Robert Davis (Husband) - +1 (555) 432-1098",
-      medicalHistory: ["PCOS", "Thyroid disorder"],
-      allergies: ["Shellfish"],
+      medicalHistory: ["Miscarriage", "PCOS"],
+      allergies: ["None"],
       image: "/images/6.png"
     }
   ];
 
   const filteredPatients = patients.filter(patient => {
-    const matchesSearch =
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      filterStatus === 'all' || patient.status.toLowerCase() === filterStatus.toLowerCase();
-    return matchesSearch && matchesFilter;
+    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         patient.phone.includes(searchTerm);
+    const matchesStatus = filterStatus === 'all' || patient.status.toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesStatus;
   });
-
-  const handlePatientClick = (patient) => {
-    navigate(`/doctor/patients/PatientDetails`);
-  };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -136,70 +130,129 @@ const Patients = () => {
     }
   };
 
+  const handleViewPatient = (patientId) => {
+    navigate(`/doctor/patients/PatientDetails?id=${patientId}`);
+  };
+
   return (
-    <div className="obgyn-patient-management-page">
-      {/* Header with Banner */}
-      <div className="obgyn-patient-dashboard-header">
-        <h1>Patient Management</h1>
-        <p>Manage your patients and their medical records efficiently</p>
-      </div>
+    <div className="doctor-patients-page">
+      <div className="doctor-patients-container">
+        <div className="doctor-patients">
+          <div className="doctor-patients__header">
+            <div className="doctor-patients__header-icon">
+              <FiUser className="w-6 h-6" />
+            </div>
+            <div className="doctor-patients__welcome">
+              <h1>Patient Management</h1>
+              <p>Manage and monitor your patients' health records and appointments</p>
+            </div>
+          </div>
 
-      {/* Search and Filters */}
-      <div className="obgyn-patient-search-controls">
-        <div className="obgyn-patient-search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Search patients by name, email, or condition..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <span className="obgyn-patient-search-icon"><FaSearch /></span>
-        </div>
-
-        <div className="obgyn-patient-filter-dropdown">
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="follow-up">Follow-up</option>
-            <option value="emergency">Emergency</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Patients Grid */}
-      <div className="obgyn-patient-cards-grid">
-        {filteredPatients.length > 0 ? (
-          filteredPatients.map(patient => (
-            <div key={patient.id} className="obgyn-patient-profile-card" onClick={() => handlePatientClick(patient)}>
-              <div className="obgyn-patient-card-header-section">
-                <img src={patient.image} alt={patient.name} className="obgyn-patient-profile-avatar" />
-                <div className="obgyn-patient-basic-info">
-                  <h3>{patient.name}</h3>
-                  <p className="obgyn-patient-age-display">{patient.age} years old</p>
-                </div>
-                <div className="obgyn-patient-status-badge" style={{ backgroundColor: getStatusColor(patient.status) }}>
-                  {patient.status}
-                </div>
-              </div>
-
-              <div className="obgyn-patient-card-main-content">
-                <p className="obgyn-patient-condition-display">{patient.condition}</p>
-                <p className="obgyn-patient-email-display">{patient.email}</p>
-                <p className="obgyn-patient-phone-display">{patient.phone}</p>
-              </div>
-
-              <div className="obgyn-patient-card-footer-section">
-                <span className="obgyn-patient-last-visit-badge">Last: {patient.lastVisit}</span>
-                <span className="obgyn-patient-next-visit-badge">Next: {patient.nextVisit}</span>
+          <div className="doctor-patients__controls">
+            <div className="doctor-patients__search">
+              <div className="doctor-search-input">
+                <FiSearch className="doctor-search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search patients by name, email, or phone..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="doctor-search-field"
+                />
               </div>
             </div>
-          ))
-        ) : (
-          <div className="obgyn-patient-empty-state">
-            <h3>No patients found</h3>
-            <p>Try adjusting your search criteria or filters.</p>
+
+            <div className="doctor-patients__filters">
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="doctor-status-filter"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="follow-up">Follow-up</option>
+                <option value="emergency">Emergency</option>
+              </select>
+            </div>
+
+            <button className="doctor-add-patient-btn">
+              <FiPlus size={16} />
+              Add New Patient
+            </button>
           </div>
-        )}
+
+          <div className="doctor-patients__content">
+            <div className="doctor-patients-grid">
+              {filteredPatients.map(patient => (
+                <div key={patient.id} className="doctor-patient-card">
+                  <div className="doctor-patient-card__header">
+                    <div className="doctor-patient-card__avatar">
+                      <img src={patient.image} alt={patient.name} />
+                    </div>
+                    <div className="doctor-patient-card__status">
+                      <span 
+                        className="doctor-patient-status-badge"
+                        style={{ backgroundColor: getStatusColor(patient.status) }}
+                      >
+                        {patient.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="doctor-patient-card__body">
+                    <h3 className="doctor-patient-card__name">{patient.name}</h3>
+                    <div className="doctor-patient-card__info">
+                      <div className="doctor-patient-info-item">
+                        <FiUser size={14} />
+                        <span>{patient.age} years old</span>
+                      </div>
+                      <div className="doctor-patient-info-item">
+                        <FiCalendar size={14} />
+                        <span>Last visit: {patient.lastVisit}</span>
+                      </div>
+                      <div className="doctor-patient-info-item">
+                        <FiPhone size={14} />
+                        <span>{patient.phone}</span>
+                      </div>
+                      <div className="doctor-patient-info-item">
+                        <FiMapPin size={14} />
+                        <span>{patient.condition}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="doctor-patient-card__actions">
+                    <button 
+                      className="doctor-patient-action-btn doctor-patient-action-btn--view"
+                      onClick={() => handleViewPatient(patient.id)}
+                    >
+                      <FiEye size={14} />
+                      View
+                    </button>
+                    <button className="doctor-patient-action-btn doctor-patient-action-btn--edit">
+                      <FiEdit size={14} />
+                      Edit
+                    </button>
+                    <button className="doctor-patient-action-btn doctor-patient-action-btn--message">
+                      <FiMessageCircle size={14} />
+                      Message
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredPatients.length === 0 && (
+              <div className="doctor-no-patients">
+                <div className="doctor-no-patients-icon">
+                  <FiUser size={48} />
+                </div>
+                <h3>No patients found</h3>
+                <p>Try adjusting your search criteria or add a new patient.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

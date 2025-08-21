@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
+import { FiPackage, FiCheck, FiClipboard, FiAlertTriangle, FiSearch, FiPlus, FiUser, FiCalendar, FiClock, FiEdit, FiEye, FiTrash2, FiX } from 'react-icons/fi';
 import './Prescriptions.css';
-import { 
-  FaPills, 
-  FaCheck, 
-  FaClipboardList, 
-  FaExclamationTriangle,
-  FaSearch
-} from 'react-icons/fa';
 
 const Prescriptions = () => {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -106,11 +100,11 @@ const Prescriptions = () => {
           instructions: "Take with or without food"
         },
         {
-          name: "Aspirin",
-          dosage: "81mg",
-          frequency: "Once daily",
-          duration: "Until delivery",
-          instructions: "Take with food"
+          name: "Magnesium Sulfate",
+          dosage: "4g IV",
+          frequency: "Loading dose then maintenance",
+          duration: "24-48 hours",
+          instructions: "Hospital administration only"
         }
       ],
       notes: "Emergency treatment for preeclampsia. Monitor blood pressure closely.",
@@ -123,39 +117,77 @@ const Prescriptions = () => {
       patientId: 5,
       date: "2024-12-08",
       status: "Active",
-      type: "Prenatal Care",
+      type: "Fertility Support",
       medications: [
+        {
+          name: "Clomiphene Citrate",
+          dosage: "50mg",
+          frequency: "Once daily",
+          duration: "5 days",
+          instructions: "Start on day 5 of menstrual cycle"
+        },
         {
           name: "Folic Acid",
           dosage: "400mcg",
+          frequency: "Once daily",
+          duration: "Until pregnancy confirmed",
+          instructions: "Take with food"
+        }
+      ],
+      notes: "Fertility treatment cycle. Monitor for side effects and ovulation.",
+      nextRefill: "2024-12-15",
+      image: "/images/5.png"
+    },
+    {
+      id: 6,
+      patient: "Charlotte Davis",
+      patientId: 6,
+      date: "2024-12-06",
+      status: "Active",
+      type: "Pregnancy Management",
+      medications: [
+        {
+          name: "Prenatal Multivitamin",
+          dosage: "1 tablet",
+          frequency: "Once daily",
+          duration: "Until delivery",
+          instructions: "Take with breakfast"
+        },
+        {
+          name: "DHA Supplement",
+          dosage: "200mg",
           frequency: "Once daily",
           duration: "Until delivery",
           instructions: "Take with food"
         }
       ],
-      notes: "Standard folic acid supplementation for early pregnancy.",
-      nextRefill: "2025-01-08",
-      image: "/images/5.png"
+      notes: "Standard prenatal care. Continue healthy diet and exercise.",
+      nextRefill: "2025-01-06",
+      image: "/images/6.png"
     }
   ];
 
   const filteredPrescriptions = prescriptions.filter(prescription => {
     const matchesSearch = prescription.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          prescription.type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || prescription.status.toLowerCase() === filterStatus.toLowerCase();
-    return matchesSearch && matchesFilter;
+    const matchesStatus = filterStatus === 'all' || prescription.status.toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'active': return '#10b981';
-      case 'completed': return '#6b7280';
-      case 'expired': return '#ef4444';
-      default: return '#6b7280';
+      case 'active':
+        return '#10b981';
+      case 'completed':
+        return '#6b7280';
+      case 'expired':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
-  const handlePrescriptionClick = (prescription) => {
+  const handleViewPrescription = (prescription) => {
     setSelectedPrescription(prescription);
   };
 
@@ -163,133 +195,142 @@ const Prescriptions = () => {
     setSelectedPrescription(null);
   };
 
-  const openNewPrescription = () => {
-    setShowNewPrescription(true);
+  const handleEditPrescription = (prescription) => {
+    console.log('Edit prescription:', prescription.id);
+    // Add edit logic here
   };
 
-  const closeNewPrescription = () => {
-    setShowNewPrescription(false);
+  const handleDeletePrescription = (prescription) => {
+    if (window.confirm('Are you sure you want to delete this prescription?')) {
+      console.log('Delete prescription:', prescription.id);
+      // Add delete logic here
+    }
   };
 
   return (
-    <div className="prescriptions-page">
-      {/* Header - Matching dashboard exactly */}
-      <div className="prescriptions-header">
-        <h1>Prescription Management</h1>
-        <p>Create and manage patient prescriptions</p>
-        <div className="doctor-dashboard-header-decoration"></div>
-      </div>
-
-      {/* Statistics Cards - Matching dashboard exactly */}
-      <div className="prescriptions-stats">
-        <div className="prescription-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
-          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
-            <FaPills />
-          </div>
-          <div className="prescription-stat-card-content">
-            <h3>{prescriptions.length}</h3>
-            <p>Total Prescriptions</p>
-          </div>
-        </div>
-        <div className="prescription-stat-card" style={{ borderLeftColor: "#2196F3" }}>
-          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
-            <FaCheck />
-          </div>
-          <div className="prescription-stat-card-content">
-            <h3>{prescriptions.filter(p => p.status === 'Active').length}</h3>
-            <p>Active</p>
-          </div>
-        </div>
-        <div className="prescription-stat-card" style={{ borderLeftColor: "#FF9800" }}>
-          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
-            <FaClipboardList />
-          </div>
-          <div className="prescription-stat-card-content">
-            <h3>{prescriptions.filter(p => p.status === 'Completed').length}</h3>
-            <p>Completed</p>
-          </div>
-        </div>
-        <div className="prescription-stat-card" style={{ borderLeftColor: "#F44336" }}>
-          <div className="prescription-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
-            <FaExclamationTriangle />
-          </div>
-          <div className="prescription-stat-card-content">
-            <h3>{prescriptions.filter(p => p.status === 'Expired').length}</h3>
-            <p>Expired</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="prescriptions-content">
-        {/* Left Column */}
-        <div className="prescriptions-left">
-          {/* Search and Filters Section */}
-          <div className="prescriptions-section">
-            <div className="prescriptions-section-header">
-              <h2>Prescription Controls</h2>
-              <button className="prescriptions-view-all-btn" onClick={openNewPrescription}>
-                <FaPills /> New Prescription
-              </button>
+    <div className="doctor-prescriptions-page">
+      <div className="doctor-prescriptions-container">
+        <div className="doctor-prescriptions">
+          <div className="doctor-prescriptions__header">
+            <div className="doctor-prescriptions__header-icon">
+              <FiPackage className="w-6 h-6" />
             </div>
-            <div className="prescriptions-controls">
-              <div className="search-box">
+            <div className="doctor-prescriptions__welcome">
+              <h1>Prescription Management</h1>
+              <p>Manage and monitor patient prescriptions and medication orders</p>
+            </div>
+          </div>
+
+          <div className="doctor-prescriptions__controls">
+            <div className="doctor-prescriptions__search">
+              <div className="doctor-search-input">
+                <FiSearch className="doctor-search-icon" />
                 <input
                   type="text"
-                  placeholder="Search prescriptions by patient or type..."
+                  placeholder="Search prescriptions by patient name or type..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  className="doctor-search-field"
                 />
-                <span className="search-icon"><FaSearch /></span>
-              </div>
-              
-              <div className="filters">
-                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
-                  <option value="expired">Expired</option>
-                </select>
               </div>
             </div>
+
+            <div className="doctor-prescriptions__filters">
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="doctor-status-filter"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+
+            <button className="doctor-add-prescription-btn">
+              <FiPlus size={16} />
+              New Prescription
+            </button>
           </div>
 
-          {/* Prescriptions Grid Section */}
-          <div className="prescriptions-section">
-            <div className="prescriptions-section-header">
-              <h2>Prescriptions</h2>
-              <span className="prescriptions-count">{filteredPrescriptions.length} prescriptions</span>
-            </div>
-            <div className="prescriptions-grid">
+          <div className="doctor-prescriptions__content">
+            <div className="doctor-prescriptions-grid">
               {filteredPrescriptions.map(prescription => (
-                <div key={prescription.id} className="prescription-card" onClick={() => handlePrescriptionClick(prescription)}>
-                  <div className="prescription-card__header">
-                    <img src={prescription.image} alt={prescription.patient} className="patient-avatar" />
-                    <div className="prescription-status" style={{ backgroundColor: getStatusColor(prescription.status) }}>
-                      {prescription.status}
+                <div key={prescription.id} className="doctor-prescription-card">
+                  <div className="doctor-prescription-card__header">
+                    <div className="doctor-prescription-card__avatar">
+                      <img src={prescription.image} alt={prescription.patient} />
+                    </div>
+                    <div className="doctor-prescription-card__status">
+                      <span 
+                        className="doctor-prescription-status-badge"
+                        style={{ backgroundColor: getStatusColor(prescription.status) }}
+                      >
+                        {prescription.status}
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className="prescription-card__body">
-                    <h3>{prescription.patient}</h3>
-                    <p className="prescription-type">{prescription.type}</p>
-                    <p className="prescription-date">Prescribed: {prescription.date}</p>
-                    <p className="medication-count">{prescription.medications.length} medication(s)</p>
-                    <p className="next-refill">Next Refill: {prescription.nextRefill}</p>
+
+                  <div className="doctor-prescription-card__body">
+                    <h3 className="doctor-prescription-card__name">{prescription.patient}</h3>
+                    <div className="doctor-prescription-card__info">
+                      <div className="doctor-prescription-info-item">
+                        <FiPackage size={14} />
+                        <span>{prescription.type}</span>
+                      </div>
+                      <div className="doctor-prescription-info-item">
+                        <FiCalendar size={14} />
+                        <span>Prescribed: {prescription.date}</span>
+                      </div>
+                      <div className="doctor-prescription-info-item">
+                        <FiClock size={14} />
+                        <span>Next refill: {prescription.nextRefill}</span>
+                      </div>
+                      <div className="doctor-prescription-info-item">
+                        <FiUser size={14} />
+                        <span>{prescription.medications.length} medications</span>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="prescription-card__footer">
-                    <button className="view-btn">View Details</button>
-                    <button className="refill-btn">Request Refill</button>
+
+                  <div className="doctor-prescription-card__actions">
+                    <button 
+                      className="doctor-prescription-action-btn doctor-prescription-action-btn--view"
+                      onClick={() => handleViewPrescription(prescription)}
+                    >
+                      <FiEye size={14} />
+                      View
+                    </button>
+                    <button 
+                      className="doctor-prescription-action-btn doctor-prescription-action-btn--edit"
+                      onClick={() => handleEditPrescription(prescription)}
+                    >
+                      <FiEdit size={14} />
+                      Edit
+                    </button>
+                    <button 
+                      className="doctor-prescription-action-btn doctor-prescription-action-btn--delete"
+                      onClick={() => handleDeletePrescription(prescription)}
+                    >
+                      <FiTrash2 size={14} />
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
 
-        {/* Right Column - Empty for now */}
-        <div className="prescriptions-right">
-          {/* Empty right column - can be used for additional features later */}
+            {filteredPrescriptions.length === 0 && (
+              <div className="doctor-no-prescriptions">
+                <div className="doctor-no-prescriptions-icon">
+                  <FiPackage size={48} />
+                </div>
+                <h3>No prescriptions found</h3>
+                <p>Try adjusting your search criteria or create a new prescription.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -299,16 +340,49 @@ const Prescriptions = () => {
           <div className="prescription-modal" onClick={(e) => e.stopPropagation()}>
             <div className="prescription-modal__header">
               <h2>Prescription Details</h2>
-              <button className="close-btn" onClick={closePrescriptionDetails}>✕</button>
+              <button className="close-btn" onClick={closePrescriptionDetails}>
+                <FiX size={20} />
+              </button>
             </div>
             
             <div className="prescription-modal__content">
-              <div className="patient-info-section">
-                <img src={selectedPrescription.image} alt={selectedPrescription.patient} />
-                <div>
-                  <h3>{selectedPrescription.patient}</h3>
-                  <p className="prescription-type">{selectedPrescription.type}</p>
-                  <p className="prescription-date">Prescribed: {selectedPrescription.date}</p>
+              <div className="prescription-info">
+                <div className="info-row">
+                  <label>Patient:</label>
+                  <div className="patient-info">
+                    <img src={selectedPrescription.image} alt={selectedPrescription.patient} />
+                    <span>{selectedPrescription.patient}</span>
+                  </div>
+                </div>
+                
+                <div className="info-row">
+                  <label>Type:</label>
+                  <span>{selectedPrescription.type}</span>
+                </div>
+                
+                <div className="info-row">
+                  <label>Date:</label>
+                  <span>{selectedPrescription.date}</span>
+                </div>
+                
+                <div className="info-row">
+                  <label>Status:</label>
+                  <span 
+                    className="status-badge"
+                    style={{ backgroundColor: getStatusColor(selectedPrescription.status) }}
+                  >
+                    {selectedPrescription.status}
+                  </span>
+                </div>
+                
+                <div className="info-row">
+                  <label>Next Refill:</label>
+                  <span>{selectedPrescription.nextRefill}</span>
+                </div>
+                
+                <div className="info-row">
+                  <label>Notes:</label>
+                  <span>{selectedPrescription.notes}</span>
                 </div>
               </div>
 
@@ -318,7 +392,7 @@ const Prescriptions = () => {
                   <div key={index} className="medication-item">
                     <div className="medication-header">
                       <h4>{med.name}</h4>
-                      <span className="dosage">{med.dosage}</span>
+                      <span className="medication-dosage">{med.dosage}</span>
                     </div>
                     <div className="medication-details">
                       <p><strong>Frequency:</strong> {med.frequency}</p>
@@ -328,124 +402,12 @@ const Prescriptions = () => {
                   </div>
                 ))}
               </div>
-
-              <div className="notes-section">
-                <h3>Notes</h3>
-                <p>{selectedPrescription.notes}</p>
-              </div>
-
-              <div className="refill-section">
-                <h3>Refill Information</h3>
-                <p><strong>Next Refill:</strong> {selectedPrescription.nextRefill}</p>
-                <p><strong>Status:</strong> 
-                  <span 
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(selectedPrescription.status) }}
-                  >
-                    {selectedPrescription.status}
-                  </span>
-                </p>
-              </div>
             </div>
 
             <div className="prescription-modal__actions">
               <button className="btn btn-primary">Edit Prescription</button>
-              <button className="btn btn-secondary">Request Refill</button>
-              <button className="btn btn-outline">Print Prescription</button>
-              <button className="btn btn-danger">Discontinue</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* New Prescription Modal */}
-      {showNewPrescription && (
-        <div className="prescription-modal-overlay" onClick={closeNewPrescription}>
-          <div className="prescription-modal new-prescription-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="prescription-modal__header">
-              <h2>Create New Prescription</h2>
-              <button className="close-btn" onClick={closeNewPrescription}>✕</button>
-            </div>
-            
-            <div className="prescription-modal__content">
-              <div className="form-section">
-                <h3>Patient Information</h3>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Select Patient</label>
-                    <select>
-                      <option>Select a patient...</option>
-                      <option>Emma Wilson</option>
-                      <option>Sophia Rodriguez</option>
-                      <option>Isabella Chen</option>
-                      <option>Mia Johnson</option>
-                      <option>Ava Thompson</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Prescription Type</label>
-                    <select>
-                      <option>Prenatal Care</option>
-                      <option>Postpartum Care</option>
-                      <option>Emergency Treatment</option>
-                      <option>Follow-up Care</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Medications</h3>
-                <div className="medication-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Medication Name</label>
-                      <input type="text" placeholder="e.g., Folic Acid" />
-                    </div>
-                    <div className="form-group">
-                      <label>Dosage</label>
-                      <input type="text" placeholder="e.g., 400mcg" />
-                    </div>
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Frequency</label>
-                      <select>
-                        <option>Once daily</option>
-                        <option>Twice daily</option>
-                        <option>Three times daily</option>
-                        <option>As needed</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Duration</label>
-                      <input type="text" placeholder="e.g., Until delivery" />
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label>Instructions</label>
-                    <textarea placeholder="Special instructions for the patient..."></textarea>
-                  </div>
-                  <button className="add-medication-btn">+ Add Another Medication</button>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Additional Information</h3>
-                <div className="form-group">
-                  <label>Notes</label>
-                  <textarea placeholder="Additional notes or instructions..."></textarea>
-                </div>
-                <div className="form-group">
-                  <label>Next Refill Date</label>
-                  <input type="date" />
-                </div>
-              </div>
-            </div>
-
-            <div className="prescription-modal__actions">
-              <button className="btn btn-outline" onClick={closeNewPrescription}>Cancel</button>
-              <button className="btn btn-primary">Create Prescription</button>
+              <button className="btn btn-secondary">Print Prescription</button>
+              <button className="btn btn-outline">Send to Pharmacy</button>
             </div>
           </div>
         </div>
