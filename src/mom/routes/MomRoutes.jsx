@@ -9,7 +9,6 @@ import Predictions from '../pages/Predictions';
 import BabyProduct from '../pages/BabyProduct';
 import Communication from '../pages/Communication';
 import ChatPage from '../pages/ChatPage';
-import VaccinationSchedule from '../pages/vaccinationschedule/VaccinationSchedule';
 
 // Pregnancy Tracker Tools
 import DueDateCalculator from '../pages/pregnancy-tools/DueDateCalculator';
@@ -55,7 +54,6 @@ export default (
 
     {/* Other Sections */}
     <Route path="vaccinations" element={<Vaccinations />} />
-    <Route path="vaccinationschedule" element={<VaccinationSchedule />} />
     <Route path="appointments" element={<AppointmentsDashboard />} />
     <Route path="medical-reports" element={<MedicalReports />} />
     <Route path="predictions" element={<Predictions />} />

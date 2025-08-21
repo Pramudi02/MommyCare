@@ -148,18 +148,18 @@ const ClinicVisitRequestsList = ({ requests, onCancel, isLoading, isAuthenticate
                 </div>
               )}
 
-              {/* Admin Notes */}
-              {request.adminNotes && (
+          {/* Admin Notes */}
+          {request.adminNotes && (
                 <div className="text-sm text-blue-700">
                   <div className="flex items-start space-x-2">
-                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
-                    <div>
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                <div>
                       <div className="font-medium mb-1">Notes:</div>
                       <p>{request.adminNotes}</p>
-                    </div>
-                  </div>
                 </div>
-              )}
+              </div>
+            </div>
+          )}
             </div>
           )}
 
