@@ -92,7 +92,7 @@ const Vaccinations= () => {
     );
   };
 
-  const TimelineCard = ({ vaccine, age, status, dueDate, batchNo, adverseEffects, bcgScar, onSchedule, showScheduleButton }) => {
+  const TimelineCard = ({ vaccine, age, status, dueDate, vaccinationDate, batchNo, adverseEffects, bcgScar, onSchedule, showScheduleButton }) => {
     const getStatusColor = (status) => {
       switch (status) {
         case 'completed':
@@ -123,8 +123,9 @@ const Vaccinations= () => {
       }
     };
 
-    const isUpcomingOrMissed = status === 'upcoming' || status === 'missed';
-    const effectsLabel = isUpcomingOrMissed ? 'Possible Effects' : 'Effects';
+    const isCompleted = status === 'completed';
+    const isUpcomingOrDue = status === 'upcoming' || status === 'due';
+    const effectsLabel = isCompleted ? 'Effects' : 'Possible Effects';
 
     return (
       <div className={`border-l-4 rounded-r-xl p-4 mb-4 shadow-sm transition-all duration-300 hover:shadow-md ${getStatusColor(status)}`}>
@@ -133,12 +134,17 @@ const Vaccinations= () => {
           <div className="text-xs text-gray-600 mb-1">
             <span className="font-medium">Age:</span> {age}
           </div>
-          {dueDate && (
+          {isCompleted && vaccinationDate && (
+            <div className="text-xs text-gray-600 mb-1">
+              <span className="font-medium">Vaccination Date:</span> {vaccinationDate}
+            </div>
+          )}
+          {!isCompleted && dueDate && (
             <div className="text-xs text-gray-600 mb-1">
               <span className="font-medium">Due:</span> {dueDate}
             </div>
           )}
-          {batchNo && !isUpcomingOrMissed && (
+          {batchNo && isCompleted && (
             <div className="text-xs text-gray-600 mb-1">
               <span className="font-medium">Batch:</span> {batchNo}
             </div>
@@ -182,6 +188,7 @@ const Vaccinations= () => {
       vaccine: 'B.C.G (Bacillus Calmette-Guérin)',
       age: 'At birth',
       status: 'completed',
+      vaccinationDate: 'January 15, 2025',
       dueDate: 'January 15, 2025',
       batchNo: 'BCG-2025-001',
       adverseEffects: 'Mild swelling at injection site',
@@ -192,16 +199,14 @@ const Vaccinations= () => {
       age: 'At birth',
       status: 'upcoming',
       dueDate: 'February 15, 2025',
-      batchNo: 'BCG-2025-002',
       adverseEffects: 'None reported',
       bcgScar: undefined
     },
     {
       vaccine: 'Pentavalent 1 + OPV 1',
       age: '2 months completed',
-      status: 'due',
+      status: 'upcoming',
       dueDate: 'March 15, 2025',
-      batchNo: 'PENT-2025-001',
       adverseEffects: 'Fever, mild fussiness',
       bcgScar: undefined
     },
@@ -210,7 +215,6 @@ const Vaccinations= () => {
       age: '4 months completed',
       status: 'upcoming',
       dueDate: 'May 15, 2025',
-      batchNo: 'PENT-2025-002',
       adverseEffects: 'Soreness at injection site',
       bcgScar: undefined
     },
@@ -219,7 +223,6 @@ const Vaccinations= () => {
       age: '6 months completed',
       status: 'upcoming',
       dueDate: 'July 15, 2025',
-      batchNo: 'PENT-2025-003',
       adverseEffects: 'Low-grade fever',
       bcgScar: undefined
     },
@@ -228,7 +231,6 @@ const Vaccinations= () => {
       age: '9 months completed',
       status: 'upcoming',
       dueDate: 'October 15, 2025',
-      batchNo: 'MMR-2025-001',
       adverseEffects: 'Rash, fever',
       bcgScar: undefined
     },
@@ -237,7 +239,6 @@ const Vaccinations= () => {
       age: '12 months completed',
       status: 'upcoming',
       dueDate: 'January 15, 2026',
-      batchNo: 'JE-2026-001',
       adverseEffects: 'Headache, fever',
       bcgScar: undefined
     },
@@ -246,7 +247,6 @@ const Vaccinations= () => {
       age: '18 months completed',
       status: 'upcoming',
       dueDate: 'July 15, 2026',
-      batchNo: 'DPT-2026-001',
       adverseEffects: 'Soreness, fever',
       bcgScar: undefined
     },
@@ -255,7 +255,6 @@ const Vaccinations= () => {
       age: '3 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2028',
-      batchNo: 'MMR-2028-001',
       adverseEffects: 'Mild rash',
       bcgScar: undefined
     },
@@ -264,7 +263,6 @@ const Vaccinations= () => {
       age: '5 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2030',
-      batchNo: 'DT-2030-001',
       adverseEffects: 'Soreness at injection site',
       bcgScar: undefined
     },
@@ -273,7 +271,6 @@ const Vaccinations= () => {
       age: '11 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2036',
-      batchNo: 'Td-2036-001',
       adverseEffects: 'Soreness, mild fever',
       bcgScar: undefined
     }
@@ -497,11 +494,12 @@ const Vaccinations= () => {
                   age={immunization.age}
                   status={immunization.status}
                   dueDate={immunization.dueDate}
+                  vaccinationDate={immunization.vaccinationDate}
                   batchNo={immunization.batchNo}
                   adverseEffects={immunization.adverseEffects}
                   bcgScar={immunization.bcgScar}
                   onSchedule={handleScheduleAppointment}
-                  showScheduleButton={immunization.status === 'upcoming' || immunization.status === 'missed'}
+                  showScheduleButton={immunization.status === 'upcoming' || immunization.status === 'due'}
                 />
               ))}
             </div>
