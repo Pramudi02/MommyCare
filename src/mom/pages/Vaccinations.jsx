@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Bell, FileText, BarChart3, Syringe, Shield, Clock, MapPin, User, Hash, Plus, MoreHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { vaccinationAPI } from '../../services/api';
 import './Vaccination.css';
  
 
 const Vaccinations= () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(2);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [isLoading, setIsLoading] = useState(false);
+  const [vaccinationData, setVaccinationData] = useState({
+    upcoming: [],
+    missed: [],
+    completed: []
+  });
  
   const handleStatCardClick = (tab) => {
     setActiveTab(tab);
@@ -82,9 +91,14 @@ const Vaccinations= () => {
           {showScheduleButton && (
             <button
               onClick={() => onSchedule(vaccine)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-md"
+              disabled={isLoading}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
+                isLoading 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
             >
-              Schedule Appointment
+              {isLoading ? 'Requesting...' : 'Request Appointment'}
             </button>
           )}
         </div>
@@ -175,7 +189,7 @@ const Vaccinations= () => {
               onClick={() => onSchedule && onSchedule(vaccine)}
               className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 transition-colors"
             >
-              Schedule Appointment
+              Request Appointment
             </button>
           )}
         </div>
@@ -197,7 +211,7 @@ const Vaccinations= () => {
     {
       vaccine: 'B.C.G Second Dose',
       age: 'At birth',
-      status: 'upcoming',
+      status: 'due',
       dueDate: 'February 15, 2025',
       adverseEffects: 'None reported',
       bcgScar: undefined
@@ -279,25 +293,67 @@ const Vaccinations= () => {
   // Sample data for the main content area
   const upcomingImmunizations = [
     {
-      vaccine: 'Influenza (Flu Shot)',
-      dueDate: 'September 1, 2025',
-      lastGiven: 'September 2024',
-      recommendation: 'Annually',
-      status: 'due-soon'
-    },
-    {
-      vaccine: 'COVID-19 Booster',
-      dueDate: 'August 15, 2025',
-      lastGiven: 'February 2025',
-      recommendation: 'As needed',
-      status: 'upcoming'
-    },
-    {
       vaccine: 'Pentavalent 1 + OPV 1',
       dueDate: 'March 15, 2025',
       lastGiven: 'Not given yet',
       recommendation: '2 months completed',
-      status: 'due'
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Pentavalent 2 + OPV 2 + IPV',
+      dueDate: 'May 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '4 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Pentavalent 3 + OPV 3',
+      dueDate: 'July 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '6 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'MMR 1 (Measles, Mumps, Rubella)',
+      dueDate: 'October 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '9 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Live JE (Japanese Encephalitis)',
+      dueDate: 'January 15, 2026',
+      lastGiven: 'Not given yet',
+      recommendation: '12 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'DPT + OPV 4',
+      dueDate: 'July 15, 2026',
+      lastGiven: 'Not given yet',
+      recommendation: '18 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'MMR 2 (Measles, Mumps, Rubella)',
+      dueDate: 'January 15, 2028',
+      lastGiven: 'Not given yet',
+      recommendation: '3 years completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'D.T + OPV 5',
+      dueDate: 'January 15, 2030',
+      lastGiven: 'Not given yet',
+      recommendation: '5 years completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Adult Tetanus & Diphtheria',
+      dueDate: 'January 15, 2036',
+      lastGiven: 'Not given yet',
+      recommendation: '11 years completed',
+      status: 'upcoming'
     }
   ];
 
@@ -322,66 +378,110 @@ const Vaccinations= () => {
   ];
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'upcoming':
-        return (
-          <div className="grid gap-4">
-            {upcomingImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={true}
-              />
-            ))}
-          </div>
-        );
-      case 'missed':
-        return (
-          <div className="grid gap-4">
-            {missedImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={false}
-              />
-            ))}
-          </div>
-        );
-      case 'completed':
-        return (
-          <div className="grid gap-4">
-            {completedImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={false}
-              />
-            ))}
-          </div>
-        );
-      default:
-        return null;
+    const data = vaccinationData[activeTab] || [];
+    
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
+
+    if (data.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No {activeTab} vaccinations found.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-4">
+        {data.map((immunization, index) => (
+          <ImmunizationCard
+            key={index}
+            vaccine={immunization.vaccine}
+            dueDate={immunization.formattedDueDate || immunization.dueDate}
+            lastGiven={immunization.lastGiven}
+            recommendation={immunization.recommendation}
+            status={immunization.status}
+            onSchedule={handleScheduleAppointment}
+            showScheduleButton={activeTab !== 'completed'}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const handleScheduleAppointment = async (vaccineName) => {
+    try {
+      setIsLoading(true);
+      
+      // Get current date and add 7 days for preferred date
+      const preferredDate = new Date();
+      preferredDate.setDate(preferredDate.getDate() + 7);
+      
+      const appointmentData = {
+        vaccine: vaccineName,
+        preferredDate: preferredDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        preferredTime: 'Morning',
+        location: 'Main Clinic',
+        notes: `Vaccination appointment requested for: ${vaccineName}`
+      };
+
+      const response = await vaccinationAPI.requestAppointment(appointmentData);
+      
+      if (response.status === 'success') {
+        // Redirect to appointments page
+        navigate('/mom/appointments');
+      } else {
+        alert('Failed to request appointment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error requesting appointment:', error);
+      alert('Failed to request appointment. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleScheduleAppointment = (vaccineName) => {
-    alert(`Scheduling appointment for: ${vaccineName}`);
-  };
+  // Load vaccination data on component mount
+  useEffect(() => {
+    const loadVaccinationData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await vaccinationAPI.getAll();
+        
+        if (response.status === 'success' && response.data) {
+          const vaccinations = response.data;
+          
+          // Categorize vaccinations by status
+          const upcoming = vaccinations.filter(v => v.status === 'upcoming');
+          const missed = vaccinations.filter(v => v.status === 'missed' || v.status === 'due');
+          const completed = vaccinations.filter(v => v.status === 'completed');
+          
+          setVaccinationData({
+            upcoming,
+            missed,
+            completed
+          });
+        }
+      } catch (error) {
+        console.error('Error loading vaccination data:', error);
+        // If no data from API, use the static data
+        setVaccinationData({
+          upcoming: upcomingImmunizations,
+          missed: missedImmunizations,
+          completed: completedImmunizations
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVaccinationData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-5">
@@ -499,7 +599,7 @@ const Vaccinations= () => {
                   adverseEffects={immunization.adverseEffects}
                   bcgScar={immunization.bcgScar}
                   onSchedule={handleScheduleAppointment}
-                  showScheduleButton={immunization.status === 'upcoming' || immunization.status === 'due'}
+                  showScheduleButton={false}
                 />
               ))}
             </div>

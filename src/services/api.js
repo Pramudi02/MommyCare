@@ -201,6 +201,30 @@ export const midwifeAppointmentAPI = {
   },
 }; 
 
+// Vaccination API functions
+export const vaccinationAPI = {
+  // Get all vaccination records for a baby
+  getAll: async () => {
+    return apiRequest('/mom/vaccinations');
+  },
+
+  // Request vaccination appointment
+  requestAppointment: async (appointmentData) => {
+    return apiRequest('/mom/vaccinations/request-appointment', {
+      method: 'POST',
+      body: JSON.stringify(appointmentData),
+    });
+  },
+
+  // Initialize vaccination schedule for a baby
+  initializeSchedule: async (babyBirthDate) => {
+    return apiRequest('/mom/vaccinations/initialize', {
+      method: 'POST',
+      body: JSON.stringify({ babyBirthDate }),
+    });
+  },
+};
+
 // Doctor API
 export const doctorAPI = {
   getDashboard: async () => apiRequest('/doctor/dashboard'),
