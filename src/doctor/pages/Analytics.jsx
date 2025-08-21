@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import './Analytics.css';
 import { 
-  FaUsers, 
-  FaCalendarAlt, 
-  FaDollarSign, 
-  FaChartBar
-} from 'react-icons/fa';
+  FiUsers, 
+  FiCalendar, 
+  FiDollarSign, 
+  FiBarChart2,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiDownload,
+  FiFilter,
+  FiActivity,
+  FiHeart,
+  FiAlertTriangle,
+  FiFileText,
+  FiEye,
+  FiEdit3
+} from 'react-icons/fi';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('month'); // 'week', 'month', 'quarter', 'year'
@@ -84,7 +94,7 @@ const Analytics = () => {
   };
 
   const getGrowthIcon = (growth) => {
-    return growth >= 0 ? '↗️' : '↘️';
+    return growth >= 0 ? <FiTrendingUp className="growth-icon" /> : <FiTrendingDown className="growth-icon" />;
   };
 
   const renderBarChart = (data, height = 200) => {
@@ -98,7 +108,7 @@ const Analytics = () => {
               className="bar" 
               style={{ 
                 height: `${(item.value / maxValue) * 100}%`,
-                backgroundColor: item.color 
+                backgroundColor: item.color || '#3b82f6'
               }}
             />
             <span className="bar-label">{item.label}</span>
@@ -108,272 +118,218 @@ const Analytics = () => {
     );
   };
 
-  const renderPieChart = (data, size = 150) => {
-    const total = data.reduce((sum, item) => sum + item.value, 0);
-    let currentAngle = 0;
-    
-    return (
-      <div className="pie-chart" style={{ width: size, height: size }}>
-        <svg width={size} height={size}>
-          {data.map((item, index) => {
-            const percentage = (item.value / total) * 100;
-            const angle = (percentage / 100) * 360;
-            const x1 = size / 2 + (size / 2 - 10) * Math.cos(currentAngle * Math.PI / 180);
-            const y1 = size / 2 + (size / 2 - 10) * Math.sin(currentAngle * Math.PI / 180);
-            const x2 = size / 2 + (size / 2 - 10) * Math.cos((currentAngle + angle) * Math.PI / 180);
-            const y2 = size / 2 + (size / 2 - 10) * Math.sin((currentAngle + angle) * Math.PI / 180);
-            
-            const largeArcFlag = angle > 180 ? 1 : 0;
-            
-            const pathData = [
-              `M ${size / 2} ${size / 2}`,
-              `L ${x1} ${y1}`,
-              `A ${size / 2 - 10} ${size / 2 - 10} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-              'Z'
-            ].join(' ');
-            
-            currentAngle += angle;
-            
-            return (
-              <path
-                key={index}
-                d={pathData}
-                fill={item.color}
-                stroke="white"
-                strokeWidth="2"
-              />
-            );
-          })}
-        </svg>
-      </div>
-    );
+  const generateReport = (type) => {
+    console.log(`Generating ${type} report for ${timeRange}`);
+    // In a real app, this would generate and download a report
   };
 
   return (
     <div className="analytics-page">
-      {/* Header - Matching dashboard exactly */}
-      <div className="analytics-header">
-        <h1>Practice Analytics</h1>
-        <p>Comprehensive insights into your medical practice performance</p>
-        <div className="doctor-dashboard-header-decoration"></div>
-      </div>
+      <div className="analytics-container">
+        <div className="analytics-content">
+          {/* Header */}
+          <div className="analytics-header">
+            <div className="analytics-header-icon">
+              <FiBarChart2 />
+            </div>
+            <div className="analytics-title">
+              <h1>Practice Analytics</h1>
+              <p>Comprehensive insights into your medical practice performance</p>
+            </div>
+            <div className="analytics-controls">
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="analytics-date-selector"
+              >
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+              </select>
+            </div>
+          </div>
 
-      {/* Statistics Cards - Matching dashboard exactly */}
-      <div className="analytics-stats">
-        <div className="analytics-stat-card" style={{ borderLeftColor: "#4CAF50" }}>
-          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#4CAF50" }}>
-            <FaUsers />
-          </div>
-          <div className="analytics-stat-card-content">
-            <h3>{analyticsData.patientStats.total}</h3>
-            <p>Total Patients</p>
-            <span className="stat-change positive">+{analyticsData.patientStats.newThisMonth} this month</span>
-          </div>
-        </div>
-        <div className="analytics-stat-card" style={{ borderLeftColor: "#2196F3" }}>
-          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#2196F3" }}>
-            <FaCalendarAlt />
-          </div>
-          <div className="analytics-stat-card-content">
-            <h3>{analyticsData.appointmentStats.total}</h3>
-            <p>Total Appointments</p>
-            <span className="stat-change positive">+{analyticsData.appointmentStats.completed} completed</span>
-          </div>
-        </div>
-        <div className="analytics-stat-card" style={{ borderLeftColor: "#FF9800" }}>
-          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#FF9800" }}>
-            <FaDollarSign />
-          </div>
-          <div className="analytics-stat-card-content">
-            <h3>{formatCurrency(analyticsData.revenueStats.total)}</h3>
-            <p>Total Revenue</p>
-            <span className="stat-change" style={{ color: getGrowthColor(analyticsData.revenueStats.growth) }}>
-              {getGrowthIcon(analyticsData.revenueStats.growth)} {analyticsData.revenueStats.growth}%
-            </span>
-          </div>
-        </div>
-        <div className="analytics-stat-card" style={{ borderLeftColor: "#F44336" }}>
-          <div className="analytics-stat-card-icon" style={{ backgroundColor: "#F44336" }}>
-            <FaChartBar />
-          </div>
-          <div className="analytics-stat-card-content">
-            <h3>{formatPercentage(85.4)}</h3>
-            <p>Patient Satisfaction</p>
-            <span className="stat-change positive">+2.1% from last month</span>
-          </div>
-        </div>
-      </div>
+          {/* Stats Cards */}
+          <div className="analytics-stats">
+            <div className="stat-card">
+              <div className="stat-card__icon stat-card__icon--blue">
+                <FiUsers />
+              </div>
+              <div className="stat-card__content">
+                <h3 className="stat-card__title">Total Patients</h3>
+                <div className="stat-card__value">{analyticsData.patientStats.total}</div>
+                <div className="stat-card__change stat-card__change--positive">
+                  +{analyticsData.patientStats.newThisMonth} this month
+                </div>
+              </div>
+            </div>
 
-      <div className="analytics-content">
-        {/* Left Column */}
-        <div className="analytics-left">
-          {/* Time Range Selector Section */}
-          <div className="analytics-section">
-            <div className="analytics-section-header">
-              <h2>Analytics Controls</h2>
-              <div className="time-range-selector">
-                <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="quarter">This Quarter</option>
-                  <option value="year">This Year</option>
-                </select>
+            <div className="stat-card">
+              <div className="stat-card__icon stat-card__icon--purple">
+                <FiCalendar />
+              </div>
+              <div className="stat-card__content">
+                <h3 className="stat-card__title">Appointments</h3>
+                <div className="stat-card__value">{analyticsData.appointmentStats.total}</div>
+                <div className="stat-card__change stat-card__change--positive">
+                  {analyticsData.appointmentStats.completed} completed
+                </div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card__icon stat-card__icon--green">
+                <FiDollarSign />
+              </div>
+              <div className="stat-card__content">
+                <h3 className="stat-card__title">Revenue</h3>
+                <div className="stat-card__value">{formatCurrency(analyticsData.revenueStats.total)}</div>
+                <div className="stat-card__change" style={{ color: getGrowthColor(analyticsData.revenueStats.growth) }}>
+                  {getGrowthIcon(analyticsData.revenueStats.growth)}
+                  {analyticsData.revenueStats.growth}% vs last month
+                </div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card__icon stat-card__icon--orange">
+                <FiActivity />
+              </div>
+              <div className="stat-card__content">
+                <h3 className="stat-card__title">Active Cases</h3>
+                <div className="stat-card__value">{analyticsData.patientStats.active}</div>
+                <div className="stat-card__change stat-card__change--neutral">
+                  {analyticsData.patientStats.inactive} inactive
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Charts Section */}
-          <div className="analytics-section">
-            <div className="analytics-section-header">
-              <h2>Performance Charts</h2>
-            </div>
-            <div className="charts-section">
-              <div className="chart-row">
-                {/* Revenue Trend */}
-                <div className="chart-card">
-                  <h3>Revenue Trend</h3>
-                  <div className="chart-content">
-                    {renderBarChart(
-                      analyticsData.monthlyTrends.slice(-6).map((item, index) => ({
-                        label: item.month,
-                        value: item.revenue,
-                        color: '#4f46e5'
-                      }))
-                    )}
-                  </div>
+          {/* Main Content */}
+          <div className="analytics-main-content">
+            <div className="analytics-left">
+              {/* Revenue Chart */}
+              <div className="analytics-section">
+                <div className="section-header">
+                  <h2><FiTrendingUp className="section-icon" /> Monthly Revenue Trends</h2>
+                  <button 
+                    className="download-btn"
+                    onClick={() => generateReport('revenue')}
+                  >
+                    <FiDownload />
+                    Export
+                  </button>
                 </div>
+                <div className="chart-container">
+                  {renderBarChart(
+                    analyticsData.monthlyTrends.map(item => ({
+                      label: item.month,
+                      value: item.revenue,
+                      color: '#3b82f6'
+                    }))
+                  )}
+                </div>
+              </div>
 
-                {/* Patient Demographics */}
-                <div className="chart-card">
-                  <h3>Patient Age Distribution</h3>
-                  <div className="chart-content">
-                    {renderPieChart(
-                      analyticsData.patientDemographics.ageGroups.map((item, index) => ({
-                        label: item.range,
-                        value: item.count,
-                        color: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index]
-                      }))
-                    )}
-                    <div className="pie-legend">
-                      {analyticsData.patientDemographics.ageGroups.map((item, index) => (
-                        <div key={index} className="legend-item">
-                          <span 
-                            className="legend-color" 
-                            style={{ backgroundColor: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index] }}
+              {/* Top Services */}
+              <div className="analytics-section">
+                <div className="section-header">
+                  <h2><FiActivity className="section-icon" /> Top Services</h2>
+                  <button 
+                    className="download-btn"
+                    onClick={() => generateReport('services')}
+                  >
+                    <FiDownload />
+                    Export
+                  </button>
+                </div>
+                <div className="services-list">
+                  {analyticsData.topServices.map((service, index) => (
+                    <div key={index} className="service-item">
+                      <div className="service-info">
+                        <span className="service-rank">#{index + 1}</span>
+                        <span className="service-name">{service.name}</span>
+                      </div>
+                      <div className="service-stats">
+                        <span className="service-count">{service.count} visits</span>
+                        <span className="service-revenue">{formatCurrency(service.revenue)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="analytics-right">
+              {/* Patient Demographics */}
+              <div className="analytics-section">
+                <div className="section-header">
+                  <h2><FiUsers className="section-icon" /> Patient Demographics</h2>
+                </div>
+                <div className="demographics-content">
+                  <div className="age-groups">
+                    <h3>Age Distribution</h3>
+                    {analyticsData.patientDemographics.ageGroups.map((group, index) => (
+                      <div key={index} className="demographic-item">
+                        <div className="demographic-label">
+                          <span>{group.range}</span>
+                          <span className="demographic-count">{group.count}</span>
+                        </div>
+                        <div className="demographic-bar">
+                          <div 
+                            className="demographic-bar-fill"
+                            style={{ width: `${group.percentage}%` }}
                           />
-                          <span className="legend-label">{item.range}: {item.count}</span>
                         </div>
-                      ))}
-                    </div>
+                        <span className="demographic-percentage">{formatPercentage(group.percentage)}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </div>
 
-              <div className="chart-row">
-                {/* Top Services */}
-                <div className="chart-card">
-                  <h3>Top Services by Revenue</h3>
-                  <div className="chart-content">
-                    <div className="services-list">
-                      {analyticsData.topServices.map((service, index) => (
-                        <div key={index} className="service-item">
-                          <div className="service-info">
-                            <span className="service-name">{service.name}</span>
-                            <span className="service-count">{service.count} patients</span>
-                          </div>
-                          <span className="service-revenue">{formatCurrency(service.revenue)}</span>
+                  <div className="conditions">
+                    <h3>Medical Conditions</h3>
+                    {analyticsData.patientDemographics.conditions.map((condition, index) => (
+                      <div key={index} className="condition-item">
+                        <div className="condition-info">
+                          <span className="condition-name">{condition.name}</span>
+                          <span className="condition-count">{condition.count}</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Appointment Status */}
-                <div className="chart-card">
-                  <h3>Appointment Status</h3>
-                  <div className="chart-content">
-                    {renderPieChart(
-                      [
-                        { label: 'Completed', value: analyticsData.appointmentStats.completed, color: '#10b981' },
-                        { label: 'Cancelled', value: analyticsData.appointmentStats.cancelled, color: '#ef4444' },
-                        { label: 'No Show', value: analyticsData.appointmentStats.noShow, color: '#f59e0b' }
-                      ]
-                    )}
-                    <div className="pie-legend">
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: '#10b981' }} />
-                        <span className="legend-label">Completed: {analyticsData.appointmentStats.completed}</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: '#ef4444' }} />
-                        <span className="legend-label">Cancelled: {analyticsData.appointmentStats.cancelled}</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: '#f59e0b' }} />
-                        <span className="legend-label">No Show: {analyticsData.appointmentStats.noShow}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Detailed Statistics */}
-          <div className="analytics-section">
-            <div className="analytics-section-header">
-              <h2>Detailed Statistics</h2>
-            </div>
-            <div className="detailed-stats">
-              <div className="stats-card">
-                <h3>Patient Conditions</h3>
-                <div className="conditions-list">
-                  {analyticsData.patientDemographics.conditions.map((condition, index) => (
-                    <div key={index} className="condition-item">
-                      <div className="condition-info">
-                        <span className="condition-name">{condition.name}</span>
+                        <div className="condition-bar">
+                          <div 
+                            className="condition-bar-fill"
+                            style={{ width: `${condition.percentage}%` }}
+                          />
+                        </div>
                         <span className="condition-percentage">{formatPercentage(condition.percentage)}</span>
                       </div>
-                      <div className="condition-bar">
-                        <div 
-                          className="condition-progress" 
-                          style={{ 
-                            width: `${condition.percentage}%`,
-                            backgroundColor: ['#4f46e5', '#8b5cf6', '#06b6d4', '#10b981'][index]
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="stats-card">
-                <h3>Monthly Performance</h3>
-                <div className="performance-table">
-                  <div className="table-header">
-                    <span>Month</span>
-                    <span>Patients</span>
-                    <span>Appointments</span>
-                    <span>Revenue</span>
-                  </div>
-                  {analyticsData.monthlyTrends.slice(-6).map((item, index) => (
-                    <div key={index} className="table-row">
-                      <span>{item.month}</span>
-                      <span>{item.patients}</span>
-                      <span>{item.appointments}</span>
-                      <span>{formatCurrency(item.revenue)}</span>
-                    </div>
-                  ))}
+              {/* Quick Actions */}
+              <div className="analytics-section">
+                <div className="section-header">
+                  <h2><FiActivity className="section-icon" /> Quick Actions</h2>
+                </div>
+                <div className="quick-actions">
+                  <button className="quick-action-btn">
+                    <FiEye />
+                    <span>View Detailed Report</span>
+                  </button>
+                  <button className="quick-action-btn">
+                    <FiDownload />
+                    <span>Export All Data</span>
+                  </button>
+                  <button className="quick-action-btn">
+                    <FiEdit3 />
+                    <span>Customize Dashboard</span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Right Column - Empty for now */}
-        <div className="analytics-right">
-          {/* Empty right column - can be used for additional features later */}
         </div>
       </div>
     </div>

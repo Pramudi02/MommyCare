@@ -200,3 +200,28 @@ export const midwifeAppointmentAPI = {
     });
   },
 }; 
+
+// Doctor API
+export const doctorAPI = {
+  getDashboard: async () => apiRequest('/doctor/dashboard'),
+  searchPatients: async (q) => apiRequest(`/doctor/patients${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  getAppointments: async (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.start) query.set('start', params.start);
+    if (params.end) query.set('end', params.end);
+    const qs = query.toString();
+    return apiRequest(`/doctor/appointments${qs ? `?${qs}` : ''}`);
+  },
+  createAppointment: async (payload) => apiRequest('/doctor/appointments', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  deleteAppointment: async (id) => apiRequest(`/doctor/appointments/${id}`, {
+    method: 'DELETE'
+  }),
+  getAppointmentRequests: async (status = 'all') => apiRequest(`/doctor/appointment-requests${status !== 'all' ? `?status=${status}` : ''}`),
+  respondToRequest: async (id, response) => apiRequest(`/doctor/appointment-requests/${id}/respond`, {
+    method: 'PUT',
+    body: JSON.stringify(response)
+  })
+};
