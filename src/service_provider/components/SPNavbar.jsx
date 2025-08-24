@@ -56,42 +56,6 @@ const SPNavbar = () => {
         ))}
       </div>
 
-      <div className="sp-navbar__profile">
-        <button 
-          className="sp-profile-button"
-          onClick={handleProfileClick}
-        >
-          <User className="w-5 h-5" />
-          <span>Sarah Johnson</span>
-        </button>
-        
-        {showProfileDropdown && (
-          <div className="sp-profile-dropdown">
-            <button 
-              className="sp-dropdown-item"
-              onClick={() => handleProfileOptionClick('profile')}
-            >
-              <User className="w-4 h-4" />
-              Profile
-            </button>
-            <button 
-              className="sp-dropdown-item"
-              onClick={() => handleProfileOptionClick('settings')}
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </button>
-            <div className="sp-dropdown-divider"></div>
-            <button 
-              className="sp-dropdown-item sp-dropdown-item-danger"
-              onClick={() => handleProfileOptionClick('logout')}
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
     </nav>
   );
 };
