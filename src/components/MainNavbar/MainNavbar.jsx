@@ -218,7 +218,7 @@ const MainNavbar = () => {
 
                 {/* Dropdown Menu */}
                 {profileDropdown && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-50 border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-[9999] border border-gray-200">
                     {/* Profile Header - Show loading, real data, or fallback */}
                     {loading ? (
                       <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
@@ -314,7 +314,7 @@ const MainNavbar = () => {
       {/* Click outside to close dropdown */}
       {profileDropdown && (
         <div 
-          className="fixed inset-0 z-40" 
+          className="fixed inset-0 z-[9998]" 
           onClick={() => setProfileDropdown(false)}
         />
       )}
