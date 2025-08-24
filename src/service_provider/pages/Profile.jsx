@@ -11,7 +11,9 @@ import {
   X,
   Camera,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  BarChart3,
+  Award
 } from 'lucide-react';
 import './Profile.css';
 
@@ -85,53 +87,59 @@ const Profile = () => {
 
   return (
     <div className="sp-profile-page">
-      <div className="sp-profile-header">
-        <div className="sp-profile-title">
-          <h1>Business Profile</h1>
-          <p>Manage your business information and settings</p>
+      <div className="sp-profile-container-wrapper">
+        <div className="sp-profile-header">
+          <div className="sp-profile-header-icon">
+            <Building />
+          </div>
+          <div className="sp-profile-title">
+            <h1>Business Profile</h1>
+            <p>Manage your business information and settings</p>
+          </div>
         </div>
-        <div className="sp-profile-actions">
-          {!isEditing ? (
-            <button 
-              className="sp-btn sp-btn-primary"
-              onClick={() => setIsEditing(true)}
-            >
-              <Edit className="sp-btn-icon" />
-              Edit Profile
-            </button>
-          ) : (
-            <div className="sp-edit-actions">
-              <button 
-                className="sp-btn sp-btn-secondary"
-                onClick={handleCancel}
-                disabled={isSaving}
-              >
-                <X className="sp-btn-icon" />
-                Cancel
-              </button>
-              <button 
-                className="sp-btn sp-btn-primary"
-                onClick={handleSave}
-                disabled={isSaving}
-              >
-                <Save className="sp-btn-icon" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
 
-      <div className="sp-profile-content">
-        <div className="sp-profile-main">
-          {/* Business Information */}
-          <div className="sp-profile-section">
-            <div className="sp-section-header">
+                <div className="sp-profile-container">
+          <div className="sp-profile-main">
+            {/* Profile Actions */}
+            <div className="sp-profile-section">
+              <div className="sp-profile-actions">
+                {!isEditing ? (
+                  <button 
+                    className="sp-btn sp-btn-primary"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Edit />
+                    Edit Profile
+                  </button>
+                ) : (
+                  <div className="sp-edit-actions">
+                    <button 
+                      className="sp-btn sp-btn-secondary"
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                    >
+                      <X />
+                      Cancel
+                    </button>
+                    <button 
+                      className="sp-btn sp-btn-primary"
+                      onClick={handleSave}
+                      disabled={isSaving}
+                    >
+                      <Save />
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Business Information */}
+            <div className="sp-profile-section">
               <h3>
-                <Building className="sp-section-icon" />
+                <Building />
                 Business Information
               </h3>
-            </div>
             
             <div className="sp-info-grid">
               <div className="sp-info-item">
@@ -469,54 +477,80 @@ const Profile = () => {
 
         <div className="sp-profile-sidebar">
           {/* Business Stats */}
-          <div className="sp-profile-card">
-            <h4>Business Statistics</h4>
-            <div className="sp-stats-list">
-              <div className="sp-stat-item">
-                <span className="sp-stat-label">Products Listed</span>
-                <span className="sp-stat-value">24</span>
-              </div>
-              <div className="sp-stat-item">
-                <span className="sp-stat-label">Total Views</span>
-                <span className="sp-stat-value">1,247</span>
-              </div>
-              <div className="sp-stat-item">
-                <span className="sp-stat-label">External Clicks</span>
-                <span className="sp-stat-value">89</span>
-              </div>
-              <div className="sp-stat-item">
-                <span className="sp-stat-label">Active Products</span>
-                <span className="sp-stat-value">22</span>
+          <div className="sp-sidebar-card">
+            <div className="sp-sidebar-card-header">
+              <h4>
+                <BarChart3 />
+                Business Statistics
+              </h4>
+            </div>
+            <div className="sp-sidebar-card-body">
+              <div className="sp-stats-grid">
+                <div className="sp-stat-item">
+                  <div className="sp-stat-value">24</div>
+                  <div className="sp-stat-label">Products Listed</div>
+                </div>
+                <div className="sp-stat-item">
+                  <div className="sp-stat-value">1,247</div>
+                  <div className="sp-stat-label">Total Views</div>
+                </div>
+                <div className="sp-stat-item">
+                  <div className="sp-stat-value">89</div>
+                  <div className="sp-stat-label">External Clicks</div>
+                </div>
+                <div className="sp-stat-item">
+                  <div className="sp-stat-value">22</div>
+                  <div className="sp-stat-label">Active Products</div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Specialties */}
-          <div className="sp-profile-card">
-            <h4>Specialties</h4>
-            <div className="sp-specialties-list">
-              {profileData.specialties.map((specialty, index) => (
-                <span key={index} className="sp-specialty-tag">
-                  <CheckCircle className="sp-specialty-icon" />
-                  {specialty}
-                </span>
-              ))}
+          <div className="sp-sidebar-card">
+            <div className="sp-sidebar-card-header">
+              <h4>
+                <Award />
+                Specialties
+              </h4>
+            </div>
+            <div className="sp-sidebar-card-body">
+              <div className="sp-specialties-list">
+                {profileData.specialties.map((specialty, index) => (
+                  <span key={index} className="sp-specialty-tag">
+                    {specialty}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Certifications */}
-          <div className="sp-profile-card">
-            <h4>Certifications</h4>
+          <div className="sp-sidebar-card">
+            <div className="sp-sidebar-card-header">
+              <h4>
+                <CheckCircle />
+                Certifications
+              </h4>
+            </div>
+            <div className="sp-sidebar-card-body">
             <div className="sp-certifications-list">
               {profileData.certifications.map((cert, index) => (
-                <span key={index} className="sp-certification-tag">
-                  <AlertCircle className="sp-certification-icon" />
-                  {cert}
-                </span>
+                <div key={index} className="sp-certification-item">
+                  <div className="sp-certification-icon">
+                    <CheckCircle />
+                  </div>
+                  <div className="sp-certification-info">
+                    <div className="sp-certification-name">{cert}</div>
+                    <div className="sp-certification-date">Certified</div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );
