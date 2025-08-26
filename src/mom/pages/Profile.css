@@ -152,12 +152,15 @@
 }
 
 .input-with-unit input {
-  flex: 1;
+  flex: 4 !important; /* Make the input field take up even more space */
+  min-width: 0; /* Allow flex item to shrink */
 }
 
 .input-with-unit select {
-  width: 80px;
-  padding: 12px 8px;
+  width: 50px !important; /* Reduce the width of the unit dropdown even more */
+  padding: 12px 2px !important; /* Reduce horizontal padding further */
+  min-width: 50px !important; /* Ensure minimum width */
+  flex-shrink: 0; /* Prevent the select from shrinking */
 }
 
 .checkbox-group {
@@ -315,8 +318,10 @@
 .form-group input:focus-visible,
 .form-group select:focus-visible,
 .form-group textarea:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  outline: none !important;
+  border-color: #d1d5db !important;
+  background: #f9fafb !important;
+  color: #374151 !important;
 }
 
 .save-button:focus-visible {
@@ -356,8 +361,9 @@
   .form-group input:focus,
   .form-group select:focus,
   .form-group textarea:focus {
-    border-color: #3b82f6;
-    background: #475569; /* Slightly lighter on focus */
+    border-color: #d1d5db !important; /* Keep light gray border color on focus */
+    background: #f9fafb !important; /* Keep light gray background color on focus */
+    color: #374151 !important; /* Keep consistent text color */
   }
 
   .back-button {
