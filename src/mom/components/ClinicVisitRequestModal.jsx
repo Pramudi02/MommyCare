@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, MapPin, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory, activeTab }) => {
+const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selectedCategory, activeTab, initialNotes }) => {
   const [formData, setFormData] = useState({
     requestType: selectedCategory || '',
     preferredDate: '',
     preferredTime: '',
     location: '',
-    notes: ''
+    notes: initialNotes || ''
   });
   const [errors, setErrors] = useState({});
   const [showCalendar, setShowCalendar] = useState(false);
@@ -41,10 +41,10 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
       setFormData(prev => ({
         ...prev,
         requestType: selectedCategory,
-        notes: getDefaultNotes(selectedCategory)
+        notes: initialNotes || getDefaultNotes(selectedCategory)
       }));
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, initialNotes]);
 
   // Reset form each time modal opens to avoid stale values
   useEffect(() => {
@@ -54,13 +54,13 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
         preferredDate: '',
         preferredTime: '',
         location: '',
-        notes: selectedCategory ? getDefaultNotes(selectedCategory) : ''
+        notes: initialNotes || (selectedCategory ? getDefaultNotes(selectedCategory) : '')
       });
       setErrors({});
       setShowCalendar(false);
       setCurrentDate(new Date());
     }
-  }, [isOpen, selectedCategory]);
+  }, [isOpen, selectedCategory, initialNotes]);
 
   // Handle click outside calendar to close it
   useEffect(() => {

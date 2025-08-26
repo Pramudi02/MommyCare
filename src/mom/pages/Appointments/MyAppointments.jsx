@@ -50,6 +50,7 @@ const AppointmentsDashboard = () => {
   const [selectedDoctorCategory, setSelectedDoctorCategory] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialClinicNotes, setInitialClinicNotes] = useState('');
 
   const statsData = [
     { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500', icon: <Calendar size={28} className="text-blue-400 mb-1" /> },
@@ -158,6 +159,12 @@ const AppointmentsDashboard = () => {
         // Preselect Baby tab and Vaccinations category
         setActiveTab('baby');
         setSelectedClinicCategory('Vaccinations');
+        // If a vaccine name was specified, prefill additional notes accordingly
+        if (intent.vaccineName) {
+          setInitialClinicNotes(`Immunization schedule for ${intent.vaccineName}`);
+        } else {
+          setInitialClinicNotes('');
+        }
 
         // If authenticated, open the clinic visit modal
         if (isAuthenticated) {
@@ -915,6 +922,7 @@ const AppointmentsDashboard = () => {
         isLoading={isSubmitting}
         selectedCategory={selectedClinicCategory}
         activeTab={activeTab}
+        initialNotes={initialClinicNotes}
       />
 
       {/* Doctor Visit Request Modal */}
