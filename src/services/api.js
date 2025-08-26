@@ -201,6 +201,30 @@ export const midwifeAppointmentAPI = {
   },
 }; 
 
+// Vaccination API functions
+export const vaccinationAPI = {
+  // Get all vaccination records for a baby
+  getAll: async () => {
+    return apiRequest('/mom/vaccinations');
+  },
+
+  // Request vaccination appointment
+  requestAppointment: async (appointmentData) => {
+    return apiRequest('/mom/vaccinations/request-appointment', {
+      method: 'POST',
+      body: JSON.stringify(appointmentData),
+    });
+  },
+
+  // Initialize vaccination schedule for a baby
+  initializeSchedule: async (babyBirthDate) => {
+    return apiRequest('/mom/vaccinations/initialize', {
+      method: 'POST',
+      body: JSON.stringify({ babyBirthDate }),
+    });
+  },
+};
+
 // Doctor API
 export const doctorAPI = {
   getDashboard: async () => apiRequest('/doctor/dashboard'),
@@ -224,4 +248,28 @@ export const doctorAPI = {
     method: 'PUT',
     body: JSON.stringify(response)
   })
+};
+
+// Mom Profile API functions
+export const momProfileAPI = {
+  // Get mom profile
+  getProfile: async () => {
+    return apiRequest('/mom/profile');
+  },
+
+  // Create or update mom profile
+  saveProfile: async (profileData) => {
+    return apiRequest('/mom/profile', {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Update mom profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/mom/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  },
 };

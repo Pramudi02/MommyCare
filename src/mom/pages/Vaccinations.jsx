@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Bell, FileText, BarChart3, Syringe, Shield, Clock, MapPin, User, Hash, Plus, MoreHorizontal } from 'lucide-react';
-import './Vaccination.css';
 import { useNavigate } from 'react-router-dom';
+import { vaccinationAPI } from '../../services/api';
+import './Vaccination.css';
+ 
 
 const Vaccinations= () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(2);
   const [activeTab, setActiveTab] = useState('upcoming');
-  const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [vaccinationData, setVaccinationData] = useState({
+    upcoming: [],
+    missed: [],
+    completed: []
+  });
+ 
   const handleStatCardClick = (tab) => {
-    navigate('/mom/vaccinationschedule', { state: { tab } });
-  };
-
-  const handleScheduleAppointment = (vaccineName) => {
-    alert(`Scheduling appointment for: ${vaccineName}`);
-    // Navigate to appointment scheduling page
-    // navigate('/mom/schedule-appointment', { state: { vaccine: vaccineName } });
+    setActiveTab(tab);
   };
 
   const StatCard = ({ number, label }) => (
@@ -89,9 +91,14 @@ const Vaccinations= () => {
           {showScheduleButton && (
             <button
               onClick={() => onSchedule(vaccine)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-md"
+              disabled={isLoading}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
+                isLoading 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
             >
-              Schedule Appointment
+              {isLoading ? 'Requesting...' : 'Request Appointment'}
             </button>
           )}
         </div>
@@ -99,7 +106,7 @@ const Vaccinations= () => {
     );
   };
 
-  const TimelineCard = ({ vaccine, age, status, dueDate, batchNo, adverseEffects, bcgScar }) => {
+  const TimelineCard = ({ vaccine, age, status, dueDate, vaccinationDate, batchNo, adverseEffects, bcgScar, onSchedule, showScheduleButton }) => {
     const getStatusColor = (status) => {
       switch (status) {
         case 'completed':
@@ -130,20 +137,9 @@ const Vaccinations= () => {
       }
     };
 
-    const getStatusBadgeColor = (status) => {
-      switch (status) {
-        case 'completed':
-          return 'bg-green-100 text-green-800';
-        case 'upcoming':
-          return 'bg-blue-100 text-blue-800';
-        case 'overdue':
-          return 'bg-red-100 text-red-800';
-        case 'due':
-          return 'bg-yellow-100 text-yellow-800';
-        default:
-          return 'bg-gray-100 text-gray-800';
-      }
-    };
+    const isCompleted = status === 'completed';
+    const isUpcomingOrDue = status === 'upcoming' || status === 'due';
+    const effectsLabel = isCompleted ? 'Effects' : 'Possible Effects';
 
     return (
       <div className={`border-l-4 rounded-r-xl p-4 mb-4 shadow-sm transition-all duration-300 hover:shadow-md ${getStatusColor(status)}`}>
@@ -152,12 +148,17 @@ const Vaccinations= () => {
           <div className="text-xs text-gray-600 mb-1">
             <span className="font-medium">Age:</span> {age}
           </div>
-          {dueDate && (
+          {isCompleted && vaccinationDate && (
+            <div className="text-xs text-gray-600 mb-1">
+              <span className="font-medium">Vaccination Date:</span> {vaccinationDate}
+            </div>
+          )}
+          {!isCompleted && dueDate && (
             <div className="text-xs text-gray-600 mb-1">
               <span className="font-medium">Due:</span> {dueDate}
             </div>
           )}
-          {batchNo && (
+          {batchNo && isCompleted && (
             <div className="text-xs text-gray-600 mb-1">
               <span className="font-medium">Batch:</span> {batchNo}
             </div>
@@ -169,13 +170,29 @@ const Vaccinations= () => {
           )}
           {adverseEffects && (
             <div className="text-xs text-gray-600 mb-1">
-              <span className="font-medium">Effects:</span> {adverseEffects}
+              <span className="font-medium">{effectsLabel}:</span> {adverseEffects}
             </div>
           )}
         </div>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(status)}`}>
+        <div className="flex items-center justify-between">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            status === 'completed' ? 'bg-green-100 text-green-800' :
+            status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+            status === 'overdue' ? 'bg-red-100 text-red-800' :
+            status === 'due' ? 'bg-yellow-100 text-yellow-800' :
+            'bg-gray-100 text-gray-800'
+          }`}>
           {getStatusText(status)}
-        </span>
+          </span>
+          {showScheduleButton && (
+            <button
+              onClick={() => onSchedule && onSchedule(vaccine)}
+              className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 transition-colors"
+            >
+              Request Appointment
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -185,6 +202,7 @@ const Vaccinations= () => {
       vaccine: 'B.C.G (Bacillus Calmette-Guérin)',
       age: 'At birth',
       status: 'completed',
+      vaccinationDate: 'January 15, 2025',
       dueDate: 'January 15, 2025',
       batchNo: 'BCG-2025-001',
       adverseEffects: 'Mild swelling at injection site',
@@ -193,18 +211,16 @@ const Vaccinations= () => {
     {
       vaccine: 'B.C.G Second Dose',
       age: 'At birth',
-      status: 'upcoming',
+      status: 'due',
       dueDate: 'February 15, 2025',
-      batchNo: 'BCG-2025-002',
       adverseEffects: 'None reported',
       bcgScar: undefined
     },
     {
       vaccine: 'Pentavalent 1 + OPV 1',
       age: '2 months completed',
-      status: 'due',
+      status: 'upcoming',
       dueDate: 'March 15, 2025',
-      batchNo: 'PENT-2025-001',
       adverseEffects: 'Fever, mild fussiness',
       bcgScar: undefined
     },
@@ -213,7 +229,6 @@ const Vaccinations= () => {
       age: '4 months completed',
       status: 'upcoming',
       dueDate: 'May 15, 2025',
-      batchNo: 'PENT-2025-002',
       adverseEffects: 'Soreness at injection site',
       bcgScar: undefined
     },
@@ -222,7 +237,6 @@ const Vaccinations= () => {
       age: '6 months completed',
       status: 'upcoming',
       dueDate: 'July 15, 2025',
-      batchNo: 'PENT-2025-003',
       adverseEffects: 'Low-grade fever',
       bcgScar: undefined
     },
@@ -231,7 +245,6 @@ const Vaccinations= () => {
       age: '9 months completed',
       status: 'upcoming',
       dueDate: 'October 15, 2025',
-      batchNo: 'MMR-2025-001',
       adverseEffects: 'Rash, fever',
       bcgScar: undefined
     },
@@ -240,7 +253,6 @@ const Vaccinations= () => {
       age: '12 months completed',
       status: 'upcoming',
       dueDate: 'January 15, 2026',
-      batchNo: 'JE-2026-001',
       adverseEffects: 'Headache, fever',
       bcgScar: undefined
     },
@@ -249,7 +261,6 @@ const Vaccinations= () => {
       age: '18 months completed',
       status: 'upcoming',
       dueDate: 'July 15, 2026',
-      batchNo: 'DPT-2026-001',
       adverseEffects: 'Soreness, fever',
       bcgScar: undefined
     },
@@ -258,7 +269,6 @@ const Vaccinations= () => {
       age: '3 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2028',
-      batchNo: 'MMR-2028-001',
       adverseEffects: 'Mild rash',
       bcgScar: undefined
     },
@@ -267,7 +277,6 @@ const Vaccinations= () => {
       age: '5 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2030',
-      batchNo: 'DT-2030-001',
       adverseEffects: 'Soreness at injection site',
       bcgScar: undefined
     },
@@ -276,7 +285,6 @@ const Vaccinations= () => {
       age: '11 years completed',
       status: 'upcoming',
       dueDate: 'January 15, 2036',
-      batchNo: 'Td-2036-001',
       adverseEffects: 'Soreness, mild fever',
       bcgScar: undefined
     }
@@ -285,25 +293,67 @@ const Vaccinations= () => {
   // Sample data for the main content area
   const upcomingImmunizations = [
     {
-      vaccine: 'Influenza (Flu Shot)',
-      dueDate: 'September 1, 2025',
-      lastGiven: 'September 2024',
-      recommendation: 'Annually',
-      status: 'due-soon'
-    },
-    {
-      vaccine: 'COVID-19 Booster',
-      dueDate: 'August 15, 2025',
-      lastGiven: 'February 2025',
-      recommendation: 'As needed',
-      status: 'upcoming'
-    },
-    {
       vaccine: 'Pentavalent 1 + OPV 1',
       dueDate: 'March 15, 2025',
       lastGiven: 'Not given yet',
       recommendation: '2 months completed',
-      status: 'due'
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Pentavalent 2 + OPV 2 + IPV',
+      dueDate: 'May 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '4 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Pentavalent 3 + OPV 3',
+      dueDate: 'July 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '6 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'MMR 1 (Measles, Mumps, Rubella)',
+      dueDate: 'October 15, 2025',
+      lastGiven: 'Not given yet',
+      recommendation: '9 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Live JE (Japanese Encephalitis)',
+      dueDate: 'January 15, 2026',
+      lastGiven: 'Not given yet',
+      recommendation: '12 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'DPT + OPV 4',
+      dueDate: 'July 15, 2026',
+      lastGiven: 'Not given yet',
+      recommendation: '18 months completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'MMR 2 (Measles, Mumps, Rubella)',
+      dueDate: 'January 15, 2028',
+      lastGiven: 'Not given yet',
+      recommendation: '3 years completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'D.T + OPV 5',
+      dueDate: 'January 15, 2030',
+      lastGiven: 'Not given yet',
+      recommendation: '5 years completed',
+      status: 'upcoming'
+    },
+    {
+      vaccine: 'Adult Tetanus & Diphtheria',
+      dueDate: 'January 15, 2036',
+      lastGiven: 'Not given yet',
+      recommendation: '11 years completed',
+      status: 'upcoming'
     }
   ];
 
@@ -328,62 +378,119 @@ const Vaccinations= () => {
   ];
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'upcoming':
-        return (
-          <div className="grid gap-4">
-            {upcomingImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={true}
-              />
-            ))}
-          </div>
-        );
-      case 'missed':
-        return (
-          <div className="grid gap-4">
-            {missedImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={false}
-              />
-            ))}
-          </div>
-        );
-      case 'completed':
-        return (
-          <div className="grid gap-4">
-            {completedImmunizations.map((immunization, index) => (
-              <ImmunizationCard
-                key={index}
-                vaccine={immunization.vaccine}
-                dueDate={immunization.dueDate}
-                lastGiven={immunization.lastGiven}
-                recommendation={immunization.recommendation}
-                status={immunization.status}
-                onSchedule={handleScheduleAppointment}
-                showScheduleButton={false}
-              />
-            ))}
-          </div>
-        );
-      default:
-        return null;
+    // Use static data as fallback when API data is empty
+    const staticData = {
+      upcoming: upcomingImmunizations,
+      missed: missedImmunizations,
+      completed: completedImmunizations
+    };
+    
+    // Use API data if available and not empty, otherwise use static data
+    const apiData = vaccinationData[activeTab] || [];
+    const data = apiData.length > 0 ? apiData : staticData[activeTab] || [];
+    
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
+
+    if (data.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No {activeTab} vaccinations found.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-4">
+        {data.map((immunization, index) => (
+          <ImmunizationCard
+            key={index}
+            vaccine={immunization.vaccine}
+            dueDate={immunization.formattedDueDate || immunization.dueDate}
+            lastGiven={immunization.lastGiven}
+            recommendation={immunization.recommendation}
+            status={immunization.status}
+            onSchedule={handleScheduleAppointment}
+            showScheduleButton={activeTab !== 'completed'}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const handleScheduleAppointment = async (vaccineName) => {
+    try {
+      setIsLoading(true);
+
+      // Instead of auto-creating a request, set intent for the Appointments page to
+      // open the clinic visit form on Baby tab with Vaccinations category selected.
+      sessionStorage.setItem('clinicRequestIntent', JSON.stringify({
+        openClinicRequestModal: true,
+        clinicTab: 'baby',
+        clinicCategory: 'Vaccinations',
+        source: 'vaccinationsPage',
+        vaccineName
+      }));
+
+      // Redirect to appointments page
+      navigate('/mom/appointments');
+    } catch (error) {
+      console.error('Error preparing appointment request:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Load vaccination data on component mount
+  useEffect(() => {
+    const loadVaccinationData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await vaccinationAPI.getAll();
+        
+        if (response.status === 'success' && response.data && response.data.length > 0) {
+          const vaccinations = response.data;
+          
+          // Categorize vaccinations by status
+          const upcoming = vaccinations.filter(v => v.status === 'upcoming');
+          const missed = vaccinations.filter(v => v.status === 'missed' || v.status === 'due');
+          const completed = vaccinations.filter(v => v.status === 'completed');
+          
+          setVaccinationData({
+            upcoming,
+            missed,
+            completed
+          });
+        } else {
+          // If API returns empty data, use static data
+          console.log('API returned empty data, using static data');
+          setVaccinationData({
+            upcoming: upcomingImmunizations,
+            missed: missedImmunizations,
+            completed: completedImmunizations
+          });
+        }
+      } catch (error) {
+        console.error('Error loading vaccination data:', error);
+        // If API fails, use the static data
+        setVaccinationData({
+          upcoming: upcomingImmunizations,
+          missed: missedImmunizations,
+          completed: completedImmunizations
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVaccinationData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-5">
@@ -496,9 +603,12 @@ const Vaccinations= () => {
                   age={immunization.age}
                   status={immunization.status}
                   dueDate={immunization.dueDate}
+                  vaccinationDate={immunization.vaccinationDate}
                   batchNo={immunization.batchNo}
                   adverseEffects={immunization.adverseEffects}
                   bcgScar={immunization.bcgScar}
+                  onSchedule={handleScheduleAppointment}
+                  showScheduleButton={false}
                 />
               ))}
             </div>
