@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, MapPin, FileText, AlertCircle, CheckCircle, XCircle, Clock as ClockIcon } from 'lucide-react';
+import { Calendar, Clock, MapPin, FileText, AlertCircle, CheckCircle, XCircle, Clock as ClockIcon, Syringe } from 'lucide-react';
 
 const ClinicVisitRequestsList = ({ requests, onCancel, isLoading, isAuthenticated }) => {
   const getStatusIcon = (status) => {
@@ -75,6 +75,7 @@ const ClinicVisitRequestsList = ({ requests, onCancel, isLoading, isAuthenticate
         <div
           key={request._id}
           className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+          data-request-type={request.requestType}
         >
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
@@ -90,7 +91,10 @@ const ClinicVisitRequestsList = ({ requests, onCancel, isLoading, isAuthenticate
           </div>
 
           {/* Request Type */}
-          <h4 className="font-medium text-gray-900 mb-2">
+          <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+            {request.requestType === 'Vaccinations' && (
+              <Syringe className="w-4 h-4 text-blue-600" />
+            )}
             {request.requestType}
           </h4>
 

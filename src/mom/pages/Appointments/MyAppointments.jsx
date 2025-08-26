@@ -112,6 +112,69 @@ const AppointmentsDashboard = () => {
     fetchDoctorRequests();
   }, []);
 
+  // Check for vaccination highlighting data and scroll to vaccination section
+  useEffect(() => {
+    const highlightData = sessionStorage.getItem('highlightVaccination');
+    if (highlightData) {
+      try {
+        const data = JSON.parse(highlightData);
+        if (data.highlightSection === 'vaccinations') {
+          // Scroll to clinic visit requests section
+          setTimeout(() => {
+            if (clinicRequestsRef.current) {
+              clinicRequestsRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+              
+              // Add highlighting effect to vaccination requests
+              const vaccinationRequests = document.querySelectorAll('[data-request-type="Vaccinations"]');
+              vaccinationRequests.forEach(request => {
+                request.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+                setTimeout(() => {
+                  request.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+                }, 3000);
+              });
+            }
+          }, 500);
+          
+          // Clear the session storage
+          sessionStorage.removeItem('highlightVaccination');
+        }
+      } catch (error) {
+        console.error('Error parsing highlight data:', error);
+        sessionStorage.removeItem('highlightVaccination');
+      }
+    }
+  }, [clinicRequests]);
+
+  // Handle intent coming from Vaccinations page to open clinic form preselected
+  useEffect(() => {
+    const intentRaw = sessionStorage.getItem('clinicRequestIntent');
+    if (!intentRaw) return;
+    try {
+      const intent = JSON.parse(intentRaw);
+      if (intent.openClinicRequestModal && intent.clinicCategory === 'Vaccinations') {
+        // Preselect Baby tab and Vaccinations category
+        setActiveTab('baby');
+        setSelectedClinicCategory('Vaccinations');
+
+        // If authenticated, open the clinic visit modal
+        if (isAuthenticated) {
+          setIsModalOpen(true);
+        } else {
+          // If not authenticated, keep selection but prompt to login when clicking
+          console.warn('User not authenticated. Modal will not auto-open.');
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing clinicRequestIntent:', e);
+    } finally {
+      // Clear intent so it doesn't re-trigger
+      sessionStorage.removeItem('clinicRequestIntent');
+    }
+  }, [isAuthenticated]);
+
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 

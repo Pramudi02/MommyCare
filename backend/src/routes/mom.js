@@ -490,7 +490,11 @@ router.post('/vaccinations/request-appointment', protect, async (req, res, next)
 			message: 'Vaccination appointment request created successfully',
 			data: {
 				request,
-				redirectTo: '/mom/appointments'
+				redirectTo: '/mom/appointments',
+				highlightSection: 'vaccinations',
+				requestType: 'Vaccinations',
+				vaccineName: vaccine,
+				appointmentId: request._id
 			}
 		});
 	} catch (err) {

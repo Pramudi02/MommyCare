@@ -378,7 +378,16 @@ const Vaccinations= () => {
   ];
 
   const renderTabContent = () => {
-    const data = vaccinationData[activeTab] || [];
+    // Use static data as fallback when API data is empty
+    const staticData = {
+      upcoming: upcomingImmunizations,
+      missed: missedImmunizations,
+      completed: completedImmunizations
+    };
+    
+    // Use API data if available and not empty, otherwise use static data
+    const apiData = vaccinationData[activeTab] || [];
+    const data = apiData.length > 0 ? apiData : staticData[activeTab] || [];
     
     if (isLoading) {
       return (
@@ -417,30 +426,22 @@ const Vaccinations= () => {
   const handleScheduleAppointment = async (vaccineName) => {
     try {
       setIsLoading(true);
-      
-      // Get current date and add 7 days for preferred date
-      const preferredDate = new Date();
-      preferredDate.setDate(preferredDate.getDate() + 7);
-      
-      const appointmentData = {
-        vaccine: vaccineName,
-        preferredDate: preferredDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-        preferredTime: 'Morning',
-        location: 'Main Clinic',
-        notes: `Vaccination appointment requested for: ${vaccineName}`
-      };
 
-      const response = await vaccinationAPI.requestAppointment(appointmentData);
-      
-      if (response.status === 'success') {
-        // Redirect to appointments page
-        navigate('/mom/appointments');
-      } else {
-        alert('Failed to request appointment. Please try again.');
-      }
+      // Instead of auto-creating a request, set intent for the Appointments page to
+      // open the clinic visit form on Baby tab with Vaccinations category selected.
+      sessionStorage.setItem('clinicRequestIntent', JSON.stringify({
+        openClinicRequestModal: true,
+        clinicTab: 'baby',
+        clinicCategory: 'Vaccinations',
+        source: 'vaccinationsPage',
+        vaccineName
+      }));
+
+      // Redirect to appointments page
+      navigate('/mom/appointments');
     } catch (error) {
-      console.error('Error requesting appointment:', error);
-      alert('Failed to request appointment. Please try again.');
+      console.error('Error preparing appointment request:', error);
+      alert('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -453,7 +454,7 @@ const Vaccinations= () => {
         setIsLoading(true);
         const response = await vaccinationAPI.getAll();
         
-        if (response.status === 'success' && response.data) {
+        if (response.status === 'success' && response.data && response.data.length > 0) {
           const vaccinations = response.data;
           
           // Categorize vaccinations by status
@@ -466,10 +467,18 @@ const Vaccinations= () => {
             missed,
             completed
           });
+        } else {
+          // If API returns empty data, use static data
+          console.log('API returned empty data, using static data');
+          setVaccinationData({
+            upcoming: upcomingImmunizations,
+            missed: missedImmunizations,
+            completed: completedImmunizations
+          });
         }
       } catch (error) {
         console.error('Error loading vaccination data:', error);
-        // If no data from API, use the static data
+        // If API fails, use the static data
         setVaccinationData({
           upcoming: upcomingImmunizations,
           missed: missedImmunizations,
