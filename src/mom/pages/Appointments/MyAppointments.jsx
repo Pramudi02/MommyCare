@@ -169,6 +169,8 @@ const AppointmentsDashboard = () => {
         // If authenticated, open the clinic visit modal
         if (isAuthenticated) {
           setIsModalOpen(true);
+          // Clear intent only after successfully opening the modal
+          sessionStorage.removeItem('clinicRequestIntent');
         } else {
           // If not authenticated, keep selection but prompt to login when clicking
           console.warn('User not authenticated. Modal will not auto-open.');
@@ -176,9 +178,29 @@ const AppointmentsDashboard = () => {
       }
     } catch (e) {
       console.error('Error parsing clinicRequestIntent:', e);
-    } finally {
-      // Clear intent so it doesn't re-trigger
-      sessionStorage.removeItem('clinicRequestIntent');
+    }
+  }, [isAuthenticated]);
+
+  // If the user logs in on the appointments page, auto-open the modal using the preserved intent
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const intentRaw = sessionStorage.getItem('clinicRequestIntent');
+    if (!intentRaw) return;
+    try {
+      const intent = JSON.parse(intentRaw);
+      if (intent.openClinicRequestModal && intent.clinicCategory === 'Vaccinations') {
+        setActiveTab('baby');
+        setSelectedClinicCategory('Vaccinations');
+        if (intent.vaccineName) {
+          setInitialClinicNotes(`Immunization schedule for ${intent.vaccineName}`);
+        } else {
+          setInitialClinicNotes('');
+        }
+        setIsModalOpen(true);
+        sessionStorage.removeItem('clinicRequestIntent');
+      }
+    } catch (e) {
+      console.error('Error parsing clinicRequestIntent after login:', e);
     }
   }, [isAuthenticated]);
 
