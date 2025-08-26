@@ -260,6 +260,7 @@ const ProductForm = () => {
 
   return (
     <div className="sp-product-form-page">
+      <div className="sp-product-form-container-wrapper">
       <div className="sp-product-form-header">
         <div className="sp-product-form-header-icon">
           <Package />
@@ -269,7 +270,6 @@ const ProductForm = () => {
           <p>{isEditing ? 'Update your product information' : 'Create a new product listing with external link'}</p>
         </div>
       </div>
-
       <div className="sp-product-form-container">
         <form onSubmit={handleSubmit} className="sp-form">
           {/* Basic Information */}
@@ -536,6 +536,10 @@ const ProductForm = () => {
           </div>
         </form>
       </div>
+      </div>
+     
+
+    
     </div>
   );
 };

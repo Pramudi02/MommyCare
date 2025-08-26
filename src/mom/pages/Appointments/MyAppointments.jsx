@@ -50,6 +50,7 @@ const AppointmentsDashboard = () => {
   const [selectedDoctorCategory, setSelectedDoctorCategory] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialClinicNotes, setInitialClinicNotes] = useState('');
 
   const statsData = [
     { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500', icon: <Calendar size={28} className="text-blue-400 mb-1" /> },
@@ -111,6 +112,97 @@ const AppointmentsDashboard = () => {
     fetchClinicRequests();
     fetchDoctorRequests();
   }, []);
+
+  // Check for vaccination highlighting data and scroll to vaccination section
+  useEffect(() => {
+    const highlightData = sessionStorage.getItem('highlightVaccination');
+    if (highlightData) {
+      try {
+        const data = JSON.parse(highlightData);
+        if (data.highlightSection === 'vaccinations') {
+          // Scroll to clinic visit requests section
+          setTimeout(() => {
+            if (clinicRequestsRef.current) {
+              clinicRequestsRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+              
+              // Add highlighting effect to vaccination requests
+              const vaccinationRequests = document.querySelectorAll('[data-request-type="Vaccinations"]');
+              vaccinationRequests.forEach(request => {
+                request.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+                setTimeout(() => {
+                  request.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+                }, 3000);
+              });
+            }
+          }, 500);
+          
+          // Clear the session storage
+          sessionStorage.removeItem('highlightVaccination');
+        }
+      } catch (error) {
+        console.error('Error parsing highlight data:', error);
+        sessionStorage.removeItem('highlightVaccination');
+      }
+    }
+  }, [clinicRequests]);
+
+  // Handle intent coming from Vaccinations page to open clinic form preselected
+  useEffect(() => {
+    const intentRaw = sessionStorage.getItem('clinicRequestIntent');
+    if (!intentRaw) return;
+    try {
+      const intent = JSON.parse(intentRaw);
+      if (intent.openClinicRequestModal && intent.clinicCategory === 'Vaccinations') {
+        // Preselect Baby tab and Vaccinations category
+        setActiveTab('baby');
+        setSelectedClinicCategory('Vaccinations');
+        // If a vaccine name was specified, prefill additional notes accordingly
+        if (intent.vaccineName) {
+          setInitialClinicNotes(`Immunization schedule for ${intent.vaccineName}`);
+        } else {
+          setInitialClinicNotes('');
+        }
+
+        // If authenticated, open the clinic visit modal
+        if (isAuthenticated) {
+          setIsModalOpen(true);
+          // Clear intent only after successfully opening the modal
+          sessionStorage.removeItem('clinicRequestIntent');
+        } else {
+          // If not authenticated, keep selection but prompt to login when clicking
+          console.warn('User not authenticated. Modal will not auto-open.');
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing clinicRequestIntent:', e);
+    }
+  }, [isAuthenticated]);
+
+  // If the user logs in on the appointments page, auto-open the modal using the preserved intent
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const intentRaw = sessionStorage.getItem('clinicRequestIntent');
+    if (!intentRaw) return;
+    try {
+      const intent = JSON.parse(intentRaw);
+      if (intent.openClinicRequestModal && intent.clinicCategory === 'Vaccinations') {
+        setActiveTab('baby');
+        setSelectedClinicCategory('Vaccinations');
+        if (intent.vaccineName) {
+          setInitialClinicNotes(`Immunization schedule for ${intent.vaccineName}`);
+        } else {
+          setInitialClinicNotes('');
+        }
+        setIsModalOpen(true);
+        sessionStorage.removeItem('clinicRequestIntent');
+      }
+    } catch (e) {
+      console.error('Error parsing clinicRequestIntent after login:', e);
+    }
+  }, [isAuthenticated]);
 
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -852,6 +944,7 @@ const AppointmentsDashboard = () => {
         isLoading={isSubmitting}
         selectedCategory={selectedClinicCategory}
         activeTab={activeTab}
+        initialNotes={initialClinicNotes}
       />
 
       {/* Doctor Visit Request Modal */}

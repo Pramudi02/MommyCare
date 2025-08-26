@@ -191,6 +191,8 @@ const Products = () => {
 
   return (
     <div className="sp-products-page">
+      <div className="sp-products-container-wrapper">
+
       <div className="sp-products-header">
         <div className="sp-products-header-icon">
           <Package />
@@ -468,6 +470,9 @@ const Products = () => {
           </div>
         </div>
       )}
+
+      </div>
+      
     </div>
   );
 };

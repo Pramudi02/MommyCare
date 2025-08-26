@@ -1,0 +1,394 @@
+.doctor-edit-profile-page {
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
+  padding: 2rem;
+}
+
+.doctor-edit-profile-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header Styles */
+.doctor-edit-profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+}
+
+.doctor-edit-profile-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+.doctor-edit-profile-header-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.doctor-edit-profile-header-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #3b82f6;
+}
+
+.doctor-edit-profile-title {
+  position: relative;
+  z-index: 1;
+}
+
+.doctor-edit-profile-title h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.doctor-edit-profile-title p {
+  color: #374151;
+  font-weight: 500;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Message Styles */
+.doctor-message {
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.doctor-message--success {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.doctor-message--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.doctor-message__icon {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Form Styles */
+.doctor-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.doctor-form-section {
+  background: #f0f7ff;
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.doctor-form-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.doctor-form-section h3 svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #3b82f6;
+}
+
+.doctor-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.doctor-form-row:last-child {
+  margin-bottom: 0;
+}
+
+.doctor-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doctor-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.doctor-form-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.doctor-form-label.required::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.doctor-form-input {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.doctor-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.doctor-form-input:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.doctor-form-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.doctor-form-textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.doctor-form-textarea:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Input Wrapper for Icons */
+.doctor-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.doctor-input-icon {
+  position: absolute;
+  left: 1.25rem;
+  color: #6b7280;
+  width: 1.25rem;
+  height: 1.25rem;
+  z-index: 1;
+}
+
+.doctor-input-wrapper .doctor-form-input {
+  padding-left: 3rem;
+}
+
+/* Form Actions */
+.doctor-form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.doctor-btn {
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.doctor-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.doctor-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.doctor-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.doctor-btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.doctor-btn-secondary:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.doctor-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.doctor-loading {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: doctor-spin 1s ease-in-out infinite;
+}
+
+@keyframes doctor-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .doctor-edit-profile-container {
+    max-width: 800px;
+    padding: 0.5rem;
+  }
+  
+  .doctor-profile-form {
+    gap: 1.5rem;
+  }
+  
+  .doctor-form-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctor-edit-profile-page {
+    padding: 1.5rem;
+  }
+  
+  .doctor-edit-profile-header {
+    padding: 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .doctor-edit-profile-title h1 {
+    font-size: 1.875rem;
+  }
+  
+  .doctor-form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .doctor-form-actions {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+  
+  .doctor-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-edit-profile-page {
+    padding: 1rem;
+  }
+  
+  .doctor-edit-profile-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .doctor-edit-profile-title h1 {
+    font-size: 1.5rem;
+  }
+  
+  .doctor-form-section {
+    padding: 1.25rem;
+  }
+  
+  .doctor-form-input {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .doctor-form-actions {
+    padding: 1.25rem;
+  }
+  
+  .doctor-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

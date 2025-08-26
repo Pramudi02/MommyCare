@@ -13,6 +13,7 @@ import Analytics from '../pages/Analytics';
 import Settings from '../pages/Settings';
 import PatientDetails from '../pages/PatientDetails';
 import DoctorChat from '../pages/DoctorChat';
+import EditProfile from '../pages/EditProfile';
 
 export default (
   <Route path="/doctor" element={<DoctorLayout />}>
@@ -27,6 +28,7 @@ export default (
     <Route path="analytics" element={<Analytics />} />
     <Route path="chat" element={<DoctorChat />} />
     <Route path="settings" element={<Settings />} />
+    <Route path="profile" element={<EditProfile />} />
     <Route path="patients/PatientDetails" element={<PatientDetails/>} />
   </Route>
 ); 

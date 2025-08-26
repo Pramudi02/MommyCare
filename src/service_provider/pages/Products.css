@@ -3,10 +3,14 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background-color: #f9fafb;
   color: #1f2937;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
 }
+
+.sp-products-container-wrapper {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
 
 /* Header Styles */
 .sp-products-header {
