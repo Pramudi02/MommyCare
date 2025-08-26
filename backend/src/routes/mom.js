@@ -5,7 +5,7 @@ const { protect } = require('../middleware/auth');
 const getClinicVisitRequestModel = require('../models/ClinicVisitRequest');
 const DoctorVisitRequest = require('../models/DoctorVisitRequest');
 const getVaccinationRecordModel = require('../models/VaccinationRecord');
-
+const getMomProfileModel = require('../models/MomProfile');
 
 /**
  * @swagger
@@ -30,8 +30,194 @@ const getVaccinationRecordModel = require('../models/VaccinationRecord');
  *       401:
  *         description: Not authorized
  */
-router.get('/profile', (req, res) => {
-	res.json({ status: 'success', data: { message: 'Mom profile endpoint (stub)' } });
+router.get('/profile', protect, async (req, res, next) => {
+	try {
+		const MomProfile = getMomProfileModel();
+		const profile = await MomProfile.findOne({ user: req.user._id })
+			.populate('user', 'firstName lastName email role');
+
+		if (!profile) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Profile not found'
+			});
+		}
+
+		res.json({
+			status: 'success',
+			data: profile
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+/**
+ * @swagger
+ * /api/mom/profile:
+ *   post:
+ *     summary: Create or update mom profile
+ *     tags: [Mom]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               age:
+ *                 type: number
+ *               bloodGroup:
+ *                 type: string
+ *               height:
+ *                 type: object
+ *               weight:
+ *                 type: object
+ *               currentBMI:
+ *                 type: number
+ *               lmp:
+ *                 type: string
+ *               edd:
+ *                 type: string
+ *               consultantObstetrician:
+ *                 type: string
+ *               mohArea:
+ *                 type: string
+ *               phmArea:
+ *                 type: string
+ *               fieldClinic:
+ *                 type: string
+ *               gramaNiladhariDivision:
+ *                 type: string
+ *               hospitalClinic:
+ *                 type: string
+ *               nextClinicDate:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile created/updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Not authorized
+ */
+router.post('/profile', protect, async (req, res, next) => {
+	try {
+		const MomProfile = getMomProfileModel();
+		
+		// Check if profile already exists
+		let profile = await MomProfile.findOne({ user: req.user._id });
+		
+		const profileData = {
+			...req.body,
+			user: req.user._id,
+			profileCompleted: true
+		};
+
+		// Convert date strings to Date objects
+		if (profileData.lmp) {
+			profileData.lmp = new Date(profileData.lmp);
+		}
+		if (profileData.edd) {
+			profileData.edd = new Date(profileData.edd);
+		}
+		if (profileData.nextClinicDate) {
+			profileData.nextClinicDate = new Date(profileData.nextClinicDate);
+		}
+
+		if (profile) {
+			// Update existing profile
+			profile = await MomProfile.findByIdAndUpdate(
+				profile._id,
+				profileData,
+				{ new: true, runValidators: true }
+			).populate('user', 'firstName lastName email role');
+		} else {
+			// Create new profile
+			profile = await MomProfile.create(profileData);
+			await profile.populate('user', 'firstName lastName email role');
+		}
+
+		res.json({
+			status: 'success',
+			message: profile ? 'Profile updated successfully' : 'Profile created successfully',
+			data: profile
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+/**
+ * @swagger
+ * /api/mom/profile:
+ *   put:
+ *     summary: Update mom profile
+ *     tags: [Mom]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Not authorized
+ *       404:
+ *         description: Profile not found
+ */
+router.put('/profile', protect, async (req, res, next) => {
+	try {
+		const MomProfile = getMomProfileModel();
+		
+		const profile = await MomProfile.findOne({ user: req.user._id });
+		
+		if (!profile) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Profile not found'
+			});
+		}
+
+		const updateData = { ...req.body };
+
+		// Convert date strings to Date objects
+		if (updateData.lmp) {
+			updateData.lmp = new Date(updateData.lmp);
+		}
+		if (updateData.edd) {
+			updateData.edd = new Date(updateData.edd);
+		}
+		if (updateData.nextClinicDate) {
+			updateData.nextClinicDate = new Date(updateData.nextClinicDate);
+		}
+
+		const updatedProfile = await MomProfile.findByIdAndUpdate(
+			profile._id,
+			updateData,
+			{ new: true, runValidators: true }
+		).populate('user', 'firstName lastName email role');
+
+		res.json({
+			status: 'success',
+			message: 'Profile updated successfully',
+			data: updatedProfile
+		});
+	} catch (err) {
+		next(err);
+	}
 });
 
 router.get('/medical-records', (req, res) => {

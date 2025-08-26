@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Link } from 'react-router-dom';
 import MomLayout from '../MomLayout';
 import Home from '../pages/Home';
+import Profile from '../pages/Profile';
 import AppointmentsDashboard from '../pages/Appointments/MyAppointments';
 import Vaccinations from '../pages/Vaccinations';
 import MedicalReports from '../pages/MedicalReports';
@@ -30,6 +31,9 @@ export default (
   
   <Route path="/mom" element={<MomLayout />}>
     <Route index element={<Home />} />
+    
+    {/* Profile Route */}
+    <Route path="profile" element={<Profile />} />
     
     {/* Pregnancy Tracker Section */}
     <Route path="pregnancy-tracker">

@@ -249,3 +249,27 @@ export const doctorAPI = {
     body: JSON.stringify(response)
   })
 };
+
+// Mom Profile API functions
+export const momProfileAPI = {
+  // Get mom profile
+  getProfile: async () => {
+    return apiRequest('/mom/profile');
+  },
+
+  // Create or update mom profile
+  saveProfile: async (profileData) => {
+    return apiRequest('/mom/profile', {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Update mom profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/mom/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  },
+};
