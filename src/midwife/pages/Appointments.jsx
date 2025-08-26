@@ -46,6 +46,14 @@ const Appointments = () => {
     reason: ''
   });
   
+  // Helper function to get current time
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   // Real data from API
   const [appointments, setAppointments] = useState([]);
   const [appointmentRequests, setAppointmentRequests] = useState([]);
@@ -63,6 +71,13 @@ const Appointments = () => {
   // Success message
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Error message
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  // Current time for display
+  const [currentTime, setCurrentTime] = useState(getCurrentTime());
   
   // Day appointments modal
   const [isDayAppointmentsModalOpen, setIsDayAppointmentsModalOpen] = useState(false);
@@ -89,6 +104,15 @@ const Appointments = () => {
     const interval = setInterval(() => {
       fetchClinicVisitRequests();
     }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update current time every minute for accurate positioning
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(getCurrentTime());
+    }, 60000); // 1 minute
 
     return () => clearInterval(interval);
   }, []);
@@ -389,19 +413,13 @@ const Appointments = () => {
 
   const handleAcceptSubmit = async () => {
     if (!acceptFormData.startTime || !acceptFormData.endTime) {
-      alert('Please fill in start time and end time');
+      showError('Please fill in start time and end time');
       return;
     }
 
     // Validate that start time is before end time
     if (acceptFormData.startTime >= acceptFormData.endTime) {
-      alert('Start time must be before end time');
-      return;
-    }
-
-    // Validate that start time is before end time (dropdowns should handle this, but double-check)
-    if (acceptFormData.startTime >= acceptFormData.endTime) {
-      alert('Start time must be before end time');
+      showError('Start time must be before end time');
       return;
     }
 
@@ -409,7 +427,7 @@ const Appointments = () => {
     const { date, time } = getCurrentDateTime();
     if (acceptFormData.appointmentDate < date || 
         (acceptFormData.appointmentDate === date && acceptFormData.startTime < time)) {
-      alert('Appointment cannot be scheduled in the past');
+      showError('Appointment cannot be scheduled in the past');
       return;
     }
 
@@ -461,7 +479,7 @@ const Appointments = () => {
       }, 5000);
     } catch (err) {
       console.error('Error accepting request:', err);
-      alert('Failed to accept request. Please try again.');
+      showError('Failed to accept request. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -469,7 +487,7 @@ const Appointments = () => {
 
   const handleRejectSubmit = async () => {
     if (!rejectFormData.reason.trim()) {
-      alert('Please provide a reason for rejection');
+      showError('Please provide a reason for rejection');
       return;
     }
 
@@ -516,7 +534,7 @@ const Appointments = () => {
       }, 5000);
       } catch (err) {
         console.error('Error rejecting request:', err);
-        alert('Failed to reject request. Please try again.');
+        showError('Failed to reject request. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -885,37 +903,32 @@ const Appointments = () => {
     }
   };
 
-  const getCurrentTime = () => {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  };
-
-  const currentTime = getCurrentTime();
-
   const getCurrentTimePosition = () => {
-    const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
     const currentMinutes = currentHour * 60 + currentMinute;
     
-    // Find the closest time slot
-    let closestSlot = timeSlots[0];
-    let minDifference = Math.abs(currentMinutes - (7 * 60)); // 7 AM in minutes
+    // Check if current time is within the visible time range (07:00 to 18:00)
+    const startTimeMinutes = 7 * 60; // 7 AM in minutes
+    const endTimeMinutes = 18 * 60; // 6 PM in minutes
     
-    timeSlots.forEach(slot => {
-      const [slotHour, slotMinute] = slot.split(':').map(Number);
-      const slotMinutes = slotHour * 60 + slotMinute;
-      const difference = Math.abs(currentMinutes - slotMinutes);
-      
-      if (difference < minDifference) {
-        minDifference = difference;
-        closestSlot = slot;
-      }
-    });
+    if (currentMinutes < startTimeMinutes || currentMinutes > endTimeMinutes) {
+      // Current time is outside visible range, return -1 to hide the indicator
+      return -1;
+    }
     
-    // Calculate position: header height (60px) + time slot index * slot height (30px)
-    const slotIndex = timeSlots.indexOf(closestSlot);
-    return 60 + (slotIndex * 30);
+    // Calculate position based on actual time difference from 7 AM
+    const timeDifference = currentMinutes - startTimeMinutes;
+    
+    // Each time slot is 30 minutes (30px height)
+    const position = 60 + (timeDifference / 30) * 30;
+    
+    // Ensure position is within reasonable bounds
+    const minPosition = 60; // Header height
+    const maxPosition = 60 + (timeSlots.length * 30); // Header + all time slots
+    
+    return Math.max(minPosition, Math.min(maxPosition, position));
   };
 
   const handleAppointmentClick = (appointment) => {
@@ -939,11 +952,11 @@ const Appointments = () => {
 
   const handleRescheduleSubmit = async () => {
     if (!rescheduleForm.date || !rescheduleForm.startTime || !rescheduleForm.endTime) {
-      alert('Please select date, start and end time');
+      showError('Please select date, start and end time');
       return;
     }
     if (rescheduleForm.startTime >= rescheduleForm.endTime) {
-      alert('Start time must be before end time');
+      showError('Start time must be before end time');
       return;
     }
     try {
@@ -971,7 +984,7 @@ const Appointments = () => {
       }, 4000);
     } catch (err) {
       console.error('Error rescheduling appointment:', err);
-      alert('Failed to reschedule appointment. Please try again.');
+      showError('Failed to reschedule appointment. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -991,10 +1004,25 @@ const Appointments = () => {
       }, 3000);
     } catch (err) {
       console.error('Error marking appointment complete:', err);
-      alert('Failed to mark appointment as completed.');
+      setErrorMessage('Failed to mark appointment as completed.');
+      setShowErrorMessage(true);
+      setTimeout(() => {
+        setShowErrorMessage(false);
+        setErrorMessage('');
+      }, 4000);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to show error messages
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorMessage(true);
+    setTimeout(() => {
+      setShowErrorMessage(false);
+      setErrorMessage('');
+    }, 4000);
   };
 
   // Update appointments when view mode changes
@@ -1193,18 +1221,20 @@ const Appointments = () => {
           </div>
         ))}
 
-        {/* Current time indicator */}
-        <div 
-          className="appointments-calendar__current-time"
-          style={{
-            top: `${getCurrentTimePosition()}px`
-          }}
-        >
-          <div className="appointments-calendar__current-time-line"></div>
-          <div className="appointments-calendar__current-time-label">
-            {currentTime}
+        {/* Current time indicator - only show when within visible time range */}
+        {getCurrentTimePosition() > 0 && (
+          <div 
+            className="appointments-calendar__current-time"
+            style={{
+              top: `${getCurrentTimePosition()}px`
+            }}
+          >
+            <div className="appointments-calendar__current-time-line"></div>
+            <div className="appointments-calendar__current-time-label">
+              {currentTime}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
@@ -1232,6 +1262,22 @@ const Appointments = () => {
                 <button 
                   className="appointments-calendar__success-close"
                   onClick={() => setShowSuccessMessage(false)}
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {showErrorMessage && (
+            <div className="appointments-calendar__error-message">
+              <div className="appointments-calendar__error-content">
+                <FiX size={20} />
+                <span>{errorMessage}</span>
+                <button 
+                  className="appointments-calendar__error-close"
+                  onClick={() => setShowErrorMessage(false)}
                 >
                   <FiX size={16} />
                 </button>

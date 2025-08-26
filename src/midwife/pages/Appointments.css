@@ -1866,6 +1866,20 @@
   animation: slideInRight 0.3s ease-out;
 }
 
+.appointments-calendar__error-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ef4444;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+  z-index: 1000;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease-out;
+}
+
 .appointments-calendar__success-content {
   display: flex;
   align-items: center;
@@ -1888,6 +1902,31 @@
 }
 
 .appointments-calendar__success-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.appointments-calendar__error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.appointments-calendar__error-content svg {
+  flex-shrink: 0;
+}
+
+.appointments-calendar__error-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.appointments-calendar__error-close:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
