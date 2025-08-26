@@ -216,6 +216,10 @@ export const doctorAPI = {
     method: 'POST',
     body: JSON.stringify(payload)
   }),
+  updateAppointment: async (id, updateData) => apiRequest(`/doctor/appointments/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  }),
   deleteAppointment: async (id) => apiRequest(`/doctor/appointments/${id}`, {
     method: 'DELETE'
   }),
