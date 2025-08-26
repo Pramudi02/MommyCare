@@ -2442,6 +2442,7 @@ textarea.form-input {
 .vitals-header h3,
 .medications-header h3,
 .birth-header h3,
+.baby-care-header h3,
 .baby-info-section h3,
 .growth-header h3,
 .development-header h3,
@@ -2512,4 +2513,99 @@ textarea.form-input {
   background: white;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
+}
+
+/* Baby Care Tab Styles */
+.baby-care-content {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.baby-care-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.baby-care-header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Next Clinic Date Tab Styles */
+.next-clinic-date-content {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.next-clinic-date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.next-clinic-date-header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.next-clinic-date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.next-clinic-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.next-clinic-date-field label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.next-clinic-date-input {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.next-clinic-date-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.next-clinic-date-input:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.next-clinic-date-field textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
 }
