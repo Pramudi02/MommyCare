@@ -773,7 +773,7 @@ const MedicalRecords = () => {
                     className={`sub-tab ${activeTab === 'mom-general' ? 'active' : ''}`}
                     onClick={() => setActiveTab('mom-general')}
                   >
-                General & Pre-pregnancy
+                Pre-pregnancy Data
               </button>
                   <button 
                     className={`sub-tab ${activeTab === 'mom-pregnancy' ? 'active' : ''}`}
@@ -817,6 +817,12 @@ const MedicalRecords = () => {
                   >
                 Medications
               </button>
+                  <button 
+                    className={`sub-tab ${activeTab === 'mom-next-clinic-date' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('mom-next-clinic-date')}
+                  >
+                    Next Clinic Date
+                  </button>
                 </div>
               )}
 
@@ -947,16 +953,47 @@ const MedicalRecords = () => {
                       />
                     </div>
                     <div className="overview-field">
-                      <label>Next Clinic Date</label>
+                      <label>MOH Area</label>
                       <input 
-                        type="date" 
+                        type="text" 
                         className="overview-input" 
-                        value={selectedMom.nextClinicDate || ''} 
-                        onChange={(e) => {
-                          const updatedMom = { ...selectedMom };
-                          updatedMom.nextClinicDate = e.target.value;
-                          setSelectedMom(updatedMom);
-                        }}
+                        value={selectedMom.mohArea || ''} 
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="overview-field">
+                      <label>PHM Area</label>
+                      <input 
+                        type="text" 
+                        className="overview-input" 
+                        value={selectedMom.phmArea || ''} 
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="overview-field">
+                      <label>Field Clinic</label>
+                      <input 
+                        type="text" 
+                        className="overview-input" 
+                        value={selectedMom.fieldClinic || ''} 
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="overview-field">
+                      <label>Hospital Clinic</label>
+                      <input 
+                        type="text" 
+                        className="overview-input" 
+                        value={selectedMom.hospitalClinic || ''} 
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="overview-field">
+                      <label>Consultant Obstetrician</label>
+                      <input 
+                        type="text" 
+                        className="overview-input" 
+                        value={selectedMom.consultantObstetrician || ''} 
                         disabled={!isEditing}
                       />
                     </div>
@@ -964,73 +1001,19 @@ const MedicalRecords = () => {
                 </div>
               )}
 
-              {/* Mom General & Pre-pregnancy Tab */}
+              {/* Mom Pre-pregnancy Data Tab */}
               {activeTab === 'mom-general' && (
                 <div className="general-content">
                   <div className="general-header">
-                    <h3>General & Pre-pregnancy Data</h3>
+                    <h3>Pre-pregnancy Data</h3>
                   </div>
                   <div className="general-grid">
-                    <div className="general-field">
-                      <label>BMI</label>
-                      <input 
-                        type="number" 
-                        className="general-input" 
-                        value={selectedMom.bmi || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="general-field">
-                      <label>MOH Area</label>
-                      <input 
-                        type="text" 
-                        className="general-input" 
-                        value={selectedMom.mohArea || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="general-field">
-                      <label>PHM Area</label>
-                      <input 
-                        type="text" 
-                        className="general-input" 
-                        value={selectedMom.phmArea || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="general-field">
-                      <label>Field Clinic</label>
-                      <input 
-                        type="text" 
-                        className="general-input" 
-                        value={selectedMom.fieldClinic || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
                     <div className="general-field">
                       <label>Grama Niladhari Division</label>
                       <input 
                         type="text" 
                         className="general-input" 
                         value={selectedMom.gramaNiladhari || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="general-field">
-                      <label>Hospital Clinic</label>
-                      <input 
-                        type="text" 
-                        className="general-input" 
-                        value={selectedMom.hospitalClinic || ''} 
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="general-field">
-                      <label>Consultant Obstetrician</label>
-                      <input 
-                        type="text" 
-                        className="general-input" 
-                        value={selectedMom.consultantObstetrician || ''} 
                         disabled={!isEditing}
                       />
                     </div>
@@ -1880,9 +1863,10 @@ const MedicalRecords = () => {
               {/* Baby Care Tab */}
               {activeTab === 'baby-care' && (
                 <div className="baby-care-content">
-                  <div className="baby-info-section">
+                  <div className="baby-care-header">
                     <h3>Baby Information</h3>
-                    <div className="baby-grid">
+                  </div>
+                  <div className="baby-grid">
                       <div className="baby-field">
                         <label>Name</label>
                         <input 
@@ -1940,7 +1924,6 @@ const MedicalRecords = () => {
                         />
                       </div>
                     </div>
-                  </div>
                 </div>
               )}
 
@@ -2397,21 +2380,6 @@ const MedicalRecords = () => {
             </div>
                   <div className="followups-grid">
                     <div className="followup-field">
-                      <label>Next Clinic Date</label>
-                      <input 
-                        type="date" 
-                        className="followup-input" 
-                        value={selectedMom.babyFollowUps?.nextClinicDate || ''} 
-                        onChange={(e) => {
-                          const updatedMom = { ...selectedMom };
-                          if (!updatedMom.babyFollowUps) updatedMom.babyFollowUps = {};
-                          updatedMom.babyFollowUps.nextClinicDate = e.target.value;
-                          setSelectedMom(updatedMom);
-                        }}
-                        disabled={!isEditing}
-                      />
-          </div>
-                    <div className="followup-field">
                       <label>Health Education Session Participation</label>
                       <select 
                         className="followup-input" 
@@ -2438,6 +2406,109 @@ const MedicalRecords = () => {
                         value={selectedMom.babyFollowUps?.specialReferrals || ''} 
                         disabled={!isEditing}
                         rows="3"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mom Next Clinic Date Tab */}
+              {activeTab === 'mom-next-clinic-date' && (
+                <div className="next-clinic-date-content">
+                  <div className="next-clinic-date-header">
+                    <h3>Next Clinic Date Details</h3>
+                  </div>
+                  <div className="next-clinic-date-grid">
+                    <div className="next-clinic-date-field">
+                      <label>Next Clinic Date</label>
+                      <input 
+                        type="date" 
+                        className="next-clinic-date-input" 
+                        value={selectedMom.nextClinicDate || ''} 
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicDate = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="next-clinic-date-field">
+                      <label>Time</label>
+                      <select 
+                        className="next-clinic-date-input" 
+                        value={selectedMom.nextClinicTime || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicTime = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                      >
+                        <option value="">Select time</option>
+                        <option value="07:00">7:00 AM</option>
+                        <option value="07:30">7:30 AM</option>
+                        <option value="08:00">8:00 AM</option>
+                        <option value="08:30">8:30 AM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="16:30">4:30 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="17:30">5:30 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                      </select>
+                    </div>
+                    <div className="next-clinic-date-field">
+                      <label>Appointment Type</label>
+                      <select 
+                        className="next-clinic-date-input" 
+                        value={selectedMom.nextClinicAppointmentType || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicAppointmentType = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                      >
+                        <option value="">Select appointment type</option>
+                        <option value="Mom Weight Check">Mom Weight Check</option>
+                        <option value="Baby Weight Check">Baby Weight Check</option>
+                        <option value="Ultrasound Scan">Ultrasound Scan</option>
+                        <option value="Blood Tests">Blood Tests</option>
+                        <option value="Vaccinations">Vaccinations</option>
+                        <option value="General Checkup">General Checkup</option>
+                        <option value="Antenatal Care">Antenatal Care</option>
+                        <option value="Postnatal Care">Postnatal Care</option>
+                        <option value="Follow-up">Follow-up</option>
+                      </select>
+                    </div>
+                    <div className="next-clinic-date-field">
+                      <label>Notes</label>
+                      <textarea 
+                        className="next-clinic-date-input" 
+                        value={selectedMom.nextClinicNotes || ''} 
+                        onChange={(e) => {
+                          const updatedMom = { ...selectedMom };
+                          updatedMom.nextClinicNotes = e.target.value;
+                          setSelectedMom(updatedMom);
+                        }}
+                        disabled={!isEditing}
+                        rows="3"
+                        placeholder="Enter any notes about the next clinic visit..."
                       />
                     </div>
                   </div>
