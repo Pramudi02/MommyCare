@@ -1,5 +1,6 @@
 import React from 'react';
 import './AppointmentsCalendar.css';
+import { useNavigate } from 'react-router-dom';
 
 const AppointmentsCalendar = ({
   selectedDate,
@@ -11,6 +12,8 @@ const AppointmentsCalendar = ({
   getMonthName,
   changeMonth
 }) => {
+  const navigate = useNavigate();
+  
   // Helper functions
   const isToday = (date) => {
     try {
@@ -66,7 +69,7 @@ const AppointmentsCalendar = ({
     <div className="appointments-section">
       <div className="appointments-section-header">
         <h2>Calendar View</h2>
-        <button className="appointments-view-all-btn" onClick={() => onAppointmentClick && onAppointmentClick()}>New Appointment</button>
+        <button className="appointments-view-all-btn" onClick={() => navigate('/doctor/appointments/new')}>New Appointment</button>
       </div>
       <div className="calendar-view">
         <div className="calendar-header">

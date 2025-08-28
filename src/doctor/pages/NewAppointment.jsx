@@ -78,180 +78,205 @@ const NewAppointment = () => {
   };
 
   return (
-    <div className="new-appointment-page">
-      <div className="new-appointment-container">
-        <div className="new-appointment">
-          <div className="new-appointment__header">
-            <div className="new-appointment__header-icon">
+    <div className="doctor-dashboard-page">
+      <div className="doctor-dashboard-container">
+        <div className="doctor-dashboard">
+          <div className="doctor-dashboard__header">
+            <div className="doctor-dashboard__header-icon">
               <FiCalendar className="w-6 h-6" />
             </div>
-            <div className="new-appointment__welcome">
+            <div className="doctor-dashboard__welcome">
               <h1>Create New Appointment</h1>
               <p>Schedule a new appointment with a patient</p>
             </div>
           </div>
 
-          <div className="new-appointment__content">
-            <div className="new-appointment__form-container">
-              <div className="new-appointment__form-header">
-                <button 
-                  className="back-button"
-                  onClick={() => navigate('/doctor/appointments')}
-                >
-                  <FiArrowLeft size={16} />
-                  Back to Appointments
-                </button>
-                <h2>Appointment Details</h2>
-              </div>
+          <div className="doctor-dashboard__main-content">
+            <div className="doctor-dashboard__section">
+              <div className="new-appointment__form-container">
+                <div className="new-appointment__form-header">
+                  <button 
+                    className="back-button"
+                    onClick={() => navigate('/doctor/appointments')}
+                  >
+                    <FiArrowLeft size={16} />
+                    Back to Appointments
+                  </button>
+                </div>
 
-              <form className="new-appointment-form" onSubmit={onSubmit}>
-                {error && <div className="error-banner">{error}</div>}
-                
-                <div className="form-section">
-                  <h3>
-                    <FiUser size={16} />
-                    Patient Selection
-                  </h3>
+                <form onSubmit={onSubmit} className="new-appointment__form">
+                  {error && <div className="error-message">{error}</div>}
+                  
                   <div className="form-row">
                     <div className="form-group">
-                      <label>
-                        <FiSearch size={14} />
-                        Search Patient
+                      <label htmlFor="patientId">
+                        <FiUser size={16} />
+                        Patient
+                      </label>
+                      <div className="search-container">
+                        <FiSearch size={16} className="search-icon" />
+                        <input
+                          type="text"
+                          placeholder="Search patients..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="search-input"
+                        />
+                      </div>
+                      <select
+                        id="patientId"
+                        name="patientId"
+                        value={form.patientId}
+                        onChange={onChange}
+                        required
+                        className="form-select"
+                      >
+                        <option value="">Select a patient</option>
+                        {filteredPatients.map(patient => (
+                          <option key={patient._id} value={patient._id}>
+                            {patient.firstName} {patient.lastName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="title">
+                        <FiFileText size={16} />
+                        Title
                       </label>
                       <input
                         type="text"
-                        placeholder="Search by name or ID"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="search-input"
-                      />
-                    </div>
-                  </div>
-                  
-                  {filteredPatients.length > 0 && (
-                    <div className="patients-list">
-                      {filteredPatients.map(patient => (
-                        <div 
-                          key={patient._id}
-                          className={`patient-option ${form.patientId === patient._id ? 'selected' : ''}`}
-                          onClick={() => setForm(prev => ({ ...prev, patientId: patient._id }))}
-                        >
-                          <div className="patient-info">
-                            <h4>{patient.firstName} {patient.lastName}</h4>
-                            <p>ID: {patient._id?.slice(-6)}</p>
-                          </div>
-                          <div className="patient-avatar">
-                            <FiUser size={20} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="form-section">
-                  <h3>
-                    <FiCalendar size={16} />
-                    Appointment Details
-                  </h3>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Title</label>
-                      <input
-                        type="text"
+                        id="title"
                         name="title"
                         value={form.title}
                         onChange={onChange}
-                        placeholder="Appointment title"
+                        required
+                        className="form-input"
                       />
                     </div>
-                    <div className="form-group">
-                      <label>Type</label>
-                      <select name="type" value={form.type} onChange={onChange}>
-                        <option value="consultation">Consultation</option>
-                        <option value="checkup">Checkup</option>
-                        <option value="emergency">Emergency</option>
-                        <option value="followup">Follow-up</option>
-                        <option value="ultrasound">Ultrasound</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
                   </div>
-                  
+
                   <div className="form-row">
                     <div className="form-group">
-                      <label>
-                        <FiCalendar size={14} />
+                      <label htmlFor="type">
+                        <FiFileText size={16} />
+                        Type
+                      </label>
+                      <select
+                        id="type"
+                        name="type"
+                        value={form.type}
+                        onChange={onChange}
+                        required
+                        className="form-select"
+                      >
+                        <option value="consultation">Consultation</option>
+                        <option value="follow-up">Follow-up</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="routine">Routine Check</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="date">
+                        <FiCalendar size={16} />
                         Date
                       </label>
                       <input
                         type="date"
+                        id="date"
                         name="date"
                         value={form.date}
                         onChange={onChange}
-                        min={new Date().toISOString().split('T')[0]}
+                        required
+                        className="form-input"
                       />
                     </div>
+                  </div>
+
+                  <div className="form-row">
                     <div className="form-group">
-                      <label>
-                        <FiClock size={14} />
+                      <label htmlFor="time">
+                        <FiClock size={16} />
                         Time
                       </label>
-                      <select name="time" value={form.time} onChange={onChange}>
+                      <select
+                        id="time"
+                        name="time"
+                        value={form.time}
+                        onChange={onChange}
+                        required
+                        className="form-select"
+                      >
                         {times.map(time => (
                           <option key={time} value={time}>{time}</option>
                         ))}
                       </select>
                     </div>
+
                     <div className="form-group">
-                      <label>Duration (minutes)</label>
-                      <select name="duration" value={form.duration} onChange={onChange}>
-                        <option value={15}>15</option>
-                        <option value={30}>30</option>
-                        <option value={45}>45</option>
-                        <option value={60}>60</option>
-                        <option value={90}>90</option>
-                        <option value={120}>120</option>
+                      <label htmlFor="duration">
+                        <FiClock size={16} />
+                        Duration (minutes)
+                      </label>
+                      <select
+                        id="duration"
+                        name="duration"
+                        value={form.duration}
+                        onChange={onChange}
+                        required
+                        className="form-select"
+                      >
+                        <option value={15}>15 minutes</option>
+                        <option value={30}>30 minutes</option>
+                        <option value={45}>45 minutes</option>
+                        <option value={60}>1 hour</option>
+                        <option value={90}>1.5 hours</option>
+                        <option value={120}>2 hours</option>
                       </select>
                     </div>
                   </div>
-                </div>
 
-                <div className="form-section">
-                  <h3>
-                    <FiFileText size={16} />
-                    Additional Information
-                  </h3>
                   <div className="form-group">
-                    <label>Notes</label>
+                    <label htmlFor="notes">
+                      <FiFileText size={16} />
+                      Notes
+                    </label>
                     <textarea
+                      id="notes"
                       name="notes"
                       value={form.notes}
                       onChange={onChange}
-                      placeholder="Any additional notes or instructions..."
                       rows={4}
+                      placeholder="Add any additional notes..."
+                      className="form-textarea"
                     />
                   </div>
-                </div>
 
-                <div className="form-actions">
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary"
-                    onClick={() => navigate('/doctor/appointments')}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    disabled={submitting || !form.patientId}
-                  >
-                    <FiPlus size={16} />
-                    {submitting ? 'Creating...' : 'Create Appointment'}
-                  </button>
-                </div>
-              </form>
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      onClick={() => navigate('/doctor/appointments')}
+                      className="btn btn-outline"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="btn btn-primary"
+                    >
+                      {submitting ? 'Creating...' : (
+                        <>
+                          <FiPlus size={16} />
+                          Create Appointment
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

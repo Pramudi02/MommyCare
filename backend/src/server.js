@@ -37,6 +37,7 @@ const server = http.createServer(app);
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
   process.env.FRONTEND_URL_ALT || 'http://localhost:5174',
+  'http://localhost:5176', // Current frontend port
   // Allow Railway healthcheck
   'https://mommycare-production-f0d0.up.railway.app',
   // Allow Vercel frontend

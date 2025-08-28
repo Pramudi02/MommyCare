@@ -156,7 +156,7 @@ router.post('/appointments', protect, authorize('doctor'), asyncHandler(async (r
         notes: notes || ''
     });
 
-    const populated = await appt
+    const populated = await Appointment.findById(appt._id)
         .populate('patient', 'firstName lastName email')
         .populate('doctor', 'firstName lastName email');
 
@@ -171,6 +171,68 @@ router.post('/appointments', protect, authorize('doctor'), asyncHandler(async (r
     } catch (e) {}
 
     res.status(201).json({ status: 'success', data: populated });
+}));
+
+// Update an appointment
+router.put('/appointments/:id', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+    const Appointment = getAppointmentModel();
+    const appointment = await Appointment.findById(req.params.id);
+    
+    if (!appointment) {
+        return res.status(404).json({ status: 'error', message: 'Appointment not found' });
+    }
+    
+    // Check if the appointment belongs to the current doctor
+    if (appointment.doctor.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ status: 'error', message: 'Not authorized to update this appointment' });
+    }
+    
+    const {
+        title,
+        description,
+        startTime,
+        endTime,
+        duration,
+        type,
+        status,
+        location,
+        notes
+    } = req.body;
+    
+    // Update appointment fields
+    if (title !== undefined) appointment.title = title;
+    if (description !== undefined) appointment.description = description;
+    if (startTime !== undefined) appointment.startTime = new Date(startTime);
+    if (endTime !== undefined) appointment.endTime = new Date(endTime);
+    if (duration !== undefined) appointment.duration = duration;
+    if (type !== undefined) appointment.type = type;
+    if (status !== undefined) appointment.status = status;
+    if (location !== undefined) appointment.location = location;
+    if (notes !== undefined) appointment.notes = notes;
+    
+    // Recalculate endTime if duration changed
+    if (duration && !endTime) {
+        appointment.endTime = new Date(appointment.startTime.getTime() + (duration * 60000));
+    }
+    
+    await appointment.save();
+    
+    // Populate and return updated appointment
+    const updated = await Appointment.findById(appointment._id)
+        .populate('patient', 'firstName lastName email')
+        .populate('doctor', 'firstName lastName email');
+    
+    // Realtime notify participants if socket.io available
+    try {
+        const io = req.app.get('io');
+        if (io) {
+            [updated.patient?._id, updated.doctor?._id].filter(Boolean).forEach((id) => {
+                io.to(`user_${id}`).emit('appointment_updated', { type: 'updated', appointment: updated });
+            });
+        }
+    } catch (e) {}
+    
+    res.json({ status: 'success', data: updated });
 }));
 
 // Delete an appointment
