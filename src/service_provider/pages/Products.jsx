@@ -5,7 +5,7 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  Star, 
+  Star,
   Package,
   TrendingUp,
   ExternalLink,
@@ -196,7 +196,7 @@ const Products = () => {
       <div className="sp-products-header">
         <div className="sp-products-header-icon">
           <Package />
-        </div>
+          </div>
         <div className="sp-products-title">
           <h1>Product Listings</h1>
           <p>Manage your product listings with external links</p>
@@ -402,10 +402,10 @@ const Products = () => {
                       <span className="sp-price">${selectedProduct.price}</span>
                       <div className="sp-rating">
                         <Star className="sp-star-icon" />
-                        <span>{selectedProduct.rating}</span>
-                      </div>
+                      <span>{selectedProduct.rating}</span>
                     </div>
                   </div>
+                </div>
                 </div>
                 
                 <div className="sp-product-detail-stats">
@@ -424,14 +424,14 @@ const Products = () => {
                         <span className="sp-stat-value">{selectedProduct.clicks}</span>
                         <span className="sp-stat-label">Clicks</span>
                       </div>
-                    </div>
+                  </div>
                     <div className="sp-stat-item">
                       <TrendingUp className="sp-stat-icon" />
                       <div>
                         <span className="sp-stat-value">{selectedProduct.clickRate}</span>
                         <span className="sp-stat-label">Click Rate</span>
-                      </div>
-                    </div>
+                  </div>
+                  </div>
                   </div>
                 </div>
                 
@@ -450,8 +450,8 @@ const Products = () => {
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
+                  </div>
+                </div>
             <div className="sp-modal-footer">
               <button 
                 className="sp-btn sp-btn-secondary"
