@@ -6,8 +6,6 @@ import {
   Paperclip, 
   Image, 
   File, 
-  Phone, 
-  Video, 
   MoreVertical, 
   Search, 
   X,
@@ -22,8 +20,6 @@ import {
   Shield,
   Calendar,
   FileText,
-  VideoIcon,
-  PhoneCall,
   Star,
   RefreshCw
 } from 'lucide-react';
@@ -36,8 +32,6 @@ const DoctorChat = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showChatInfo, setShowChatInfo] = useState(false);
-  const [showVoiceCall, setShowVoiceCall] = useState(false);
-  const [showVideoCall, setShowVideoCall] = useState(false);
   
   // State for moms and messages
   const [moms, setMoms] = useState([]);
@@ -56,6 +50,7 @@ const DoctorChat = () => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   // Initialize Socket.IO connection
   useEffect(() => {
@@ -116,15 +111,19 @@ const DoctorChat = () => {
       
       // Only append messages for the currently active conversation
       if (activeConversationId && conversationId === activeConversationId) {
+        const inferredType = msg.messageType || msg.type;
+        const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
+        const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
         const newMessage = {
           id: msg.id,
           // Determine sender based on current user vs message sender
           sender: msg.senderId === currentUser?._id ? 'doctor' : 'mom',
-          message: msg.content,
+          message: inferredType === 'text' ? (msg.content || '') : inferredName,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-          type: msg.messageType,
-          status: msg.status || 'delivered'
+          type: inferredType,
+          status: msg.status || 'delivered',
+          fileUrl: inferredUrl || undefined
         };
         
         console.log('Adding message to active conversation:', newMessage);
@@ -147,14 +146,18 @@ const DoctorChat = () => {
           setSelectedChat(momId);
           setActiveConversationId(conversationId);
           fetchMessages(conversationId);
+          const inferredType = msg.messageType || msg.type;
+          const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
+          const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
           const newMessage = {
             id: msg.id,
             sender: 'mom',
-            message: msg.content,
+            message: inferredType === 'text' ? (msg.content || '') : inferredName,
             timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-            type: msg.messageType,
-            status: msg.status || 'delivered'
+            type: inferredType,
+            status: msg.status || 'delivered',
+            fileUrl: inferredUrl || undefined
           };
           setChatMessages(prev => {
             const updatedMessages = [...prev, newMessage];
@@ -304,11 +307,12 @@ const DoctorChat = () => {
         const messages = data.data.map(msg => ({
           id: msg.id,
           sender: msg.sender === 'user' ? 'doctor' : 'mom',
-          message: msg.content,
+          message: (msg.messageType === 'text') ? msg.content : (msg.fileName || msg.filename || msg.name || msg.content || (msg.messageType === 'image' ? 'Image' : 'File')),
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
           type: msg.messageType,
-          status: msg.read ? 'read' : 'delivered'
+          status: msg.read ? 'read' : 'delivered',
+          fileUrl: msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl
         }))
         .sort((a, b) => a.originalTimestamp - b.originalTimestamp); // Sort by timestamp (oldest first)
         
@@ -740,20 +744,6 @@ const DoctorChat = () => {
               <div className="doctor-chat-header-actions">
                 <button 
                   className="doctor-chat-action-btn"
-                  onClick={() => setShowVoiceCall(true)}
-                  title="Voice Call"
-                >
-                  <PhoneCall size={18} />
-                </button>
-                <button 
-                  className="doctor-chat-action-btn"
-                  onClick={() => setShowVideoCall(true)}
-                  title="Video Call"
-                >
-                  <VideoIcon size={18} />
-                </button>
-                <button 
-                  className="doctor-chat-action-btn"
                   onClick={() => setShowChatInfo(true)}
                   title="Chat Info"
                 >
@@ -777,16 +767,18 @@ const DoctorChat = () => {
                             <File size={20} />
                             <div className="doctor-chat-file-info">
                               <span className="doctor-chat-file-name">{msg.message}</span>
-                              <span className="doctor-chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                              <span className="doctor-chat-file-size">{(msg.file?.size ? (msg.file.size / 1024 / 1024).toFixed(2) + ' MB' : '')}</span>
                             </div>
-                            <button className="doctor-chat-download-btn">
-                              <Download size={16} />
-                            </button>
+                            {msg.fileUrl && (
+                              <a className="doctor-chat-download-btn" href={msg.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                                <Download size={16} />
+                              </a>
+                            )}
                           </div>
                         )}
                         {msg.type === 'image' && (
                           <div className="doctor-chat-image-message">
-                            <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
+                            <img src={msg.fileUrl ? msg.fileUrl : (msg.file ? URL.createObjectURL(msg.file) : '')} alt="Shared image" />
                           </div>
                         )}
                         
@@ -854,6 +846,7 @@ const DoctorChat = () => {
                   <button 
                     className="doctor-chat-input-btn"
                     title="Camera"
+                    onClick={() => cameraInputRef.current?.click()}
                   >
                     <Camera size={20} />
                   </button>
@@ -905,6 +898,14 @@ const DoctorChat = () => {
               onChange={handleImageUpload}
               style={{ display: 'none' }}
               accept="image/*"
+            />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+              accept="image/*"
+              capture="environment"
             />
           </>
         ) : (
@@ -971,48 +972,6 @@ const DoctorChat = () => {
                 <FileText size={16} />
                 View Profile
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Voice Call Modal */}
-      {showVoiceCall && (
-        <div className="doctor-chat-modal-overlay" onClick={() => setShowVoiceCall(false)}>
-          <div className="doctor-chat-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="doctor-chat-call-modal">
-              <div className="doctor-chat-call-avatar">
-                <img src={getMomById(selectedChat)?.avatar} alt="Patient" />
-                <div className="doctor-chat-call-ringing"></div>
-              </div>
-              <h3>Calling {getMomById(selectedChat)?.name}</h3>
-              <p>Connecting to voice call...</p>
-              <div className="doctor-chat-call-actions">
-                <button className="doctor-chat-call-btn end-call">
-                  <Phone size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Video Call Modal */}
-      {showVideoCall && (
-        <div className="doctor-chat-modal-overlay" onClick={() => setShowVideoCall(false)}>
-          <div className="doctor-chat-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="doctor-chat-call-modal">
-              <div className="doctor-chat-call-avatar">
-                <img src={getMomById(selectedChat)?.avatar} alt="Patient" />
-                <div className="doctor-chat-call-ringing"></div>
-              </div>
-              <h3>Calling {getMomById(selectedChat)?.name}</h3>
-              <p>Connecting to video call...</p>
-              <div className="doctor-chat-call-actions">
-                <button className="doctor-chat-call-btn end-call">
-                  <Video size={20} />
-                </button>
-              </div>
             </div>
           </div>
         </div>
