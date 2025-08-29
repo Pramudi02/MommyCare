@@ -6,8 +6,6 @@ import {
   Paperclip, 
   Image, 
   File, 
-  Phone, 
-  Video, 
   MoreVertical, 
   Search, 
   Filter, 
@@ -33,8 +31,6 @@ import {
   Shield,
   Calendar,
   FileText,
-  VideoIcon,
-  PhoneCall,
   Heart,
   Share
 } from 'lucide-react';
@@ -48,8 +44,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showChatInfo, setShowChatInfo] = useState(false);
-  const [showVoiceCall, setShowVoiceCall] = useState(false);
-  const [showVideoCall, setShowVideoCall] = useState(false);
   
   // State for healthcare providers and messages
   const [healthcareProviders, setHealthcareProviders] = useState([]);
@@ -80,6 +74,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   // Initialize Socket.IO connection
   useEffect(() => {
@@ -137,19 +132,23 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
       // Only append messages for the currently active conversation
       if (activeConversationId && conversationId === activeConversationId) {
         console.log('✅ Message belongs to active conversation - adding to chat');
+        const inferredType = msg.messageType || msg.type;
+        const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
+        const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
         const newMessage = {
           id: msg.id,
           // Determine sender based on current user vs message sender
           sender: msg.senderId === currentUser?._id ? 'user' : 'provider',
-          message: msg.content,
+          message: inferredType === 'text' ? (msg.content || '') : inferredName,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-          type: msg.messageType,
+          type: inferredType || 'text',
           status: msg.status || 'delivered',
           replyTo: msg.replyTo ? {
             sender: msg.replyTo.sender,
             message: msg.replyTo.content
-          } : null
+          } : null,
+          fileUrl: inferredUrl || undefined
         };
         
         // Add new message and sort by timestamp to maintain correct order
@@ -328,7 +327,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
           .map(msg => ({
             id: msg.id,
             sender: msg.sender,
-            message: msg.content,
+            message: (msg.messageType === 'text') ? msg.content : (msg.fileName || msg.filename || msg.name || msg.content || (msg.messageType === 'image' ? 'Image' : 'File')),
             timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
             type: msg.messageType,
@@ -336,7 +335,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
             replyTo: msg.replyTo ? {
               sender: msg.replyTo.sender,
               message: msg.replyTo.content
-            } : null
+            } : null,
+            fileUrl: msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl
           }))
           .sort((a, b) => a.originalTimestamp - b.originalTimestamp); // Sort by timestamp (oldest first)
         
@@ -781,11 +781,17 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
         // Forward message (you can implement this later)
         console.log('Forward message:', message.message);
         break;
-              case 'delete':
+      case 'delete':
           // Delete message permanently from database and frontend
           const deleteMessage = async () => {
             try {
               const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+              
+              // Only allow deleting own messages
+              if (message.sender !== 'user') {
+                alert('You can only delete your own messages.');
+                return;
+              }
               
               const response = await fetch(`http://localhost:5000/api/chat/messages/${messageId}`, {
                 method: 'DELETE',
@@ -798,9 +804,34 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                 // Remove from frontend after successful database deletion
                 setChatMessages(prev => prev.filter(msg => msg.id !== messageId));
                 console.log('Message deleted permanently from database:', message.message);
+              } else if (response.status === 403) {
+                // Forbidden: not allowed to delete
+                let serverMessage = 'You are not allowed to delete this message.';
+                try {
+                  const contentType = response.headers.get('content-type') || '';
+                  if (contentType.includes('application/json')) {
+                    const data = await response.json();
+                    serverMessage = data.message || serverMessage;
+                  } else {
+                    const text = await response.text();
+                    if (text) serverMessage = text;
+                  }
+                } catch {}
+                alert(serverMessage);
               } else {
+                let errorText = 'Failed to delete message. Please try again.';
+                try {
+                  const ct = response.headers.get('content-type') || '';
+                  if (ct.includes('application/json')) {
+                    const data = await response.json();
+                    errorText = data.message || errorText;
+                  } else {
+                    const text = await response.text();
+                    if (text) errorText = text;
+                  }
+                } catch {}
                 console.error('Failed to delete message from database');
-                alert('Failed to delete message. Please try again.');
+                alert(errorText);
               }
             } catch (error) {
               console.error('Error deleting message:', error);
@@ -992,20 +1023,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                 <div className="chat-header-actions">
                   <button 
                     className="chat-action-btn"
-                    onClick={() => setShowVoiceCall(true)}
-                    title="Voice Call"
-                  >
-                    <PhoneCall size={18} />
-                  </button>
-                  <button 
-                    className="chat-action-btn"
-                    onClick={() => setShowVideoCall(true)}
-                    title="Video Call"
-                  >
-                    <VideoIcon size={18} />
-                  </button>
-                  <button 
-                    className="chat-action-btn"
                     onClick={() => setShowChatInfo(true)}
                     title="Chat Info"
                   >
@@ -1058,11 +1075,13 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                               <File size={20} />
                               <div className="chat-file-info">
                                 <span className="chat-file-name">{msg.message}</span>
-                                <span className="chat-file-size">{(msg.file?.size / 1024 / 1024).toFixed(2)} MB</span>
+                                <span className="chat-file-size">{(msg.file?.size ? (msg.file.size / 1024 / 1024).toFixed(2) + ' MB' : '')}</span>
                               </div>
-                              <button className="chat-download-btn">
-                                <Download size={16} />
-                              </button>
+                              {msg.fileUrl && (
+                                <a className="chat-download-btn" href={msg.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                                  <Download size={16} />
+                                </a>
+                              )}
                             </div>
                           </>
                         )}
@@ -1079,7 +1098,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                               </div>
                             )}
                             <div className="chat-image-message">
-                              <img src={URL.createObjectURL(msg.file)} alt="Shared image" />
+                              <img src={msg.fileUrl ? msg.fileUrl : (msg.file ? URL.createObjectURL(msg.file) : '')} alt="Shared image" />
                             </div>
                           </>
                         )}
@@ -1184,6 +1203,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                     <button 
                       className="chat-input-btn"
                       title="Camera"
+                      onClick={() => cameraInputRef.current?.click()}
                     >
                       <Camera size={20} />
                     </button>
@@ -1236,6 +1256,14 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                 onChange={handleImageUpload}
                 style={{ display: 'none' }}
                 accept="image/*"
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+                accept="image/*"
+                capture="environment"
               />
             </>
           ) : (
@@ -1317,48 +1345,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                   <FileText size={16} />
                   View Profile
                 </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Voice Call Modal */}
-        {showVoiceCall && (
-          <div className="chat-modal-overlay" onClick={() => setShowVoiceCall(false)}>
-            <div className="chat-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="chat-call-modal">
-                <div className="chat-call-avatar">
-                  <img src={getProviderById(selectedChat)?.avatar} alt="Provider" />
-                  <div className="chat-call-ringing"></div>
-                </div>
-                <h3>Calling {getProviderById(selectedChat)?.name}</h3>
-                <p>Connecting to voice call...</p>
-                <div className="chat-call-actions">
-                  <button className="chat-call-btn end-call">
-                    <Phone size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Video Call Modal */}
-        {showVideoCall && (
-          <div className="chat-modal-overlay" onClick={() => setShowVideoCall(false)}>
-            <div className="chat-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="chat-call-modal">
-                <div className="chat-call-avatar">
-                  <img src={getProviderById(selectedChat)?.avatar} alt="Provider" />
-                  <div className="chat-call-ringing"></div>
-                </div>
-                <h3>Calling {getProviderById(selectedChat)?.name}</h3>
-                <p>Connecting to video call...</p>
-                <div className="chat-call-actions">
-                  <button className="chat-call-btn end-call">
-                    <Video size={20} />
-                  </button>
-                </div>
               </div>
             </div>
           </div>
