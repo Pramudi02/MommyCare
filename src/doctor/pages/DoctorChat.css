@@ -699,26 +699,7 @@
   cursor: not-allowed;
 }
 
-.doctor-chat-voice-btn {
-  background: rgba(16, 185, 129, 0.1);
-  border: 2px solid rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
 
-.doctor-chat-voice-btn:hover {
-  background: #10b981;
-  color: white;
-  border-color: #10b981;
-  transform: scale(1.1);
-}
 
 /* Welcome Screen */
 .doctor-chat-welcome-screen {
@@ -1293,10 +1274,7 @@
     height: 2.5rem;
   }
   
-  .doctor-chat-voice-btn {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
+
   
   .doctor-chat-textarea {
     padding: 0.75rem 1rem;
@@ -1428,10 +1406,7 @@
     height: 2.25rem;
   }
   
-  .doctor-chat-voice-btn {
-    width: 2rem;
-    height: 2rem;
-  }
+
   
   .doctor-chat-textarea {
     padding: 0.6rem 0.8rem;
@@ -1580,10 +1555,7 @@
     height: 2rem;
   }
   
-  .doctor-chat-voice-btn {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
+
   
   .doctor-chat-textarea {
     padding: 0.5rem 0.7rem;

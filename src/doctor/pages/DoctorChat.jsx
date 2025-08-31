@@ -9,8 +9,6 @@ import {
   MoreVertical, 
   Search, 
   X,
-  Smile,
-  Mic,
   Camera,
   Download,
   Check,
@@ -825,12 +823,6 @@ const DoctorChat = () => {
                 <div className="doctor-chat-input-actions">
                   <button 
                     className="doctor-chat-input-btn"
-                    title="Emoji"
-                  >
-                    <Smile size={20} />
-                  </button>
-                  <button 
-                    className="doctor-chat-input-btn"
                     onClick={() => imageInputRef.current?.click()}
                     title="Send Image"
                   >
@@ -877,10 +869,6 @@ const DoctorChat = () => {
                     <Send size={18} />
                   </button>
                 </div>
-                
-                <button className="doctor-chat-voice-btn" title="Voice Message">
-                  <Mic size={20} />
-                </button>
               </div>
             </div>
 
