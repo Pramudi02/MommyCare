@@ -285,6 +285,7 @@ export const midwifeAPI = {
       body: JSON.stringify(profileData)
     });
   }
+};
 
 // Immunization Schedule API functions
 export const immunizationScheduleAPI = {

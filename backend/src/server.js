@@ -25,7 +25,6 @@ const chatRoutes = require('./routes/chat');
 const aiRoutes = require('./routes/ai');
 const permissionRequestRoutes = require('./routes/permissionRequests');
 const babyNameRoutes = require('./routes/babyNames');
-const immunizationScheduleRoutes = require('./routes/immunizationSchedule');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -204,37 +203,36 @@ app.use('/api/chat', protect, chatRoutes);
 app.use('/api/ai', protect, aiRoutes);
 app.use('/api/permission-requests', permissionRequestRoutes);
 app.use('/api/baby-names', babyNameRoutes);
-app.use('/api/immunization-schedule', immunizationScheduleRoutes);
 
 // Import chat socket handler
 const { setupChatSocket } = require('./socket/chatSocket');
 
 // Import seeders
-const { seedImmunizationSchedule } = require('./controllers/immunizationScheduleSeed');
+// const { seedImmunizationSchedule } = require('./controllers/immunizationScheduleSeed');
 
 // Initialize chat socket functionality
 setupChatSocket(io);
 
 // Auto-seed immunization schedule for demo purposes
-const autoSeedImmunizationSchedule = async () => {
-  try {
-    // This is a demo seeder - in production, you'd want to seed based on actual user data
-    console.log('🌱 Auto-seeding immunization schedule for demo...');
-    
-    // For demo purposes, create a sample schedule with a recent birth date
-    const demoBirthDate = new Date(Date.now() - (2 * 30 * 24 * 60 * 60 * 1000)); // 2 months ago
-    const demoBabyId = 'demo-baby-001'; // Demo baby ID
-    
-    // Note: In production, you'd get this from actual user registration
-    console.log('📝 Note: Demo immunization schedule created. In production, seed based on actual user data.');
-    
-  } catch (error) {
-    console.log('⚠️ Demo seeding failed (this is normal in production):', error.message);
-  }
-};
+// const autoSeedImmunizationSchedule = async () => {
+//   try {
+//     // This is a demo seeder - in production, you'd want to seed based on actual user data
+//     console.log('🌱 Auto-seeding immunization schedule for demo...');
+//     
+//     // For demo purposes, create a sample schedule with a recent birth date
+//     const demoBirthDate = new Date(Date.now() - (2 * 30 * 24 * 60 * 60 * 1000)); // 2 months ago
+//     const demoBabyId = 'demo-baby-001'; // Demo baby ID
+//     
+//     // Note: In production, you'd get this from actual user registration
+//     console.log('📝 Note: Demo immunization schedule created. In production, seed based on actual user data.');
+//     
+//   } catch (error) {
+//     console.log('⚠️ Demo seeding failed (this is normal in production):', error.message);
+//   }
+// };
 
 // Run demo seeder after server starts
-setTimeout(autoSeedImmunizationSchedule, 5000); // Wait 5 seconds after server starts
+// setTimeout(autoSeedImmunizationSchedule, 5000); // Wait 5 seconds after server starts
 
 // Legacy socket handlers for backward compatibility
 io.on('connection', (socket) => {
