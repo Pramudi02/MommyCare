@@ -18,8 +18,6 @@ import {
   Baby, 
   Stethoscope,
   X,
-  Smile,
-  Mic,
   Camera,
   Download,
   Trash2,
@@ -40,7 +38,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   const [selectedChat, setSelectedChat] = useState(null);
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showChatInfo, setShowChatInfo] = useState(false);
@@ -1181,13 +1178,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                   <div className="chat-input-actions">
                     <button 
                       className="chat-input-btn"
-                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                      title="Emoji"
-                    >
-                      <Smile size={20} />
-                    </button>
-                    <button 
-                      className="chat-input-btn"
                       onClick={() => imageInputRef.current?.click()}
                       title="Send Image"
                     >
@@ -1235,10 +1225,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                       <Send size={18} />
                     </button>
                   </div>
-                  
-                  <button className="chat-voice-btn" title="Voice Message">
-                    <Mic size={20} />
-                  </button>
                 </div>
               </div>
 
