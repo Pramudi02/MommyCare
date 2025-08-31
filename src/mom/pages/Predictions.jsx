@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Baby, Stethoscope, AlertTriangle, BarChart3, CheckCircle, Loader2, Brain } from 'lucide-react';
+import { momProfileAPI } from '../../services/api';
 import './Predictions.css';
 
 const Predictions = () => {
@@ -7,15 +8,78 @@ const Predictions = () => {
   const [babyWeightResult, setBabyWeightResult] = useState(null);
   const [diabetesResult, setDiabetesResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [prePregnancyWeight, setPrePregnancyWeight] = useState('');
+  const [smokingStatus, setSmokingStatus] = useState(0);
+  const [apiError, setApiError] = useState(null);
+  const [debugMode, setDebugMode] = useState(false);
+  
+  // Form state for editable fields
+  const [formData, setFormData] = useState({
+    gestationalAge: '',
+    maternalAge: '',
+    maternalHeight: '',
+    maternalWeight: '',
+    previousPregnancies: 0
+  });
 
-  // Sample data for Baby Weight Prediction
-  const sampleBabyWeightData = {
-    gestationalAge: 35,
-    maternalAge: 28,
-    maternalHeight: 165,
-    maternalWeight: 51,
-    currentWeight: 56,
-    previousBabies: 0
+  // AI Backend URL - update this to match your Python backend
+  const AI_BACKEND_URL = 'http://localhost:8000';
+  
+  // Log the backend URL for debugging
+  console.log('AI Backend URL:', AI_BACKEND_URL);
+
+  // Calculate gestational age from LMP
+  const calculateGestationalAge = (lmp) => {
+    if (!lmp) return null;
+    const lmpDate = new Date(lmp);
+    const today = new Date();
+    const diffTime = Math.abs(today - lmpDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const gestationalWeeks = Math.floor(diffDays / 7);
+    return gestationalWeeks;
+  };
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      setProfileLoading(true);
+      const response = await momProfileAPI.getProfile();
+      if (response.data) {
+        setProfileData(response.data);
+        // Calculate gestational age from LMP
+        const gestationalAge = calculateGestationalAge(response.data.lmp);
+        if (gestationalAge) {
+          setProfileData(prev => ({ ...prev, gestationalAge }));
+        }
+        
+        // Initialize form data with profile values
+        setFormData({
+          gestationalAge: gestationalAge || '',
+          maternalAge: response.data.age || '',
+          maternalHeight: response.data.height?.value || '',
+          maternalWeight: '',
+          previousPregnancies: response.data.medicalHistory?.previousPregnancies || 0
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+      // Set default values if API fails
+      setProfileData({
+        age: '',
+        height: { value: '', unit: 'cm' },
+        weight: { value: '', unit: 'kg' },
+        gestationalAge: null,
+        medicalHistory: { previousPregnancies: 0 }
+      });
+    } finally {
+      setProfileLoading(false);
+    }
   };
 
   // Sample data for Diabetes Risk Assessment
@@ -28,8 +92,133 @@ const Predictions = () => {
     pregnancyWeeks: 24
   };
 
-  // Function to calculate baby weight prediction
-  const calculateBabyWeight = (data) => {
+  const handleBabyWeightSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check if profile data is loaded
+    if (!profileData) {
+      alert('Profile data is not loaded. Please refresh the page and try again.');
+      return;
+    }
+
+    // Check if pre-pregnancy weight is provided
+    if (!prePregnancyWeight) {
+      alert('Please enter your pre-pregnancy weight.');
+      return;
+    }
+
+    // Validate gestational age
+    const gestationalAge = parseFloat(formData.gestationalAge);
+    if (!gestationalAge || gestationalAge < 20 || gestationalAge > 45) {
+      alert(`Gestational age must be between 20-45 weeks. Current value: ${gestationalAge || 'Not set'}.`);
+      return;
+    }
+
+    // Validate other required fields
+    const maternalAge = parseInt(formData.maternalAge);
+    if (!maternalAge || maternalAge < 13 || maternalAge > 60) {
+      alert(`Please ensure your age is between 13-60 years. Current value: ${maternalAge || 'Not set'}.`);
+      return;
+    }
+
+    const maternalHeight = parseFloat(formData.maternalHeight);
+    if (!maternalHeight || maternalHeight < 120 || maternalHeight > 220) {
+      alert(`Please ensure your height is between 120-220 cm. Current value: ${maternalHeight || 'Not set'} cm.`);
+      return;
+    }
+
+    const maternalWeight = parseFloat(prePregnancyWeight);
+    if (maternalWeight < 25 || maternalWeight > 200) {
+      alert('Pre-pregnancy weight must be between 25-200 kg.');
+      return;
+    }
+    
+    // Calculate BMI and validate
+    const heightM = maternalHeight / 100;
+    const bmi = maternalWeight / (heightM * heightM);
+    if (bmi < 13 || bmi > 55) {
+      alert(`BMI (${bmi.toFixed(1)}) is outside the reasonable range (13-55). Please check your weight and height.`);
+      return;
+    }
+
+    setIsLoading(true);
+    setApiError(null); // Clear previous errors
+    
+    try {
+      // Prepare the request data
+      const requestData = {
+        gestational_age: gestationalAge,
+        maternal_age: maternalAge,
+        maternal_height: maternalHeight,
+        maternal_weight: maternalWeight,
+        smoking_status: smokingStatus,
+        previous_pregnancies: formData.previousPregnancies
+      };
+      
+      console.log('Sending request to AI backend:', requestData);
+      
+      // Call the Python AI backend
+      const response = await fetch(`${AI_BACKEND_URL}/predict/baby-weight`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.detail || 'Unknown error';
+        console.log('API Error:', errorMessage);
+        setApiError(`API Error (${response.status}): ${errorMessage}`);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
+      }
+
+      const result = await response.json();
+      console.log('API Response:', result);
+      
+      if (result.success) {
+        console.log('Setting baby weight result:', {
+          weight: result.predicted_weight,
+          category: result.weight_category,
+          advice: result.recommendation,
+          riskLevel: result.risk_level
+        });
+        setBabyWeightResult({
+          weight: result.predicted_weight,
+          category: result.weight_category,
+          advice: result.recommendation,
+          riskLevel: result.risk_level
+        });
+      } else {
+        throw new Error('Prediction failed');
+      }
+    } catch (error) {
+      console.error('Error calling AI backend:', error);
+      console.log('Using fallback calculation...');
+             // Fallback to local calculation if AI backend fails
+       const fallbackResult = calculateBabyWeightFallback({
+         gestationalAge: gestationalAge || 0,
+         maternalAge: maternalAge || 0,
+         maternalHeight: maternalHeight || 0,
+         maternalWeight: parseFloat(prePregnancyWeight),
+         currentWeight: profileData.weight?.value || 0,
+         previousBabies: formData.previousPregnancies || 0
+       });
+      console.log('Fallback result:', fallbackResult);
+      setBabyWeightResult(fallbackResult);
+      // Show error to user
+      setApiError(`API Error: ${error.message}. Using fallback calculation.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fallback calculation if AI backend is not available
+  const calculateBabyWeightFallback = (data) => {
     const { gestationalAge, maternalAge, maternalHeight, maternalWeight, currentWeight, previousBabies } = data;
     
     const baseWeight = 1500 + (gestationalAge - 20) * 140;
@@ -43,20 +232,17 @@ const Predictions = () => {
       (Math.random() - 0.5) * 200
     );
 
-    let category, icon, advice, riskLevel;
+    let category, advice, riskLevel;
     if (predictedWeight < 2500) {
       category = "Low Birth Weight";
-      icon = <AlertTriangle size={32} className="text-yellow-500" />;
       advice = "Consider discussing nutrition and monitoring with your doctor.";
       riskLevel = "low";
     } else if (predictedWeight > 4000) {
       category = "High Birth Weight";
-      icon = <BarChart3 size={32} className="text-purple-500" />;
       advice = "Monitor glucose levels and discuss delivery plans with your healthcare provider.";
       riskLevel = "medium";
     } else {
       category = "Normal Birth Weight";
-      icon = <CheckCircle size={32} className="text-green-500" />;
       advice = "Predicted weight is within normal range. Continue regular check-ups.";
       riskLevel = "normal";
     }
@@ -64,14 +250,96 @@ const Predictions = () => {
     return {
       weight: Math.round(predictedWeight),
       category,
-      icon,
       advice,
       riskLevel
     };
   };
 
-  // Function to calculate diabetes risk
-  const calculateDiabetesRisk = (data) => {
+  const handleDiabetesSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const formData = new FormData(e.target);
+      
+      // Validate input data
+      const age = parseFloat(formData.get('age'));
+      const height = parseFloat(formData.get('height'));
+      const bmi = parseFloat(formData.get('bmi'));
+      const familyHistory = parseInt(formData.get('familyHistory'));
+      const previousGD = parseInt(formData.get('previousGD'));
+      
+      // Validate ranges
+      if (age < 13 || age > 60) {
+        alert('Age must be between 13-60 years.');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (height < 120 || height > 220) {
+        alert('Height must be between 120-220 cm.');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (bmi < 15 || bmi > 50) {
+        alert('BMI must be between 15-50 kg/m².');
+        setIsLoading(false);
+        return;
+      }
+      
+      const data = {
+        age: age,
+        height: height,
+        bmi: bmi,
+        family_history: familyHistory,
+        previous_gd: previousGD
+      };
+
+      // Call the Python AI backend
+      const response = await fetch(`${AI_BACKEND_URL}/predict/diabetes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.detail || 'Unknown error'}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setDiabetesResult({
+          riskLevel: result.risk_assessment,
+          riskScore: result.risk_score,
+          advice: result.recommendation
+        });
+      } else {
+        throw new Error('Prediction failed');
+      }
+    } catch (error) {
+      console.error('Error calling AI backend:', error);
+      // Fallback to local calculation if AI backend fails
+      const fallbackResult = calculateDiabetesRiskFallback({
+        age: parseFloat(e.target.age.value),
+        bmi: parseFloat(e.target.bmi.value),
+        height: parseFloat(e.target.height.value),
+        familyHistory: parseInt(e.target.familyHistory.value),
+        previousGD: parseInt(e.target.previousGD.value),
+
+      });
+      setDiabetesResult(fallbackResult);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fallback calculation if AI backend is not available
+  const calculateDiabetesRiskFallback = (data) => {
     const { age, bmi, glucose, familyHistory, previousGD, pregnancyWeeks } = data;
     
     let riskScore = 0;
@@ -105,75 +373,45 @@ const Predictions = () => {
     riskScore += (Math.random() - 0.5) * 10;
     riskScore = Math.max(0, Math.min(100, riskScore));
 
-    let riskLevel, icon, advice;
+    let riskLevel, advice;
     
     if (riskScore <= 30) {
       riskLevel = "Low Risk";
-      icon = <CheckCircle size={32} className="text-green-500" />;
       advice = "Your risk appears low. Continue healthy eating and regular exercise. Monitor with routine check-ups.";
     } else if (riskScore <= 60) {
       riskLevel = "Moderate Risk";
-      icon = <BarChart3 size={32} className="text-yellow-500" />;
       advice = "You may have moderate risk. Consider more frequent glucose monitoring and dietary consultation.";
     } else {
       riskLevel = "High Risk";
-      icon = <AlertTriangle size={32} className="text-red-500" />;
       advice = "You may be at higher risk. Please consult your healthcare provider immediately for proper testing and monitoring.";
     }
 
     return {
       riskLevel,
       riskScore: Math.round(riskScore),
-      icon,
       advice
     };
   };
 
-  // Remove automatic submission - user will submit manually
-
-  const handleBabyWeightSubmit = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const formData = new FormData(e.target);
-    const data = {
-      gestationalAge: parseFloat(formData.get('gestationalAge')),
-      maternalAge: parseFloat(formData.get('maternalAge')),
-      maternalHeight: parseFloat(formData.get('maternalHeight')),
-      maternalWeight: parseFloat(formData.get('maternalWeight')),
-      currentWeight: parseFloat(formData.get('currentWeight')),
-      previousBabies: parseInt(formData.get('previousBabies'))
-    };
-
-    // Simulate AI prediction
-    setTimeout(() => {
-      const result = calculateBabyWeight(data);
-      setBabyWeightResult(result);
-      setIsLoading(false);
-    }, 1500);
-  };
-
-  const handleDiabetesSubmit = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const formData = new FormData(e.target);
-    const data = {
-      age: parseFloat(formData.get('age')),
-      bmi: parseFloat(formData.get('bmi')),
-      glucose: parseFloat(formData.get('glucose')),
-      familyHistory: parseInt(formData.get('familyHistory')),
-      previousGD: parseInt(formData.get('previousGD')),
-      pregnancyWeeks: parseFloat(formData.get('pregnancyWeeks'))
-    };
-
-    // Simulate AI prediction
-    setTimeout(() => {
-      const result = calculateDiabetesRisk(data);
-      setDiabetesResult(result);
-      setIsLoading(false);
-    }, 1500);
-  };
+  if (profileLoading) {
+    return (
+      <div className="predictions-page bg-gray-50 p-4">
+        <div className="predictions-container max-w-7xl mx-auto">
+          <div className="predictions-header">
+            <div className="header-icon">
+              <Brain className="w-6 h-6" />
+            </div>
+            <h1 className="main-title-Ai text-white-700">AI Predictions</h1>
+            <p className="subtitle-Ai text-white-500">Loading your profile data...</p>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="loading-spinner"></div>
+            <p className="ml-3">Loading profile data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="predictions-page  bg-gray-50 p-4">
@@ -188,16 +426,26 @@ const Predictions = () => {
         <p className="subtitle-Ai text-white-500  ">Advanced AI-powered health predictions for maternal care <br /> Baby Weight Prediction & Gestational Diabetes Risk Assessment</p>
       </div>
         
-        {/* Disclaimer */}
-        <div className="disclaimer-card">
-          <div className="disclaimer-content">
-            <span className="warning-icon">⚠️</span>
-            <p className="disclaimer-text">
-              <strong>Important:</strong> These are AI predictions for guidance only. Results are not 100% accurate. 
-              Always consult with your healthcare provider for medical decisions.
-            </p>
-          </div>
+              {/* Disclaimer */}
+      <div className="disclaimer-card">
+        <div className="disclaimer-content">
+          <span className="warning-icon">⚠️</span>
+          <p className="disclaimer-text">
+            <strong>Important:</strong> These are AI predictions for guidance only. Results are not 100% accurate. 
+            Always consult with your healthcare provider for medical decisions.
+          </p>
         </div>
+      </div>
+      
+      {/* Debug Mode Toggle */}
+      <div className="debug-toggle mb-4">
+        <button 
+          onClick={() => setDebugMode(!debugMode)}
+          className="text-xs text-gray-500 hover:text-gray-700 underline"
+        >
+          {debugMode ? 'Hide Debug Info' : 'Show Debug Info'}
+        </button>
+      </div>
       {/* Tab Navigation */}
       <div className="tab-navigationp">
         <div className="tab-container">
@@ -225,90 +473,139 @@ const Predictions = () => {
                 <Baby size={28} className="text-blue-400" />
                 <h2 className="card-title-Ai">Baby Weight Prediction</h2>
               </div>
+              
+              
               <form onSubmit={handleBabyWeightSubmit} className="prediction-form">
-                <div className="input-group">
-                  <input 
-                    type="number" 
-                    name="gestationalAge"
-                    className="form-input-Ai" 
-                    placeholder=" " 
-                    step="0.1" 
-                    required 
-                    defaultValue={sampleBabyWeightData.gestationalAge}
-                    disabled={isLoading}
-                  />
-                  <label className="floating-label">Gestational Age (weeks)</label>
-                </div>
+                                 <div className="input-group">
+                   <input 
+                     type="number" 
+                     className="form-input-Ai" 
+                     placeholder=" " 
+                     step="0.1" 
+                     value={formData.gestationalAge}
+                     onChange={(e) => setFormData(prev => ({ ...prev, gestationalAge: e.target.value }))}
+                     required
+                     disabled={isLoading}
+                   />
+                   <label className="floating-label">Gestational Age (weeks) - Calculated from LMP</label>
+                 </div>
+                 
+                 <div className="input-group">
+                   <input 
+                     type="number" 
+                     className="form-input-Ai" 
+                     placeholder=" " 
+                     value={formData.maternalAge}
+                     onChange={(e) => setFormData(prev => ({ ...prev, maternalAge: e.target.value }))}
+                     required
+                     disabled={isLoading}
+                   />
+                   <label className="floating-label">Maternal Age (years) - From Profile</label>
+                 </div>
+                 
+                 <div className="input-group">
+                   <input 
+                     type="number" 
+                     className="form-input-Ai" 
+                     placeholder=" " 
+                     step="0.1" 
+                     value={formData.maternalHeight}
+                     onChange={(e) => setFormData(prev => ({ ...prev, maternalHeight: e.target.value }))}
+                     required
+                     disabled={isLoading}
+                   />
+                   <label className="floating-label">Maternal Height (cm) - From Profile</label>
+                 </div>
                 
                 <div className="input-group">
                   <input 
                     type="number" 
-                    name="maternalAge"
-                    className="form-input-Ai" 
-                    placeholder=" " 
-                    required 
-                    defaultValue={sampleBabyWeightData.maternalAge}
-                    disabled={isLoading}
-                  />
-                  <label className="floating-label">Maternal Age (years)</label>
-                </div>
-                
-                <div className="input-group">
-                  <input 
-                    type="number" 
-                    name="maternalHeight"
+                    name="prePregnancyWeight"
                     className="form-input-Ai" 
                     placeholder=" " 
                     step="0.1" 
+                    value={prePregnancyWeight}
+                    onChange={(e) => setPrePregnancyWeight(e.target.value)}
                     required 
-                    defaultValue={sampleBabyWeightData.maternalHeight}
                     disabled={isLoading}
                   />
-                  <label className="floating-label">Maternal Height (cm)</label>
+                  <label className="floating-label">Pre-pregnancy Weight (kg) *</label>
                 </div>
                 
                 <div className="input-group">
-                  <input 
-                    type="number" 
-                    name="maternalWeight"
+                  <select 
                     className="form-input-Ai" 
-                    placeholder=" " 
-                    step="0.1" 
-                    required 
-                    defaultValue={sampleBabyWeightData.maternalWeight}
+                    value={smokingStatus}
+                    onChange={(e) => setSmokingStatus(parseInt(e.target.value))}
                     disabled={isLoading}
-                  />
-                  <label className="floating-label">Pre-pregnancy Weight (kg)</label>
+                  >
+                    <option value="0">No smoking</option>
+                    <option value="1">Smoking</option>
+                  </select>
+                  <label className="floating-label">Smoking Status *</label>
                 </div>
                 
                                    <div className="input-group">
                    <input 
                      type="number" 
-                     name="currentWeight"
                      className="form-input-Ai" 
                      placeholder=" " 
                      step="0.1" 
-                     required 
-                     defaultValue={sampleBabyWeightData.currentWeight}
-                     disabled={isLoading}
+                    value={profileData?.weight?.value || ''}
+                    disabled
                    />
-                   <label className="floating-label">Current Weight (kg)</label>
+                  <label className="floating-label">Current Weight (kg) - From Profile</label>
                  </div>
                 
-                                   <div className="input-group">
-                   <select name="previousBabies" className="form-input-Ai" required disabled={isLoading} defaultValue={sampleBabyWeightData.previousBabies}>
-                     <option value="" disabled>Number of Previous Babies</option>
-                     <option value="0">0 (First pregnancy)</option>
-                     <option value="1">1</option>
-                     <option value="2">2</option>
-                     <option value="3">3</option>
-                     <option value="4">4+</option>
-                   </select>
-                 </div>
+                                                                       <div className="input-group">
+                   <select 
+                     className="form-input-Ai" 
+                     value={formData.previousPregnancies}
+                     onChange={(e) => setFormData(prev => ({ ...prev, previousPregnancies: parseInt(e.target.value) }))}
+                     disabled={isLoading}
+                   >
+                      <option value="0">0 (First pregnancy)</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4+</option>
+                    </select>
+                   <label className="floating-label">Previous Pregnancies - From Profile</label>
+                  </div>
                 
-                <button type="submit" className="predict-btn" disabled={isLoading}>
+                <button type="submit" className="predict-btn" disabled={isLoading || !prePregnancyWeight}>
                   {isLoading ? <Loader2 className="animate-spin inline mr-2" size={18} /> : <BarChart3 className="inline mr-2" size={18} />} Predict Baby Weight
                 </button>
+                
+                {/* API Error Display */}
+                {apiError && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center text-red-800">
+                      <AlertTriangle size={16} className="mr-2" />
+                      <span className="text-sm font-medium">API Error</span>
+                    </div>
+                    <p className="text-sm text-red-700 mt-1">{apiError}</p>
+                    <p className="text-xs text-red-600 mt-2">
+                      Using fallback calculation. Please check your profile data and try again.
+                    </p>
+                  </div>
+                )}
+                
+                {/* Debug Information */}
+                {debugMode && (
+                  <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="flex items-center text-gray-800 mb-2">
+                      <span className="text-sm font-medium">Debug Information</span>
+                    </div>
+                                         <div className="text-xs text-gray-600 space-y-1">
+                       <div><strong>API URL:</strong> {AI_BACKEND_URL}/predict/baby-weight</div>
+                       <div><strong>Profile Data:</strong> {JSON.stringify(profileData, null, 2)}</div>
+                       <div><strong>Form Data:</strong> {JSON.stringify(formData, null, 2)}</div>
+                       <div><strong>Pre-pregnancy Weight:</strong> {prePregnancyWeight}</div>
+                       <div><strong>Smoking Status:</strong> {smokingStatus}</div>
+                     </div>
+                  </div>
+                )}
               </form>
             </div>
             {/* Results */}
@@ -320,12 +617,18 @@ const Predictions = () => {
               <div className="results-container">
                 {!babyWeightResult ? (
                   <div className="empty-result">
-                    <p className="empty-text">Fill in the form to get your baby weight prediction</p>
+                    <p className="empty-text">Fill in the pre-pregnancy weight to get your baby weight prediction</p>
                   </div>
                 ) : (
                   <div className={`result-card ${babyWeightResult.riskLevel}`}>
                     <div className="result-header flex items-center justify-center mb-2">
-                      {babyWeightResult.icon}
+                      {babyWeightResult.riskLevel === 'low' ? (
+                        <AlertTriangle size={32} className="text-yellow-500" />
+                      ) : babyWeightResult.riskLevel === 'medium' ? (
+                        <BarChart3 size={32} className="text-purple-500" />
+                      ) : (
+                        <CheckCircle size={32} className="text-green-500" />
+                      )}
                     </div>
                     <div className="result-content">
                       <div className="result-item">
@@ -452,7 +755,13 @@ const Predictions = () => {
                 ) : (
                   <div className={`result-card ${diabetesResult.riskLevel.toLowerCase().replace(' ', '-')}`}> 
                     <div className="result-header flex items-center justify-center mb-2">
-                      {diabetesResult.icon}
+                      {diabetesResult.riskLevel === 'Low Risk' ? (
+                        <CheckCircle size={32} className="text-green-500" />
+                      ) : diabetesResult.riskLevel === 'Moderate Risk' ? (
+                        <BarChart3 size={32} className="text-yellow-500" />
+                      ) : (
+                        <AlertTriangle size={32} className="text-red-500" />
+                      )}
                     </div>
                     <div className="result-content">
                       <div className="result-item">
