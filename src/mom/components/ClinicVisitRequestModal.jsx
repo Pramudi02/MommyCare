@@ -412,3 +412,417 @@ const ClinicVisitRequestModal = ({ isOpen, onClose, onSubmit, isLoading, selecte
 };
 
 export default ClinicVisitRequestModal;
+
+
+
+  return (
+
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 pt-20">
+
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+
+        {/* Header */}
+
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+
+          <h2 className="text-xl font-semibold text-gray-800">Request Clinic Visit</h2>
+
+          <button
+
+            onClick={handleClose}
+
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+
+          >
+
+            <X size={24} />
+
+          </button>
+
+        </div>
+
+
+
+        {/* Form */}
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+          {/* Request Type */}
+
+          <div>
+
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+
+              Request Type <span className="text-red-500">*</span>
+
+            </label>
+
+            <div className="w-full px-4 py-3 bg-pink-50 border border-pink-200 rounded-lg text-pink-700 font-medium">
+
+              {selectedCategory ? `${activeTab === 'mom' ? 'Mom' : 'Baby'} - ${selectedCategory}` : 'No category selected'}
+
+            </div>
+
+          </div>
+
+
+
+          {/* Preferred Date */}
+
+          <div>
+
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+
+              Preferred Date <span className="text-red-500">*</span>
+
+            </label>
+
+            <div className="relative">
+
+              <input
+
+                type="text"
+
+                name="preferredDate"
+
+                value={formData.preferredDate ? (() => { const [y,m,d] = formData.preferredDate.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(); })() : ''}
+
+                onClick={() => setShowCalendar(!showCalendar)}
+
+                readOnly
+
+                placeholder="Click to select date"
+
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent cursor-pointer ${
+
+                  errors.preferredDate ? 'border-red-500' : 'border-gray-300'
+
+                }`}
+
+              />
+
+              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+
+            </div>
+
+            
+
+            {/* Calendar Popup */}
+
+            {showCalendar && (
+
+              <div ref={calendarRef} className="absolute z-10 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64">
+
+                <div className="flex items-center justify-between mb-3">
+
+                  <button
+
+                    type="button"
+
+                    onClick={() => navigateMonth('prev')}
+
+                    className="p-1 hover:bg-gray-100 rounded"
+
+                  >
+
+                    <ChevronLeft size={16} />
+
+                  </button>
+
+                  <h3 className="text-sm font-semibold">{formatDate(currentDate)}</h3>
+
+                  <button
+
+                    type="button"
+
+                    onClick={() => navigateMonth('next')}
+
+                    className="p-1 hover:bg-gray-100 rounded"
+
+                  >
+
+                    <ChevronRight size={16} />
+
+                  </button>
+
+                </div>
+
+                
+
+                <div className="grid grid-cols-7 gap-1 mb-2">
+
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 p-1">
+
+                      {day}
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+                
+
+                <div className="grid grid-cols-7 gap-1">
+
+                  {getDaysInMonth(currentDate).map((day, index) => (
+
+                    <button
+
+                      key={index}
+
+                      type="button"
+
+                      onClick={() => handleDateSelect(day)}
+
+                      disabled={!day || isPastDate(day)}
+
+                      className={`p-1 text-xs rounded transition-colors ${
+
+                        !day 
+
+                          ? 'invisible' 
+
+                          : isPastDate(day)
+
+                          ? 'text-gray-300 cursor-not-allowed'
+
+                          : isToday(day)
+
+                          ? 'bg-pink-500 text-white font-bold'
+
+                          : isSelected(day)
+
+                          ? 'bg-pink-200 text-pink-800 font-medium'
+
+                          : 'hover:bg-gray-100 text-gray-700'
+
+                      }`}
+
+                    >
+
+                      {day}
+
+                    </button>
+
+                  ))}
+
+                </div>
+
+              </div>
+
+            )}
+
+            
+
+            {errors.preferredDate && (
+
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+
+                <AlertCircle size={16} className="mr-1" />
+
+                {errors.preferredDate}
+
+              </p>
+
+            )}
+
+          </div>
+
+
+
+          {/* Preferred Time */}
+
+          <div>
+
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+
+              Preferred Time <span className="text-red-500">*</span>
+
+            </label>
+
+            <select
+
+              name="preferredTime"
+
+              value={formData.preferredTime}
+
+              onChange={handleInputChange}
+
+              className={`mc-preferred-time-select w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+
+                errors.preferredTime ? 'border-red-500' : 'border-gray-300'
+
+              }`}
+
+            >
+
+              <option value="">Select preferred time</option>
+
+              {timeSlots.map((time) => (
+
+                <option key={time} value={time}>
+
+                  {time}
+
+                </option>
+
+              ))}
+
+            </select>
+
+            {errors.preferredTime && (
+
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+
+                <AlertCircle size={16} className="mr-1" />
+
+                {errors.preferredTime}
+
+              </p>
+
+            )}
+
+          </div>
+
+
+
+          {/* Location */}
+
+          <div>
+
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+
+              Location <span className="text-red-500">*</span>
+
+            </label>
+
+            <div className="relative">
+
+              <input
+
+                type="text"
+
+                name="location"
+
+                value={formData.location}
+
+                onChange={handleInputChange}
+
+                placeholder="Enter clinic/hospital location"
+
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+
+                  errors.location ? 'border-red-500' : 'border-gray-300'
+
+                }`}
+
+              />
+
+              <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+
+            </div>
+
+            {errors.location && (
+
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+
+                <AlertCircle size={16} className="mr-1" />
+
+                {errors.location}
+
+              </p>
+
+            )}
+
+          </div>
+
+
+
+          {/* Notes */}
+
+          <div>
+
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+
+              Additional Notes
+
+            </label>
+
+            <div className="relative">
+
+              <textarea
+
+                name="notes"
+
+                value={formData.notes}
+
+                onChange={handleInputChange}
+
+                placeholder="Any additional information or special requirements..."
+
+                rows={3}
+
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+
+              />
+
+              <FileText className="absolute right-3 top-3 text-gray-400" size={20} />
+
+            </div>
+
+          </div>
+
+
+
+          {/* Submit Button */}
+
+          <div className="flex gap-3 pt-4">
+
+            <button
+
+              type="button"
+
+              onClick={handleClose}
+
+              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+
+            >
+
+              Cancel
+
+            </button>
+
+            <button
+
+              type="submit"
+
+              disabled={isLoading}
+
+              className="flex-1 px-4 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+
+            >
+
+              {isLoading ? 'Submitting...' : 'Submit Request'}
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  );
+
+};
+
+
+
+export default ClinicVisitRequestModal;
+
+
