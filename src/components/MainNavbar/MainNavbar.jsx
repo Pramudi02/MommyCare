@@ -19,13 +19,29 @@ const MainNavbar = () => {
     console.log('🔍 MainNavbar useEffect - Auth status:', { isAuthenticated, hasToken: !!user?.token, user });
     
     if (isAuthenticated && user?.token) {
-      console.log('📱 Fetching user profile...');
-      fetchUserProfile();
+      // Only fetch profile if we don't already have meaningful user data
+      if (!hasUserData()) {
+        console.log('📱 Fetching user profile...');
+        fetchUserProfile();
+      } else {
+        console.log('📱 Already have user data, skipping profile fetch');
+        setLoading(false);
+      }
     } else {
       console.log('📱 Not authenticated or no token, clearing profile');
       setUserProfile(null);
+      setLoading(false);
+      // Close dropdown if it was open
+      setProfileDropdown(false);
     }
   }, [isAuthenticated, user?.token]);
+
+  // Close dropdown if user data becomes invalid
+  useEffect(() => {
+    if (profileDropdown && !hasUserData()) {
+      setProfileDropdown(false);
+    }
+  }, [userProfile, user, profileDropdown]);
 
   const fetchUserProfile = async () => {
     try {
@@ -63,7 +79,12 @@ const MainNavbar = () => {
   };
 
   const handleProfileClick = () => {
-    setProfileDropdown(!profileDropdown);
+    // Only allow profile dropdown to open if we have meaningful user data
+    if (hasUserData()) {
+      setProfileDropdown(!profileDropdown);
+    } else {
+      console.log('📱 Cannot open profile dropdown - no meaningful user data');
+    }
   };
 
   const handleLogout = () => {
@@ -114,7 +135,8 @@ const MainNavbar = () => {
     if (user?.user?.firstName && user?.user?.lastName) {
       return `${user.user.firstName} ${user.user.lastName}`;
     }
-    return null; // Don't show anything if no real data
+    // Return null if no real name data
+    return null;
   };
 
   // Get user role from profile or auth context
@@ -125,7 +147,8 @@ const MainNavbar = () => {
     if (user?.user?.role) {
       return getRoleDisplayName(user.user.role);
     }
-    return null; // Don't show anything if no real data
+    // Return null if no real role data
+    return null;
   };
 
   // Get user email from profile or auth context
@@ -152,7 +175,16 @@ const MainNavbar = () => {
 
   // Check if we have any user data to display
   const hasUserData = () => {
-    return !!(getDisplayName() && getUserRole());
+    // Must have both display name and role, and they must be real values (not null/undefined)
+    const displayName = getDisplayName();
+    const userRole = getUserRole();
+    
+    // Check if we have meaningful data (not just empty strings or null)
+    return !!(displayName && userRole && 
+              displayName.trim() !== '' && 
+              userRole.trim() !== '' && 
+              displayName !== 'User' && 
+              userRole !== 'Unknown');
   };
 
   // Check if we have avatar data
@@ -173,35 +205,31 @@ const MainNavbar = () => {
           
           {/* Auth Section - Show Profile Dropdown ONLY when authenticated AND we have real user data; otherwise Login/Signup */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            {(isAuthenticated && (userProfile || user?.user)) ? (
+            {(isAuthenticated && hasUserData() && !loading) ? (
               // Profile Dropdown
               <div className="relative">
-                <button
+                                <button 
                   onClick={handleProfileClick}
-                  className="flex items-center space-x-3 p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
+                  disabled={!hasUserData()}
+                  className={`flex items-center space-x-3 p-2 rounded-full transition-colors duration-200 ${
+                    hasUserData() 
+                      ? 'hover:bg-blue-100 cursor-pointer' 
+                      : 'opacity-50 cursor-not-allowed'
+                  }`}
                 >
-                  {/* Avatar - Show loading, initials, or fallback */}
-                  {loading ? (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  ) : hasAvatarData() ? (
+                  {/* Avatar - Only show when we have meaningful data */}
+                  {hasAvatarData() ? (
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
                       {getAvatarInitials()}
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-sm">
-                      <User className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                      U
                     </div>
                   )}
                   
-                  {/* User Info - Show loading, real data, or nothing */}
-                  {loading ? (
-                    <div className="hidden sm:block text-left">
-                      <div className="text-sm font-medium text-gray-900">Loading...</div>
-                      <div className="text-xs text-gray-500"></div>
-                    </div>
-                  ) : hasUserData() ? (
+                  {/* User Info - Only show when we have meaningful data */}
+                  {hasUserData() ? (
                     <div className="hidden sm:block text-left">
                       <div className="text-sm font-medium text-gray-900">
                         {getDisplayName()}
@@ -212,28 +240,17 @@ const MainNavbar = () => {
                     </div>
                   ) : null}
                   
-                  {/* Dropdown Arrow */}
-                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
+                  {/* Dropdown Arrow - Only show when we have meaningful user data */}
+                  {hasUserData() && (
+                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
+                  )}
                 </button>
 
                 {/* Dropdown Menu */}
-                {profileDropdown && (
+                {profileDropdown && hasUserData() && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-[9999] border border-gray-200">
-                    {/* Profile Header - Show loading, real data, or fallback */}
-                    {loading ? (
-                      <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 truncate">Loading...</div>
-                            <div className="text-xs text-gray-500 truncate">Please wait...</div>
-                            <div className="text-xs text-blue-600 font-medium mt-1">Loading...</div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : hasUserData() && getUserEmail() ? (
+                    {/* Profile Header - Only show when we have real user data */}
+                    {getUserEmail() ? (
                       <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
@@ -255,40 +272,53 @@ const MainNavbar = () => {
                     ) : (
                       <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-pink-50 rounded-t-lg">
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-base">
-                            <User className="w-6 h-6" />
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-semibold text-base shadow-md">
+                            {getAvatarInitials() || 'U'}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 truncate">User</div>
-                            <div className="text-xs text-gray-500 truncate">Profile loading...</div>
-                            <div className="text-xs text-blue-600 font-medium mt-1">Please wait...</div>
+                            <div className="text-sm font-semibold text-gray-900 truncate">
+                              {getDisplayName()}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {getUserRole()}
+                            </div>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Menu Items */}
-                    <div className="py-1">
-                      <button
-                        onClick={handleEditProfile}
-                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
-                      >
-                        <Settings className="w-4 h-4 text-gray-500" />
-                        <span>Edit Profile</span>
-                      </button>
-                      
-                      <div className="border-t border-gray-100 my-1"></div>
-                      
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors duration-150"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Logout</span>
-                      </button>
-                    </div>
+                    {/* Menu Items - Only show when we have meaningful user data */}
+                    {hasUserData() && (
+                      <div className="py-1">
+                        <button
+                          onClick={handleEditProfile}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
+                        >
+                          <Settings className="w-4 h-4 text-gray-500" />
+                          <span>Edit Profile</span>
+                        </button>
+                        
+                        <div className="border-t border-gray-100 my-1"></div>
+                        
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors duration-150"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
+              </div>
+            ) : isAuthenticated && loading ? (
+              // Show loading state when authenticated but still loading profile
+              <div className="flex items-center space-x-3 p-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <div className="hidden sm:block text-sm text-gray-600">Loading...</div>
               </div>
             ) : (
               // Login/Signup Buttons
@@ -312,7 +342,7 @@ const MainNavbar = () => {
       </div>
 
       {/* Click outside to close dropdown */}
-      {profileDropdown && (
+      {profileDropdown && hasUserData() && (
         <div 
           className="fixed inset-0 z-[9998]" 
           onClick={() => setProfileDropdown(false)}
