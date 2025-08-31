@@ -228,6 +228,32 @@ MidwifeAppointmentSchema.statics.getByDateRange = function(midwifeId, startDate,
   }).sort({ startTime: 1 }).populate('mom', 'firstName lastName email');
 };
 
+// Static method to get upcoming appointments for a mom
+MidwifeAppointmentSchema.statics.getUpcomingForMom = function(momId) {
+  return this.find({
+    mom: momId,
+    startTime: { $gte: new Date() },
+    status: { $in: ['scheduled', 'confirmed'] }
+  }).sort({ startTime: 1 }).populate('midwife', 'firstName lastName email');
+};
+
+// Static method to get completed appointments for a mom
+MidwifeAppointmentSchema.statics.getCompletedForMom = function(momId) {
+  return this.find({
+    mom: momId,
+    status: 'completed'
+  }).sort({ startTime: -1 }).populate('midwife', 'firstName lastName email');
+};
+
+// Static method to get missed appointments for a mom
+MidwifeAppointmentSchema.statics.getMissedForMom = function(momId) {
+  return this.find({
+    mom: momId,
+    startTime: { $lt: new Date() },
+    status: { $in: ['scheduled', 'confirmed'] }
+  }).sort({ startTime: -1 }).populate('midwife', 'firstName lastName email');
+};
+
 // Function to get the MidwifeAppointment model with the correct database connection
 let MidwifeAppointment = null;
 

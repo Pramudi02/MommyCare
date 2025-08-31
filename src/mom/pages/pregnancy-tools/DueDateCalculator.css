@@ -174,11 +174,10 @@ body {
   background: linear-gradient(135deg, #e91e63, #f06292);
   color: white;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: 16px;
   text-align: center;
-  margin-bottom: 32px;
-  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.2);
-  transition: all 0.3s ease;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
 }
 
 .due-date-banner:hover {
@@ -191,14 +190,34 @@ body {
   font-size: 16px;
   margin-bottom: 8px;
   opacity: 0.9;
-  color: rgba(255, 255, 255, 0.9);
 }
 
 .due-date-main {
   font-size: 28px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.lmp-info {
+  background: linear-gradient(135deg, #4caf50, #81c784);
   color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.lmp-text {
+  font-size: 14px;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.lmp-date {
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Milestones Grid */

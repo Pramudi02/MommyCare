@@ -277,3 +277,75 @@ export const momProfileAPI = {
     });
   },
 };
+
+// Mom Appointments API functions
+export const momAppointmentsAPI = {
+  // Get all appointments (upcoming, completed, missed)
+  getAll: async () => {
+    return apiRequest('/mom/appointments');
+  },
+};
+
+// Baby Growth API functions
+export const babyGrowthAPI = {
+  // Create a new baby growth profile
+  createProfile: async (profileData) => {
+    return apiRequest('/baby-growth', {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Get all baby growth profiles for the current mom
+  getAllProfiles: async () => {
+    return apiRequest('/baby-growth');
+  },
+
+  // Get a specific baby growth profile by ID
+  getProfile: async (babyId) => {
+    return apiRequest(`/baby-growth/${babyId}`);
+  },
+
+  // Update baby growth profile
+  updateProfile: async (babyId, updateData) => {
+    return apiRequest(`/baby-growth/${babyId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  // Delete baby growth profile
+  deleteProfile: async (babyId) => {
+    return apiRequest(`/baby-growth/${babyId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Add a new measurement to a baby's profile
+  addMeasurement: async (babyId, measurementData) => {
+    return apiRequest(`/baby-growth/${babyId}/measurements`, {
+      method: 'POST',
+      body: JSON.stringify(measurementData),
+    });
+  },
+
+  // Get all measurements for a specific baby
+  getMeasurements: async (babyId, startDate = null, endDate = null) => {
+    let url = `/baby-growth/${babyId}/measurements`;
+    const params = new URLSearchParams();
+    
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    return apiRequest(url);
+  },
+
+  // Get growth rate analysis
+  getGrowthRate: async (babyId, days = 30) => {
+    return apiRequest(`/baby-growth/${babyId}/growth-rate?days=${days}`);
+  },
+};

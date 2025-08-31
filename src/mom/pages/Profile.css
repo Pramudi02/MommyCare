@@ -1,8 +1,8 @@
 .profile-container {
-  max-width: 1200px;
+  max-width: 1400px; /* Increased from 1200px to fit page better */
   margin: 0 auto;
   padding: 20px;
-  background: #f8fafc;
+  background: #ffffff; /* Changed from #f8fafc to pure white */
   min-height: 100vh;
 }
 
@@ -12,9 +12,10 @@
   justify-content: space-between;
   margin-bottom: 30px;
   padding: 20px;
-  background: white;
+  background: #ffffff; /* Changed to pure white */
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Lighter shadow */
+  border: 1px solid #e2e8f0; /* Added subtle border */
 }
 
 .back-button {
@@ -22,10 +23,10 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: #f1f5f9;
+  background: #f8fafc; /* Lighter background */
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: #64748b;
+  color: #475569; /* Darker text for better contrast */
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -33,7 +34,7 @@
 
 .back-button:hover {
   background: #e2e8f0;
-  color: #475569;
+  color: #1e293b;
 }
 
 .profile-title {
@@ -42,7 +43,7 @@
   gap: 12px;
   font-size: 28px;
   font-weight: 700;
-  color: #1e293b;
+  color: #1e293b; /* Dark text for good contrast */
   margin: 0;
 }
 
@@ -69,15 +70,16 @@
 }
 
 .profile-form {
-  background: white;
+  background: #ffffff; /* Pure white background */
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Lighter shadow */
   overflow: hidden;
+  border: 1px solid #e2e8f0; /* Added subtle border */
 }
 
 .form-section {
-  padding: 30px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 35px; /* Increased padding from 30px */
+  border-bottom: 1px solid #f1f5f9; /* Lighter border */
 }
 
 .form-section:last-child {
@@ -88,18 +90,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
+  font-size: 22px; /* Increased from 20px */
   font-weight: 600;
-  color: #6b7280; /* Lighter color for section topics */
-  margin: 0 0 25px 0;
-  padding-bottom: 12px;
+  color: #374151; /* Darker color for better contrast */
+  margin: 0 0 30px 0; /* Increased bottom margin */
+  padding-bottom: 15px; /* Increased padding */
   border-bottom: 2px solid #e2e8f0;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Increased from 300px */
+  gap: 25px; /* Increased gap from 20px */
 }
 
 .form-group {
@@ -109,9 +111,9 @@
 
 .form-group label {
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
-  font-size: 14px;
+  color: #1e293b; /* Darker text for better contrast */
+  margin-bottom: 10px; /* Increased from 8px */
+  font-size: 15px; /* Increased from 14px */
 }
 
 .form-group label::after {
@@ -123,13 +125,13 @@
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 12px 16px;
-  border: 2px solid #d1d5db; /* Softer border color */
+  padding: 14px 18px; /* Increased padding from 12px 16px */
+  border: 2px solid #e2e8f0; /* Lighter border */
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 15px; /* Increased from 14px */
   transition: all 0.2s ease;
-  background: #f9fafb; /* Softer background color */
-  color: #374151;
+  background: #ffffff; /* Pure white background */
+  color: #1e293b; /* Dark text for good contrast */
 }
 
 .form-group input:focus,
@@ -138,7 +140,7 @@
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: white; /* Return to white background on focus */
+  background: #ffffff; /* Keep white background on focus */
 }
 
 .form-group input::placeholder,
@@ -148,45 +150,45 @@
 
 .input-with-unit {
   display: flex;
-  gap: 8px;
+  gap: 10px; /* Increased from 8px */
 }
 
 .input-with-unit input {
-  flex: 4 !important; /* Make the input field take up even more space */
-  min-width: 0; /* Allow flex item to shrink */
+  flex: 4 !important;
+  min-width: 0;
 }
 
 .input-with-unit select {
-  width: 50px !important; /* Reduce the width of the unit dropdown even more */
-  padding: 12px 2px !important; /* Reduce horizontal padding further */
-  min-width: 50px !important; /* Ensure minimum width */
-  flex-shrink: 0; /* Prevent the select from shrinking */
+  width: 60px !important; /* Increased from 50px */
+  padding: 14px 4px !important; /* Increased padding */
+  min-width: 60px !important;
+  flex-shrink: 0;
 }
 
 .checkbox-group {
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: 10px; /* Increased from 8px */
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px; /* Increased from 8px */
   cursor: pointer;
   font-weight: 500;
-  color: #374151;
+  color: #1e293b; /* Darker text */
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 20px; /* Increased from 18px */
+  height: 20px; /* Increased from 18px */
   accent-color: #3b82f6;
 }
 
 .form-actions {
-  padding: 30px;
-  background: #f8fafc;
+  padding: 35px; /* Increased from 30px */
+  background: #f8fafc; /* Light background */
   border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: center;
@@ -195,8 +197,8 @@
 .save-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
+  gap: 10px; /* Increased from 8px */
+  padding: 16px 36px; /* Increased from 14px 32px */
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
   border: none;
@@ -257,6 +259,7 @@
 @media (max-width: 768px) {
   .profile-container {
     padding: 10px;
+    max-width: 100%; /* Full width on mobile */
   }
 
   .profile-header {
@@ -270,16 +273,16 @@
   }
 
   .form-section {
-    padding: 20px;
+    padding: 25px; /* Increased from 20px */
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px; /* Increased from 16px */
   }
 
   .section-title {
-    font-size: 18px;
+    font-size: 20px; /* Increased from 18px */
   }
 
   .save-button {
@@ -290,23 +293,23 @@
 
 @media (max-width: 480px) {
   .profile-header {
-    padding: 16px;
+    padding: 20px; /* Increased from 16px */
   }
 
   .form-section {
-    padding: 16px;
+    padding: 20px; /* Increased from 16px */
   }
 
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 10px 12px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 14px; /* Increased from 10px 12px */
+    font-size: 16px;
   }
 
   .input-with-unit {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px; /* Increased from 8px */
   }
 
   .input-with-unit select {
@@ -319,66 +322,12 @@
 .form-group select:focus-visible,
 .form-group textarea:focus-visible {
   outline: none !important;
-  border-color: #d1d5db !important;
-  background: #f9fafb !important;
-  color: #374151 !important;
+  border-color: #3b82f6 !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
 }
 
 .save-button:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .profile-container {
-    background: #0f172a;
-  }
-
-  .profile-header,
-  .profile-form {
-    background: #1e293b;
-    color: #f1f5f9;
-  }
-
-  .section-title {
-    color: #94a3b8; /* Lighter color for dark mode section topics */
-    border-bottom-color: #334155;
-  }
-
-  .form-group label {
-    color: #cbd5e1;
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    background: #374151; /* Softer background for dark mode */
-    border-color: #4b5563;
-    color: #f1f5f9;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    border-color: #d1d5db !important; /* Keep light gray border color on focus */
-    background: #f9fafb !important; /* Keep light gray background color on focus */
-    color: #374151 !important; /* Keep consistent text color */
-  }
-
-  .back-button {
-    background: #334155;
-    border-color: #475569;
-    color: #cbd5e1;
-  }
-
-  .back-button:hover {
-    background: #475569;
-    color: #f1f5f9;
-  }
-
-  .form-actions {
-    background: #1e293b;
-    border-top-color: #334155;
-  }
 }

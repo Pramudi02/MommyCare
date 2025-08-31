@@ -271,6 +271,18 @@ const AppointmentsDashboard = () => {
     }
   };
 
+  const fetchAppointments = async () => {
+    try {
+      const response = await momAppointmentsAPI.getAll();
+      if (response.data) {
+        setAppointments(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      // Don't block the UI if appointments fail to load
+    }
+  };
+
   const handleSubmitRequest = async (requestData) => {
     try {
       setIsSubmitting(true);

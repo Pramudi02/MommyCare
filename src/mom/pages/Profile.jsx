@@ -167,19 +167,7 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <button 
-          className="back-button"
-          onClick={() => navigate('/mom')}
-        >
-          <ArrowLeft size={20} />
-          Back to Dashboard
-        </button>
-        <h1 className="profile-title">
-          <User size={24} />
-          Edit Profile
-        </h1>
-      </div>
+
 
       {message.text && (
         <div className={`message ${message.type}`}>

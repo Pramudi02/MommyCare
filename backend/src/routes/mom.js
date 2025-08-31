@@ -224,8 +224,31 @@ router.get('/medical-records', (req, res) => {
 	res.json({ status: 'success', data: [] });
 });
 
-router.get('/appointments', (req, res) => {
-	res.json({ status: 'success', data: [] });
+router.get('/appointments', protect, async (req, res, next) => {
+	try {
+		const getMidwifeAppointmentModel = require('../models/MidwifeAppointment');
+		const MidwifeAppointment = getMidwifeAppointmentModel();
+		
+		// Get upcoming appointments
+		const upcomingAppointments = await MidwifeAppointment.getUpcomingForMom(req.user._id);
+		
+		// Get completed appointments
+		const completedAppointments = await MidwifeAppointment.getCompletedForMom(req.user._id);
+		
+		// Get missed appointments
+		const missedAppointments = await MidwifeAppointment.getMissedForMom(req.user._id);
+		
+		res.json({
+			status: 'success',
+			data: {
+				upcoming: upcomingAppointments,
+				completed: completedAppointments,
+				missed: missedAppointments
+			}
+		});
+	} catch (err) {
+		next(err);
+	}
 });
 
 // Clinic Visit Requests (Mom)
