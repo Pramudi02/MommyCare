@@ -219,11 +219,11 @@ class DiabetesPredictor:
             # Prepare input data - map schema fields to model features
             input_data = {
                 'Age': request.age,
-                'Pregnancy No': 1,  # Default to first pregnancy for now
-                'Weight': request.bmi * ((request.height / 100) ** 2),  # Calculate weight from BMI and height
+                'Pregnancy No': request.pregnancy_no,
+                'Weight': request.weight,
                 'Height': request.height,
                 'BMI': request.bmi,
-                'Heredity': request.family_history
+                'Heredity': request.heredity
             }
             
             # Convert to array and scale

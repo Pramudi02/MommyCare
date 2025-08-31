@@ -31,10 +31,11 @@ class BabyWeightRequest(BaseModel):
 class DiabetesRequest(BaseModel):
     """Schema for diabetes risk prediction request"""
     age: int = Field(..., ge=13, le=60, description="Age in years")
+    pregnancy_no: int = Field(..., ge=1, le=10, description="Number of pregnancies")
+    weight: float = Field(..., ge=30, le=200, description="Weight in kg")
     height: float = Field(..., ge=120, le=220, description="Height in cm")
-    bmi: float = Field(..., ge=15, le=50, description="BMI (kg/m²)")
-    family_history: int = Field(..., ge=0, le=1, description="Family history of diabetes (0=No, 1=Yes)")
-    previous_gd: int = Field(..., ge=0, le=1, description="Previous gestational diabetes (0=No, 1=Yes)")
+    bmi: float = Field(..., ge=15, le=60, description="BMI (kg/m²)")
+    heredity: int = Field(..., ge=0, le=1, description="Family history of diabetes (0=No, 1=Yes)")
 
 class PredictionResponse(BaseModel):
     """Schema for prediction response"""
