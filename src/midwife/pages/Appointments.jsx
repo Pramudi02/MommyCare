@@ -128,44 +128,21 @@ const Appointments = () => {
       setIsLoading(true);
       setError(null);
       
-      // Fetch both appointments and clinic visit requests
-      const [appointmentsResponse, requestsResponse] = await Promise.all([
-        midwifeAppointmentAPI.getAppointments(viewMode),
-        midwifeAppointmentAPI.getClinicVisitRequests()
-      ]);
+      // Fetch appointments from MidwifeAppointment collection only
+      const appointmentsResponse = await midwifeAppointmentAPI.getAppointments(viewMode);
       
-      console.log('Raw appointments response:', appointmentsResponse);
-      console.log('Raw requests response:', requestsResponse);
-      console.log('Appointments data:', appointmentsResponse.data);
-      console.log('Requests data:', requestsResponse.data);
+      console.log('📅 Fetched appointments:', appointmentsResponse.data?.length || 0, 'appointments');
       
-      // Get approved requests from clinic visit requests
-      const approvedRequests = (requestsResponse.data || []).filter(req => req.status === 'approved');
-      console.log('Approved requests:', approvedRequests);
-      
-      // Combine appointments with approved requests
-      const allAppointments = [
-        ...(appointmentsResponse.data || []),
-        ...approvedRequests.map(req => ({
-          _id: req._id,
-          startTime: req.appointmentDateTime || req.appointmentDate,
-          endTime: req.endDateTime || req.appointmentDate,
-          type: req.requestType || 'Appointment',
-          location: req.location || 'Location TBD',
-          mom: req.mom,
-          status: 'approved',
-          notes: req.notes,
-          source: 'clinicVisitRequest'
-        }))
-      ];
-      
-      console.log('Combined appointments:', allAppointments);
-      console.log('Setting appointments state to:', allAppointments);
-      setAppointments(allAppointments);
+      if (appointmentsResponse.status === 'success') {
+        setAppointments(appointmentsResponse.data || []);
+      } else {
+        setError('Failed to fetch appointments');
+        setAppointments([]);
+      }
     } catch (err) {
-      console.error('Error fetching appointments:', err);
-      console.error('Error details:', err.message, err.stack);
+      console.error('❌ Error fetching appointments:', err);
       setError('Failed to fetch appointments');
+      setAppointments([]);
     } finally {
       setIsLoading(false);
     }
@@ -214,11 +191,10 @@ const Appointments = () => {
   const getCurrentWeekDates = (date = new Date()) => {
     const currentDay = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
     
-    // Always start from Monday (1)
+    // Calculate days to subtract to get to Monday (1)
     // If current day is Sunday (0), go back 6 days to get to Monday
     // If current day is Monday (1), no offset needed (0)
     // If current day is Tuesday (2), go back 1 day to get to Monday
-    // If current day is Wednesday (3), go back 2 days to get to Monday
     // And so on...
     const mondayOffset = currentDay === 0 ? -6 : -(currentDay - 1);
     
@@ -542,20 +518,9 @@ const Appointments = () => {
 
   // Transform real appointment data to display format
   const transformAppointmentData = (appointment) => {
-    console.log('Transforming appointment:', appointment);
-    
-    // Handle different possible field names from backend
-    let startTime = appointment.startTime || appointment.appointmentTime || appointment.startDateTime;
-    let endTime = appointment.endTime || appointment.endDateTime;
-    
-    // Handle clinic visit requests that might have different structure
-    if (appointment.source === 'clinicVisitRequest') {
-      startTime = appointment.startTime || appointment.appointmentDateTime || appointment.appointmentDate;
-      endTime = appointment.endTime || appointment.endDateTime || appointment.appointmentDate;
-    }
-    
-    console.log('Extracted startTime:', startTime);
-    console.log('Extracted endTime:', endTime);
+    // Handle MidwifeAppointment data structure
+    let startTime = appointment.startTime;
+    let endTime = appointment.endTime;
     
     if (!startTime) {
       console.warn('Appointment missing start time:', appointment);
@@ -564,9 +529,6 @@ const Appointments = () => {
     
     const startDate = new Date(startTime);
     const endDate = endTime ? new Date(endTime) : new Date(startTime);
-    
-    console.log('Parsed startDate:', startDate);
-    console.log('Parsed endDate:', endDate);
     
     // Get day name and convert to lowercase for matching
     const dayName = startDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
@@ -585,19 +547,17 @@ const Appointments = () => {
         minute: '2-digit',
         hour12: false 
       }),
-      type: appointment.type || appointment.title || appointment.appointmentType || appointment.requestType || 'Appointment',
-      icon: getAppointmentIcon(appointment.type || appointment.appointmentType || appointment.requestType),
-      location: appointment.location?.clinicName || appointment.location?.address || appointment.location || 'Location TBD',
-      color: getAppointmentColor(appointment.type || appointment.appointmentType || appointment.requestType),
-      mom: appointment.mom || appointment.patient,
+      type: appointment.type || appointment.title || 'General Checkup',
+      icon: getAppointmentIcon(appointment.type),
+      location: appointment.location?.clinicName || appointment.location?.address || 'Location TBD',
+      color: getAppointmentColor(appointment.type),
+      mom: appointment.mom,
       status: appointment.status || 'scheduled',
-      notes: appointment.notes,
+      notes: appointment.notes || appointment.description,
       originalData: appointment
     };
     
-    console.log('Transformed appointment:', transformed);
     return transformed;
-
   };
 
   const getAppointmentIcon = (type) => {
@@ -640,69 +600,12 @@ const Appointments = () => {
     }
   };
 
-  // Transform appointments for display and filter for approved appointments only
+  // Transform appointments for display
   const displayAppointments = appointments
     .map(transformAppointmentData)
     .filter(apt => apt !== null);
   
-  console.log('Raw appointments before transform:', appointments);
-  console.log('Transformed appointments:', displayAppointments);
-  
-  console.log('Display appointments after transform:', displayAppointments);
-  
-  // If no appointments found, show some sample data for testing
-  const getSampleAppointments = () => {
-    const currentWeekDates = getCurrentWeekDates(selectedDate);
-    const currentMonthDates = getCurrentMonthDates(selectedDate);
-    const monday = currentWeekDates[0]; // Monday
-    const wednesday = currentWeekDates[2]; // Wednesday
-    
-    // Generate sample appointments for the current month
-    const sampleAppointments = [];
-    
-    // Add some appointments for the current month
-    const monthStart = new Date(currentMonthDates.firstDay);
-    const monthEnd = new Date(currentMonthDates.lastDay);
-    
-    // Add appointments on different days of the month
-    for (let i = 0; i < 5; i++) {
-      const randomDay = new Date(monthStart);
-      randomDay.setDate(monthStart.getDate() + Math.floor(Math.random() * (monthEnd.getDate() - monthStart.getDate() + 1)));
-      
-      const dayName = randomDay.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-      const date = `${randomDay.getDate().toString().padStart(2, '0')}/${(randomDay.getMonth() + 1).toString().padStart(2, '0')}`;
-      
-      sampleAppointments.push({
-        id: `sample-${i + 1}`,
-        day: dayName,
-        date: date,
-      startTime: '09:00',
-      endTime: '09:30',
-        type: 'Baby Weight Check',
-      icon: 'medical',
-        location: 'Kalubowila Clinic',
-      color: 'pink',
-        mom: { firstName: `Mom ${i + 1}`, lastName: 'Sample' },
-        status: 'approved',
-        notes: 'Regular checkup',
-        originalData: {
-          startTime: new Date(randomDay.getFullYear(), randomDay.getMonth(), randomDay.getDate(), 9, 0, 0),
-          endTime: new Date(randomDay.getFullYear(), randomDay.getMonth(), randomDay.getDate(), 9, 30, 0)
-        }
-      });
-    }
-    
-    return sampleAppointments;
-  };
-  
-  const sampleAppointments = getSampleAppointments();
-  
-  const finalAppointments = displayAppointments.length > 0 ? displayAppointments : sampleAppointments;
-  
-  console.log('Original appointments:', appointments);
-  console.log('Transformed appointments:', displayAppointments);
-  console.log('Sample appointments:', sampleAppointments);
-  console.log('Final appointments to display:', finalAppointments);
+  const finalAppointments = displayAppointments;
 
   const timeSlots = [
     '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -787,54 +690,52 @@ const Appointments = () => {
   };
 
   const days = getDaysForViewMode();
-  
-  console.log('Days array:', days);
-  console.log('Sample appointments:', sampleAppointments);
 
 
 
   const getAppointmentsForTimeSlot = (day, time) => {
     const filtered = finalAppointments.filter(apt => {
-      // Check if appointment is on the correct day
-      const appointmentDate = new Date(apt.originalData.startTime || apt.originalData.appointmentTime || apt.originalData.startDateTime);
-      const dayDate = days.find(d => d.key === day)?.fullDate;
+      // Get appointment date from original data
+      const appointmentDate = new Date(apt.originalData.startTime);
+      let dayDate;
+      
+      if (day === 'today') {
+        dayDate = new Date();
+      } else {
+        dayDate = days.find(d => d.key === day)?.fullDate;
+      }
       
       if (!dayDate || !appointmentDate) return false;
       
+      // Check if same day
       const isSameDay = appointmentDate.toDateString() === dayDate.toDateString();
-      const isSameTime = apt.startTime === time;
       
-      if (isSameDay && isSameTime) {
-        console.log(`Found appointment for ${day} at ${time}:`, apt);
-      }
+      // Check if appointment starts at this time slot
+      const isSameTime = apt.startTime === time;
       
       return isSameDay && isSameTime;
     });
-    
-    if (filtered.length === 0) {
-      console.log(`No appointments found for ${day} at ${time}`);
-    }
     
     return filtered;
   };
 
   const getAppointmentsForDay = (day) => {
     const filtered = finalAppointments.filter(apt => {
-      const appointmentDate = new Date(apt.originalData.startTime || apt.originalData.appointmentTime || apt.originalData.startDateTime);
-      const dayDate = days.find(d => d.key === day)?.fullDate;
+      const appointmentDate = new Date(apt.originalData.startTime);
+      let dayDate;
+      
+      if (day === 'today') {
+        dayDate = new Date();
+      } else {
+        dayDate = days.find(d => d.key === day)?.fullDate;
+      }
       
       if (!dayDate || !appointmentDate) return false;
       
       const isSameDay = appointmentDate.toDateString() === dayDate.toDateString();
-      
-      if (isSameDay) {
-        console.log(`Found appointment for ${day}:`, apt);
-      }
-      
       return isSameDay;
     });
     
-    console.log(`Appointments for ${day}:`, filtered);
     return filtered;
   };
 
@@ -844,29 +745,8 @@ const Appointments = () => {
     console.log('finalAppointments:', finalAppointments);
     
     return finalAppointments.filter(apt => {
-      // For transformed appointments, the date is already in the apt object
-      // We need to reconstruct the date from the day and date fields
-      if (apt.day && apt.date) {
-        // Get current year and month from selectedDate
-        const currentYear = selectedDate.getFullYear();
-        const currentMonth = selectedDate.getMonth();
-        
-        // Parse the date string (format: "MM/DD")
-        const [month, day] = apt.date.split('/').map(Number);
-        
-        // Create a date object for comparison
-        const appointmentDate = new Date(currentYear, month - 1, day);
-        const result = appointmentDate.toDateString() === dateString;
-        
-        if (result) {
-          console.log('Found matching appointment by day/date:', apt, 'for date:', dateString);
-        }
-        
-        return result;
-      }
-      
-      // Fallback: try to get date from original data
-      const dateField = apt.originalData?.startTime || apt.originalData?.appointmentTime || apt.originalData?.startDateTime;
+      // Get date from original data
+      const dateField = apt.originalData?.startTime;
       
       if (dateField) {
         const appointmentDate = new Date(dateField);
@@ -1044,16 +924,17 @@ const Appointments = () => {
   }, [viewMode, selectedDate]);
 
   const renderTodayView = () => {
-    const currentDayKey = days.find(d => d.current)?.key || 'thursday';
-    const currentDayName = days.find(d => d.current)?.name || 'THU';
-    const currentDayDate = days.find(d => d.current)?.fullDate;
+    const today = new Date();
+    const currentDayKey = 'today';
+    const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+    const currentDayDate = today;
     
     const todayAppointments = getAppointmentsForDay(currentDayKey);
     
     return (
       <div className="appointments-calendar__today-view">
         <div className="appointments-calendar__today-header">
-          <h2>Today - {currentDayName}, {currentDayDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</h2>
+          <h2>Today - {currentDayName}, {currentDayDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</h2>
         </div>
         <div className="appointments-calendar__today-timeline">
           {todayAppointments.length > 0 ? (
@@ -1184,42 +1065,47 @@ const Appointments = () => {
           ))}
         </div>
 
-        {days.map(day => (
-          <div key={day.key} className="appointments-calendar__day-column">
-            <div className={`appointments-calendar__day-header ${day.current ? 'current' : ''} ${day.weekend ? 'weekend' : ''}`}>
-              <div className="appointments-calendar__day-name">{day.name}</div>
-              <div className="appointments-calendar__day-date">{day.date}</div>
-            </div>
-            
-            {timeSlots.map(time => {
-              const dayAppointments = getAppointmentsForTimeSlot(day.key, time);
-              return (
-                <div key={time} className="appointments-calendar__time-cell">
-                  {dayAppointments.map(appointment => (
-                    <div 
-                      key={appointment.id} 
-                      className={`appointments-calendar__event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
-                      style={{
-                        gridRow: `span ${calculateAppointmentSpan(appointment.startTime, appointment.endTime)}`
-                      }}
-                      onClick={() => handleAppointmentClick(appointment)}
-                    >
+        {days.map(day => {
+          const dayAppointments = getAppointmentsForDay(day.key);
+          
+          return (
+            <div key={day.key} className="appointments-calendar__day-column">
+              <div className={`appointments-calendar__day-header ${day.current ? 'current' : ''} ${day.weekend ? 'weekend' : ''}`}>
+                <div className="appointments-calendar__day-name">{day.name}</div>
+                <div className="appointments-calendar__day-date">{day.date}</div>
+              </div>
+              
+              {timeSlots.map(time => {
+                const timeAppointments = getAppointmentsForTimeSlot(day.key, time);
+                
+                return (
+                  <div key={time} className="appointments-calendar__time-cell">
+                    {timeAppointments.map(appointment => (
+                      <div 
+                        key={appointment.id} 
+                        className={`appointments-calendar__event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
+                        style={{
+                          gridRow: `span ${calculateAppointmentSpan(appointment.startTime, appointment.endTime)}`
+                        }}
+                        onClick={() => handleAppointmentClick(appointment)}
+                      >
                         <div className="appointments-calendar__event-icon">
                           {getIconComponent(appointment.icon)}
                         </div>
-                      <div className="appointments-calendar__event-mom">
-                        {appointment.mom?.firstName} {appointment.mom?.lastName}
+                        <div className="appointments-calendar__event-mom">
+                          {appointment.mom?.firstName} {appointment.mom?.lastName}
                         </div>
-                      {appointment.status === 'completed' && (
-                        <div className="appointments-calendar__completed-badge">✓</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                        {appointment.status === 'completed' && (
+                          <div className="appointments-calendar__completed-badge">✓</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
 
         {/* Current time indicator - only show when within visible time range */}
         {getCurrentTimePosition() > 0 && (
@@ -1308,17 +1194,26 @@ const Appointments = () => {
                     onClick={() => setShowDatePicker(false)}
                   >
                     <FiX size={16} />
-            </button>
+                  </button>
                 </div>
                 <div className="appointments-calendar__date-picker-content">
-                  <label>Start Date:</label>
+                  <label>Week Start Date (Monday):</label>
                   <input
                     type="date"
-                    value={selectedDate.toISOString().split('T')[0]}
-                    onChange={(e) => handleDateSelection(new Date(e.target.value))}
+                    value={(() => {
+                      // Calculate the Monday of the selected week
+                      const weekDates = getCurrentWeekDates(selectedDate);
+                      return weekDates[0].toISOString().split('T')[0];
+                    })()}
+                    onChange={(e) => {
+                      // When user selects a date, find the Monday of that week
+                      const selectedDate = new Date(e.target.value);
+                      const weekDates = getCurrentWeekDates(selectedDate);
+                      handleDateSelection(weekDates[0]); // Use Monday as the reference date
+                    }}
                     className="appointments-calendar__date-input"
                   />
-                  <small>Select any date in the week you want to view</small>
+                  <small>Select any date and we'll show the week starting from Monday</small>
                 </div>
               </div>
             )}
@@ -1388,6 +1283,21 @@ const Appointments = () => {
 
         <div className="appointments-calendar__content-wrapper">
           <div className="appointments-calendar__calendar-section">
+            {/* Appointment Counter */}
+            <div style={{ 
+              background: '#f8f9fa', 
+              padding: '10px 15px', 
+              borderRadius: '8px', 
+              marginBottom: '15px',
+              border: '1px solid #e9ecef',
+              fontSize: '14px',
+              color: '#495057'
+            }}>
+              📅 <strong>Total Appointments:</strong> {finalAppointments.length} | 
+              📊 <strong>View:</strong> {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} | 
+              📅 <strong>Date:</strong> {selectedDate.toLocaleDateString()}
+            </div>
+            
             {error && (
               <div className="appointments-calendar__error">
                 {error}

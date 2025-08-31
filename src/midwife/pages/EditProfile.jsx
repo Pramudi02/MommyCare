@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, GraduationCap, Award, Save, X, Heart } from 'lucide-react';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  GraduationCap, 
+  Save, 
+  X,
+  Heart
+} from 'lucide-react';
+import { midwifeAPI } from '../../services/api';
+import './EditProfile.css';
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({
@@ -7,22 +18,18 @@ const EditProfile = () => {
     lastName: '',
     email: '',
     phone: '',
+    address: '',
     licenseNumber: '',
     experience: '',
-    education: '',
-    certifications: '',
-    specializations: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    bio: '',
-    languages: '',
-    availability: ''
+    phmArea: '',
+    mohArea: '',
+    certifications: ''
   });
 
+  const [originalData, setOriginalData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
@@ -30,27 +37,43 @@ const EditProfile = () => {
     loadProfileData();
   }, []);
 
-  const loadProfileData = () => {
-    // Mock data - replace with actual API call
-    const mockProfile = {
-      firstName: 'Maria',
-      lastName: 'Garcia',
-      email: 'maria.garcia@example.com',
-      phone: '+1 (555) 987-6543',
-      licenseNumber: 'CNM12345',
-      experience: '12 years',
-      education: 'Yale School of Nursing',
-      certifications: 'Certified Nurse Midwife, Lactation Consultant, Neonatal Resuscitation',
-      specializations: 'Natural Birth, High-Risk Pregnancy, Postpartum Care',
-      address: '456 Midwife Center Blvd',
-      city: 'New Haven',
-      state: 'CT',
-      zipCode: '06510',
-      bio: 'Passionate certified nurse midwife with expertise in natural childbirth and comprehensive maternal care.',
-      languages: 'English, Spanish',
-      availability: 'Monday-Friday, 8AM-6PM, Emergency on-call 24/7'
-    };
-    setFormData(mockProfile);
+  const loadProfileData = async () => {
+    try {
+      setIsLoading(true);
+      setMessage({ type: '', text: '' });
+      
+      console.log('🔄 Loading midwife profile...');
+      const response = await midwifeAPI.getProfile();
+      console.log('📡 API Response:', response);
+      
+      if (response.status === 'success') {
+        const profile = response.data;
+        console.log('👤 Profile data received:', profile);
+        
+        setFormData({
+          firstName: profile.firstName || '',
+          lastName: profile.lastName || '',
+          email: profile.email || '',
+          phone: profile.phone || '',
+          address: profile.address || '',
+          licenseNumber: profile.licenseNumber || '',
+          experience: profile.experience || '',
+          phmArea: profile.phmArea || '',
+          mohArea: profile.mohArea || '',
+          certifications: profile.certifications || ''
+        });
+        setOriginalData(profile);
+        console.log('✅ Form data set:', formData);
+      } else {
+        console.error('❌ API returned error status:', response);
+        setMessage({ type: 'error', text: 'Failed to load profile data' });
+      }
+    } catch (error) {
+      console.error('❌ Error loading profile:', error);
+      setMessage({ type: 'error', text: 'Failed to load profile data' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -67,12 +90,21 @@ const EditProfile = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('💾 Saving profile data:', formData);
+      const response = await midwifeAPI.updateProfile(formData);
+      console.log('📡 Save response:', response);
       
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      setIsEditing(false);
+      if (response.status === 'success') {
+        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+        setOriginalData(response.data);
+        setIsEditing(false);
+        console.log('✅ Profile saved successfully');
+      } else {
+        console.error('❌ Save failed:', response);
+        setMessage({ type: 'error', text: response.message || 'Failed to update profile' });
+      }
     } catch (error) {
+      console.error('❌ Error updating profile:', error);
       setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
     } finally {
       setIsSubmitting(false);
@@ -81,318 +113,292 @@ const EditProfile = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    loadProfileData(); // Reset to original data
+    setFormData(originalData); // Reset to original data
     setMessage({ type: '', text: '' });
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setMessage({ type: '', text: '' });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="midwife-profile-page">
+        <div className="midwife-profile-container-wrapper">
+          <div className="midwife-profile-header">
+            <div className="midwife-profile-header-icon">
+              <Heart />
+            </div>
+            <div className="midwife-profile-title">
+              <h1>Edit Profile</h1>
+              <p>Update your professional information and personal details</p>
+            </div>
+          </div>
+          <div className="midwife-profile-container">
+            <div className="midwife-profile-main">
+              <div className="midwife-profile-section">
+                <div className="loading-message">Loading profile data...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="midwife-edit-profile-page">
-      <div className="midwife-edit-profile-container">
-        {/* Header */}
-        <div className="midwife-edit-profile-header">
-          <div className="midwife-edit-profile-header-icon">
+    <div className="midwife-profile-page">
+      <div className="midwife-profile-container-wrapper">
+        <div className="midwife-profile-header">
+          <div className="midwife-profile-header-icon">
             <Heart />
           </div>
-          <div className="midwife-edit-profile-title">
+          <div className="midwife-profile-title">
             <h1>Edit Profile</h1>
             <p>Update your professional information and personal details</p>
           </div>
         </div>
 
-        {/* Success/Error Messages */}
-        {message.text && (
-          <div className={`midwife-message midwife-message--${message.type}`}>
-            {message.type === 'success' ? (
-              <div className="midwife-message__icon">✓</div>
-            ) : (
-              <div className="midwife-message__icon">⚠</div>
+        <div className="midwife-profile-container">
+          <div className="midwife-profile-main">
+            {/* Profile Actions */}
+            <div className="midwife-profile-section">
+              <div className="midwife-profile-actions">
+                {!isEditing ? (
+                  <button 
+                    className="midwife-btn midwife-btn-primary"
+                    onClick={handleEdit}
+                  >
+                    <User />
+                    Edit Profile
+                  </button>
+                ) : (
+                  <div className="midwife-edit-actions">
+                    <button 
+                      className="midwife-btn midwife-btn-secondary"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      <X />
+                      Cancel
+                    </button>
+                    <button 
+                      className="midwife-btn midwife-btn-primary"
+                      onClick={handleSubmit}
+                      disabled={isSubmitting}
+                    >
+                      <Save />
+                      {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Success/Error Messages */}
+            {message.text && (
+              <div className={`midwife-message midwife-message--${message.type}`}>
+                {message.type === 'success' ? (
+                  <div className="midwife-message__icon">✓</div>
+                ) : (
+                  <div className="midwife-message__icon">⚠</div>
+                )}
+                <span>{message.text}</span>
+              </div>
             )}
-            <span>{message.text}</span>
-          </div>
-        )}
 
-        {/* Profile Form */}
-        <form onSubmit={handleSubmit} className="midwife-profile-form">
-          {/* Personal Information Section */}
-          <div className="midwife-form-section">
-            <h3>
-              <User />
-              Personal Information
-            </h3>
-            <div className="midwife-form-row">
-              <div className="midwife-form-group">
-                <label className="midwife-form-label required">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="midwife-form-group">
-                <label className="midwife-form-label required">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-            </div>
-            <div className="midwife-form-row">
-              <div className="midwife-form-group">
-                <label className="midwife-form-label required">Email</label>
-                <div className="midwife-input-wrapper">
-                  <Mail className="midwife-input-icon" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="midwife-form-input"
-                    disabled={!isEditing}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">Phone</label>
-                <div className="midwife-input-wrapper">
-                  <Phone className="midwife-input-icon" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="midwife-form-input"
-                    disabled={!isEditing}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Professional Information Section */}
-          <div className="midwife-form-section">
-            <h3>
-              <GraduationCap />
-              Professional Information
-            </h3>
-            <div className="midwife-form-row">
-              <div className="midwife-form-group">
-                <label className="midwife-form-label required">License Number</label>
-                <input
-                  type="text"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">Years of Experience</label>
-                <input
-                  type="text"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  placeholder="e.g., 12 years"
-                />
-              </div>
-            </div>
-            <div className="midwife-form-row">
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">Education</label>
-                <input
-                  type="text"
-                  name="education"
-                  value={formData.education}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  placeholder="e.g., Yale School of Nursing"
-                />
-              </div>
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">Languages</label>
-                <input
-                  type="text"
-                  name="languages"
-                  value={formData.languages}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                  placeholder="e.g., English, Spanish"
-                />
-              </div>
-            </div>
-            <div className="midwife-form-group full-width">
-              <label className="midwife-form-label">Certifications</label>
-              <textarea
-                name="certifications"
-                value={formData.certifications}
-                onChange={handleInputChange}
-                className="midwife-form-textarea"
-                disabled={!isEditing}
-                placeholder="List your certifications and qualifications"
-                rows="3"
-              />
-            </div>
-            <div className="midwife-form-group full-width">
-              <label className="midwife-form-label">Specializations</label>
-              <textarea
-                name="specializations"
-                value={formData.specializations}
-                onChange={handleInputChange}
-                className="midwife-form-textarea"
-                disabled={!isEditing}
-                placeholder="List your areas of expertise"
-                rows="3"
-              />
-            </div>
-          </div>
 
-          {/* Address Section */}
-          <div className="midwife-form-section">
-            <h3>
-              <MapPin />
-              Address Information
-            </h3>
-            <div className="midwife-form-group full-width">
-              <label className="midwife-form-label">Street Address</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                className="midwife-form-input"
-                disabled={!isEditing}
-              />
-            </div>
-            <div className="midwife-form-row">
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="midwife-form-group">
-                <label className="midwife-form-label">State</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  className="midwife-form-input"
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-            <div className="midwife-form-group">
-              <label className="midwife-form-label">ZIP Code</label>
-              <input
-                type="text"
-                name="zipCode"
-                value={formData.zipCode}
-                onChange={handleInputChange}
-                className="midwife-form-input"
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
 
-          {/* Availability Section */}
-          <div className="midwife-form-section">
-            <h3>
-              <Calendar />
-              Availability
-            </h3>
-            <div className="midwife-form-group full-width">
-              <label className="midwife-form-label">Availability</label>
-              <textarea
-                name="availability"
-                value={formData.availability}
-                onChange={handleInputChange}
-                className="midwife-form-textarea"
-                disabled={!isEditing}
-                placeholder="Describe your working hours and availability..."
-                rows="3"
-              />
-            </div>
-          </div>
 
-          {/* Bio Section */}
-          <div className="midwife-form-section">
-            <h3>
-              <Award />
-              Professional Bio
-            </h3>
-            <div className="midwife-form-group full-width">
-              <label className="midwife-form-label">Bio</label>
-              <textarea
-                name="bio"
-                value={formData.bio}
-                onChange={handleInputChange}
-                className="midwife-form-textarea"
-                disabled={!isEditing}
-                placeholder="Tell families about your approach to midwifery care..."
-                rows="5"
-              />
-            </div>
-          </div>
-
-          {/* Form Actions */}
-          <div className="midwife-form-actions">
-            {!isEditing ? (
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="midwife-btn midwife-btn-primary"
-              >
+            {/* Personal Information */}
+            <div className="midwife-profile-section">
+              <h3>
                 <User />
-                Edit Profile
-              </button>
-            ) : (
-              <>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="midwife-btn midwife-btn-primary"
-                >
-                  {isSubmitting ? (
-                    <div className="midwife-loading"></div>
+                Personal Information
+              </h3>
+            
+              <div className="midwife-info-grid">
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">First Name</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
                   ) : (
-                    <Save />
+                    <span className="midwife-info-value">{formData.firstName || 'Not provided'}</span>
                   )}
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="midwife-btn midwife-btn-secondary"
-                >
-                  <X />
-                  Cancel
-                </button>
-              </>
-            )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">Last Name</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.lastName || 'Not provided'}</span>
+                  )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">
+                    <Mail className="midwife-info-icon" />
+                    Email Address
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.email || 'Not provided'}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="midwife-info-grid">
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">
+                    <Phone className="midwife-info-icon" />
+                    Phone Number
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.phone || 'Not provided'}</span>
+                  )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">
+                    <MapPin className="midwife-info-icon" />
+                    Address
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                      placeholder="Enter your full address"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.address || 'Not provided'}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Information */}
+            <div className="midwife-profile-section">
+              <div className="midwife-section-header">
+                <h3>
+                  <GraduationCap className="midwife-section-icon" />
+                  Professional Information
+                </h3>
+              </div>
+              
+              <div className="midwife-info-grid">
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">License Number</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="licenseNumber"
+                      value={formData.licenseNumber}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.licenseNumber || 'Not provided'}</span>
+                  )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">Years of Experience</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="experience"
+                      value={formData.experience}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.experience || 'Not provided'}</span>
+                  )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">PHM Area</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="phmArea"
+                      value={formData.phmArea}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.phmArea || 'Not provided'}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="midwife-info-grid">
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">MOH Office</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="mohArea"
+                      value={formData.mohArea}
+                      onChange={handleInputChange}
+                      className="midwife-input"
+                    />
+                  ) : (
+                    <span className="midwife-info-value">{formData.mohArea || 'Not provided'}</span>
+                  )}
+                </div>
+
+                <div className="midwife-info-item">
+                  <label className="midwife-info-label">Certifications</label>
+                  {isEditing ? (
+                    <textarea
+                      name="certifications"
+                      value={formData.certifications}
+                      onChange={handleInputChange}
+                      className="midwife-textarea"
+                      rows="3"
+                    />
+                  ) : (
+                    <p className="midwife-info-description">{formData.certifications || 'Not provided'}</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

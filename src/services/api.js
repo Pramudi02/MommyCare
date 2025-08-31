@@ -225,6 +225,63 @@ export const vaccinationAPI = {
   },
 };
 
+// Midwife Medical Records API (moms listing)
+export const midwifeAPI = {
+  getMomProfiles: async (search = '') => {
+    const params = new URLSearchParams();
+    if (search) params.set('q', search);
+    const qs = params.toString();
+    return apiRequest(`/midwife/moms${qs ? `?${qs}` : ''}`);
+  },
+  
+  // Search for moms to assign
+  searchMoms: async (query) => {
+    return apiRequest(`/midwife/moms/search?q=${encodeURIComponent(query)}`);
+  },
+  
+  // Assign mom to midwife
+  assignMom: async (momId, notes = '') => {
+    return apiRequest('/midwife/moms/assign', {
+      method: 'POST',
+      body: JSON.stringify({ momId, notes })
+    });
+  },
+  
+  // Get medical records for a mom
+  getMedicalRecords: async (momId) => {
+    return apiRequest(`/midwife/moms/${momId}/records`);
+  },
+  
+  // Update overview data
+  updateOverview: async (momId, data) => {
+    return apiRequest(`/midwife/moms/${momId}/overview`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  // Update pre-pregnancy data
+  updatePrePregnancy: async (momId, data) => {
+    return apiRequest(`/midwife/moms/${momId}/prepregnancy`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  // Get midwife profile
+  getProfile: async () => {
+    return apiRequest('/midwife/profile');
+  },
+  
+  // Update midwife profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/midwife/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(profileData)
+    });
+  }
+};
+
 // Doctor API
 export const doctorAPI = {
   getDashboard: async () => apiRequest('/doctor/dashboard'),

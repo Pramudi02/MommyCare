@@ -1,4 +1,5 @@
 const getUserModel = require('../models/User');
+const { getMidwifeProfileModel } = require('../models/MidwifeProfile');
 const jwt = require('jsonwebtoken');
 
 // Helper function to create token response
@@ -59,6 +60,33 @@ const register = async (req, res) => {
 		try {
 			user = await User.create({ firstName, lastName, email, password, role });
 			console.log('User created successfully:', user._id);
+			
+			// If user is a midwife, create a midwife profile
+			if (role === 'midwife') {
+				try {
+					console.log('Creating midwife profile for new user:', user._id);
+					const MidwifeProfile = getMidwifeProfileModel();
+					const midwifeProfile = await MidwifeProfile.create({
+						user: user._id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						email: user.email,
+						phone: '',
+						address: '',
+						licenseNumber: '',
+						experience: '',
+						phmArea: '',
+						mohArea: '',
+						certifications: ''
+					});
+					console.log('✅ Midwife profile created successfully:', midwifeProfile._id);
+				} catch (profileError) {
+					console.error('❌ Error creating midwife profile:', profileError);
+					console.error('Profile creation failed, but user registration succeeded');
+					// Don't fail registration if profile creation fails
+					// The profile can be created later when they first access the edit profile page
+				}
+			}
 		} catch (createError) {
 			console.error('Error creating user:', createError);
 			

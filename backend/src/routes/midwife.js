@@ -3,6 +3,11 @@ const asyncHandler = require('express-async-handler');
 const { protect, authorize } = require('../middleware/auth');
 const getClinicVisitRequestModel = require('../models/ClinicVisitRequest');
 const getMidwifeAppointmentModel = require('../models/MidwifeAppointment');
+const getMomProfileModel = require('../models/MomProfile');
+const getMedicalRecordModel = require('../models/MedicalRecord');
+const getMidwifeMomModel = require('../models/MidwifeMom');
+const { getMidwifeProfileModel } = require('../models/MidwifeProfile');
+const getUserModel = require('../models/User');
 
 const router = express.Router();
 
@@ -10,6 +15,59 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
+ *     MidwifeProfile:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Unique identifier for the profile
+ *         user:
+ *           type: string
+ *           description: Reference to the User model
+ *         firstName:
+ *           type: string
+ *           description: Midwife's first name
+ *         lastName:
+ *           type: string
+ *           description: Midwife's last name
+ *         email:
+ *           type: string
+ *           description: Midwife's email address
+ *         phone:
+ *           type: string
+ *           description: Midwife's phone number
+ *         address:
+ *           type: string
+ *           description: Midwife's address
+ *         licenseNumber:
+ *           type: string
+ *           description: Midwife's license number
+ *         experience:
+ *           type: string
+ *           description: Years of experience
+ *         phmArea:
+ *           type: string
+ *           description: PHM area assignment
+ *         mohArea:
+ *           type: string
+ *           description: MOH office assignment
+ *         certifications:
+ *           type: string
+ *           description: Professional certifications
+ *         updatedBy:
+ *           type: string
+ *           description: Reference to user who last updated the profile
+ *         lastUpdated:
+ *           type: string
+ *           format: date-time
+ *           description: Last update timestamp
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     
  *     ClinicVisitRequest:
  *       type: object
  *       properties:
@@ -683,16 +741,29 @@ router.get('/appointments', protect, authorize('midwife'), asyncHandler(async (r
       appointments = await MidwifeAppointment.getTodayForMidwife(req.user._id);
       break;
     case 'week':
-      const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      // Calculate week start (Monday) and end (Sunday) based on current date
+      const currentDate = new Date();
+      const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      // Calculate days to subtract to get to Monday (1)
+      const mondayOffset = currentDay === 0 ? -6 : -(currentDay - 1);
+      
+      const weekStart = new Date(currentDate);
+      weekStart.setDate(currentDate.getDate() + mondayOffset);
+      weekStart.setHours(0, 0, 0, 0); // Start of day
+      
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999); // End of day
+      
       appointments = await MidwifeAppointment.getByDateRange(req.user._id, weekStart, weekEnd);
       break;
     case 'month':
       const monthStart = new Date();
       monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0); // Start of day
       const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+      monthEnd.setHours(23, 59, 59, 999); // End of day
       appointments = await MidwifeAppointment.getByDateRange(req.user._id, monthStart, monthEnd);
       break;
     case 'all':
@@ -969,6 +1040,821 @@ router.delete('/appointments/:id', protect, authorize('midwife'), asyncHandler(a
     status: 'success',
     message: 'Appointment deleted successfully'
   });
+}));
+
+// ===== MIDWIFE-MOM ASSIGNMENT =====
+
+/**
+ * @swagger
+ * /api/midwife/moms:
+ *   get:
+ *     summary: Get moms assigned to the authenticated midwife
+ *     description: Returns mom profiles assigned to the midwife through MidwifeMom collection.
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         description: Search by name or phone (case-insensitive)
+ *     responses:
+ *       200:
+ *         description: Moms retrieved successfully
+ *       401:
+ *         description: Not authorized
+ */
+router.get('/moms', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const MidwifeMom = getMidwifeMomModel();
+  const MomProfile = getMomProfileModel();
+  const { q } = req.query;
+
+  // Get mom IDs assigned to this midwife
+  const assignments = await MidwifeMom.find({ 
+    midwife: req.user._id, 
+    status: 'active' 
+  }).select('mom');
+
+  const momIds = assignments.map(a => a.mom);
+
+  if (momIds.length === 0) {
+    return res.json({ status: 'success', data: [] });
+  }
+
+  // Build query for mom profiles
+  const filter = { _id: { $in: momIds } };
+  if (q) {
+    const regex = new RegExp(q, 'i');
+    filter.$or = [
+      { name: regex },
+      { phone: regex }
+    ];
+  }
+
+  const moms = await MomProfile.find(filter)
+    .sort({ name: 1 })
+    .select('-__v');
+
+  res.json({ status: 'success', data: moms });
+}));
+
+/**
+ * @swagger
+ * /api/midwife/moms/search:
+ *   get:
+ *     summary: Search for moms to assign to midwife
+ *     description: Search all mom profiles to find moms that can be assigned to the midwife.
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Search query for mom name or phone
+ *     responses:
+ *       200:
+ *         description: Search results
+ *       401:
+ *         description: Not authorized
+ */
+router.get('/moms/search', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const User = getUserModel();
+  const MomProfile = getMomProfileModel();
+  const { q } = req.query;
+
+  if (!q || q.trim().length < 2) {
+    return res.status(400).json({ 
+      status: 'error', 
+      message: 'Search query must be at least 2 characters' 
+    });
+  }
+
+  try {
+    // Search for all users with role 'mom'
+    const regex = new RegExp(q.trim(), 'i');
+    
+    // First, search in User collection for moms
+    const momUsers = await User.find({
+      role: 'mom',
+      $or: [
+        { firstName: regex },
+        { lastName: regex },
+        { email: regex }
+      ]
+    }).select('firstName lastName email role');
+
+    if (momUsers.length === 0) {
+      return res.json({ status: 'success', data: [] });
+    }
+
+    // Get mom profile details for these users
+    const momUserIds = momUsers.map(user => user._id);
+    const momProfiles = await MomProfile.find({
+      user: { $in: momUserIds }
+    }).select('name phone age phmArea user');
+
+    // Create a map of user ID to profile data
+    const profileMap = {};
+    momProfiles.forEach(profile => {
+      profileMap[profile.user.toString()] = profile;
+    });
+
+    // Combine user and profile data
+    const results = momUsers.map(user => {
+      const profile = profileMap[user._id.toString()];
+      return {
+        _id: user._id, // This is the User ID for assignment
+        name: profile ? profile.name : `${user.firstName} ${user.lastName}`,
+        phone: profile ? profile.phone : 'Not set',
+        age: profile ? profile.age : 'Not set',
+        phmArea: profile ? profile.phmArea : 'Not set',
+        email: user.email
+      };
+    });
+
+    // Sort by name and limit results
+    results.sort((a, b) => a.name.localeCompare(b.name));
+    
+    res.json({ 
+      status: 'success', 
+      data: results.slice(0, 20) // Increased limit to show more results
+    });
+
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Search failed' 
+    });
+  }
+}));
+
+/**
+ * @swagger
+ * /api/midwife/moms/assign:
+ *   post:
+ *     summary: Assign a mom to the midwife
+ *     description: Create a MidwifeMom assignment to connect a mom to the midwife.
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - momId
+ *             properties:
+ *               momId:
+ *                 type: string
+ *                 description: Mom profile ID to assign
+ *               notes:
+ *                 type: string
+ *                 description: Optional notes about the assignment
+ *     responses:
+ *       200:
+ *         description: Mom assigned successfully
+ *       400:
+ *         description: Invalid request or mom already assigned
+ *       401:
+ *         description: Not authorized
+ */
+router.post('/moms/assign', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const MidwifeMom = getMidwifeMomModel();
+  const MomProfile = getMomProfileModel();
+  const User = getUserModel();
+  const { momId, notes } = req.body;
+
+  if (!momId) {
+    return res.status(400).json({ 
+      status: 'error', 
+      message: 'Mom ID is required' 
+    });
+  }
+
+  try {
+    // First check if momId is a User ID
+    let user = await User.findById(momId);
+    let momProfile = null;
+    
+    if (user && user.role === 'mom') {
+      // Check if mom profile exists
+      momProfile = await MomProfile.findOne({ user: momId });
+      
+      if (!momProfile) {
+        // Create a basic mom profile if it doesn't exist
+        // Use valid default values for required fields
+        const defaultProfileData = {
+          user: momId,
+          name: `${user.firstName} ${user.lastName}`,
+          phone: '0000000000', // Valid phone format
+          age: 25, // Valid age
+          bloodGroup: 'O+', // Valid blood group
+          height: { value: 160, unit: 'cm' }, // Valid height
+          weight: { value: 60, unit: 'kg' }, // Valid weight
+          currentBMI: 23.4, // Valid BMI
+          lmp: new Date(), // Current date
+          edd: new Date(Date.now() + 280 * 24 * 60 * 60 * 1000), // 40 weeks from now
+          consultantObstetrician: 'To be assigned', // Valid string
+          mohArea: 'To be assigned', // Valid string
+          phmArea: 'To be assigned', // Valid string
+          fieldClinic: 'To be assigned', // Valid string
+          gramaNiladhariDivision: 'To be assigned', // Valid string
+          hospitalClinic: 'To be assigned', // Valid string
+          nextClinicDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+          profileCompleted: false
+        };
+        
+        try {
+          momProfile = await MomProfile.create(defaultProfileData);
+          console.log('Created new mom profile for user:', momId);
+        } catch (profileError) {
+          console.error('Error creating mom profile:', profileError);
+          return res.status(500).json({
+            status: 'error',
+            message: 'Failed to create mom profile: ' + profileError.message
+          });
+        }
+      }
+    } else {
+      // Check if momId is a MomProfile ID
+      momProfile = await MomProfile.findById(momId);
+      if (momProfile) {
+        user = await User.findById(momProfile.user);
+      }
+    }
+
+    if (!momProfile || !user) {
+      return res.status(404).json({ 
+        status: 'error', 
+        message: 'Mom not found' 
+      });
+    }
+
+    // Check if already assigned
+    const existingAssignment = await MidwifeMom.findOne({
+      midwife: req.user._id,
+      mom: momProfile._id,
+      status: 'active'
+    });
+
+    if (existingAssignment) {
+      return res.status(400).json({ 
+        status: 'error', 
+        message: 'Mom is already assigned to this midwife' 
+      });
+    }
+
+    // Create assignment
+    const assignment = await MidwifeMom.create({
+      midwife: req.user._id,
+      mom: momProfile._id,
+      assignedBy: req.user._id,
+      notes
+    });
+
+    res.json({ 
+      status: 'success', 
+      message: 'Mom assigned successfully',
+      data: assignment 
+    });
+
+  } catch (error) {
+    console.error('Assignment error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to assign mom: ' + error.message
+    });
+  }
+}));
+
+// ===== MEDICAL RECORDS MANAGEMENT =====
+
+/**
+ * @swagger
+ * /api/midwife/moms/:id/records:
+ *   get:
+ *     summary: Get combined medical records for a mom
+ *     description: Returns mom profile data combined with medical record data.
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mom profile ID
+ *     responses:
+ *       200:
+ *         description: Medical records retrieved successfully
+ *       404:
+ *         description: Mom not found
+ */
+router.get('/moms/:id/records', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const MidwifeMom = getMidwifeMomModel();
+  const MomProfile = getMomProfileModel();
+  const MedicalRecord = getMedicalRecordModel();
+
+  // Verify midwife has access to this mom
+  const assignment = await MidwifeMom.findOne({
+    midwife: req.user._id,
+    mom: req.params.id,
+    status: 'active'
+  });
+
+  if (!assignment) {
+    return res.status(403).json({ 
+      status: 'error', 
+      message: 'Access denied: Mom not assigned to this midwife' 
+    });
+  }
+
+  const mom = await MomProfile.findById(req.params.id);
+  if (!mom) {
+    return res.status(404).json({ 
+      status: 'error', 
+      message: 'Mom not found' 
+    });
+  }
+
+  const record = await MedicalRecord.findOne({ mom: mom._id });
+  
+  res.json({ 
+    status: 'success', 
+    data: { mom, record: record || {} } 
+  });
+}));
+
+/**
+ * @swagger
+ * /api/midwife/moms/:id/overview:
+ *   patch:
+ *     summary: Update mom overview data
+ *     description: Update overview fields in MomProfile (editable by midwife).
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mom profile ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               age:
+ *                 type: number
+ *               bloodGroup:
+ *                 type: string
+ *               height:
+ *                 type: object
+ *               weight:
+ *                 type: object
+ *               currentBMI:
+ *                 type: number
+ *               mohArea:
+ *                 type: string
+ *               phmArea:
+ *                 type: string
+ *               fieldClinic:
+ *                 type: string
+ *               gramaNiladhariDivision:
+ *                 type: string
+ *               hospitalClinic:
+ *                 type: string
+ *               consultantObstetrician:
+ *                 type: string
+ *               nextClinicDate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Overview updated successfully
+ *       404:
+ *         description: Mom not found
+ */
+router.patch('/moms/:id/overview', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const MidwifeMom = getMidwifeMomModel();
+  const MomProfile = getMomProfileModel();
+
+  // Verify midwife has access to this mom
+  const assignment = await MidwifeMom.findOne({
+    midwife: req.user._id,
+    mom: req.params.id,
+    status: 'active'
+  });
+
+  if (!assignment) {
+    return res.status(403).json({ 
+      status: 'error', 
+      message: 'Access denied: Mom not assigned to this midwife' 
+    });
+  }
+
+  const allowedFields = [
+    'name', 'phone', 'age', 'bloodGroup', 'height', 'weight', 'currentBMI',
+    'mohArea', 'phmArea', 'fieldClinic', 'gramaNiladhariDivision',
+    'hospitalClinic', 'consultantObstetrician', 'nextClinicDate'
+  ];
+
+  const payload = {};
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      payload[field] = req.body[field];
+    }
+  }
+
+  // Handle date conversion
+  if (payload.nextClinicDate) {
+    payload.nextClinicDate = new Date(payload.nextClinicDate);
+  }
+
+  // Handle numeric conversions for height/weight
+  if (payload.height && payload.height.value) {
+    payload.height.value = Number(payload.height.value);
+  }
+  if (payload.weight && payload.weight.value) {
+    payload.weight.value = Number(payload.weight.value);
+  }
+
+  const updated = await MomProfile.findByIdAndUpdate(
+    req.params.id, 
+    payload, 
+    { new: true, runValidators: true }
+  );
+
+  if (!updated) {
+    return res.status(404).json({ 
+      status: 'error', 
+      message: 'Mom not found' 
+    });
+  }
+
+  res.json({ 
+    status: 'success', 
+    message: 'Overview updated successfully', 
+    data: updated 
+  });
+}));
+
+/**
+ * @swagger
+ * /api/midwife/moms/:id/prepregnancy:
+ *   patch:
+ *     summary: Update pre-pregnancy data
+ *     description: Update pre-pregnancy fields in MedicalRecord collection.
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mom profile ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               lmp:
+ *                 type: string
+ *                 format: date
+ *               quickening:
+ *                 type: string
+ *                 format: date
+ *               amenorrheaAtRegistration:
+ *                 type: string
+ *               consanguinity:
+ *                 type: boolean
+ *               rubellaImmunization:
+ *                 type: boolean
+ *               prePregnancyScreening:
+ *                 type: boolean
+ *               preconceptionalFolicAcid:
+ *                 type: boolean
+ *               historyOfSubfertility:
+ *                 type: boolean
+ *               planningPregnancy:
+ *                 type: boolean
+ *               familyPlanningLastUsed:
+ *                 type: string
+ *               ageOfYoungestChild:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Pre-pregnancy data saved successfully
+ */
+router.patch('/moms/:id/prepregnancy', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  const MidwifeMom = getMidwifeMomModel();
+  const MedicalRecord = getMedicalRecordModel();
+
+  // Verify midwife has access to this mom
+  const assignment = await MidwifeMom.findOne({
+    midwife: req.user._id,
+    mom: req.params.id,
+    status: 'active'
+  });
+
+  if (!assignment) {
+    return res.status(403).json({ 
+      status: 'error', 
+      message: 'Access denied: Mom not assigned to this midwife' 
+    });
+  }
+
+  const momId = req.params.id;
+  const set = {};
+  const allowedFields = [
+    'lmp', 'quickening', 'amenorrheaAtRegistration', 'consanguinity',
+    'rubellaImmunization', 'prePregnancyScreening', 'preconceptionalFolicAcid',
+    'historyOfSubfertility', 'planningPregnancy', 'familyPlanningLastUsed',
+    'ageOfYoungestChild'
+  ];
+
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      set[`prePregnancy.${field}`] = req.body[field];
+    }
+  }
+
+  // Handle date conversions
+  if (set['prePregnancy.lmp']) {
+    set['prePregnancy.lmp'] = new Date(set['prePregnancy.lmp']);
+  }
+  if (set['prePregnancy.quickening']) {
+    set['prePregnancy.quickening'] = new Date(set['prePregnancy.quickening']);
+  }
+
+  const updated = await MedicalRecord.findOneAndUpdate(
+    { mom: momId },
+    { $set: set, updatedBy: req.user._id },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+
+  res.json({ 
+    status: 'success', 
+    message: 'Pre-pregnancy data saved successfully', 
+    data: updated 
+  });
+}));
+
+/**
+ * @swagger
+ * /api/midwife/profile:
+ *   get:
+ *     summary: Get midwife profile
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Midwife profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/MidwifeProfile'
+ *       404:
+ *         description: Profile not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/profile', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  try {
+    console.log('🔍 Midwife profile request - User ID:', req.user._id);
+    console.log('🔍 User data from JWT:', {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email,
+      role: req.user.role
+    });
+    
+    // Try to get the existing midwife profile from database
+    try {
+      const MidwifeProfile = getMidwifeProfileModel();
+      let profile = await MidwifeProfile.findOne({ user: req.user._id });
+      
+      if (profile) {
+        console.log('✅ Found existing midwife profile:', profile);
+        res.json({ status: 'success', data: profile });
+      } else {
+        console.log('📝 No profile found, creating new one...');
+        // Create new profile with user data from JWT token
+        profile = await MidwifeProfile.create({
+          user: req.user._id,
+          firstName: req.user.firstName || '',
+          lastName: req.user.lastName || '',
+          email: req.user.email || '',
+          phone: '',
+          licenseNumber: '',
+          experience: '',
+          phmArea: '',
+          mohArea: '',
+          certifications: '',
+          address: ''
+        });
+        console.log('✅ Created new midwife profile:', profile);
+        res.json({ status: 'success', data: profile });
+      }
+    } catch (dbError) {
+      console.error('❌ Database error:', dbError);
+      // Fallback to simple profile if database fails
+      const simpleProfile = {
+        user: req.user._id,
+        firstName: req.user.firstName || '',
+        lastName: req.user.lastName || '',
+        email: req.user.email || '',
+        phone: '',
+        licenseNumber: '',
+        experience: '',
+        phmArea: '',
+        mohArea: '',
+        certifications: '',
+        address: ''
+      };
+      console.log('✅ Using fallback profile:', simpleProfile);
+      res.json({ status: 'success', data: simpleProfile });
+    }
+    
+  } catch (error) {
+    console.error('❌ Error in midwife profile route:', error);
+    console.error('❌ Error stack:', error.stack);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Internal server error',
+      error: error.message 
+    });
+  }
+}));
+
+/**
+ * @swagger
+ * /api/midwife/profile:
+ *   patch:
+ *     summary: Update midwife profile
+ *     tags: [Midwife]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               licenseNumber:
+ *                 type: string
+ *               experience:
+ *                 type: string
+ *               phmArea:
+ *                 type: string
+ *               mohArea:
+ *                 type: string
+ *               certifications:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/MidwifeProfile'
+ *       400:
+ *         description: Invalid data
+ *       500:
+ *         description: Server error
+ */
+router.patch('/profile', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  try {
+    console.log('🔧 Updating midwife profile for user:', req.user._id);
+    console.log('🔧 Update data received:', req.body);
+    console.log('🔧 Request headers:', req.headers);
+    
+    // Update the midwife profile in database
+    let MidwifeProfile;
+    try {
+      MidwifeProfile = getMidwifeProfileModel();
+      console.log('✅ MidwifeProfile model loaded successfully');
+    } catch (modelError) {
+      console.error('❌ Error loading MidwifeProfile model:', modelError);
+      return res.status(500).json({ 
+        status: 'error', 
+        message: 'Failed to load database model',
+        error: modelError.message 
+      });
+    }
+    
+    const allowedFields = [
+      'firstName', 'lastName', 'email', 'phone', 'address',
+      'licenseNumber', 'experience', 'phmArea', 'mohArea', 'certifications'
+    ];
+    
+    const updateData = {};
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
+    
+    updateData.updatedBy = req.user._id;
+    updateData.lastUpdated = new Date();
+    
+    console.log('🔧 Final update data:', updateData);
+    console.log('🔧 User ID for update:', req.user._id);
+    
+    // Update the midwife profile
+    const profile = await MidwifeProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: updateData },
+      { new: true, upsert: true, runValidators: true }
+    );
+    
+    console.log('✅ Profile updated successfully in database:', profile);
+    
+    res.json({ 
+      status: 'success', 
+      message: 'Profile updated successfully', 
+      data: profile 
+    });
+  } catch (error) {
+    console.error('❌ Error updating midwife profile:', error);
+    console.error('❌ Error stack:', error.stack);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Internal server error',
+      error: error.message 
+    });
+  }
+}));
+
+// Test endpoint to check if MidwifeProfile model is working
+router.get('/test-profile-model', protect, authorize('midwife'), asyncHandler(async (req, res) => {
+  try {
+    console.log('🧪 Testing MidwifeProfile model...');
+    const MidwifeProfile = getMidwifeProfileModel();
+    console.log('✅ Model loaded successfully');
+    
+    // Try to find a profile
+    const profile = await MidwifeProfile.findOne({ user: req.user._id });
+    console.log('🔍 Profile search result:', profile ? 'Found' : 'Not found');
+    
+    res.json({ 
+      status: 'success', 
+      message: 'MidwifeProfile model is working',
+      profileExists: !!profile,
+      userId: req.user._id
+    });
+  } catch (error) {
+    console.error('❌ Test failed:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Test failed',
+      error: error.message 
+    });
+  }
 }));
 
 module.exports = router;
