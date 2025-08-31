@@ -1,56 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Search, Star, Heart, User, Sparkles } from 'lucide-react';
 
 const BabyNameFinder = () => {
   const [selectedGender, setSelectedGender] = useState('All Genders');
   const [selectedLetter, setSelectedLetter] = useState('Any Letter');
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
   
 
-  const [names, setNames] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const mapGenderToApi = (uiGender) => {
-    if (!uiGender || uiGender === 'All Genders') return undefined;
-    const lower = uiGender.toLowerCase();
-    if (lower.startsWith('girl')) return 'girl';
-    if (lower.startsWith('boy')) return 'boy';
-    return 'unisex';
-  };
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300);
-    return () => clearTimeout(t);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchNames = async () => {
-      try {
-        setLoading(true);
-        const params = new URLSearchParams();
-        const apiGender = mapGenderToApi(selectedGender);
-        if (apiGender) params.set('gender', apiGender);
-        if (selectedLetter !== 'Any Letter') params.set('startsWith', selectedLetter);
-        if (debouncedQuery) params.set('search', debouncedQuery);
-        params.set('page', String(page));
-        params.set('limit', '50');
-        const res = await fetch(`/api/baby-names?${params.toString()}`, { signal: controller.signal });
-        const data = await res.json();
-        setNames(data.items || []);
-        setTotalPages(data.pages || 1);
-      } catch (e) {
-        if (e.name !== 'AbortError') console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNames();
-    return () => controller.abort();
-  }, [selectedGender, selectedLetter, debouncedQuery, page]);
+  const popularNames = [
+    {
+      name: 'Anushka',
+      meaning: 'Lightning, grace filled of divinity and optimism with divine blessing',
+      rating: 5,
+      likes: 0
+    },
+    {
+      name: 'Kaweesha',
+      meaning: 'A sweet poem, a piece of beautiful world and intelligence',
+      rating: 4,
+      likes: 0
+    },
+    {
+      name: 'Tharushi',
+      meaning: 'Charming, ambitious and also represents an courageous',
+      rating: 5,
+      likes: 0
+    },
+    {
+      name: 'Nimaya',
+      meaning: 'Pure, divine, spiritual Humble, representing someone pure',
+      rating: 4,
+      likes: 0
+    },
+    {
+      name: 'Dinura',
+      meaning: 'Day-bright, bright like the sun, bringing hope and light',
+      rating: 4,
+      likes: 0
+    },
+    {
+      name: 'Senali',
+      meaning: 'Lightning, flash of light that illuminates the sky',
+      rating: 5,
+      likes: 0
+    }
+  ];
 
   
 
@@ -185,7 +179,7 @@ const BabyNameFinder = () => {
                   { key: 'Boys', label: 'Boy', color: '#3b82f6', emoji: '♂' },
                   { key: 'Neutral', label: 'Unisex', color: '#8b5cf6', emoji: '⚧' }
                 ].map(card => (
-                  <button key={card.key} onClick={() => { setSelectedGender(card.key); setPage(1); }} style={{
+                  <button key={card.key} onClick={() => setSelectedGender(card.key)} style={{
                     border: 'none',
                     background: 'white',
                     borderRadius: '0.75rem',
@@ -223,7 +217,7 @@ const BabyNameFinder = () => {
                   gap: '0.75rem'
                 }}>
                   {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(letter => (
-                    <button key={letter} onClick={() => { setSelectedLetter(letter); setPage(1); }} style={{
+                    <button key={letter} onClick={() => setSelectedLetter(letter)} style={{
                       background: 'white',
                       border: '2px solid #f472b6',
                       color: '#111827',
@@ -264,7 +258,7 @@ const BabyNameFinder = () => {
 
             <div style={{ textAlign: 'center' }}>
               <p style={{ color: '#6b7280', fontWeight: '500' }}>
-                {loading ? 'Loading names...' : `Showing ${names.length} names`}
+                Showing 24 beautiful names for you
               </p>
             </div>
           </div>
@@ -277,7 +271,7 @@ const BabyNameFinder = () => {
           gap: '1.5rem',
           marginBottom: '2rem'
         }}>
-          {names.map((name, index) => (
+          {popularNames.map((name, index) => (
             <div key={index} style={{
               background: 'rgba(255, 255, 255, 0.9)',
               backdropFilter: 'blur(12px)',
@@ -349,7 +343,7 @@ const BabyNameFinder = () => {
                 marginBottom: '1rem',
                 lineHeight: '1.5'
               }}>
-                {name.meaning || '—'}
+                {name.meaning}
               </p>
               
               <div style={{
@@ -357,7 +351,19 @@ const BabyNameFinder = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center'
               }}>
-                <div />
+                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        color: i < name.rating ? '#eab308' : '#d1d5db',
+                        fill: i < name.rating ? 'currentColor' : 'none'
+                      }}
+                    />
+                  ))}
+                </div>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
