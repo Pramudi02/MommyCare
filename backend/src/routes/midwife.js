@@ -503,6 +503,14 @@ router.get('/clinic-visit-requests/:id', protect, authorize('midwife'), asyncHan
 router.post('/clinic-visit-requests/:id/accept', protect, authorize('midwife'), asyncHandler(async (req, res) => {
   const { appointmentDate, startTime, endTime, notes, location } = req.body;
   
+  console.log('🕐 Backend received appointment data:', {
+    appointmentDate,
+    startTime,
+    endTime,
+    notes,
+    location
+  });
+  
   if (!appointmentDate || !startTime || !endTime) {
     return res.status(400).json({
       status: 'error',
@@ -529,14 +537,28 @@ router.post('/clinic-visit-requests/:id/accept', protect, authorize('midwife'), 
     });
   }
 
-  // Create appointment date and time
-  const appointmentDateTime = new Date(appointmentDate);
-  const [startHours, startMinutes] = startTime.split(':');
-  appointmentDateTime.setHours(parseInt(startHours), parseInt(startMinutes), 0, 0);
+  // Create appointment date and time in local timezone
+  const [year, month, day] = appointmentDate.split('-').map(Number);
+  const [startHours, startMinutes] = startTime.split(':').map(Number);
+  const [endHours, endMinutes] = endTime.split(':').map(Number);
   
-  const endDateTime = new Date(appointmentDate);
-  const [endHours, endMinutes] = endTime.split(':');
-  endDateTime.setHours(parseInt(endHours), parseInt(endMinutes), 0, 0);
+  // Create dates in local timezone to avoid UTC conversion issues
+  const appointmentDateTime = new Date(year, month - 1, day, startHours, startMinutes, 0, 0);
+  const endDateTime = new Date(year, month - 1, day, endHours, endMinutes, 0, 0);
+  
+  // Convert to UTC to ensure consistent storage
+  const appointmentDateTimeUTC = new Date(appointmentDateTime.getTime() - (appointmentDateTime.getTimezoneOffset() * 60000));
+  const endDateTimeUTC = new Date(endDateTime.getTime() - (endDateTime.getTimezoneOffset() * 60000));
+  
+  console.log('🕐 Backend created appointment times:', {
+    originalStartTime: startTime,
+    originalEndTime: endTime,
+    appointmentDateTimeLocal: appointmentDateTime.toString(),
+    endDateTimeLocal: endDateTime.toString(),
+    appointmentDateTimeUTC: appointmentDateTimeUTC.toISOString(),
+    endDateTimeUTC: endDateTimeUTC.toISOString(),
+    timezoneOffset: appointmentDateTime.getTimezoneOffset()
+  });
 
   // Create the appointment
   const appointment = await MidwifeAppointment.create({
@@ -544,8 +566,8 @@ router.post('/clinic-visit-requests/:id/accept', protect, authorize('midwife'), 
     description: request.notes || `Appointment for ${request.requestType}`,
     mom: request.mom,
     midwife: req.user._id,
-    startTime: appointmentDateTime,
-    endTime: endDateTime,
+    startTime: appointmentDateTimeUTC,
+    endTime: endDateTimeUTC,
     type: request.requestType,
     location: location || {
       type: 'field-clinic',
@@ -741,29 +763,51 @@ router.get('/appointments', protect, authorize('midwife'), asyncHandler(async (r
       appointments = await MidwifeAppointment.getTodayForMidwife(req.user._id);
       break;
     case 'week':
-      // Calculate week start (Monday) and end (Sunday) based on current date
-      const currentDate = new Date();
-      const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      let weekStart, weekEnd;
       
-      // Calculate days to subtract to get to Monday (1)
-      const mondayOffset = currentDay === 0 ? -6 : -(currentDay - 1);
-      
-      const weekStart = new Date(currentDate);
-      weekStart.setDate(currentDate.getDate() + mondayOffset);
-      weekStart.setHours(0, 0, 0, 0); // Start of day
-      
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
-      weekEnd.setHours(23, 59, 59, 999); // End of day
+      if (startDate && endDate) {
+        // Use provided start and end dates
+        weekStart = new Date(startDate);
+        weekStart.setHours(0, 0, 0, 0);
+        weekEnd = new Date(endDate);
+        weekEnd.setHours(23, 59, 59, 999);
+      } else {
+        // Calculate week start (Monday) and end (Sunday) based on current date
+        const currentDate = new Date();
+        const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        
+        // Calculate days to subtract to get to Monday (1)
+        const mondayOffset = currentDay === 0 ? -6 : -(currentDay - 1);
+        
+        weekStart = new Date(currentDate);
+        weekStart.setDate(currentDate.getDate() + mondayOffset);
+        weekStart.setHours(0, 0, 0, 0); // Start of day
+        
+        weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999); // End of day
+      }
       
       appointments = await MidwifeAppointment.getByDateRange(req.user._id, weekStart, weekEnd);
       break;
     case 'month':
-      const monthStart = new Date();
-      monthStart.setDate(1);
-      monthStart.setHours(0, 0, 0, 0); // Start of day
-      const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
-      monthEnd.setHours(23, 59, 59, 999); // End of day
+      let monthStart, monthEnd;
+      
+      if (startDate && endDate) {
+        // Use provided start and end dates
+        monthStart = new Date(startDate);
+        monthStart.setHours(0, 0, 0, 0);
+        monthEnd = new Date(endDate);
+        monthEnd.setHours(23, 59, 59, 999);
+      } else {
+        // Calculate current month
+        monthStart = new Date();
+        monthStart.setDate(1);
+        monthStart.setHours(0, 0, 0, 0); // Start of day
+        monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+        monthEnd.setHours(23, 59, 59, 999); // End of day
+      }
+      
       appointments = await MidwifeAppointment.getByDateRange(req.user._id, monthStart, monthEnd);
       break;
     case 'all':
@@ -771,6 +815,18 @@ router.get('/appointments', protect, authorize('midwife'), asyncHandler(async (r
       appointments = await MidwifeAppointment.find({ midwife: req.user._id })
         .sort({ startTime: 1 })
         .populate('mom', 'firstName lastName email');
+      
+      console.log('🕐 Backend returning appointments:', appointments.length, 'appointments');
+      appointments.forEach(apt => {
+        console.log('🕐 Appointment:', {
+          id: apt._id,
+          startTime: apt.startTime,
+          endTime: apt.endTime,
+          startTimeLocal: new Date(apt.startTime).toString(),
+          endTimeLocal: new Date(apt.endTime).toString(),
+          mom: apt.mom?.firstName
+        });
+      });
       break;
   }
 

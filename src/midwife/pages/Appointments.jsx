@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers, FiFileText, FiEye, FiChevronDown } from 'react-icons/fi';
+import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers, FiFileText, FiEye, FiChevronDown, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { midwifeAppointmentAPI } from '../../services/api';
 import './Appointments.css';
 
@@ -15,6 +15,11 @@ const Appointments = () => {
     date: '',
     startTime: '',
     endTime: ''
+  });
+
+  // Add state for appointment notes
+  const [appointmentNotes, setAppointmentNotes] = useState({
+    midwifeNotes: ''
   });
 
   const todayDateString = () => new Date().toISOString().split('T')[0];
@@ -128,10 +133,10 @@ const Appointments = () => {
       setIsLoading(true);
       setError(null);
       
-      // Fetch appointments from MidwifeAppointment collection only
-      const appointmentsResponse = await midwifeAppointmentAPI.getAppointments(viewMode);
+      // Fetch ALL appointments - no date filtering
+      const appointmentsResponse = await midwifeAppointmentAPI.getAppointments('all');
       
-      console.log('📅 Fetched appointments:', appointmentsResponse.data?.length || 0, 'appointments');
+      console.log('📅 Fetched ALL appointments:', appointmentsResponse.data?.length || 0, 'appointments');
       
       if (appointmentsResponse.status === 'success') {
         setAppointments(appointmentsResponse.data || []);
@@ -187,43 +192,7 @@ const Appointments = () => {
     return { date, time };
   };
 
-  // Get current week dates
-  const getCurrentWeekDates = (date = new Date()) => {
-    const currentDay = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    
-    // Calculate days to subtract to get to Monday (1)
-    // If current day is Sunday (0), go back 6 days to get to Monday
-    // If current day is Monday (1), no offset needed (0)
-    // If current day is Tuesday (2), go back 1 day to get to Monday
-    // And so on...
-    const mondayOffset = currentDay === 0 ? -6 : -(currentDay - 1);
-    
-    const monday = new Date(date);
-    monday.setDate(date.getDate() + mondayOffset);
-    
-    const weekDates = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-      weekDates.push(date);
-    }
-    
-    return weekDates;
-  };
 
-  // Format week range for display
-  const formatWeekRange = (weekDates) => {
-    const start = weekDates[0];
-    const end = weekDates[6];
-    const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
-    const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
-    
-    if (startMonth === endMonth) {
-      return `${startMonth} ${start.getDate()}/${start.getMonth() + 1}-${end.getDate()}/${end.getMonth() + 1}`;
-    } else {
-      return `${startMonth} ${start.getDate()}/${start.getMonth() + 1}-${endMonth} ${end.getDate()}/${end.getMonth() + 1}`;
-    }
-  };
 
   // Get current month dates
   const getCurrentMonthDates = (date = new Date()) => {
@@ -252,10 +221,7 @@ const Appointments = () => {
         });
         setCurrentDateRange(today);
         break;
-      case 'week':
-        const weekDates = getCurrentWeekDates(date);
-        setCurrentDateRange(formatWeekRange(weekDates));
-        break;
+
       case 'month':
         const monthDates = getCurrentMonthDates(date);
         setCurrentDateRange(formatMonthRange(monthDates));
@@ -324,6 +290,19 @@ const Appointments = () => {
     setSelectedDate(date);
     updateDateRange(viewMode, date);
     setShowDatePicker(false);
+  };
+
+  // Handle month navigation
+  const handlePreviousMonth = () => {
+    const newDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1);
+    setSelectedDate(newDate);
+    updateDateRange(viewMode, newDate);
+  };
+
+  const handleNextMonth = () => {
+    const newDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1);
+    setSelectedDate(newDate);
+    updateDateRange(viewMode, newDate);
   };
 
   // Handle showing more requests
@@ -553,9 +532,12 @@ const Appointments = () => {
       color: getAppointmentColor(appointment.type),
       mom: appointment.mom,
       status: appointment.status || 'scheduled',
+      isRescheduled: appointment.status === 'cancelled' && appointment.cancellationReason === 'Rescheduled to new date/time',
       notes: appointment.notes || appointment.description,
       originalData: appointment
     };
+    
+
     
     return transformed;
   };
@@ -607,14 +589,13 @@ const Appointments = () => {
   
   const finalAppointments = displayAppointments;
 
-  const timeSlots = [
-    '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
-  ];
+
+
+
 
   // Generate days array based on view mode
   const getDaysForViewMode = () => {
+    // Get current date fresh each time to ensure accurate highlighting
     const currentDate = new Date();
     const currentDateString = currentDate.toDateString();
     
@@ -630,22 +611,7 @@ const Appointments = () => {
           fullDate: today
         }];
         
-      case 'week':
-        const weekDates = getCurrentWeekDates(selectedDate);
-        return weekDates.map((date, index) => {
-          // Since getCurrentWeekDates returns Monday as first day, adjust day names accordingly
-          const dayNames = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THU', 'FR', 'SA', 'SU'];
-          const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-          
-          return {
-            name: dayNames[index],
-            date: `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`,
-            key: dayKeys[index],
-            current: date.toDateString() === currentDateString,
-            weekend: index === 5 || index === 6, // Saturday and Sunday are now at indices 5 and 6
-            fullDate: date
-          };
-        });
+
         
       case 'month':
         const monthDates = getCurrentMonthDates(selectedDate);
@@ -693,73 +659,19 @@ const Appointments = () => {
 
 
 
-  const getAppointmentsForTimeSlot = (day, time) => {
-    const filtered = finalAppointments.filter(apt => {
-      // Get appointment date from original data
-      const appointmentDate = new Date(apt.originalData.startTime);
-      let dayDate;
-      
-      if (day === 'today') {
-        dayDate = new Date();
-      } else {
-        dayDate = days.find(d => d.key === day)?.fullDate;
-      }
-      
-      if (!dayDate || !appointmentDate) return false;
-      
-      // Check if same day
-      const isSameDay = appointmentDate.toDateString() === dayDate.toDateString();
-      
-      // Check if appointment starts at this time slot
-      const isSameTime = apt.startTime === time;
-      
-      return isSameDay && isSameTime;
-    });
-    
-    return filtered;
-  };
 
-  const getAppointmentsForDay = (day) => {
-    const filtered = finalAppointments.filter(apt => {
-      const appointmentDate = new Date(apt.originalData.startTime);
-      let dayDate;
-      
-      if (day === 'today') {
-        dayDate = new Date();
-      } else {
-        dayDate = days.find(d => d.key === day)?.fullDate;
-      }
-      
-      if (!dayDate || !appointmentDate) return false;
-      
-      const isSameDay = appointmentDate.toDateString() === dayDate.toDateString();
-      return isSameDay;
-    });
-    
-    return filtered;
-  };
 
   // Get appointments for a specific date string
   const getAppointmentsForDateString = (dateString) => {
-    console.log('getAppointmentsForDateString called with:', dateString);
-    console.log('finalAppointments:', finalAppointments);
-    
     return finalAppointments.filter(apt => {
       // Get date from original data
       const dateField = apt.originalData?.startTime;
       
       if (dateField) {
         const appointmentDate = new Date(dateField);
-        const result = appointmentDate.toDateString() === dateString;
-        
-        if (result) {
-          console.log('Found matching appointment by original data:', apt, 'for date:', dateString);
-        }
-        
-        return result;
+        return appointmentDate.toDateString() === dateString;
       }
       
-      console.warn('No date field found for appointment:', apt);
       return false;
     });
   };
@@ -783,36 +695,14 @@ const Appointments = () => {
     }
   };
 
-  const getCurrentTimePosition = () => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentMinutes = currentHour * 60 + currentMinute;
-    
-    // Check if current time is within the visible time range (07:00 to 18:00)
-    const startTimeMinutes = 7 * 60; // 7 AM in minutes
-    const endTimeMinutes = 18 * 60; // 6 PM in minutes
-    
-    if (currentMinutes < startTimeMinutes || currentMinutes > endTimeMinutes) {
-      // Current time is outside visible range, return -1 to hide the indicator
-      return -1;
-    }
-    
-    // Calculate position based on actual time difference from 7 AM
-    const timeDifference = currentMinutes - startTimeMinutes;
-    
-    // Each time slot is 30 minutes (30px height)
-    const position = 60 + (timeDifference / 30) * 30;
-    
-    // Ensure position is within reasonable bounds
-    const minPosition = 60; // Header height
-    const maxPosition = 60 + (timeSlots.length * 30); // Header + all time slots
-    
-    return Math.max(minPosition, Math.min(maxPosition, position));
-  };
+
 
   const handleAppointmentClick = (appointment) => {
     setSelectedAppointment(appointment);
+    // Set existing notes if available
+    setAppointmentNotes({
+      midwifeNotes: appointment.originalData?.midwifeNotes || ''
+    });
     setIsModalOpen(true);
   };
 
@@ -851,12 +741,14 @@ const Appointments = () => {
       await midwifeAppointmentAPI.updateAppointment(selectedAppointment.id, {
         startTime: start.toISOString(),
         endTime: end.toISOString(),
+        status: 'cancelled',
+        cancellationReason: 'Rescheduled to new date/time'
       });
 
       setIsRescheduleModalOpen(false);
       setIsModalOpen(false);
       await fetchAppointments();
-      setSuccessMessage('Appointment rescheduled successfully.');
+      setSuccessMessage('Appointment rescheduled successfully. The old appointment has been cancelled and marked as rescheduled.');
       setShowSuccessMessage(true);
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -873,10 +765,13 @@ const Appointments = () => {
   const handleMarkComplete = async () => {
     try {
       setIsLoading(true);
-      await midwifeAppointmentAPI.updateAppointment(selectedAppointment.id, { status: 'completed' });
+      await midwifeAppointmentAPI.updateAppointment(selectedAppointment.id, { 
+        status: 'completed',
+        midwifeNotes: appointmentNotes.midwifeNotes
+      });
       setIsModalOpen(false);
       await fetchAppointments();
-      setSuccessMessage('Appointment marked as completed.');
+      setSuccessMessage('Appointment marked as completed with notes saved.');
       setShowSuccessMessage(true);
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -905,18 +800,10 @@ const Appointments = () => {
     }, 4000);
   };
 
-  // Update appointments when view mode changes
+  // Fetch all appointments once on component mount
   useEffect(() => {
     fetchAppointments();
-  }, [viewMode]);
-
-  // Force re-render of month view when appointments change
-  useEffect(() => {
-    if (viewMode === 'month') {
-      // This will trigger a re-render of the month view
-      setSelectedDate(new Date(selectedDate));
-    }
-  }, [appointments, viewMode]);
+  }, []);
 
   // Update date range when view mode or selected date changes
   useEffect(() => {
@@ -925,11 +812,10 @@ const Appointments = () => {
 
   const renderTodayView = () => {
     const today = new Date();
-    const currentDayKey = 'today';
     const currentDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
     const currentDayDate = today;
     
-    const todayAppointments = getAppointmentsForDay(currentDayKey);
+    const todayAppointments = getAppointmentsForDateString(today.toDateString());
     
     return (
       <div className="appointments-calendar__today-view">
@@ -938,33 +824,33 @@ const Appointments = () => {
         </div>
         <div className="appointments-calendar__today-timeline">
           {todayAppointments.length > 0 ? (
-            timeSlots.map(time => {
-            const timeAppointments = todayAppointments.filter(apt => apt.startTime === time);
-            return (
-              <div key={time} className="appointments-calendar__today-time-slot">
-                <div className="appointments-calendar__today-time">{time}</div>
+            todayAppointments.map(appointment => (
+              <div key={appointment.id} className="appointments-calendar__today-time-slot">
+                <div className="appointments-calendar__today-time">{appointment.startTime}-{appointment.endTime}</div>
                 <div className="appointments-calendar__today-events">
-                  {timeAppointments.map(appointment => (
-                    <div 
-                      key={appointment.id} 
-                      className={`appointments-calendar__today-event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
-                      onClick={() => handleAppointmentClick(appointment)}
-                    >
-                       <div className="appointments-calendar__today-event-icon">
-                         {getIconComponent(appointment.icon)}
-                      </div>
-                       <div className="appointments-calendar__today-event-mom">
-                         {appointment.mom?.firstName} {appointment.mom?.lastName}
-                      </div>
-                      {appointment.status === 'completed' && (
-                        <div className="appointments-calendar__completed-badge">✓ Completed</div>
-                      )}
+                  <div 
+                    className={`appointments-calendar__today-event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
+                    onClick={() => handleAppointmentClick(appointment)}
+                  >
+                     <div className="appointments-calendar__today-event-icon">
+                       {getIconComponent(appointment.icon)}
                     </div>
-                  ))}
+                     <div className="appointments-calendar__today-event-mom">
+                       {appointment.mom?.firstName} {appointment.mom?.lastName}
+                    </div>
+                    <div className="appointments-calendar__today-event-type">
+                      {appointment.type}
+                    </div>
+                    {appointment.status === 'completed' && (
+                      <div className="appointments-calendar__completed-badge">✓ Completed</div>
+                    )}
+                    {appointment.isRescheduled && (
+                      <div className="appointments-calendar__rescheduled-badge">↻ Rescheduled to today</div>
+                    )}
+                  </div>
                 </div>
               </div>
-            );
-            })
+            ))
           ) : (
             <div className="appointments-calendar__today-empty">
               No appointments today
@@ -1024,15 +910,21 @@ const Appointments = () => {
                   if (!day) return <div key={dayIndex} className="appointments-calendar__month-day-empty" />;
                   
                   const dayAppointments = getAppointmentsForDateString(day.toDateString());
-                  // Check if this day is the current date based on selectedDate, not actual current date
-                  const isToday = day.toDateString() === selectedDate.toDateString();
+                                     // Check if this day is the current date (actual current date, not selected date)
+                   const isToday = day.toDateString() === new Date().toDateString();
                   
-                  console.log(`Day ${day.toDateString()}: ${dayAppointments.length} appointments`);
+
+                  
+                  // Check if all appointments for this day are completed
+                  const allCompleted = dayAppointments.length > 0 && dayAppointments.every(apt => apt.status === 'completed');
+                  
+                  // Check if any appointments for this day are rescheduled
+                  const hasRescheduled = dayAppointments.some(apt => apt.isRescheduled);
                   
                   return (
                     <div 
                       key={dayIndex} 
-                      className={`appointments-calendar__month-day ${isToday ? 'today' : ''} ${dayAppointments.length > 0 ? 'has-appointments' : ''}`}
+                      className={`appointments-calendar__month-day ${isToday ? 'today' : ''} ${dayAppointments.length > 0 ? 'has-appointments' : ''} ${allCompleted ? 'all-completed' : ''}`}
                       onClick={() => handleDayClick(day)}
                       style={{ cursor: 'pointer' }}
                     >
@@ -1040,6 +932,16 @@ const Appointments = () => {
                       {dayAppointments.length > 0 && (
                         <div className="appointments-calendar__month-day-indicator">
                           {dayAppointments.length}
+                        </div>
+                      )}
+                      {allCompleted && (
+                        <div className="appointments-calendar__month-day-completed">
+                          ✓
+                        </div>
+                      )}
+                      {hasRescheduled && (
+                        <div className="appointments-calendar__month-day-rescheduled">
+                          ↻
                         </div>
                       )}
                     </div>
@@ -1053,77 +955,7 @@ const Appointments = () => {
     );
   };
 
-  const renderWeekView = () => {
-    return (
-      <div className="appointments-calendar__grid">
-        <div className="appointments-calendar__time-column">
-          <div className="appointments-calendar__time-header"></div>
-          {timeSlots.map(time => (
-            <div key={time} className="appointments-calendar__time-slot">
-              {time}
-            </div>
-          ))}
-        </div>
 
-        {days.map(day => {
-          const dayAppointments = getAppointmentsForDay(day.key);
-          
-          return (
-            <div key={day.key} className="appointments-calendar__day-column">
-              <div className={`appointments-calendar__day-header ${day.current ? 'current' : ''} ${day.weekend ? 'weekend' : ''}`}>
-                <div className="appointments-calendar__day-name">{day.name}</div>
-                <div className="appointments-calendar__day-date">{day.date}</div>
-              </div>
-              
-              {timeSlots.map(time => {
-                const timeAppointments = getAppointmentsForTimeSlot(day.key, time);
-                
-                return (
-                  <div key={time} className="appointments-calendar__time-cell">
-                    {timeAppointments.map(appointment => (
-                      <div 
-                        key={appointment.id} 
-                        className={`appointments-calendar__event appointments-calendar__event--${appointment.color} ${appointment.status === 'completed' ? 'completed' : ''}`}
-                        style={{
-                          gridRow: `span ${calculateAppointmentSpan(appointment.startTime, appointment.endTime)}`
-                        }}
-                        onClick={() => handleAppointmentClick(appointment)}
-                      >
-                        <div className="appointments-calendar__event-icon">
-                          {getIconComponent(appointment.icon)}
-                        </div>
-                        <div className="appointments-calendar__event-mom">
-                          {appointment.mom?.firstName} {appointment.mom?.lastName}
-                        </div>
-                        {appointment.status === 'completed' && (
-                          <div className="appointments-calendar__completed-badge">✓</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-
-        {/* Current time indicator - only show when within visible time range */}
-        {getCurrentTimePosition() > 0 && (
-          <div 
-            className="appointments-calendar__current-time"
-            style={{
-              top: `${getCurrentTimePosition()}px`
-            }}
-          >
-            <div className="appointments-calendar__current-time-line"></div>
-            <div className="appointments-calendar__current-time-label">
-              {currentTime}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="appointments-calendar">
@@ -1173,50 +1005,42 @@ const Appointments = () => {
 
         <div className="appointments-calendar__filters">
           <div className="appointments-calendar__week-selector">
-            <button 
-              className="appointments-calendar__week-btn"
-              onClick={() => {
-                if (viewMode === 'week' || viewMode === 'month') {
-                  setShowDatePicker(!showDatePicker);
-                }
-              }}
-              title={viewMode === 'week' || viewMode === 'month' ? 'Click to change date' : 'Current date'}
-            >
-              {currentDateRange}
-              <FiCalendar size={16} />
-            </button>
-            {showDatePicker && viewMode === 'week' && (
-              <div className="appointments-calendar__date-picker">
-                <div className="appointments-calendar__date-picker-header">
-                  <h4>Select Week</h4>
-                  <button 
-                    className="appointments-calendar__date-picker-close"
-                    onClick={() => setShowDatePicker(false)}
-                  >
-                    <FiX size={16} />
-                  </button>
-                </div>
-                <div className="appointments-calendar__date-picker-content">
-                  <label>Week Start Date (Monday):</label>
-                  <input
-                    type="date"
-                    value={(() => {
-                      // Calculate the Monday of the selected week
-                      const weekDates = getCurrentWeekDates(selectedDate);
-                      return weekDates[0].toISOString().split('T')[0];
-                    })()}
-                    onChange={(e) => {
-                      // When user selects a date, find the Monday of that week
-                      const selectedDate = new Date(e.target.value);
-                      const weekDates = getCurrentWeekDates(selectedDate);
-                      handleDateSelection(weekDates[0]); // Use Monday as the reference date
-                    }}
-                    className="appointments-calendar__date-input"
-                  />
-                  <small>Select any date and we'll show the week starting from Monday</small>
-                </div>
-              </div>
+            {viewMode === 'month' && (
+              <>
+                <button 
+                  className="appointments-calendar__nav-btn"
+                  onClick={handlePreviousMonth}
+                  title="Previous month"
+                >
+                  <FiChevronLeft size={16} />
+                </button>
+                <button 
+                  className="appointments-calendar__week-btn"
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  title="Click to change date"
+                >
+                  {currentDateRange}
+                  <FiCalendar size={16} />
+                </button>
+                <button 
+                  className="appointments-calendar__nav-btn"
+                  onClick={handleNextMonth}
+                  title="Next month"
+                >
+                  <FiChevronRight size={16} />
+                </button>
+              </>
             )}
+            {viewMode === 'today' && (
+              <button 
+                className="appointments-calendar__week-btn"
+                title="Current date"
+              >
+                {currentDateRange}
+                <FiCalendar size={16} />
+              </button>
+            )}
+            
             
             {showDatePicker && viewMode === 'month' && (
               <div className="appointments-calendar__date-picker">
@@ -1253,12 +1077,6 @@ const Appointments = () => {
               Today
             </button>
             <button 
-              className={`appointments-calendar__view-btn ${viewMode === 'week' ? 'active' : ''}`}
-              onClick={() => handleViewModeChange('week')}
-            >
-              Week
-            </button>
-            <button 
               className={`appointments-calendar__view-btn ${viewMode === 'month' ? 'active' : ''}`}
               onClick={() => handleViewModeChange('month')}
             >
@@ -1283,20 +1101,6 @@ const Appointments = () => {
 
         <div className="appointments-calendar__content-wrapper">
           <div className="appointments-calendar__calendar-section">
-            {/* Appointment Counter */}
-            <div style={{ 
-              background: '#f8f9fa', 
-              padding: '10px 15px', 
-              borderRadius: '8px', 
-              marginBottom: '15px',
-              border: '1px solid #e9ecef',
-              fontSize: '14px',
-              color: '#495057'
-            }}>
-              📅 <strong>Total Appointments:</strong> {finalAppointments.length} | 
-              📊 <strong>View:</strong> {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} | 
-              📅 <strong>Date:</strong> {selectedDate.toLocaleDateString()}
-            </div>
             
             {error && (
               <div className="appointments-calendar__error">
@@ -1310,7 +1114,6 @@ const Appointments = () => {
             ) : (
               <>
             {viewMode === 'today' && renderTodayView()}
-            {viewMode === 'week' && renderWeekView()}
             {viewMode === 'month' && renderMonthView()}
               </>
             )}
@@ -1455,15 +1258,45 @@ const Appointments = () => {
                         <span>{selectedAppointment.status}</span>
                       </div>
                     )}
-                    {selectedAppointment.notes && (
+                    {selectedAppointment.originalData?.momNotes && (
                       <div className="modal__field">
-                        <label>Notes</label>
+                        <label>Mom Notes</label>
+                        <span>{selectedAppointment.originalData.momNotes}</span>
+                      </div>
+                    )}
+                    {selectedAppointment.originalData?.midwifeNotes && (
+                      <div className="modal__field">
+                        <label>Midwife Notes</label>
+                        <span>{selectedAppointment.originalData.midwifeNotes}</span>
+                      </div>
+                    )}
+                    {selectedAppointment.notes && !selectedAppointment.originalData?.momNotes && !selectedAppointment.originalData?.midwifeNotes && (
+                      <div className="modal__field">
+                        <label>Mom Notes</label>
                         <span>{selectedAppointment.notes}</span>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
+              {selectedAppointment.status !== 'completed' && (
+                <div className="modal__content">
+                  <div className="modal__section">
+                    <h3>Add Notes</h3>
+                    <div className="modal__grid">
+                      <div className="modal__field">
+                        <label>Midwife Notes (Optional)</label>
+                        <textarea
+                          value={appointmentNotes.midwifeNotes}
+                          onChange={(e) => setAppointmentNotes({ ...appointmentNotes, midwifeNotes: e.target.value })}
+                          placeholder="Add your notes as midwife..."
+                          className="modal__input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {selectedAppointment.status !== 'completed' && (
                 <div className="modal__actions">
                   <button className="modal__btn modal__btn--secondary" onClick={openReschedule}>Reschedule</button>
@@ -1744,7 +1577,16 @@ const Appointments = () => {
                     <h3>Appointments ({selectedDayAppointments.length})</h3>
                     <div className="modal__appointments-list">
                       {selectedDayAppointments.map((appointment, index) => (
-                        <div key={index} className="modal__appointment-item">
+                        <div 
+                          key={index} 
+                          className="modal__appointment-item"
+                          onClick={() => {
+                            setSelectedAppointment(appointment);
+                            setIsModalOpen(true);
+                            setIsDayAppointmentsModalOpen(false);
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <div className="modal__appointment-header">
                             <span className="modal__appointment-time">
                               {appointment.startTime}-{appointment.endTime}
@@ -1766,7 +1608,28 @@ const Appointments = () => {
                                 {appointment.location}
                               </div>
                             )}
-                            {appointment.notes && (
+                            {appointment.status === 'completed' && (
+                              <div className="modal__appointment-status">
+                                <FiCheck size={14} />
+                                Completed
+                              </div>
+                            )}
+                            {appointment.isRescheduled && (
+                              <div className="modal__appointment-status modal__appointment-status--rescheduled">
+                                ↻ Rescheduled to today
+                              </div>
+                            )}
+                            {appointment.originalData?.momNotes && (
+                              <div className="modal__appointment-notes">
+                                <strong>Mom Notes:</strong> {appointment.originalData.momNotes}
+                              </div>
+                            )}
+                            {appointment.originalData?.midwifeNotes && (
+                              <div className="modal__appointment-notes">
+                                <strong>Midwife Notes:</strong> {appointment.originalData.midwifeNotes}
+                              </div>
+                            )}
+                            {appointment.notes && !appointment.originalData?.momNotes && !appointment.originalData?.midwifeNotes && (
                               <div className="modal__appointment-notes">
                                 {appointment.notes}
                               </div>

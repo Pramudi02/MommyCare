@@ -154,8 +154,12 @@ export const fetchData = () => Promise.resolve('data');
 // Midwife Appointment API functions
 export const midwifeAppointmentAPI = {
   // Get appointments based on view mode (today, week, month, etc.)
-  getAppointments: async (viewMode = 'today') => {
-    return apiRequest(`/midwife/appointments?view=${viewMode}`);
+  getAppointments: async (viewMode = 'today', startDate = null, endDate = null) => {
+    const params = new URLSearchParams();
+    params.set('view', viewMode);
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+    return apiRequest(`/midwife/appointments?${params.toString()}`);
   },
 
   // Get all clinic visit requests
