@@ -541,7 +541,7 @@ const Vaccinations= () => {
                   onClick={() => setActiveTab('upcoming')}
                   className={`pb-2 px-1 font-medium text-sm transition-colors duration-200 ${
                     activeTab === 'upcoming'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      ? 'text-gray-700 border-b-2 border-gray-300'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -551,7 +551,7 @@ const Vaccinations= () => {
                   onClick={() => setActiveTab('missed')}
                   className={`pb-2 px-1 font-medium text-sm transition-colors duration-200 ${
                     activeTab === 'missed'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      ? 'text-gray-700 border-b-2 border-gray-300'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -561,7 +561,7 @@ const Vaccinations= () => {
                   onClick={() => setActiveTab('completed')}
                   className={`pb-2 px-1 font-medium text-sm transition-colors duration-200 ${
                     activeTab === 'completed'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      ? 'text-gray-700 border-b-2 border-gray-300'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
