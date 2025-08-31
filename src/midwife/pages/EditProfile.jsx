@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { 
   User, 
   Mail, 
@@ -10,6 +11,7 @@ import {
   Heart
 } from 'lucide-react';
 import { midwifeAPI } from '../../services/api';
+
 import './EditProfile.css';
 
 const EditProfile = () => {
@@ -148,10 +150,12 @@ const EditProfile = () => {
   }
 
   return (
+
     <div className="midwife-profile-page">
       <div className="midwife-profile-container-wrapper">
         <div className="midwife-profile-header">
           <div className="midwife-profile-header-icon">
+
             <Heart />
           </div>
           <div className="midwife-profile-title">
@@ -159,6 +163,7 @@ const EditProfile = () => {
             <p>Update your professional information and personal details</p>
           </div>
         </div>
+
 
         <div className="midwife-profile-container">
           <div className="midwife-profile-main">
@@ -305,9 +310,11 @@ const EditProfile = () => {
                   ) : (
                     <span className="midwife-info-value">{formData.address || 'Not provided'}</span>
                   )}
+
                 </div>
               </div>
             </div>
+
 
             {/* Professional Information */}
             <div className="midwife-profile-section">
@@ -396,6 +403,7 @@ const EditProfile = () => {
                   )}
                 </div>
               </div>
+
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import MedicalRecords from '../pages/MedicalRecords';
 import Analytics from '../pages/Analytics';
 import Articles from '../pages/Education';
 import Emergency from '../pages/Emergency';
-import EditProfile from '../pages/EditProfile';
+import MidwifeChat from '../pages/MidwifeChat';
 
 export default (
   <Route path="/midwife" element={<MidwifeLayout />}>
@@ -19,6 +19,6 @@ export default (
     <Route path="analytics" element={<Analytics />} />
     <Route path="articles" element={<Articles />} />
     <Route path="emergency" element={<Emergency />} />
-    <Route path="profile" element={<EditProfile />} />
+    <Route path="chat" element={<MidwifeChat />} />
   </Route>
 ); 

@@ -240,7 +240,7 @@ messageSchema.statics.getConversation = function(user1Id, user2Id, limit = 50, s
       { sender: user2Id, recipient: user1Id }
     ]
   })
-  .sort({ createdAt: -1 })
+  .sort({ createdAt: 1 }) // Changed to chronological order (oldest first)
   .limit(limit)
   .skip(skip)
   .populate('sender', 'firstName lastName profilePicture avatar role specialty')

@@ -15,6 +15,7 @@ const {
   addMessageReaction,
   removeMessageReaction,
   getAllHealthcareProviders,
+  getMidwifeChatUsers,
   deleteMessage
 } = require('../controllers/chatController');
 
@@ -646,5 +647,49 @@ router.delete('/messages/:messageId/reactions', protect, removeMessageReaction);
  *         description: Unauthorized to delete this message
  */
 router.delete('/messages/:messageId', protect, deleteMessage);
+
+/**
+ * @swagger
+ * /api/chat/midwife-chat-users:
+ *   get:
+ *     summary: Get all midwife chat users (doctors and moms)
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of midwife chat users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                       avatar:
+ *                         type: string
+ *                       specialty:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       isActive:
+ *                         type: boolean
+ *                 total:
+ *                   type: number
+ */
+router.get('/midwife-chat-users', protect, getMidwifeChatUsers);
 
 module.exports = router;

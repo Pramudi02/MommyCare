@@ -204,7 +204,7 @@ const Dashboard = () => {
     <div className="sp-dashboard-page">
       <div className="sp-dashboard-container">
         <div className="sp-dashboard">
-          {/* Header */}
+      {/* Header */}
           <div className="sp-dashboard__header">
             <div className="sp-dashboard__header-icon">
               <BarChart3 />
@@ -212,37 +212,37 @@ const Dashboard = () => {
             <div className="sp-dashboard__welcome">
               <h1>Service Provider Dashboard</h1>
               <p>Manage your product listings and track performance</p>
-            </div>
+        </div>
             <div className="sp-dashboard__filter">
-              <select 
-                value={selectedPeriod} 
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-              >
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-                <option value="quarter">This Quarter</option>
+            <select 
+              value={selectedPeriod} 
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+            >
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
                 <option value="year">This Year</option>
-              </select>
-            </div>
-          </div>
+            </select>
+        </div>
+      </div>
 
           {/* Stats Cards */}
           <div className="sp-dashboard__stats">
-            {stats.map((stat, index) => (
+        {stats.map((stat, index) => (
               <div key={index} className={`sp-stat-card ${stat.color}`}>
                 <div className="sp-stat-card__icon">
-                  {stat.icon}
-                </div>
+              {stat.icon}
+            </div>
                 <div className="sp-stat-card__content">
                   <div className="sp-stat-card__title">{stat.title}</div>
                   <div className="sp-stat-card__value">{stat.value}</div>
                   <div className={`sp-stat-card__change sp-stat-card__change--${stat.changeType}`}>
-                    {stat.change}
-                  </div>
-                </div>
+                {stat.change}
               </div>
-            ))}
+            </div>
           </div>
+        ))}
+      </div>
 
           {/* Quick Actions */}
           <div className="sp-quick-actions">
@@ -250,13 +250,13 @@ const Dashboard = () => {
               <a key={index} href={action.link} className="sp-quick-action">
                 <div className="sp-quick-action__icon">
                   {action.icon}
-                </div>
+          </div>
                 <div className="sp-quick-action__text">
                   {action.title}
                 </div>
               </a>
             ))}
-          </div>
+                  </div>
 
           <div className="sp-dashboard__main-content">
             {/* Recent Products */}
@@ -284,7 +284,7 @@ const Dashboard = () => {
                           <div className="sp-product-info">
                             <span className="sp-product-emoji">{product.image}</span>
                             <span className="sp-product-name">{product.name}</span>
-                          </div>
+              </div>
                         </td>
                         <td>{product.category}</td>
                         <td>
@@ -300,8 +300,8 @@ const Dashboard = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
+          </div>
+        </div>
 
             {/* Top Performing Products */}
             <div className="sp-dashboard__section">
@@ -326,23 +326,23 @@ const Dashboard = () => {
                           <div className="sp-top-performing__metric">
                             <Eye className="w-3 h-3" />
                             {product.views}
-                          </div>
+          </div>
                           <div className="sp-top-performing__metric">
                             <ExternalLink className="w-3 h-3" />
                             {product.clicks}
-                          </div>
+                  </div>
                           <div className="sp-top-performing__metric">
                             <TrendingUp className="w-3 h-3" />
                             {product.clickRate}
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
+                </div>
           </div>
+        </div>
+      </div>
 
           {/* Recent Activity */}
           <div className="sp-dashboard__section">
@@ -352,13 +352,13 @@ const Dashboard = () => {
                 <div key={index} className={`sp-activity-item sp-activity-item--${activity.type}`}>
                   <div className="sp-activity-item__icon">
                     {activity.icon}
-                  </div>
+              </div>
                   <div className="sp-activity-item__content">
                     <div className="sp-activity-item__title">{activity.title}</div>
                     <div className="sp-activity-item__time">{activity.time}</div>
-                  </div>
-                </div>
-              ))}
+              </div>
+            </div>
+          ))}
             </div>
           </div>
         </div>

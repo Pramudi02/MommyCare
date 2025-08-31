@@ -229,6 +229,7 @@ export const vaccinationAPI = {
   },
 };
 
+
 // Midwife Medical Records API (moms listing)
 export const midwifeAPI = {
   getMomProfiles: async (search = '') => {
@@ -284,6 +285,47 @@ export const midwifeAPI = {
       body: JSON.stringify(profileData)
     });
   }
+
+// Immunization Schedule API functions
+export const immunizationScheduleAPI = {
+  // Get all immunization schedules for a baby
+  getAll: async () => {
+    return apiRequest('/immunization-schedule');
+  },
+
+  // Get immunization schedules by status
+  getByStatus: async (status) => {
+    return apiRequest(`/immunization-schedule/status/${status}`);
+  },
+
+  // Get immunization timeline
+  getTimeline: async () => {
+    return apiRequest('/immunization-schedule/timeline');
+  },
+
+  // Initialize immunization schedule for a baby
+  initialize: async (babyBirthDate) => {
+    return apiRequest('/immunization-schedule/initialize', {
+      method: 'POST',
+      body: JSON.stringify({ babyBirthDate }),
+    });
+  },
+
+  // Update immunization status
+  updateStatus: async (id, updateData) => {
+    return apiRequest(`/immunization-schedule/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  // Delete immunization schedule
+  delete: async (id) => {
+    return apiRequest(`/immunization-schedule/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
 };
 
 // Doctor API

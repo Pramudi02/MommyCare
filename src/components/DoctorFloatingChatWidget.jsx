@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './FloatingChatWidget.css';
 
 const DoctorFloatingChatWidget = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Check if user is logged in and is a doctor
   useEffect(() => {
@@ -16,7 +16,9 @@ const DoctorFloatingChatWidget = () => {
         // Check if user is a doctor
         const userRole = localStorage.getItem('userRole');
         if (userRole === 'doctor') {
-          setIsVisible(true);
+          // Hide the floating chat when already in the doctor chatbox
+          const isInDoctorChat = location.pathname.includes('/doctor/chat');
+          setIsVisible(!isInDoctorChat);
         }
       } else {
         setIsVisible(false);
@@ -38,46 +40,9 @@ const DoctorFloatingChatWidget = () => {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
-
-  // Handle unread message count (you can integrate this with your chat system)
-  useEffect(() => {
-    // This is a placeholder - integrate with your actual chat system
-    const checkUnreadMessages = () => {
-      // For now, we'll check localStorage for unread count
-      // In a real implementation, you'd make an API call to get unread messages
-      const storedUnreadCount = localStorage.getItem('doctorUnreadMessageCount');
-      if (storedUnreadCount) {
-        setUnreadCount(parseInt(storedUnreadCount));
-      }
-    };
-
-    if (isVisible) {
-      checkUnreadMessages();
-      const interval = setInterval(checkUnreadMessages, 10000); // Check every 10 seconds
-      
-      // Simulate new messages for testing (remove this in production)
-      const testInterval = setInterval(() => {
-        if (Math.random() > 0.7) { // 30% chance every 10 seconds
-          const currentCount = parseInt(localStorage.getItem('doctorUnreadMessageCount') || '0');
-          const newCount = currentCount + 1;
-          localStorage.setItem('doctorUnreadMessageCount', newCount.toString());
-          setUnreadCount(newCount);
-        }
-      }, 10000);
-      
-      return () => {
-        clearInterval(interval);
-        clearInterval(testInterval);
-      };
-    }
-  }, [isVisible]);
+  }, [location.pathname]);
 
   const handleToggleChat = () => {
-    // Clear unread count when opening chat
-    setUnreadCount(0);
-    localStorage.removeItem('doctorUnreadMessageCount');
-    
     // Navigate to the doctor chat page
     navigate('/doctor/chat');
   };
@@ -88,14 +53,11 @@ const DoctorFloatingChatWidget = () => {
     <>
       {/* Floating Chat Button */}
       <div 
-        className={`floating-chat-button doctor-floating-chat ${unreadCount > 0 ? 'has-new-messages' : ''}`} 
+        className="floating-chat-button doctor-floating-chat"
         onClick={handleToggleChat}
-        title={unreadCount > 0 ? `You have ${unreadCount} new message${unreadCount > 1 ? 's' : ''}` : 'Open Patient Chat'}
+        title="Open Patient Chat"
       >
         <MessageCircle size={24} />
-        {unreadCount > 0 && (
-          <span className="floating-chat-badge">{unreadCount}</span>
-        )}
       </div>
     </>
   );

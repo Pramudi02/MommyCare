@@ -4,7 +4,7 @@ import {
   Bell, 
   Shield, 
   User, 
-  Globe, 
+  Globe,
   Save,
   Eye,
   EyeOff,
@@ -101,10 +101,10 @@ const Settings = () => {
           >
             <Save className="sp-btn-icon" />
             {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
+            </button>
+          </div>
         </div>
-      </div>
-
+        
       <div className="sp-settings-content">
         <div className="sp-settings-sidebar">
           <nav className="sp-settings-nav">
@@ -119,8 +119,8 @@ const Settings = () => {
               </button>
             ))}
           </nav>
-        </div>
-
+          </div>
+          
         <div className="sp-settings-main">
           {/* Notifications Tab */}
           {activeTab === 'notifications' && (
@@ -136,70 +136,70 @@ const Settings = () => {
                   <div className="sp-setting-info">
                     <h4>New Product Views</h4>
                     <p>Get notified when your products receive new views</p>
-                  </div>
+          </div>
                   <label className="sp-toggle">
-                    <input
+            <input 
                       type="checkbox"
                       checked={notificationSettings.newProductViews}
                       onChange={() => handleNotificationChange('newProductViews')}
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-
+          </div>
+          
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>External Link Clicks</h4>
                     <p>Receive notifications when customers click your product links</p>
                   </div>
                   <label className="sp-toggle">
-                    <input
+            <input 
                       type="checkbox"
                       checked={notificationSettings.externalLinkClicks}
                       onChange={() => handleNotificationChange('externalLinkClicks')}
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-
+          </div>
+          
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Product Approval Status</h4>
                     <p>Get notified when your products are approved or rejected</p>
-                  </div>
+            </div>
                   <label className="sp-toggle">
-                    <input
+              <input 
                       type="checkbox"
                       checked={notificationSettings.productApproval}
                       onChange={() => handleNotificationChange('productApproval')}
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-
+          </div>
+          
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Weekly Performance Reports</h4>
                     <p>Receive weekly summaries of your product performance</p>
-                  </div>
+            </div>
                   <label className="sp-toggle">
-                    <input
+              <input 
                       type="checkbox"
                       checked={notificationSettings.weeklyReports}
                       onChange={() => handleNotificationChange('weeklyReports')}
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-              </div>
-
+            </div>
+          </div>
+          
               <div className="sp-settings-group">
                 <h3>Notification Methods</h3>
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Email Notifications</h4>
                     <p>Receive notifications via email</p>
-                  </div>
+            </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -208,13 +208,13 @@ const Settings = () => {
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-
+          </div>
+          
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Push Notifications</h4>
                     <p>Receive notifications in your browser</p>
-                  </div>
+              </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -223,9 +223,9 @@ const Settings = () => {
                     />
                     <span className="sp-toggle-slider"></span>
                   </label>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
           )}
 
           {/* Privacy Tab */}
@@ -242,7 +242,7 @@ const Settings = () => {
                   <div className="sp-setting-info">
                     <h4>Show Contact Information</h4>
                     <p>Display your email and phone number on your business profile</p>
-                  </div>
+              </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -250,14 +250,14 @@ const Settings = () => {
                       onChange={() => handlePrivacyChange('showContactInfo')}
                     />
                     <span className="sp-toggle-slider"></span>
-                  </label>
-                </div>
-
+              </label>
+            </div>
+            
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Show Business Address</h4>
                     <p>Display your business address on your profile</p>
-                  </div>
+              </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -265,14 +265,14 @@ const Settings = () => {
                       onChange={() => handlePrivacyChange('showBusinessAddress')}
                     />
                     <span className="sp-toggle-slider"></span>
-                  </label>
-                </div>
-
+              </label>
+            </div>
+            
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Allow Direct Messages</h4>
                     <p>Allow customers to send you direct messages</p>
-                  </div>
+              </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -280,14 +280,14 @@ const Settings = () => {
                       onChange={() => handlePrivacyChange('allowDirectMessages')}
                     />
                     <span className="sp-toggle-slider"></span>
-                  </label>
-                </div>
-
+              </label>
+            </div>
+            
                 <div className="sp-setting-item">
                   <div className="sp-setting-info">
                     <h4>Show Analytics to Others</h4>
                     <p>Allow other service providers to see your performance metrics</p>
-                  </div>
+              </div>
                   <label className="sp-toggle">
                     <input
                       type="checkbox"
@@ -295,10 +295,10 @@ const Settings = () => {
                       onChange={() => handlePrivacyChange('showAnalytics')}
                     />
                     <span className="sp-toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
+              </label>
             </div>
+          </div>
+        </div>
           )}
 
           {/* Account Tab */}
@@ -322,9 +322,9 @@ const Settings = () => {
                     onChange={(e) => handleAccountChange('email', e.target.value)}
                     className="sp-input"
                   />
-                </div>
-              </div>
-
+            </div>
+          </div>
+          
               <div className="sp-settings-group">
                 <h3>Change Password</h3>
                 <div className="sp-form-group">
@@ -353,7 +353,7 @@ const Settings = () => {
                     className="sp-input"
                     placeholder="Enter new password"
                   />
-                </div>
+              </div>
 
                 <div className="sp-form-group">
                   <label className="sp-label">
@@ -367,9 +367,9 @@ const Settings = () => {
                     className="sp-input"
                     placeholder="Confirm new password"
                   />
-                </div>
-              </div>
-
+            </div>
+          </div>
+          
               <div className="sp-settings-group">
                 <h3>Account Actions</h3>
                 <div className="sp-account-actions">
@@ -385,8 +385,8 @@ const Settings = () => {
                     <AlertCircle className="sp-btn-icon" />
                     Delete Account
                   </button>
-                </div>
-              </div>
+        </div>
+      </div>
             </div>
           )}
         </div>
