@@ -83,7 +83,7 @@ const getConversationMessages = async (req, res) => {
       }
     });
     
-    // Format messages for frontend
+    // Format messages for frontend with consistent field names
     const formattedMessages = messages.map(message => ({
       id: message._id,
       content: message.content,
@@ -93,6 +93,9 @@ const getConversationMessages = async (req, res) => {
       senderId: message.sender._id,
       recipientId: message.recipient._id,
       read: message.read,
+      // Add fileUrl field for compatibility with frontend
+      fileUrl: message.file?.url || message.attachments?.[0]?.url || null,
+      fileName: message.file?.name || message.attachments?.[0]?.name || null,
       file: message.file || null,
       attachments: message.attachments || [],
       isEdited: message.isEdited || false,
@@ -305,7 +308,13 @@ const searchConversations = async (req, res) => {
     };
 
     if (role) {
-      searchCriteria.role = role;
+      // Handle multiple roles (comma-separated)
+      if (role.includes(',')) {
+        const roles = role.split(',').map(r => r.trim());
+        searchCriteria.role = { $in: roles };
+      } else {
+        searchCriteria.role = role;
+      }
     }
 
     // Exclude current user
@@ -586,6 +595,54 @@ const getAllHealthcareProviders = async (req, res) => {
   }
 };
 
+// Get users for midwife chat (doctors and moms)
+const getMidwifeChatUsers = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get both doctors and moms from database
+    const users = await User().find({
+      role: { $in: ['doctor', 'mom'] },
+      _id: { $ne: userId } // Exclude current user
+    })
+    .select('firstName lastName role email isActive')
+    .sort({ firstName: 1, lastName: 1 });
+    
+    console.log('Found users for midwife chat:', users.length);
+    console.log('Sample user:', users[0]);
+    
+    // Format users for frontend
+    const formattedUsers = users.map(user => ({
+      id: user._id,
+      name: `${user.firstName} ${user.lastName}`,
+      role: user.role,
+      email: user.email,
+      isActive: user.isActive,
+      avatar: `https://ui-avatars.com/api/?name=${user.firstName}&background=${user.role === 'doctor' ? '667eea' : 'ff6b6b'}&color=fff`,
+      specialty: user.role === 'doctor' ? 'General Medicine' : 'Pregnancy Care',
+      status: 'online', // Default status
+      lastMessage: '',
+      lastMessageTime: '',
+      unreadCount: 0,
+      rating: 4.8, // Default rating
+      experience: user.role === 'doctor' ? '5+ years' : 'First-time mom',
+      location: 'Medical Center',
+      isTyping: false,
+      availability: 'Available now',
+      nextAppointment: 'TBD'
+    }));
+
+    res.json({
+      success: true,
+      data: formattedUsers,
+      total: formattedUsers.length
+    });
+  } catch (error) {
+    console.error('Error getting midwife chat users:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 // Delete message permanently
 const deleteMessage = async (req, res) => {
   try {
@@ -637,5 +694,6 @@ module.exports = {
   addMessageReaction,
   removeMessageReaction,
   getAllHealthcareProviders,
+  getMidwifeChatUsers,
   deleteMessage
 };
