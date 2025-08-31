@@ -52,6 +52,11 @@ const AppointmentsDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialClinicNotes, setInitialClinicNotes] = useState('');
 
+  // Add state for appointment tabs
+  const [upcomingTab, setUpcomingTab] = useState('clinic');
+  const [missedTab, setMissedTab] = useState('clinic');
+  const [completedTab, setCompletedTab] = useState('clinic');
+
   const statsData = [
     { number: 3, label: 'Upcoming Appointments', color: 'text-blue-500', icon: <Calendar size={28} className="text-blue-400 mb-1" /> },
     { number: 2, label: 'Missed Appointments', color: 'text-red-500', icon: <X size={28} className="text-red-400 mb-1" /> },
@@ -388,46 +393,93 @@ const AppointmentsDashboard = () => {
     setIsDoctorModalOpen(true);
   };
 
-  const upcomingAppointments = [
-    {
-      id: 1,
-      type: 'Gynecologist Checkup',
-      date: 'July 22, 10:00 AM',
-      icon: UserCheck,
-      color: 'bg-pink-100'
-    },
-    {
-      id: 2,
-      type: 'Baby Weight Check',
-      date: 'July 25, 2:30 PM',
-      icon: Baby,
-      color: 'bg-yellow-100'
-    },
-    {
-      id: 3,
-      type: 'Ultrasound Scan',
-      date: 'July 28, 9:00 AM',
-      icon: Search,
-      color: 'bg-purple-100'
-    }
-  ];
+  // Updated appointment data with clinic/doctor distinction
+  const upcomingAppointments = {
+    clinic: [
+      {
+        id: 1,
+        type: 'Ultrasound Scan',
+        date: 'July 28, 9:00 AM',
+        icon: Search,
+        color: 'bg-purple-100'
+      },
+      {
+        id: 2,
+        type: 'Blood Test',
+        date: 'July 30, 11:00 AM',
+        icon: TestTube,
+        color: 'bg-blue-100'
+      }
+    ],
+    doctor: [
+      {
+        id: 3,
+        type: 'Gynecologist Checkup',
+        date: 'July 22, 10:00 AM',
+        icon: UserCheck,
+        color: 'bg-pink-100'
+      },
+      {
+        id: 4,
+        type: 'Baby Weight Check',
+        date: 'July 25, 2:30 PM',
+        icon: Baby,
+        color: 'bg-yellow-100'
+      }
+    ]
+  };
 
-  const missedAppointments = [
-    {
-      id: 1,
-      type: 'Baby Vaccination',
-      date: 'July 10, 3:00 PM',
-      icon: Syringe,
-      action: 'Click to reschedule'
-    },
-    {
-      id: 2,
-      type: 'Blood Test',
-      date: 'July 15, 11:00 AM',
-      icon: TestTube,
-      action: 'Click to reschedule'
-    }
-  ];
+  const missedAppointments = {
+    clinic: [
+      {
+        id: 1,
+        type: 'Blood Test',
+        date: 'July 15, 11:00 AM',
+        icon: TestTube,
+        action: 'Click to reschedule'
+      }
+    ],
+    doctor: [
+      {
+        id: 2,
+        type: 'Baby Vaccination',
+        date: 'July 10, 3:00 PM',
+        icon: Syringe,
+        action: 'Click to reschedule'
+      }
+    ]
+  };
+
+  const completedAppointments = {
+    clinic: [
+      {
+        id: 1,
+        type: 'Blood Test',
+        date: 'July 8, 11:30 AM',
+        icon: TestTube
+      },
+      {
+        id: 2,
+        type: 'Glucose Screening',
+        date: 'July 3, 9:00 AM',
+        icon: TestTube
+      }
+    ],
+    doctor: [
+      {
+        id: 3,
+        type: 'General Checkup',
+        date: 'July 5, 10:00 AM',
+        icon: Stethoscope
+      },
+      {
+        id: 4,
+        type: 'Prenatal Consultation',
+        date: 'July 1, 2:00 PM',
+        icon: UserCheck
+      }
+    ]
+  };
 
   const healthReminders = [
     {
@@ -509,6 +561,32 @@ const AppointmentsDashboard = () => {
       window.scrollTo({ top: y - offset, behavior: 'smooth' });
     }
   };
+
+  // Helper function to render appointment tabs
+  const renderAppointmentTabs = (activeTab, setActiveTab, tabName) => (
+    <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full">
+      <button
+        onClick={() => setActiveTab('clinic')}
+        className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          activeTab === 'clinic'
+            ? 'bg-white text-blue-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-800'
+        }`}
+      >
+        Clinic Visit
+      </button>
+      <button
+        onClick={() => setActiveTab('doctor')}
+        className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          activeTab === 'doctor'
+            ? 'bg-white text-blue-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-800'
+        }`}
+      >
+        Doctor Consultation
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4">
@@ -821,8 +899,12 @@ const AppointmentsDashboard = () => {
               <Zap className="text-yellow-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Upcoming Appointments</h3>
             </div>
+            
+            {/* Tabs for Upcoming Appointments */}
+            {renderAppointmentTabs(upcomingTab, setUpcomingTab, 'upcoming')}
+            
             <div className="space-y-3">
-              {upcomingAppointments.map((appointment) => {
+              {upcomingAppointments[upcomingTab].map((appointment) => {
                 const IconComponent = appointment.icon;
                 return (
                   <div key={appointment.id} className="flex items-center p-3 rounded-lg border-l-4 border-yellow-400">
@@ -845,8 +927,12 @@ const AppointmentsDashboard = () => {
               <X className="text-red-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Missed Appointments</h3>
             </div>
+            
+            {/* Tabs for Missed Appointments */}
+            {renderAppointmentTabs(missedTab, setMissedTab, 'missed')}
+            
             <div className="space-y-3">
-              {missedAppointments.map((appointment) => {
+              {missedAppointments[missedTab].map((appointment) => {
                 const IconComponent = appointment.icon;
                 return (
                   <div key={appointment.id} className="flex items-center p-3 rounded-lg border-l-4 border-red-400">
@@ -878,19 +964,25 @@ const AppointmentsDashboard = () => {
               <CheckCircle className="text-green-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">Completed Appointments</h3>
             </div>
+            
+            {/* Tabs for Completed Appointments */}
+            {renderAppointmentTabs(completedTab, setCompletedTab, 'completed')}
+            
             <div className="space-y-3">
-              {/* Placeholder completed list; hook this to real data when available */}
-              {[{ id: 1, type: 'General Checkup', date: 'July 5, 10:00 AM' }, { id: 2, type: 'Blood Test', date: 'July 8, 11:30 AM' }].map((item) => (
-                <div key={item.id} className="flex items-center p-3 rounded-lg border-l-4 border-green-400">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+              {completedAppointments[completedTab].map((appointment) => {
+                const IconComponent = appointment.icon;
+                return (
+                  <div key={appointment.id} className="flex items-center p-3 rounded-lg border-l-4 border-green-400">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                      <IconComponent className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800 text-sm">{appointment.type}</div>
+                      <div className="text-gray-600 text-xs">{appointment.date}</div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800 text-sm">{item.type}</div>
-                    <div className="text-gray-600 text-xs">{item.date}</div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
