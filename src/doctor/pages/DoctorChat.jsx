@@ -31,8 +31,8 @@ const DoctorChat = () => {
   const [filterType, setFilterType] = useState('all');
   const [showChatInfo, setShowChatInfo] = useState(false);
   
-  // State for moms and messages
-  const [moms, setMoms] = useState([]);
+  // State for users and messages
+  const [users, setUsers] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -115,7 +115,7 @@ const DoctorChat = () => {
         const newMessage = {
           id: msg.id,
           // Determine sender based on current user vs message sender
-          sender: msg.senderId === currentUser?._id ? 'doctor' : 'mom',
+          sender: msg.senderId === currentUser?._id ? 'doctor' : 'user',
           message: inferredType === 'text' ? (msg.content || '') : inferredName,
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
@@ -136,27 +136,27 @@ const DoctorChat = () => {
           });
         });
       } else if (!selectedChat && conversationId) {
-        // Auto-select the mom who sent the message and load conversation messages
-        const momId = msg.senderId === currentUser?._id ? msg.recipientId : msg.senderId;
-        const momExists = moms.some(m => m.id === momId);
-        if (momExists) {
-          console.log('Auto-selecting mom:', momId);
-          setSelectedChat(momId);
+        // Auto-select the user who sent the message and load conversation messages
+        const userId = msg.senderId === currentUser?._id ? msg.recipientId : msg.senderId;
+        const userExists = users.some(u => u.id === userId);
+        if (userExists) {
+          console.log('Auto-selecting user:', userId);
+          setSelectedChat(userId);
           setActiveConversationId(conversationId);
           fetchMessages(conversationId);
           const inferredType = msg.messageType || msg.type;
           const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
           const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
-          const newMessage = {
-            id: msg.id,
-            sender: 'mom',
-            message: inferredType === 'text' ? (msg.content || '') : inferredName,
-            timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-            type: inferredType,
-            status: msg.status || 'delivered',
-            fileUrl: inferredUrl || undefined
-          };
+                  const newMessage = {
+          id: msg.id,
+          sender: 'user',
+          message: inferredType === 'text' ? (msg.content || '') : inferredName,
+          timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
+          type: inferredType,
+          status: msg.status || 'delivered',
+          fileUrl: inferredUrl || undefined
+        };
           setChatMessages(prev => {
             const updatedMessages = [...prev, newMessage];
             return updatedMessages.sort((a, b) => {
@@ -223,13 +223,23 @@ const DoctorChat = () => {
     getUserInfo();
   }, []);
 
-  // Fetch moms (patients)
-  const fetchMoms = async () => {
+  // Fetch users based on filter type
+  const fetchUsers = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/chat/search?query=.&role=mom', {
+      let endpoint = 'http://localhost:5000/api/chat/search?query=.';
+      if (filterType === 'moms') {
+        endpoint += '&role=mom';
+      } else if (filterType === 'midwives') {
+        endpoint += '&role=midwife';
+      } else {
+        // For 'all', fetch both moms and midwives
+        endpoint += '&role=mom,midwife';
+      }
+      
+      const response = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -237,28 +247,33 @@ const DoctorChat = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const momsList = data.data.map(mom => ({
-          id: mom.id,
-          name: mom.name,
-          type: 'mom',
-          specialty: 'Pregnancy Care',
-          status: 'online',
+        console.log('Raw API response:', data);
+        
+        const usersList = data.data.map(user => ({
+          id: user.id,
+          name: user.name,
+          type: user.role,
+          specialty: user.role === 'mom' ? 'Pregnancy Care' : 'Midwifery Care',
+          role: user.role,
           lastMessage: '',
           lastMessageTime: '',
           unreadCount: 0,
           rating: 4.8,
-          experience: 'First-time mom',
+          experience: user.role === 'mom' ? 'First-time mom' : 'Experienced midwife',
           location: 'Local Area',
-          avatar: `https://ui-avatars.com/api/?name=${mom.name}&background=ff6b6b&color=fff`,
+          avatar: `https://ui-avatars.com/api/?name=${user.name}&background=${
+            user.role === 'mom' ? 'ff6b6b' : '10b981'
+          }&color=fff`,
           isTyping: false,
           availability: 'Available now',
           nextAppointment: 'TBD'
         }));
         
-        setMoms(momsList);
+        console.log('Processed users list:', usersList);
+        setUsers(usersList);
       }
     } catch (error) {
-      console.error('Error fetching moms:', error);
+      console.error('Error fetching users:', error);
     } finally {
       setLoading(false);
     }
@@ -304,7 +319,7 @@ const DoctorChat = () => {
         
         const messages = data.data.map(msg => ({
           id: msg.id,
-          sender: msg.sender === 'user' ? 'doctor' : 'mom',
+          sender: msg.sender === 'user' ? 'doctor' : 'user',
           message: (msg.messageType === 'text') ? msg.content : (msg.fileName || msg.filename || msg.name || msg.content || (msg.messageType === 'image' ? 'Image' : 'File')),
           timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
@@ -324,16 +339,29 @@ const DoctorChat = () => {
 
   // Load initial data
   useEffect(() => {
-    fetchMoms();
+    fetchUsers();
     fetchConversations();
-  }, []);
+  }, [filterType]);
 
-  // Filter moms based on search
-  const filteredMoms = moms.filter(mom => {
-    const matchesSearch = mom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         mom.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+  // Filter users based on search and filter type
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         user.specialty.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Apply filter type
+    if (filterType === 'moms') {
+      return matchesSearch && user.role === 'mom';
+    } else if (filterType === 'midwives') {
+      return matchesSearch && user.role === 'midwife';
+    } else {
+      // 'all' - show both moms and midwives
+      return matchesSearch && (user.role === 'mom' || user.role === 'midwife');
+    }
   });
+
+  console.log('Filter type:', filterType);
+  console.log('All users:', users);
+  console.log('Filtered users:', filteredUsers);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -346,8 +374,13 @@ const DoctorChat = () => {
       try {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         
-        const mom = moms.find(m => m.id === selectedChat);
-        if (!mom) return;
+        const user = users.find(u => u.id === selectedChat);
+        if (!user) {
+          console.error('User not found for selectedChat:', selectedChat);
+          return;
+        }
+
+        console.log('Sending message to user:', user);
 
         const newMessage = {
           id: Date.now(),
@@ -370,6 +403,12 @@ const DoctorChat = () => {
         });
         setMessage('');
 
+        console.log('Sending message to backend:', {
+          recipientId: selectedChat,
+          content: message.trim(),
+          messageType: 'text'
+        });
+
         const response = await fetch('http://localhost:5000/api/chat/messages', {
           method: 'POST',
           headers: {
@@ -385,6 +424,8 @@ const DoctorChat = () => {
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Message sent successfully:', data);
+          
           setChatMessages(prev => prev.map(msg => 
             msg.id === newMessage.id 
               ? { ...msg, status: 'sent', id: data.data.id }
@@ -398,17 +439,23 @@ const DoctorChat = () => {
             });
             if (convRes.ok) {
               const convData = await convRes.json();
+              console.log('Refreshed conversations:', convData.data);
               setConversations(convData.data);
               const conversation = convData.data.find(c => c.participants.some(p => p.id === selectedChat));
               if (conversation) {
+                console.log('Found conversation:', conversation);
                 setActiveConversationId(conversation.id);
                 if (socket) socket.emit('join_conversation', conversation.id);
+              } else {
+                console.log('No conversation found for selectedChat:', selectedChat);
               }
             }
           } catch (e) {
             console.error('Error refreshing conversations:', e);
           }
         } else {
+          const errorData = await response.text();
+          console.error('Failed to send message:', response.status, errorData);
           setChatMessages(prev => prev.map(msg => 
             msg.id === newMessage.id 
               ? { ...msg, status: 'error' }
@@ -556,34 +603,14 @@ const DoctorChat = () => {
     }
   };
 
-  // Get mom by ID
-  const getMomById = (id) => {
-    return moms.find(mom => mom.id === id);
+  // Get user by ID
+  const getUserById = (id) => {
+    return users.find(user => user.id === id);
   };
 
-  // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'online': return '#10b981';
-      case 'away': return '#f59e0b';
-      case 'offline': return '#6b7280';
-      default: return '#6b7280';
-    }
-  };
-
-  // Get mom icon
-  const getMomIcon = () => {
-    return <MessageCircle size={16} />;
-  };
-
-  // Get status text
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'online': return 'Online';
-      case 'away': return 'Away';
-      case 'offline': return 'Offline';
-      default: return 'Unknown';
-    }
+  // Get user icon based on role
+  const getUserIcon = (role) => {
+    return role === 'mom' ? '🤱' : '👩‍⚕️';
   };
 
   return (
@@ -605,7 +632,7 @@ const DoctorChat = () => {
             <Search size={18} />
             <input
               type="text"
-              placeholder="Search healthcare providers..."
+              placeholder="Search moms and midwives..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="doctor-chat-search-input"
@@ -622,11 +649,11 @@ const DoctorChat = () => {
             ALL
           </button>
           <button 
-            className={`doctor-chat-filter-btn ${filterType === 'doctors' ? 'active' : ''}`}
-            onClick={() => setFilterType('doctors')}
+            className={`doctor-chat-filter-btn ${filterType === 'moms' ? 'active' : ''}`}
+            onClick={() => setFilterType('moms')}
           >
             <MessageCircle size={16} />
-            Patients
+            MOMS
           </button>
           <button 
             className={`doctor-chat-filter-btn ${filterType === 'midwives' ? 'active' : ''}`}
@@ -637,30 +664,30 @@ const DoctorChat = () => {
           </button>
         </div>
 
-        {/* Moms List */}
-        <div className="doctor-chat-moms-list">
+        {/* Users List */}
+        <div className="doctor-chat-users-list">
           {loading ? (
             <div className="doctor-chat-loading">
-              <p>Loading patients...</p>
+              <p>Loading moms and midwives...</p>
             </div>
-          ) : filteredMoms.length > 0 ? (
-            filteredMoms.map(mom => (
+          ) : filteredUsers.length > 0 ? (
+            filteredUsers.map(user => (
               <div
-                key={mom.id}
-                className={`doctor-chat-mom-item ${selectedChat === mom.id ? 'active' : ''}`}
+                key={user.id}
+                className={`doctor-chat-user-item ${selectedChat === user.id ? 'active' : ''}`}
                 onClick={() => {
-                  console.log('Selecting mom:', mom.id);
-                  setSelectedChat(mom.id);
+                  console.log('Selecting user:', user.id);
+                  setSelectedChat(user.id);
                   setChatMessages([]); // Clear messages when selecting new chat
                   
                   const conversation = conversations.find(c => 
-                    c.participants.some(p => p.id === mom.id)
+                    c.participants.some(p => p.id === user.id)
                   );
                   
                   console.log('Found conversation:', conversation);
                   
                   if (conversation) {
-                    console.log('✅ Found conversation for mom:', conversation.id);
+                    console.log('✅ Found conversation for user:', conversation.id);
                     setActiveConversationId(conversation.id);
                     if (socket) {
                       console.log('🔌 Joining conversation via socket:', conversation.id);
@@ -668,39 +695,42 @@ const DoctorChat = () => {
                     }
                     fetchMessages(conversation.id);
                   } else {
-                    console.log('❌ No conversation found for mom:', mom.id);
+                    console.log('❌ No conversation found for user:', user.id);
                     setActiveConversationId(null);
                   }
                 }}
               >
-                <div className="doctor-chat-mom-avatar">
-                  <img src={mom.avatar} alt={mom.name} />
-                  <div 
-                    className="doctor-chat-status-indicator"
-                    style={{ backgroundColor: getStatusColor(mom.status) }}
-                  ></div>
+                <div className="doctor-chat-user-avatar">
+                  <img src={user.avatar} alt={user.name} />
                 </div>
                 
-                <div className="doctor-chat-mom-info">
-                  <div className="doctor-chat-mom-header">
-                    <h3>{mom.name}</h3>
-                    <div className="doctor-chat-mom-type">
-                      {getMomIcon()}
-                      <span>{mom.specialty}</span>
+                <div className="doctor-chat-user-info">
+                  <div className="doctor-chat-user-header">
+                    <h3>{user.name}</h3>
+                    <div className="doctor-chat-user-type">
+                      <span>{getUserIcon(user.role)}</span>
+                      <span>{user.specialty}</span>
                     </div>
                   </div>
                   
-                  <div className="doctor-chat-mom-meta">
-                    <p className="doctor-chat-last-message">{mom.lastMessage || 'No messages yet'}</p>
+                  <div className="doctor-chat-user-meta">
+                    <p className="doctor-chat-last-message">{user.lastMessage || 'No messages yet'}</p>
                     <div className="doctor-chat-message-meta">
-                      <span className="doctor-chat-time">{mom.lastMessageTime || 'New'}</span>
-                      {mom.unreadCount > 0 && (
-                        <span className="doctor-chat-unread-badge">{mom.unreadCount}</span>
+                      <span className="doctor-chat-time">{user.lastMessageTime || 'New'}</span>
+                      {user.unreadCount > 0 && (
+                        <span className="doctor-chat-unread-badge">{user.unreadCount}</span>
                       )}
                     </div>
                   </div>
                   
-                  {mom.isTyping && (
+                  {/* Role indicator */}
+                  <div className="doctor-chat-role-indicator">
+                    <span className={`doctor-chat-role-badge ${user.role}`}>
+                      {user.role === 'mom' ? '🤱 Mom' : '👩‍⚕️ Midwife'}
+                    </span>
+                  </div>
+                  
+                  {user.isTyping && (
                     <div className="doctor-chat-typing-indicator">
                       <span>typing...</span>
                     </div>
@@ -709,8 +739,8 @@ const DoctorChat = () => {
               </div>
             ))
           ) : (
-            <div className="doctor-chat-no-moms">
-              <p>No healthcare providers found</p>
+            <div className="doctor-chat-no-users">
+              <p>No moms or midwives found</p>
             </div>
           )}
         </div>
@@ -724,17 +754,13 @@ const DoctorChat = () => {
             <div className="doctor-chat-main-header">
               <div className="doctor-chat-header-info">
                 <div className="doctor-chat-header-avatar">
-                  <img src={getMomById(selectedChat)?.avatar} alt="Patient" />
-                  <div 
-                    className="doctor-chat-header-status"
-                    style={{ backgroundColor: getStatusColor(getMomById(selectedChat)?.status) }}
-                  ></div>
+                  <img src={getUserById(selectedChat)?.avatar} alt="Patient" />
                 </div>
                 
                 <div className="doctor-chat-header-details">
-                  <h3>{getMomById(selectedChat)?.name || 'Patient'}</h3>
+                  <h3>{getUserById(selectedChat)?.name || 'Patient'}</h3>
                   <span className="doctor-chat-availability">
-                    {getStatusText(getMomById(selectedChat)?.status)}
+                    {getUserById(selectedChat)?.role === 'mom' ? '🤱 Mom' : '👩‍⚕️ Midwife'}
                   </span>
                 </div>
               </div>
@@ -802,15 +828,15 @@ const DoctorChat = () => {
                 )}
                 
                 {isTyping && (
-                  <div className="doctor-chat-message mom">
-                    <div className="doctor-chat-message-content">
-                      <div className="doctor-chat-typing-bubble">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
+                                  <div className="doctor-chat-message user">
+                  <div className="doctor-chat-message-content">
+                    <div className="doctor-chat-typing-bubble">
+                      <span></span>
+                      <span></span>
+                      <span></span>
                     </div>
                   </div>
+                </div>
                 )}
                 
                 <div ref={messagesEndRef} />
@@ -903,8 +929,8 @@ const DoctorChat = () => {
               <div className="doctor-chat-welcome-icon">
                 <MessageCircle size={80} />
               </div>
-              <h2>Welcome to Patient Chat</h2>
-              <p>Connect with your patients for personalized care and support</p>
+              <h2>Welcome to Healthcare Chat</h2>
+              <p>Connect with moms and midwives for personalized care and support</p>
             </div>
           </div>
         )}
@@ -925,8 +951,8 @@ const DoctorChat = () => {
           
           <div className="doctor-chat-info-content">
             <div className="doctor-chat-info-patient">
-              <img src={getMomById(selectedChat)?.avatar} alt="Patient" />
-              <h4>Provider</h4>
+              <img src={getUserById(selectedChat)?.avatar} alt="Patient" />
+              <h4>{getUserById(selectedChat)?.role === 'mom' ? 'Mom' : 'Midwife'}</h4>
               <button className="doctor-chat-refresh-btn">
                 <RefreshCw size={16} />
               </button>

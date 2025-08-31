@@ -137,14 +137,14 @@
   border-color: #7c3aed;
 }
 
-/* Moms List */
-.doctor-chat-moms-list {
+/* Users List */
+.doctor-chat-users-list {
   flex: 1;
   overflow-y: auto;
   padding: 0.5rem;
 }
 
-.doctor-chat-mom-item {
+.doctor-chat-user-item {
   display: flex;
   gap: 1rem;
   padding: 1rem;
@@ -156,25 +156,25 @@
   border: 2px solid transparent;
 }
 
-.doctor-chat-mom-item:hover {
+.doctor-chat-user-item:hover {
   background: #f8fafc;
   border-color: #e2e8f0;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-chat-mom-item.active {
+.doctor-chat-user-item.active {
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
   border-color: #7c3aed;
   box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
 }
 
-.doctor-chat-mom-avatar {
+.doctor-chat-user-avatar {
   position: relative;
   flex-shrink: 0;
 }
 
-.doctor-chat-mom-avatar img {
+.doctor-chat-user-avatar img {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
@@ -183,34 +183,25 @@
   transition: all 0.3s ease;
 }
 
-.doctor-chat-mom-item:hover .doctor-chat-mom-avatar img {
+.doctor-chat-user-item:hover .doctor-chat-user-avatar img {
   border-color: #7c3aed;
 }
 
-.doctor-chat-status-indicator {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid white;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-.doctor-chat-mom-info {
+
+.doctor-chat-user-info {
   flex: 1;
   min-width: 0;
 }
 
-.doctor-chat-mom-header {
+.doctor-chat-user-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.5rem;
 }
 
-.doctor-chat-mom-header h3 {
+.doctor-chat-user-header h3 {
   font-size: 1rem;
   font-weight: 700;
   color: #1f2937;
@@ -218,7 +209,7 @@
   line-height: 1.2;
 }
 
-.doctor-chat-mom-type {
+.doctor-chat-user-type {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -230,7 +221,7 @@
   white-space: nowrap;
 }
 
-.doctor-chat-mom-meta {
+.doctor-chat-user-meta {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -279,6 +270,35 @@
   margin-top: 0.5rem;
 }
 
+/* Role indicator */
+.doctor-chat-role-indicator {
+  margin-top: 0.5rem;
+}
+
+.doctor-chat-role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.doctor-chat-role-badge.mom {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.doctor-chat-role-badge.midwife {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+
+
 /* Doctor Chat Main Area */
 .doctor-chat-main {
   flex: 1;
@@ -316,16 +336,7 @@
   transition: all 0.3s ease;
 }
 
-.doctor-chat-header-status {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid white;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
 
 .doctor-chat-header-details h3 {
   font-size: 1.25rem;
@@ -449,6 +460,53 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.8));
   border-radius: 1.5rem;
   z-index: -1;
+}
+
+/* User message styling (for moms and midwives) */
+.doctor-chat-message.user .doctor-chat-message-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1f2937;
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+  position: relative;
+}
+
+.doctor-chat-message.user .doctor-chat-message-content::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(30, 64, 175, 0.1));
+  border-radius: 1.5rem;
+  z-index: -1;
+}
+
+.doctor-chat-message.user .doctor-chat-message-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.8));
+  border-radius: 1.5rem;
+  z-index: -1;
+}
+
+.doctor-chat-message.user .doctor-chat-message-content p {
+  color: #374151;
+  font-weight: 500;
+}
+
+.doctor-chat-message.user .doctor-chat-message-meta {
+  color: #6b7280;
+}
+
+.doctor-chat-message.user .doctor-chat-message-time {
+  color: #9ca3af;
+  font-size: 0.7rem;
 }
 
 .doctor-chat-message-content p {
@@ -1027,7 +1085,7 @@
 
 /* Loading and No Data States */
 .doctor-chat-loading,
-.doctor-chat-no-moms,
+.doctor-chat-no-users,
 .doctor-chat-no-messages {
   text-align: center;
   padding: 2rem;
@@ -1160,11 +1218,11 @@
     padding: 0.75rem;
   }
   
-  .doctor-chat-mom-item {
+  .doctor-chat-user-item {
     padding: 0.75rem;
   }
   
-  .doctor-chat-mom-avatar img {
+  .doctor-chat-user-avatar img {
     width: 3rem;
     height: 3rem;
   }
@@ -1222,21 +1280,21 @@
     font-size: 0.65rem;
   }
   
-  .doctor-chat-mom-item {
+  .doctor-chat-user-item {
     padding: 0.6rem;
     margin-bottom: 0.4rem;
   }
   
-  .doctor-chat-mom-avatar img {
+  .doctor-chat-user-avatar img {
     width: 2.5rem;
     height: 2.5rem;
   }
   
-  .doctor-chat-mom-header h3 {
+  .doctor-chat-user-header h3 {
     font-size: 0.9rem;
   }
   
-  .doctor-chat-mom-type {
+  .doctor-chat-user-type {
     font-size: 0.65rem;
   }
   
@@ -1340,21 +1398,21 @@
     font-size: 0.6rem;
   }
   
-  .doctor-chat-mom-item {
+  .doctor-chat-user-item {
     padding: 0.5rem;
     margin-bottom: 0.3rem;
   }
   
-  .doctor-chat-mom-avatar img {
+  .doctor-chat-user-avatar img {
     width: 2.25rem;
     height: 2.25rem;
   }
   
-  .doctor-chat-mom-header h3 {
+  .doctor-chat-user-header h3 {
     font-size: 0.85rem;
   }
   
-  .doctor-chat-mom-type {
+  .doctor-chat-user-type {
     font-size: 0.6rem;
   }
   
@@ -1489,21 +1547,21 @@
     font-size: 0.55rem;
   }
   
-  .doctor-chat-mom-item {
+  .doctor-chat-user-item {
     padding: 0.4rem;
     margin-bottom: 0.25rem;
   }
   
-  .doctor-chat-mom-avatar img {
+  .doctor-chat-user-avatar img {
     width: 2rem;
     height: 2rem;
   }
   
-  .doctor-chat-mom-header h3 {
+  .doctor-chat-user-header h3 {
     font-size: 0.8rem;
   }
   
-  .doctor-chat-mom-type {
+  .doctor-chat-user-type {
     font-size: 0.55rem;
   }
   
@@ -1606,12 +1664,12 @@
     padding: 0.3rem;
   }
   
-  .doctor-chat-mom-item {
+  .doctor-chat-user-item {
     padding: 0.4rem;
     margin-bottom: 0.2rem;
   }
   
-  .doctor-chat-mom-avatar img {
+  .doctor-chat-user-avatar img {
     width: 2rem;
     height: 2rem;
   }

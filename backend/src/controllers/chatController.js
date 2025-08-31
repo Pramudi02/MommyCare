@@ -83,7 +83,7 @@ const getConversationMessages = async (req, res) => {
       }
     });
     
-    // Format messages for frontend
+    // Format messages for frontend with consistent field names
     const formattedMessages = messages.map(message => ({
       id: message._id,
       content: message.content,
@@ -93,6 +93,9 @@ const getConversationMessages = async (req, res) => {
       senderId: message.sender._id,
       recipientId: message.recipient._id,
       read: message.read,
+      // Add fileUrl field for compatibility with frontend
+      fileUrl: message.file?.url || message.attachments?.[0]?.url || null,
+      fileName: message.file?.name || message.attachments?.[0]?.name || null,
       file: message.file || null,
       attachments: message.attachments || [],
       isEdited: message.isEdited || false,
@@ -305,7 +308,13 @@ const searchConversations = async (req, res) => {
     };
 
     if (role) {
-      searchCriteria.role = role;
+      // Handle multiple roles (comma-separated)
+      if (role.includes(',')) {
+        const roles = role.split(',').map(r => r.trim());
+        searchCriteria.role = { $in: roles };
+      } else {
+        searchCriteria.role = role;
+      }
     }
 
     // Exclude current user
