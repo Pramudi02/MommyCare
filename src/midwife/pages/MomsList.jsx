@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiX, FiMessageCircle, FiBarChart2, FiBell, FiFileText } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiX, FiMessageCircle, FiBarChart2, FiBell, FiFileText, FiUserPlus, FiCheckCircle } from 'react-icons/fi';
+import { midwifeAPI } from '../../services/api';
 import './MomsList.css';
 
 const MomsList = () => {
@@ -8,77 +9,45 @@ const MomsList = () => {
   const [selectedMom, setSelectedMom] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Add mom modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [assignNotes, setAssignNotes] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const moms = [
-    {
-      id: 1,
-      name: 'Emma Wilson',
-      age: 28,
-      status: 'active',
-      dueDate: '3/15/2024',
-      week: '32 weeks',
-      phone: '(555) 123-4567',
-      nextVisit: '2/27/2024',
-      height: '165 cm',
-      weight: '68 kg',
-      bloodGroup: 'A+',
-      babyName: 'Lily',
-      babyGender: 'Girl',
-      babyWeight: '2.1 kg',
-      deliveryDate: '3/12/2024'
-    },
-    {
-      id: 2,
-      name: 'Sarah Davis',
-      age: 31,
-      status: 'active',
-      dueDate: '4/2/2024',
-      week: '28 weeks',
-      phone: '(555) 234-5678',
-      nextVisit: '2/25/2024',
-      height: '170 cm',
-      weight: '72 kg',
-      bloodGroup: 'O+',
-      babyName: '',
-      babyGender: '',
-      babyWeight: '',
-      deliveryDate: ''
-    },
-    {
-      id: 3,
-      name: 'Jennifer Lee',
-      age: 25,
-      status: 'delivered',
-      dueDate: '1/20/2024',
-      week: 'Delivered',
-      phone: '(555) 345-6789',
-      nextVisit: '2/20/2024',
-      height: '162 cm',
-      weight: '65 kg',
-      bloodGroup: 'B+',
-      babyName: 'Emma',
-      babyGender: 'Girl',
-      babyWeight: '3.2 kg',
-      deliveryDate: '1/18/2024'
-    },
-    {
-      id: 4,
-      name: 'Maria Garcia',
-      age: 29,
-      status: 'active',
-      dueDate: '5/10/2024',
-      week: '24 weeks',
-      phone: '(555) 456-7890',
-      nextVisit: '3/5/2024',
-      height: '168 cm',
-      weight: '70 kg',
-      bloodGroup: 'AB+',
-      babyName: '',
-      babyGender: '',
-      babyWeight: '',
-      deliveryDate: ''
+  // Notification state
+  const [notification, setNotification] = useState(null);
+
+  // Real data state
+  const [moms, setMoms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Load moms assigned to this midwife
+  const fetchMoms = async (search = '') => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await midwifeAPI.getMomProfiles(search);
+      if (response.status === 'success') {
+        setMoms(response.data);
+      } else {
+        setError('Failed to fetch moms');
+      }
+    } catch (err) {
+      console.error('Error fetching moms:', err);
+      setError('Failed to fetch moms');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Load moms on component mount
+  useEffect(() => {
+    fetchMoms();
+  }, []);
 
   const filteredMoms = moms.filter(mom => {
     const matchesSearch = mom.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,34 +66,166 @@ const MomsList = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save the changes to your backend
+  const handleSave = async () => {
+    if (!selectedMom) return;
+    
+    try {
+      // Here you would typically save the changes to your backend
+      // For now, we'll just close the editing mode
+      setIsEditing(false);
+      // Refresh the moms list
+      await fetchMoms();
+    } catch (err) {
+      console.error('Error saving changes:', err);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setSelectedMom(moms.find(m => m.id === selectedMom.id)); // Reset to original data
+    // Reset to original data by finding the mom again
+    const originalMom = moms.find(m => m._id === selectedMom._id);
+    if (originalMom) {
+      setSelectedMom(originalMom);
+    }
   };
 
   const getStatusText = (status) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    if (status === 'delivered') return 'Delivered';
+    if (status === 'active') return 'Active';
+    return 'Unknown';
   };
 
   const getStatusColor = (status) => {
-    return status === 'active' ? 'green' : 'blue';
+    if (status === 'delivered') return 'blue';
+    return 'green';
+  };
+
+  // Calculate pregnancy week based on LMP and EDD
+  const calculatePregnancyWeek = (lmp, edd) => {
+    if (!lmp) return 'Unknown';
+    
+    const today = new Date();
+    const lmpDate = new Date(lmp);
+    const weeksDiff = Math.floor((today - lmpDate) / (1000 * 60 * 60 * 24 * 7));
+    
+    if (weeksDiff < 0) return 'Pre-pregnancy';
+    if (weeksDiff > 42) return 'Delivered';
+    
+    return `${weeksDiff} weeks`;
+  };
+
+  // Search for moms to assign
+  const searchMomsToAssign = async (query) => {
+    if (!query || query.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      setSearching(true);
+      console.log('🔍 Searching for moms with query:', query);
+      
+      // Add a small delay to prevent too many API calls
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const response = await midwifeAPI.searchMoms(query);
+      console.log('📡 Search API response:', response);
+      
+      if (response.status === 'success') {
+        const results = response.data || [];
+        console.log('✅ Search results:', results);
+        setSearchResults(results);
+      } else {
+        console.log('❌ Search failed:', response.message);
+        setSearchResults([]);
+      }
+    } catch (err) {
+      console.error('💥 Search error:', err);
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // Show notification
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000); // Auto-hide after 5 seconds
+  };
+
+  // Assign mom to midwife
+  const assignMom = async (momId) => {
+    try {
+      console.log('🔄 Assigning mom with ID:', momId);
+      console.log('📝 Assignment notes:', assignNotes);
+      
+      const response = await midwifeAPI.assignMom(momId, assignNotes);
+      console.log('📡 Assign response:', response);
+      
+      if (response.status === 'success') {
+        console.log('✅ Mom assigned successfully!');
+        // Show success notification instead of alert
+        showNotification('Mom assigned successfully!', 'success');
+        setShowAddModal(false);
+        setAssignNotes('');
+        setSearchResults([]);
+        setSearchQuery('');
+        // Refresh the moms list
+        await fetchMoms();
+      } else {
+        console.log('❌ Assignment failed:', response.message);
+        showNotification(`Assignment failed: ${response.message}`, 'error');
+      }
+    } catch (err) {
+      console.error('💥 Error assigning mom:', err);
+      showNotification('Error assigning mom. Please try again.', 'error');
+    }
   };
 
   // Stats for the sidebar
   const stats = {
     totalMoms: moms.length,
-    activePregnancies: moms.filter(mom => mom.status === 'active').length,
+    activePregnancies: moms.filter(mom => mom.status !== 'delivered').length,
     delivered: moms.filter(mom => mom.status === 'delivered').length,
-    upcomingThisWeek: moms.filter(mom => mom.status === 'active').length // This would be calculated based on actual dates
+    upcomingThisWeek: moms.filter(mom => {
+      if (!mom.nextClinicDate) return false;
+      const nextDate = new Date(mom.nextClinicDate);
+      const today = new Date();
+      const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return nextDate >= today && nextDate <= weekFromNow;
+    }).length
   };
+
+  if (loading) {
+    return (
+      <div className="moms-list-page">
+        <div className="moms-list-container">
+          <div className="moms-list-content">
+            <div className="moms-list__loading">Loading moms...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="moms-list-page">
+      {/* Notification Component */}
+      {notification && (
+        <div className={`moms-list__notification moms-list__notification--${notification.type}`}>
+          <div className="moms-list__notification-content">
+            {notification.type === 'success' && <FiCheckCircle size={20} />}
+            <span>{notification.message}</span>
+          </div>
+          <button 
+            className="moms-list__notification-close"
+            onClick={() => setNotification(null)}
+          >
+            <FiX size={16} />
+          </button>
+        </div>
+      )}
+
       <div className="moms-list-container">
         <div className="moms-list-content">
           <div className="moms-list__header">
@@ -136,6 +237,12 @@ const MomsList = () => {
               <p>Manage and track all your pregnant moms</p>
             </div>
           </div>
+
+          {error && (
+            <div className="moms-list__error">
+              <p>{error}</p>
+            </div>
+          )}
 
           <div className="moms-list__filters">
             <div className="moms-list__search">
@@ -156,65 +263,92 @@ const MomsList = () => {
               <option value="active">Active</option>
               <option value="delivered">Delivered</option>
             </select>
+            <button 
+              className="moms-list__add-btn"
+              onClick={() => setShowAddModal(true)}
+            >
+              <FiUserPlus size={18} />
+              Add New Mom
+            </button>
           </div>
 
           <div className="moms-list__main-content">
             <div className="moms-list__content">
-              {filteredMoms.map((mom) => (
-                <div key={mom.id} className="moms-list__mom-card">
-                  <div className="moms-list__mom-card-avatar">
-                    <FiUser size={24} />
-                  </div>
-                  <div className="moms-list__mom-card-info">
-                    <div className="moms-list__mom-card-name-age">
-                      <h3>{mom.name}</h3>
-                      <span>{mom.age} years old</span>
-                    </div>
-                    <div className={`moms-list__mom-card-status moms-list__mom-card-status--${getStatusColor(mom.status)}`}>
-                      {getStatusText(mom.status)}
-                    </div>
-                  </div>
-                  <div className="moms-list__mom-card-details">
-                    <div className="moms-list__mom-card-detail">
-                      <span className="moms-list__mom-card-label">DUE DATE</span>
-                      <span className="moms-list__mom-card-value">{mom.dueDate}</span>
-                    </div>
-                    <div className="moms-list__mom-card-detail">
-                      <span className="moms-list__mom-card-label">
-                        {mom.status === 'delivered' ? 'BABY NAME' : 'WEEK'}
-                      </span>
-                      <span className="moms-list__mom-card-value">
-                        {mom.status === 'delivered' ? mom.babyName : mom.week}
-                      </span>
-                    </div>
-                    <div className="moms-list__mom-card-detail">
-                      <span className="moms-list__mom-card-label">PHONE</span>
-                      <span className="moms-list__mom-card-value">{mom.phone}</span>
-                    </div>
-                    <div className="moms-list__mom-card-detail">
-                      <span className="moms-list__mom-card-label">
-                        {mom.status === 'delivered' ? 'DELIVERY DATE' : 'NEXT VISIT'}
-                      </span>
-                      <span className="moms-list__mom-card-value">
-                        {mom.status === 'delivered' ? mom.deliveryDate : mom.nextVisit}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="moms-list__mom-card-actions">
-                    <button 
-                      className="moms-list__mom-card-btn moms-list__mom-card-btn--view"
-                      onClick={() => handleViewDetails(mom)}
-                    >
-                      <FiEye size={16} />
-                      View Details
-                    </button>
-                    <button className="moms-list__mom-card-btn moms-list__mom-card-btn--chat">
-                      <FiMessageCircle size={16} />
-                      Chat
-                    </button>
-                  </div>
+              {filteredMoms.length === 0 ? (
+                <div className="moms-list__no-moms">
+                  <p>No moms found. {searchTerm ? 'Try adjusting your search terms.' : 'Add your first mom to get started.'}</p>
                 </div>
-              ))}
+              ) : (
+                filteredMoms.map((mom) => (
+                  <div key={mom._id} className="moms-list__mom-card">
+                    <div className="moms-list__mom-card-avatar">
+                      <FiUser size={24} />
+                    </div>
+                    <div className="moms-list__mom-card-info">
+                      <div className="moms-list__mom-card-name-age">
+                        <h3>{mom.name}</h3>
+                        <span>{mom.age} years old</span>
+                      </div>
+                      <div className={`moms-list__mom-card-status moms-list__mom-card-status--${getStatusColor(mom.status || 'active')}`}>
+                        {getStatusText(mom.status || 'active')}
+                      </div>
+                    </div>
+                    <div className="moms-list__mom-card-details">
+                      <div className="moms-list__mom-card-detail">
+                        <span className="moms-list__mom-card-label">USER ID</span>
+                        <span className="moms-list__mom-card-value moms-list__mom-card-userid">
+                          {mom._id}
+                        </span>
+                      </div>
+                      <div className="moms-list__mom-card-detail">
+                        <span className="moms-list__mom-card-label">DUE DATE</span>
+                        <span className="moms-list__mom-card-value">
+                          {mom.edd ? new Date(mom.edd).toLocaleDateString() : 'Not set'}
+                        </span>
+                      </div>
+                      <div className="moms-list__mom-card-detail">
+                        <span className="moms-list__mom-card-label">
+                          {mom.status === 'delivered' ? 'BABY NAME' : 'WEEK'}
+                        </span>
+                        <span className="moms-list__mom-card-value">
+                          {mom.status === 'delivered' ? 
+                            (mom.babyName || 'Not set') : 
+                            (mom.lmp ? calculatePregnancyWeek(mom.lmp, mom.edd) : 'Not set')
+                          }
+                        </span>
+                      </div>
+                      <div className="moms-list__mom-card-detail">
+                        <span className="moms-list__mom-card-label">PHONE</span>
+                        <span className="moms-list__mom-card-value">{mom.phone}</span>
+                      </div>
+                      <div className="moms-list__mom-card-detail">
+                        <span className="moms-list__mom-card-label">
+                          {mom.status === 'delivered' ? 'DELIVERY DATE' : 'NEXT VISIT'}
+                        </span>
+                        <span className="moms-list__mom-card-value">
+                          {mom.status === 'delivered' ? 
+                            (mom.deliveryDate || 'Not set') : 
+                            (mom.nextClinicDate ? new Date(mom.nextClinicDate).toLocaleDateString() : 'Not set')
+                          }
+                        </span>
+                      </div>
+                    </div>
+                    <div className="moms-list__mom-card-actions">
+                      <button 
+                        className="moms-list__mom-card-btn moms-list__mom-card-btn--view"
+                        onClick={() => handleViewDetails(mom)}
+                      >
+                        <FiEye size={16} />
+                        View Details
+                      </button>
+                      <button className="moms-list__mom-card-btn moms-list__mom-card-btn--chat">
+                        <FiMessageCircle size={16} />
+                        Chat
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="moms-list__sidebar">
@@ -263,33 +397,23 @@ const MomsList = () => {
               <div className="moms-list__sidebar-section">
                 <h3>Recent Activity</h3>
                 <div className="moms-list__activity-list">
-                  <div className="moms-list__activity-item">
-                    <div className="moms-list__activity-icon">
-                      <FiUser size={14} />
+                  {moms.length === 0 ? (
+                    <div className="moms-list__no-activity">
+                      <p>No recent activity</p>
                     </div>
-                    <div className="moms-list__activity-content">
-                      <p>Emma Wilson - Prenatal checkup completed</p>
-                      <span>2 hours ago</span>
-                    </div>
-                  </div>
-                  <div className="moms-list__activity-item">
-                    <div className="moms-list__activity-icon">
-                      <FiCalendar size={14} />
-                    </div>
-                    <div className="moms-list__activity-content">
-                      <p>Sarah Davis - Appointment scheduled</p>
-                      <span>4 hours ago</span>
-                    </div>
-                  </div>
-                  <div className="moms-list__activity-item">
-                    <div className="moms-list__activity-icon">
-                      <FiUser size={14} />
-                    </div>
-                    <div className="moms-list__activity-content">
-                      <p>Jennifer Lee - Delivery completed</p>
-                      <span>1 day ago</span>
-                    </div>
-                  </div>
+                  ) : (
+                    moms.slice(0, 3).map((mom) => (
+                      <div key={mom._id} className="moms-list__activity-item">
+                        <div className="moms-list__activity-icon">
+                          <FiUser size={14} />
+                        </div>
+                        <div className="moms-list__activity-content">
+                          <p>{mom.name} - Profile updated</p>
+                          <span>Recently</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -424,6 +548,97 @@ const MomsList = () => {
                       Edit Details
                     </button>
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Add Mom Modal */}
+          {showAddModal && (
+            <div className="moms-list__modal-overlay" onClick={() => setShowAddModal(false)}>
+              <div className="moms-list__modal" onClick={(e) => e.stopPropagation()}>
+                <div className="moms-list__modal-header">
+                  <h2>Add New Mom to Your List</h2>
+                  <button 
+                    className="moms-list__modal-close"
+                    onClick={() => setShowAddModal(false)}
+                  >
+                    <FiX size={20} />
+                  </button>
+                </div>
+                
+                <div className="moms-list__modal-content">
+                  <div className="moms-list__modal-section">
+                    <h3>Search for Mom</h3>
+                    <div className="moms-list__search-container">
+                      <input
+                        type="text"
+                        placeholder="Enter mom's name or phone number..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          searchMomsToAssign(e.target.value);
+                        }}
+                        className="moms-list__modal-input"
+                      />
+                      <FiSearch size={18} className="moms-list__search-icon" />
+                    </div>
+                    
+                    {searching && <div className="moms-list__loading">Searching...</div>}
+                    
+                    {searchResults.length > 0 && (
+                      <div className="moms-list__search-results">
+                        <h4>Search Results</h4>
+                        {searchResults.map((mom) => (
+                          <div key={mom._id} className="moms-list__search-result-item">
+                            <div className="moms-list__result-info">
+                              <h5>{mom.name}</h5>
+                                                             <div className="moms-list__result-details">
+                                 <div className="moms-list__result-detail">
+                                   <strong>User ID:</strong> {mom._id}
+                                 </div>
+                                 <div className="moms-list__result-detail">
+                                   <strong>Address:</strong> {mom.phmArea || 'Not set'}
+                                 </div>
+                                 <div className="moms-list__result-detail">
+                                   <strong>Age:</strong> {mom.age || 'Not set'}
+                                 </div>
+                               </div>
+                            </div>
+                            <button 
+                              className="moms-list__assign-btn"
+                              onClick={() => assignMom(mom._id)}
+                            >
+                              Assign
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {searchResults.length === 0 && !searching && searchQuery.length >= 2 && (
+                      <div className="moms-list__no-results">
+                        <p>No moms found. Try searching with a different name or phone number.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="moms-list__modal-section">
+                    <h3>Assignment Notes (Optional)</h3>
+                    <textarea 
+                      className="moms-list__modal-textarea"
+                      rows="3"
+                      placeholder="Enter any notes about this assignment..."
+                      value={assignNotes}
+                      onChange={(e) => setAssignNotes(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="moms-list__modal-actions">
+                  <button className="moms-list__modal-btn moms-list__modal-btn--cancel" onClick={() => setShowAddModal(false)}>
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
