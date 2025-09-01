@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Baby, 
   Droplets, 
@@ -9,13 +9,24 @@ import {
   Calculator,
   DollarSign,
   TrendingUp,
-  Lightbulb
+  Lightbulb,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import './BabyCostsCalculator.css';
 
 const BabyCostsCalculator = () => {
   const [currentAge, setCurrentAge] = useState('0-3months');
   const [itemCosts, setItemCosts] = useState({});
+  const [customItems, setCustomItems] = useState([]);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [newCustomItem, setNewCustomItem] = useState({
+    name: '',
+    description: '',
+    quantity: 1,
+    price: 0,
+    category: 'custom'
+  });
 
   // Data structure for baby costs by age group
   const babyCostData = {
@@ -133,7 +144,8 @@ const BabyCostsCalculator = () => {
     clothing: Shirt,
     sleep: Bed,
     health: Heart,
-    travel: Car
+    travel: Car,
+    custom: Plus
   };
 
   const ageTabs = [
@@ -148,11 +160,44 @@ const BabyCostsCalculator = () => {
     setCurrentAge(age);
   };
 
-  const handleCostChange = (itemKey, value) => {
+  const handleItemChange = (itemKey, field, value) => {
     setItemCosts(prev => ({
       ...prev,
-      [itemKey]: parseFloat(value) || 0
+      [itemKey]: {
+        ...(prev[itemKey] || {}),
+        [field]: field === 'quantity' ? parseInt(value) || 1 : parseFloat(value) || 0
+      }
     }));
+  };
+
+  const handleCustomItemChange = (field, value) => {
+    setNewCustomItem(prev => ({
+      ...prev,
+      [field]: field === 'quantity' ? parseInt(value) || 1 : value
+    }));
+  };
+
+  const addCustomItem = () => {
+    if (newCustomItem.name.trim() && newCustomItem.price > 0) {
+      const customItem = {
+        ...newCustomItem,
+        id: Date.now(),
+        totalCost: newCustomItem.quantity * newCustomItem.price
+      };
+      setCustomItems(prev => [...prev, customItem]);
+      setNewCustomItem({
+        name: '',
+        description: '',
+        quantity: 1,
+        price: 0,
+        category: 'custom'
+      });
+      setShowCustomForm(false);
+    }
+  };
+
+  const removeCustomItem = (id) => {
+    setCustomItems(prev => prev.filter(item => item.id !== id));
   };
 
   const calculateTotals = () => {
@@ -160,20 +205,31 @@ const BabyCostsCalculator = () => {
     let totalCost = 0;
     const categoryTotals = {};
 
+    // Calculate totals for predefined items
     Object.keys(data).forEach(categoryKey => {
       categoryTotals[categoryKey] = 0;
       data[categoryKey].forEach((item, index) => {
         const itemKey = `${currentAge}-${categoryKey}-${index}`;
-        const cost = itemCosts[itemKey] || item.cost;
-        categoryTotals[categoryKey] += cost;
-        totalCost += cost;
+        const itemData = itemCosts[itemKey] || {};
+        const quantity = itemData.quantity || 1;
+        const price = itemData.price || item.cost;
+        const itemTotal = quantity * price;
+        categoryTotals[categoryKey] += itemTotal;
+        totalCost += itemTotal;
       });
+    });
+
+    // Add custom items
+    categoryTotals.custom = 0;
+    customItems.forEach(item => {
+      categoryTotals.custom += item.totalCost;
+      totalCost += item.totalCost;
     });
 
     return { totalCost, categoryTotals };
   };
 
-  const { totalCost, categoryTotals } = calculateTotals();
+  const { totalCost, categoryTotals } = useMemo(() => calculateTotals(), [currentAge, itemCosts, customItems]);
 
   return (
     <div className="babycosts-page-wrapper">
@@ -215,26 +271,46 @@ const BabyCostsCalculator = () => {
                   <div className="item-list">
                     {category.map((item, index) => {
                       const itemKey = `${currentAge}-${categoryKey}-${index}`;
-                      const currentCost = itemCosts[itemKey] || item.cost;
+                      const itemData = itemCosts[itemKey] || {};
+                      const quantity = itemData.quantity || 1;
+                      const price = itemData.price || item.cost;
+                      const itemTotal = quantity * price;
                       
                       return (
                         <div key={index} className="cost-item">
                           <div className="item-info">
                             <div className="item-name">{item.name}</div>
                             <div className="item-description">{item.description}</div>
+                            <div className="item-total">Total: ${itemTotal.toLocaleString()}</div>
                           </div>
                           <div className="item-controls">
                             <span className={`priority-badge priority-${item.priority}`}>
                               {item.priority}
                             </span>
-                            <input
-                              type="number"
-                              className="cost-input"
-                              value={currentCost}
-                              onChange={(e) => handleCostChange(itemKey, e.target.value)}
-                              min="0"
-                              step="5"
-                            />
+                            <div className="quantity-price-inputs">
+                              <div className="input-group">
+                                <label>Qty:</label>
+                                <input
+                                  type="number"
+                                  className="quantity-input"
+                                  value={quantity}
+                                  onChange={(e) => handleItemChange(itemKey, 'quantity', e.target.value)}
+                                  min="1"
+                                  step="1"
+                                />
+                              </div>
+                              <div className="input-group">
+                                <label>Price:</label>
+                                <input
+                                  type="number"
+                                  className="price-input"
+                                  value={price}
+                                  onChange={(e) => handleItemChange(itemKey, 'price', e.target.value)}
+                                  min="0"
+                                  step="5"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       );
@@ -243,6 +319,104 @@ const BabyCostsCalculator = () => {
                 </div>
               );
             })}
+
+            {/* Custom Items Section */}
+            <div className="babycosts-card custom">
+              <div className="category-header">
+                <div className="category-icon">
+                  <Plus className="category-icon-svg" />
+                </div>
+                <div className="category-title">Custom Items</div>
+                <button 
+                  className="add-custom-btn"
+                  onClick={() => setShowCustomForm(!showCustomForm)}
+                >
+                  <Plus size={16} />
+                  Add 
+                </button>
+              </div>
+
+              {showCustomForm && (
+                <div className="custom-item-form">
+                  <div className="form-row">
+                    <input
+                      type="text"
+                      placeholder="Item name"
+                      value={newCustomItem.name}
+                      onChange={(e) => handleCustomItemChange('name', e.target.value)}
+                      className="custom-input"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description"
+                      value={newCustomItem.description}
+                      onChange={(e) => handleCustomItemChange('description', e.target.value)}
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="form-row">
+                    <div className="input-group">
+                      <label>Quantity:</label>
+                      <input
+                        type="number"
+                        value={newCustomItem.quantity}
+                        onChange={(e) => handleCustomItemChange('quantity', e.target.value)}
+                        min="1"
+                        className="custom-input"
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label>Price:</label>
+                      <input
+                        type="number"
+                        value={newCustomItem.price}
+                        onChange={(e) => handleCustomItemChange('price', e.target.value)}
+                        min="0"
+                        step="5"
+                        className="custom-input"
+                      />
+                    </div>
+                    <button 
+                      className="add-item-btn"
+                      onClick={addCustomItem}
+                      disabled={!newCustomItem.name.trim() || newCustomItem.price <= 0}
+                    >
+                      Add 
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="item-list">
+                {customItems.map((item) => (
+                  <div key={item.id} className="cost-item custom-item">
+                    <div className="item-info">
+                      <div className="item-name">{item.name}</div>
+                      <div className="item-description">{item.description}</div>
+                      <div className="item-total">Total: ${item.totalCost.toLocaleString()}</div>
+                    </div>
+                    <div className="item-controls">
+                      <div className="quantity-price-display">
+                        <span>Qty: {item.quantity}</span>
+                        <span>Price: ${item.price}</span>
+                      </div>
+                      <button 
+                        className="remove-item-btn"
+                        onClick={() => removeCustomItem(item.id)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {customItems.length === 0 && !showCustomForm && (
+                  <div className="no-custom-items">
+                    <p>No custom items added yet.</p>
+                    <p>Click "Add" to add your own expenses.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
