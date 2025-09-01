@@ -3,6 +3,7 @@ import './DueDateCalculator.css';
 
 const DueDateCalculator = () => {
   const [lastPeriod, setLastPeriod] = useState('');
+  const [conceptionDate, setConceptionDate] = useState('');
   const [cycleLength, setCycleLength] = useState(28);
   const [calculationMethod, setCalculationMethod] = useState('last-period');
   const [timeline, setTimeline] = useState(null);

@@ -21,7 +21,6 @@ const Profile = () => {
     edd: '',
     consultantObstetrician: '',
     mohArea: '',
-    phmArea: '',
     fieldClinic: '',
     gramaNiladhariDivision: '',
     hospitalClinic: '',
@@ -109,7 +108,7 @@ const Profile = () => {
         'name', 'phone', 'age', 'bloodGroup', 
         'height.value', 'weight.value', 'currentBMI',
         'lmp', 'edd', 'consultantObstetrician',
-        'mohArea', 'phmArea', 'fieldClinic',
+        'mohArea', 'fieldClinic',
         'gramaNiladhariDivision', 'hospitalClinic', 'nextClinicDate'
       ];
 
@@ -156,9 +155,9 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="mom-profile-container">
-        <div className="mom-profile-loading">
-          <div className="mom-loading-spinner"></div>
+      <div className="profile-container">
+        <div className="profile-loading">
+          <div className="loading-spinner"></div>
           <p>Loading profile...</p>
         </div>
       </div>
@@ -166,69 +165,68 @@ const Profile = () => {
   }
 
   return (
-    <div className="mom-profile-page">
+    <div className="profile-container">
+
+
       {message.text && (
-        <div className={`mom-message ${message.type}`}>
+        <div className={`message ${message.type}`}>
           {message.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
           {message.text}
         </div>
       )}
 
-      <div className="mom-profile-content">
-        <div className="mom-profile-main">
+      <div className="profile-form">
         {/* Personal Information Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <User className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <User size={20} />
             Personal Information
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Name *</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="name">Name *</label>
               <input
                 type="text"
+                id="name"
                 value={profile.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Enter your full name"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Phone *</label>
+            <div className="form-group">
+              <label htmlFor="phone">Phone *</label>
               <input
                 type="tel"
+                id="phone"
                 value={profile.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="Enter phone number"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Age *</label>
+            <div className="form-group">
+              <label htmlFor="age">Age *</label>
               <input
                 type="number"
+                id="age"
                 value={profile.age}
                 onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
                 placeholder="Enter age"
                 min="13"
                 max="100"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Blood Group *</label>
+            <div className="form-group">
+              <label htmlFor="bloodGroup">Blood Group *</label>
               <select
+                id="bloodGroup"
                 value={profile.bloodGroup}
                 onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
-                  className="mom-select"
                 required
               >
                 <option value="">Select blood group</option>
@@ -241,31 +239,28 @@ const Profile = () => {
         </div>
 
         {/* Physical Measurements Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <Heart className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <Heart size={20} />
             Physical Measurements
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Height *</label>
-                <div className="mom-input-with-unit">
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="height">Height *</label>
+              <div className="input-with-unit">
                 <input
                   type="number"
+                  id="height"
                   value={profile.height.value}
                   onChange={(e) => handleInputChange('height.value', parseFloat(e.target.value))}
                   placeholder="Enter height"
                   min="100"
                   max="250"
-                    className="mom-input"
                   required
                 />
                 <select
                   value={profile.height.unit}
                   onChange={(e) => handleInputChange('height.unit', e.target.value)}
-                    className="mom-select-unit"
                 >
                   <option value="cm">cm</option>
                   <option value="ft">ft</option>
@@ -273,23 +268,22 @@ const Profile = () => {
               </div>
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Weight *</label>
-                <div className="mom-input-with-unit">
+            <div className="form-group">
+              <label htmlFor="weight">Weight *</label>
+              <div className="input-with-unit">
                 <input
                   type="number"
+                  id="weight"
                   value={profile.weight.value}
                   onChange={(e) => handleInputChange('weight.value', parseFloat(e.target.value))}
                   placeholder="Enter weight"
                   min="30"
                   max="200"
-                    className="mom-input"
                   required
                 />
                 <select
                   value={profile.weight.unit}
                   onChange={(e) => handleInputChange('weight.unit', e.target.value)}
-                    className="mom-select-unit"
                 >
                   <option value="kg">kg</option>
                   <option value="lbs">lbs</option>
@@ -297,17 +291,17 @@ const Profile = () => {
               </div>
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Current BMI *</label>
+            <div className="form-group">
+              <label htmlFor="currentBMI">Current BMI *</label>
               <input
                 type="number"
+                id="currentBMI"
                 value={profile.currentBMI}
                 onChange={(e) => handleInputChange('currentBMI', parseFloat(e.target.value))}
                 placeholder="Enter BMI"
                 min="15"
                 max="50"
                 step="0.1"
-                  className="mom-input"
                 required
               />
             </div>
@@ -315,55 +309,53 @@ const Profile = () => {
         </div>
 
         {/* Medical Information Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <Calendar className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <Calendar size={20} />
             Medical Information
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Last Menstrual Period (LMP) *</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="lmp">Last Menstrual Period (LMP) *</label>
               <input
                 type="date"
+                id="lmp"
                 value={formatDateForInput(profile.lmp)}
                 onChange={(e) => handleInputChange('lmp', e.target.value)}
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Expected Due Date (EDD) *</label>
+            <div className="form-group">
+              <label htmlFor="edd">Expected Due Date (EDD) *</label>
               <input
                 type="date"
+                id="edd"
                 value={formatDateForInput(profile.edd)}
                 onChange={(e) => handleInputChange('edd', e.target.value)}
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Next Clinic Date *</label>
+            <div className="form-group">
+              <label htmlFor="nextClinicDate">Next Clinic Date *</label>
               <input
                 type="date"
+                id="nextClinicDate"
                 value={formatDateForInput(profile.nextClinicDate)}
                 onChange={(e) => handleInputChange('nextClinicDate', e.target.value)}
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Consultant Obstetrician *</label>
+            <div className="form-group">
+              <label htmlFor="consultantObstetrician">Consultant Obstetrician *</label>
               <input
                 type="text"
+                id="consultantObstetrician"
                 value={profile.consultantObstetrician}
                 onChange={(e) => handleInputChange('consultantObstetrician', e.target.value)}
                 placeholder="Enter consultant name"
-                  className="mom-input"
                 required
               />
             </div>
@@ -371,70 +363,56 @@ const Profile = () => {
         </div>
 
         {/* Location Information Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <MapPin className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <MapPin size={20} />
             Location Information
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">MOH Area *</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="mohArea">MOH Area *</label>
               <input
                 type="text"
+                id="mohArea"
                 value={profile.mohArea}
                 onChange={(e) => handleInputChange('mohArea', e.target.value)}
                 placeholder="Enter MOH area"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">PHM Area *</label>
+            <div className="form-group">
+              <label htmlFor="fieldClinic">Field Clinic *</label>
               <input
                 type="text"
-                value={profile.phmArea}
-                onChange={(e) => handleInputChange('phmArea', e.target.value)}
-                placeholder="Enter PHM area"
-                  className="mom-input"
-                required
-              />
-            </div>
-
-              <div className="mom-info-item">
-                <label className="mom-info-label">Field Clinic *</label>
-              <input
-                type="text"
+                id="fieldClinic"
                 value={profile.fieldClinic}
                 onChange={(e) => handleInputChange('fieldClinic', e.target.value)}
                 placeholder="Enter field clinic"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Grama Niladhari Division *</label>
+            <div className="form-group">
+              <label htmlFor="gramaNiladhariDivision">Grama Niladhari Division *</label>
               <input
                 type="text"
+                id="gramaNiladhariDivision"
                 value={profile.gramaNiladhariDivision}
                 onChange={(e) => handleInputChange('gramaNiladhariDivision', e.target.value)}
                 placeholder="Enter GN division"
-                  className="mom-input"
                 required
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Hospital Clinic *</label>
+            <div className="form-group">
+              <label htmlFor="hospitalClinic">Hospital Clinic *</label>
               <input
                 type="text"
+                id="hospitalClinic"
                 value={profile.hospitalClinic}
                 onChange={(e) => handleInputChange('hospitalClinic', e.target.value)}
                 placeholder="Enter hospital clinic"
-                  className="mom-input"
                 required
               />
             </div>
@@ -442,77 +420,73 @@ const Profile = () => {
         </div>
 
         {/* Emergency Contact Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <Phone className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <Phone size={20} />
             Emergency Contact
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Emergency Contact Name</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="emergencyName">Emergency Contact Name</label>
               <input
                 type="text"
+                id="emergencyName"
                 value={profile.emergencyContact.name}
                 onChange={(e) => handleInputChange('emergencyContact.name', e.target.value)}
                 placeholder="Enter emergency contact name"
-                  className="mom-input"
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Emergency Contact Phone</label>
+            <div className="form-group">
+              <label htmlFor="emergencyPhone">Emergency Contact Phone</label>
               <input
                 type="tel"
+                id="emergencyPhone"
                 value={profile.emergencyContact.phone}
                 onChange={(e) => handleInputChange('emergencyContact.phone', e.target.value)}
                 placeholder="Enter emergency contact phone"
-                  className="mom-input"
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Relationship</label>
+            <div className="form-group">
+              <label htmlFor="emergencyRelationship">Relationship</label>
               <input
                 type="text"
+                id="emergencyRelationship"
                 value={profile.emergencyContact.relationship}
                 onChange={(e) => handleInputChange('emergencyContact.relationship', e.target.value)}
                 placeholder="Enter relationship"
-                  className="mom-input"
               />
             </div>
           </div>
         </div>
 
         {/* Current Pregnancy Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <Stethoscope className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <Stethoscope size={20} />
             Current Pregnancy
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Pregnancy Week</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="pregnancyWeek">Pregnancy Week</label>
               <input
                 type="number"
+                id="pregnancyWeek"
                 value={profile.currentPregnancy.week}
                 onChange={(e) => handleInputChange('currentPregnancy.week', parseInt(e.target.value))}
                 placeholder="Enter pregnancy week"
                 min="1"
                 max="42"
-                  className="mom-input"
               />
             </div>
 
-              <div className="mom-info-item">
-                <label className="mom-info-label">Trimester</label>
+            <div className="form-group">
+              <label htmlFor="trimester">Trimester</label>
               <select
+                id="trimester"
                 value={profile.currentPregnancy.trimester}
                 onChange={(e) => handleInputChange('currentPregnancy.trimester', parseInt(e.target.value))}
-                  className="mom-select"
               >
                 <option value="">Select trimester</option>
                 {trimesters.map(trimester => (
@@ -521,8 +495,8 @@ const Profile = () => {
               </select>
             </div>
 
-              <div className="mom-info-item mom-checkbox-group">
-                <label className="mom-checkbox-label">
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={profile.currentPregnancy.isHighRisk}
@@ -535,49 +509,46 @@ const Profile = () => {
         </div>
 
         {/* Medical History Section */}
-          <div className="mom-profile-section">
-            <div className="mom-section-header">
-              <h3>
-                <Heart className="mom-section-icon" />
+        <div className="form-section">
+          <h2 className="section-title">
+            <Heart size={20} />
             Medical History
-              </h3>
-            </div>
-            <div className="mom-info-grid">
-              <div className="mom-info-item">
-                <label className="mom-info-label">Previous Pregnancies</label>
+          </h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="previousPregnancies">Previous Pregnancies</label>
               <input
                 type="number"
+                id="previousPregnancies"
                 value={profile.medicalHistory.previousPregnancies}
                 onChange={(e) => handleArrayFieldChange('medicalHistory', 'previousPregnancies', parseInt(e.target.value))}
                 placeholder="Number of previous pregnancies"
                 min="0"
-                  className="mom-input"
               />
             </div>
           </div>
         </div>
 
         {/* Save Button */}
-          <div className="mom-form-actions">
+        <div className="form-actions">
           <button
             type="button"
-              className="mom-btn mom-btn-primary"
+            className="save-button"
             onClick={handleSave}
             disabled={saving}
           >
             {saving ? (
               <>
-                  <div className="mom-loading-spinner-small"></div>
+                <div className="loading-spinner-small"></div>
                 Saving...
               </>
             ) : (
               <>
-                  <Save className="mom-btn-icon" />
+                <Save size={20} />
                 Save Profile
               </>
             )}
           </button>
-          </div>
         </div>
       </div>
     </div>

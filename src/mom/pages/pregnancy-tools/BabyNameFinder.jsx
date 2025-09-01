@@ -1,58 +1,80 @@
-import React, { useEffect, useState } from 'react';
-import { Search, Star, Heart, User, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Star, Heart, User, Sparkles, Volume2, Venus } from 'lucide-react';
+import { babyNamesAPI } from '../../../services/api';
 
 const BabyNameFinder = () => {
   const [selectedGender, setSelectedGender] = useState('All Genders');
   const [selectedLetter, setSelectedLetter] = useState('Any Letter');
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  
-
-  const [names, setNames] = useState([]);
+  const [babyNames, setBabyNames] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState(null);
 
-  const mapGenderToApi = (uiGender) => {
-    if (!uiGender || uiGender === 'All Genders') return undefined;
-    const lower = uiGender.toLowerCase();
-    if (lower.startsWith('girl')) return 'girl';
-    if (lower.startsWith('boy')) return 'boy';
-    return 'unisex';
+  // Load baby names on component mount
+  useEffect(() => {
+    loadBabyNames();
+  }, []);
+
+  // Load baby names when filters change
+  useEffect(() => {
+    loadBabyNames();
+  }, [selectedGender, selectedLetter, searchQuery]);
+
+  const loadBabyNames = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const params = {};
+      if (selectedGender !== 'All Genders') params.gender = selectedGender;
+      if (selectedLetter !== 'Any Letter') params.letter = selectedLetter;
+      if (searchQuery) params.search = searchQuery;
+      
+      console.log('Loading baby names with params:', params);
+      console.log('Selected gender:', selectedGender);
+      
+      const response = await babyNamesAPI.getAll(params);
+      console.log('API response:', response);
+      setBabyNames(response.data || []);
+    } catch (err) {
+      setError('Failed to load baby names');
+      console.error('Error loading baby names:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300);
-    return () => clearTimeout(t);
-  }, [searchQuery]);
+  const handleLike = async (nameId) => {
+    try {
+      await babyNamesAPI.like(nameId);
+      // Reload names to get updated like count
+      loadBabyNames();
+    } catch (err) {
+      console.error('Error liking name:', err);
+    }
+  };
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchNames = async () => {
-      try {
-        setLoading(true);
-        const params = new URLSearchParams();
-        const apiGender = mapGenderToApi(selectedGender);
-        if (apiGender) params.set('gender', apiGender);
-        if (selectedLetter !== 'Any Letter') params.set('startsWith', selectedLetter);
-        if (debouncedQuery) params.set('search', debouncedQuery);
-        params.set('page', String(page));
-        params.set('limit', '50');
-        const res = await fetch(`/api/baby-names?${params.toString()}`, { signal: controller.signal });
-        const data = await res.json();
-        setNames(data.items || []);
-        setTotalPages(data.pages || 1);
-      } catch (e) {
-        if (e.name !== 'AbortError') console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNames();
-    return () => controller.abort();
-  }, [selectedGender, selectedLetter, debouncedQuery, page]);
+  const handleGenderChange = (gender) => {
+    console.log('Gender changed to:', gender);
+    setSelectedGender(gender);
+  };
 
-  
+  const handleLetterChange = (letter) => {
+    setSelectedLetter(letter);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setSelectedGender('All Genders');
+    setSelectedLetter('Any Letter');
+    setSearchQuery('');
+  };
+
+  // Generate alphabet letters for filtering
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   return (
     <div style={{
@@ -114,305 +136,229 @@ const BabyNameFinder = () => {
               }} />
               <input
                 type="text"
-                placeholder="Search for the Perfect Name"
+                placeholder="Search names or meanings..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 style={{
                   width: '100%',
-                  paddingLeft: '3rem',
-                  paddingRight: '4rem',
-                  paddingTop: '1rem',
-                  paddingBottom: '1rem',
-                  fontSize: '1.125rem',
+                  padding: '0.875rem 1rem 0.875rem 3rem',
                   border: '2px solid #e5e7eb',
-                  borderRadius: '9999px',
+                  borderRadius: '0.75rem',
+                  fontSize: '1rem',
                   outline: 'none',
-                  transition: 'all 0.2s ease-in-out'
+                  transition: 'border-color 0.2s',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)'
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#ec4899';
-                  e.target.style.boxShadow = '0 0 0 4px rgba(236, 72, 153, 0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e5e7eb';
-                  e.target.style.boxShadow = 'none';
-                }}
+                onFocus={(e) => e.target.style.borderColor = '#9333ea'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
               />
-              <button style={{
-                position: 'absolute',
-                right: '0.5rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: '#ec4899',
-                border: 'none',
-                color: 'white',
-                padding: '0.75rem',
-                borderRadius: '9999px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.background = '#db2777'}
-              onMouseLeave={(e) => e.target.style.background = '#ec4899'}>
-                <Search style={{ width: '1rem', height: '1rem' }} />
-              </button>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Search by name, meaning, or letter</p>
-            </div>
-
-            
-
-            {/* Gender Cards */}
-            <div style={{ marginBottom: '2rem' }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#111827',
-                marginBottom: '1rem'
-              }}>Browse Baby Names By Gender</h2>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: window.innerWidth >= 1024 ? 'repeat(3, 1fr)' : window.innerWidth >= 768 ? 'repeat(3, 1fr)' : '1fr',
-                gap: '1.5rem',
-                background: 'rgba(17,24,39,0.02)',
-                padding: '1.25rem',
-                borderRadius: '1.25rem'
-              }}>
-                {[
-                  { key: 'Girls', label: 'Girl', color: '#ec4899', emoji: '♀' },
-                  { key: 'Boys', label: 'Boy', color: '#3b82f6', emoji: '♂' },
-                  { key: 'Neutral', label: 'Unisex', color: '#8b5cf6', emoji: '⚧' }
-                ].map(card => (
-                  <button key={card.key} onClick={() => { setSelectedGender(card.key); setPage(1); }} style={{
-                    border: 'none',
-                    background: 'white',
-                    borderRadius: '0.75rem',
-                    padding: '2rem',
-                    boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.75rem',
-                    cursor: 'pointer'
-                  }}>
-                    <span style={{ fontSize: '2.25rem', color: card.color }}>{card.emoji}</span>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827' }}>{card.label}</span>
+            {/* Filter Buttons */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {/* Gender Filter */}
+              <div style={{ display: 'flex', gap: '0.25rem' }}>
+                {['All Genders', 'girl', 'boy'].map((gender) => (
+                  <button
+                    key={gender}
+                    onClick={() => handleGenderChange(gender)}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      backgroundColor: selectedGender === gender ? '#9333ea' : 'rgba(255, 255, 255, 0.6)',
+                      color: selectedGender === gender ? 'white' : '#374151',
+                      border: selectedGender === gender ? 'none' : '1px solid #e5e7eb'
+                    }}
+                  >
+                    {gender === 'All Genders' ? 'All' : gender === 'girl' ? '👧 Girls' : '👦 Boys'}
                   </button>
                 ))}
               </div>
-            </div>
 
-            {/* Alphabet Buttons */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#111827',
-                marginBottom: '1rem'
-              }}>Browse Baby Names By Alphabet</h2>
-              <div style={{
-                background: 'rgba(17,24,39,0.02)',
-                padding: '1.25rem',
-                borderRadius: '1.25rem'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem'
-                }}>
-                  {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(letter => (
-                    <button key={letter} onClick={() => { setSelectedLetter(letter); setPage(1); }} style={{
-                      background: 'white',
-                      border: '2px solid #f472b6',
-                      color: '#111827',
-                      borderRadius: '0.75rem',
-                      width: '3rem',
-                      height: '3rem',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}>{letter}</button>
-                  ))}
-                </div>
-                {/* Pagination mock */}
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem' }}>
-                  {[1,2].map(n => (
-                    <button key={n} style={{
-                      background: n === 1 ? '#0ea5e9' : 'white',
-                      color: n === 1 ? 'white' : '#111827',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '9999px',
-                      width: '3rem',
-                      height: '3rem',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}>{n}</button>
-                  ))}
-                  <button aria-label="Next" style={{
-                    background: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '9999px',
-                    width: '3rem',
-                    height: '3rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}>»</button>
-                </div>
+              {/* Letter Filter */}
+              <div style={{ display: 'flex', gap: '0.25rem' }}>
+                {['Any Letter', ...alphabet.slice(0, 8)].map((letter) => (
+                  <button
+                    key={letter}
+                    onClick={() => handleLetterChange(letter)}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      backgroundColor: selectedLetter === letter ? '#ec4899' : 'rgba(255, 255, 255, 0.6)',
+                      color: selectedLetter === letter ? 'white' : '#374151',
+                      border: selectedLetter === letter ? 'none' : '1px solid #e5e7eb',
+                      minWidth: '2.5rem'
+                    }}
+                  >
+                    {letter}
+                  </button>
+                ))}
               </div>
-            </div>
 
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: '#6b7280', fontWeight: '500' }}>
-                {loading ? 'Loading names...' : `Showing ${names.length} names`}
-              </p>
+              {/* Clear Filters */}
+              <button
+                onClick={clearFilters}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                  color: '#374151'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.6)'}
+              >
+                Clear
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Names Grid */}
+        {/* Results Section */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: window.innerWidth >= 1024 ? 'repeat(3, 1fr)' : window.innerWidth >= 768 ? 'repeat(2, 1fr)' : '1fr',
-          gap: '1.5rem',
-          marginBottom: '2rem'
+          background: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: '1.5rem',
+          padding: '2rem',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
-          {names.map((name, index) => (
-            <div key={index} style={{
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(12px)',
-              borderRadius: '1rem',
-              padding: '1.5rem',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '1rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 'bold',
-                  color: '#1f2937'
-                }}>{name.name}</h3>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button style={{
-                    padding: '0.5rem',
-                    border: 'none',
-                    background: 'none',
-                    borderRadius: '9999px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = '#fef2f2'}
-                  onMouseLeave={(e) => e.target.style.background = 'none'}>
-                    <Heart style={{
-                      width: '1.25rem',
-                      height: '1.25rem',
-                      color: '#9ca3af'
-                    }} />
-                  </button>
-                  <button style={{
-                    padding: '0.5rem',
-                    border: 'none',
-                    background: 'none',
-                    borderRadius: '9999px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = '#eff6ff'}
-                  onMouseLeave={(e) => e.target.style.background = 'none'}>
-                    <User style={{
-                      width: '1.25rem',
-                      height: '1.25rem',
-                      color: '#9ca3af'
-                    }} />
-                  </button>
-                </div>
+          {/* Results Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#374151' }}>
+              {loading ? 'Loading...' : `${babyNames.length} Baby Names Found`}
+            </h2>
+            {error && (
+              <div style={{ color: '#dc2626', fontSize: '0.875rem' }}>
+                {error}
               </div>
-              
-              <p style={{
-                color: '#6b7280',
-                fontSize: '0.875rem',
-                marginBottom: '1rem',
-                lineHeight: '1.5'
-              }}>
-                {name.meaning || '—'}
-              </p>
-              
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <div />
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  background: '#f3f4f6',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '9999px'
-                }}>
-                  <Heart style={{
-                    width: '1rem',
-                    height: '1rem',
-                    color: '#ec4899'
-                  }} />
-                  <span style={{
-                    fontSize: '0.875rem',
-                    color: '#6b7280',
-                    fontWeight: '500'
-                  }}>{name.likes}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            )}
+          </div>
 
-        {/* Discover More Button */}
-        <div style={{ textAlign: 'center' }}>
-          <button style={{
-            background: 'linear-gradient(90deg, #ec4899, #9333ea)',
-            border: 'none',
-            color: 'white',
-            fontWeight: '600',
-            padding: '1rem 2rem',
-            borderRadius: '9999px',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = 'linear-gradient(90deg, #db2777, #7c3aed)';
-            e.target.style.transform = 'scale(1.05)';
-            e.target.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = 'linear-gradient(90deg, #ec4899, #9333ea)';
-            e.target.style.transform = 'scale(1)';
-            e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-          }}>
-            <span style={{ fontSize: '1.25rem' }}>✨</span>
-            <span style={{ fontSize: '1rem' }}>Discover More Beautiful Names</span>
-          </button>
+          {/* Names Grid */}
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '3rem' }}>
+              <div style={{
+                width: '3rem',
+                height: '3rem',
+                border: '4px solid #e5e7eb',
+                borderTop: '4px solid #9333ea',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem'
+              }} />
+              <p style={{ color: '#6b7280' }}>Finding perfect names for you...</p>
+            </div>
+          ) : babyNames.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+              <p>No names found matching your criteria.</p>
+              <p>Try adjusting your search or filters.</p>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(20rem, 1fr))',
+              gap: '1.5rem'
+            }}>
+              {babyNames.map((name) => (
+                <div key={name._id} style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  borderRadius: '1rem',
+                  padding: '1.5rem',
+                  border: '1px solid #e5e7eb',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-4px)';
+                  e.target.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}
+                >
+                  {/* Name Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Heart style={{ 
+                        color: '#ec4899', 
+                        width: '1.25rem', 
+                        height: '1.25rem',
+                        cursor: 'pointer'
+                      }} 
+                      onClick={() => handleLike(name._id)}
+                      />
+                      <h3 style={{ 
+                        fontSize: '1.25rem', 
+                        fontWeight: '600', 
+                        color: '#1f2937',
+                        margin: 0
+                      }}>
+                        {name.name}
+                      </h3>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Volume2 style={{ color: '#6b7280', width: '1rem', height: '1rem' }} />
+                      <Venus style={{ color: '#ec4899', width: '1rem', height: '1rem' }} />
+                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        {name.gender === 'girl' ? 'Girl' : name.gender === 'boy' ? 'Boy' : 'Unisex'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Meaning */}
+                  <p style={{ 
+                    color: '#4b5563', 
+                    fontSize: '0.875rem', 
+                    lineHeight: '1.5',
+                    marginBottom: '1rem'
+                  }}>
+                    {name.meaning}
+                  </p>
+
+                  {/* Popularity and Likes */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Star style={{ color: '#eab308', width: '1rem', height: '1rem' }} />
+                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        {name.popularity}/100
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Heart style={{ color: '#ec4899', width: '1rem', height: '1rem' }} />
+                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        {name.likes}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
