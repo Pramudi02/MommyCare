@@ -314,15 +314,29 @@
   border-color: #667eea;
 }
 
-.chat-status-indicator {
+.chat-role-tag {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid white;
-  border-radius: 50%;
+  bottom: -2px;
+  right: -2px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid white;
+}
+
+.chat-role-tag.doctor {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.chat-role-tag.mom {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
 }
 
 .chat-provider-info {
@@ -558,15 +572,29 @@
   transition: all 0.3s ease;
 }
 
-.chat-header-status {
+.chat-header-role-tag {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 1rem;
-  height: 1rem;
+  bottom: -3px;
+  right: -3px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border: 2px solid white;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header-role-tag.doctor {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.chat-header-role-tag.mom {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
 }
 
 .chat-header-details h3 {
@@ -592,10 +620,12 @@
   font-weight: 600;
 }
 
-.chat-availability {
-  color: #10b981;
-  font-weight: 600;
+.chat-specialty {
+  color: #6b7280;
+  font-weight: 500;
   font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .chat-header-actions {

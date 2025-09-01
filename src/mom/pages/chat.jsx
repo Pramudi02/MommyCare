@@ -1026,10 +1026,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               >
                 <div className="chat-provider-avatar">
                   <img src={provider.avatar} alt={provider.name} />
-                  <div 
-                    className="chat-status-indicator"
-                    style={{ backgroundColor: getStatusColor(provider.status) }}
-                  ></div>
                 </div>
                 
                 <div className="chat-provider-info">
@@ -1088,18 +1084,14 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               {/* Chat Header */}
               <div className="chat-main-header">
                 <div className="chat-header-info">
-                  <div className="chat-header-avatar">
-                    <img src={getProviderById(selectedChat)?.avatar} alt="Provider" />
-                    <div 
-                      className="chat-header-status"
-                      style={{ backgroundColor: getStatusColor(getProviderById(selectedChat)?.status) }}
-                    ></div>
-                  </div>
+                                  <div className="chat-header-avatar">
+                  <img src={getProviderById(selectedChat)?.avatar} alt="Provider" />
+                </div>
                   
                   <div className="chat-header-details">
                     <h3>{getProviderById(selectedChat)?.name}</h3>
-                    <span className="chat-availability">
-                      {getStatusText(getProviderById(selectedChat)?.status)}
+                    <span className="chat-specialty">
+                      {getProviderById(selectedChat)?.specialty}
                     </span>
                   </div>
                 </div>

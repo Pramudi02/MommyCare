@@ -22,72 +22,122 @@
 .midwife-chat-page-sidebar {
   width: 380px;
   background: white;
-  border-right: 2px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.midwife-chat-page-header {
+  background: white;
+  color: #1f2937;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.midwife-chat-page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.midwife-chat-page-header-left h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.midwife-chat-page-close-btn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.midwife-chat-page-close-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
 }
 
 /* Search Section */
 .midwife-chat-page-search {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
   position: relative;
 }
 
 .midwife-chat-page-search input {
   width: 100%;
-  padding: 0.875rem 1rem 0.875rem 2.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 1rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
   font-size: 0.875rem;
   outline: none;
   transition: all 0.3s ease;
   background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .midwife-chat-page-search input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
 .midwife-chat-page-search svg {
   position: absolute;
-  left: 2rem;
+  left: 1.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
   z-index: 1;
 }
 
-/* Filter Section */
-.midwife-chat-page-filter {
-  padding: 1rem 1.5rem;
+/* Filter Tabs */
+.midwife-chat-page-filter-tabs {
+  display: flex;
   background: white;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 1.5rem;
+}
+
+.midwife-chat-page-tab {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  background: white;
+  border: none;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.midwife-chat-page-filter select {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  outline: none;
-  transition: all 0.3s ease;
-  background: white;
-  cursor: pointer;
+.midwife-chat-page-tab.active {
+  color: white;
+  background: #10b981;
 }
 
-.midwife-chat-page-filter select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+.midwife-chat-page-tab:hover:not(.active) {
+  background: #f9fafb;
+  color: #374151;
 }
 
 /* Conversations List */
@@ -99,47 +149,49 @@
 
 .midwife-chat-page-conversation {
   display: flex;
+  align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 0.5rem;
   background: white;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #f3f4f6;
+  position: relative;
 }
 
 .midwife-chat-page-conversation:hover {
-  background: #f8fafc;
-  border-color: #e2e8f0;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  background: #f9fafb;
 }
 
 .midwife-chat-page-conversation.active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-  border-color: #10b981;
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid #10b981;
 }
 
 .midwife-chat-page-avatar {
   flex-shrink: 0;
+  position: relative;
 }
 
-.midwife-chat-page-avatar img {
-  width: 3.5rem;
-  height: 3.5rem;
+.midwife-chat-page-avatar-initials {
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #e2e8f0;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  position: relative;
 }
 
-.midwife-chat-page-conversation:hover .midwife-chat-page-avatar img {
-  border-color: #10b981;
-  transform: scale(1.05);
+.midwife-chat-page-avatar-initials.doctor {
+  background: #6366f1;
+}
+
+.midwife-chat-page-avatar-initials.midwife {
+  background: #f97316;
 }
 
 .midwife-chat-page-details {
@@ -148,24 +200,35 @@
 }
 
 .midwife-chat-page-name {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 0.25rem;
-  line-height: 1.2;
-}
-
-.midwife-chat-page-role {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .midwife-chat-page-specialty {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.midwife-chat-page-message-status {
   font-size: 0.75rem;
   color: #9ca3af;
   font-weight: 500;
+}
+
+.midwife-chat-page-new-indicator {
+  font-size: 0.65rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-left: auto;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }

@@ -493,26 +493,50 @@ const MidwifeChat = () => {
       <div className="midwife-chat-page-content">
         {/* Sidebar - Users List */}
         <div className="midwife-chat-page-sidebar">
+          {/* Header */}
+          <div className="midwife-chat-page-header">
+            <div className="midwife-chat-page-header-left">
+              <MessageCircle size={20} />
+              <h2>Healthcare Chat</h2>
+            </div>
+            <button className="midwife-chat-page-close-btn">
+              <X size={18} />
+            </button>
+          </div>
+          
+          {/* Search Bar */}
           <div className="midwife-chat-page-search">
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search your assigned midwife and doctors..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
-          <div className="midwife-chat-page-filter">
-            <Filter size={16} />
-            <select 
-              value={filterType} 
-              onChange={(e) => setFilterType(e.target.value)}
+          {/* Filter Tabs */}
+          <div className="midwife-chat-page-filter-tabs">
+            <button 
+              className={`midwife-chat-page-tab ${filterType === 'all' ? 'active' : ''}`}
+              onClick={() => setFilterType('all')}
             >
-              <option value="all">All Users</option>
-              <option value="doctor">Doctors Only</option>
-              <option value="mom">Moms Only</option>
-            </select>
+              ALL
+            </button>
+            <button 
+              className={`midwife-chat-page-tab ${filterType === 'doctor' ? 'active' : ''}`}
+              onClick={() => setFilterType('doctor')}
+            >
+              <Stethoscope size={14} />
+              DOCTORS
+            </button>
+            <button 
+              className={`midwife-chat-page-tab ${filterType === 'mom' ? 'active' : ''}`}
+              onClick={() => setFilterType('mom')}
+            >
+              <User size={14} />
+              MOMS
+            </button>
           </div>
 
           <div className="midwife-chat-page-conversations">
@@ -531,18 +555,24 @@ const MidwifeChat = () => {
                   onClick={() => selectChat(provider)}
                 >
                   <div className="midwife-chat-page-avatar">
-                    <img src={provider.avatar} alt={provider.name} />
+                    <div className={`midwife-chat-page-avatar-initials ${provider.role === 'doctor' ? 'doctor' : 'midwife'}`}>
+                      {provider.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </div>
                   </div>
                   <div className="midwife-chat-page-details">
                     <div className="midwife-chat-page-name">
                       {provider.name}
                     </div>
-                    <div className="midwife-chat-page-role">
-                      {provider.role === 'doctor' ? '👩‍⚕️ Doctor' : '🤱 Mom'}
-                    </div>
                     <div className="midwife-chat-page-specialty">
+                      <Stethoscope size={12} />
                       {provider.specialty}
                     </div>
+                    <div className="midwife-chat-page-message-status">
+                      No messages yet
+                    </div>
+                  </div>
+                  <div className="midwife-chat-page-new-indicator">
+                    New
                   </div>
                 </div>
               ))
