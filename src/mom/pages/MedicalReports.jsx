@@ -242,7 +242,7 @@ const MedicalReports = () => {
                 </button>
               </div>
             </div>
-          </div>
+                      </div>
         </div>
       </div>
     </div>

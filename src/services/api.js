@@ -229,6 +229,25 @@ export const vaccinationAPI = {
 export const doctorAPI = {
   getDashboard: async () => apiRequest('/doctor/dashboard'),
   searchPatients: async (q) => apiRequest(`/doctor/patients${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  getMyPatients: async () => apiRequest('/doctor/my-patients'),
+  getAvailableMoms: async () => apiRequest('/doctor/available-moms'),
+  assignPatient: async (momId) => apiRequest('/doctor/assign-patient', {
+    method: 'POST',
+    body: JSON.stringify({ momId })
+  }),
+  getPatientDetails: async (patientId) => apiRequest(`/doctor/patient/${patientId}`),
+  // Medical records
+  getMedicalRecordPatients: async () => apiRequest('/doctor/medical-records/patients'),
+  getMedicalRecordsByPatient: async (patientId) => apiRequest(`/doctor/medical-records/${patientId}`),
+  createMedicalRecord: async (patientId, payload) => apiRequest(`/doctor/medical-records/${patientId}`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  updateMedicalRecord: async (reportId, payload) => apiRequest(`/doctor/medical-records/${reportId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  deleteMedicalRecord: async (reportId) => apiRequest(`/doctor/medical-records/${reportId}`, { method: 'DELETE' }),
   getAppointments: async (params = {}) => {
     const query = new URLSearchParams();
     if (params.start) query.set('start', params.start);
@@ -251,6 +270,7 @@ export const doctorAPI = {
   respondToRequest: async (id, response) => apiRequest(`/doctor/appointment-requests/${id}/respond`, {
     method: 'PUT',
     body: JSON.stringify(response)
+
   })
 };
 

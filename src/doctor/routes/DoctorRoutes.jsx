@@ -9,6 +9,8 @@ import ViewAllAppointments from '../pages/ViewAllAppointments';
 import AppointmentRequests from '../pages/AppointmentRequests';
 import Prescriptions from '../pages/Prescriptions';
 import MedicalRecords from '../pages/MedicalRecords';
+import ViewMedicalRecords from '../pages/ViewMedicalRecords';
+import SubmitMedicalRecord from '../pages/SubmitMedicalRecord';
 import Analytics from '../pages/Analytics';
 import Settings from '../pages/Settings';
 import PatientDetails from '../pages/PatientDetails';
@@ -25,10 +27,12 @@ export default (
     <Route path="appointment-requests" element={<AppointmentRequests />} />
     <Route path="prescriptions" element={<Prescriptions />} />
     <Route path="medical-records" element={<MedicalRecords />} />
+    <Route path="medical-records/view/:patientId" element={<ViewMedicalRecords />} />
+    <Route path="medical-records/submit/:patientId" element={<SubmitMedicalRecord />} />
     <Route path="analytics" element={<Analytics />} />
     <Route path="chat" element={<DoctorChat />} />
     <Route path="settings" element={<Settings />} />
     <Route path="profile" element={<EditProfile />} />
-    <Route path="patients/PatientDetails" element={<PatientDetails/>} />
+    <Route path="patient-details/:patientId" element={<PatientDetails/>} />
   </Route>
 ); 
