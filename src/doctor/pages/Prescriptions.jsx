@@ -259,9 +259,6 @@ const Prescriptions = () => {
               {filteredPrescriptions.map(prescription => (
                 <div key={prescription.id} className="doctor-prescription-card">
                   <div className="doctor-prescription-card__header">
-                    <div className="doctor-prescription-card__avatar">
-                      <img src={prescription.image} alt={prescription.patient} />
-                    </div>
                     <div className="doctor-prescription-card__status">
                       <span 
                         className="doctor-prescription-status-badge"
@@ -350,7 +347,6 @@ const Prescriptions = () => {
                 <div className="info-row">
                   <label>Patient:</label>
                   <div className="patient-info">
-                    <img src={selectedPrescription.image} alt={selectedPrescription.patient} />
                     <span>{selectedPrescription.patient}</span>
                   </div>
                 </div>

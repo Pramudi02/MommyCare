@@ -352,6 +352,16 @@ export const doctorAPI = {
     body: JSON.stringify(payload)
   }),
   deleteMedicalRecord: async (reportId) => apiRequest(`/doctor/medical-records/${reportId}`, { method: 'DELETE' }),
+  // Doctor Profile
+  getProfile: async () => apiRequest('/doctor/profile'),
+  createProfile: async (profileData) => apiRequest('/doctor/profile', {
+    method: 'POST',
+    body: JSON.stringify(profileData)
+  }),
+  updateProfile: async (profileData) => apiRequest('/doctor/profile', {
+    method: 'PUT',
+    body: JSON.stringify(profileData)
+  }),
   getAppointments: async (params = {}) => {
     const query = new URLSearchParams();
     if (params.start) query.set('start', params.start);
@@ -375,6 +385,16 @@ export const doctorAPI = {
     method: 'PUT',
     body: JSON.stringify(response)
 
+  }),
+  // Permission Requests
+  getPermissionRequests: async () => apiRequest('/doctor/permission-requests'),
+  getPermissionRequestById: async (requestId) => apiRequest(`/doctor/permission-request/${requestId}`),
+  updatePermissionRequest: async (requestId, updateData) => apiRequest(`/doctor/permission-request/${requestId}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  }),
+  cancelPermissionRequest: async (requestId) => apiRequest(`/doctor/permission-request/${requestId}`, {
+    method: 'DELETE'
   })
 };
 

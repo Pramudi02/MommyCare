@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers, FiFileText, FiEye, FiChevronDown, FiList } from 'react-icons/fi';
+import { FiCalendar, FiPlus, FiMapPin, FiBell, FiX, FiCheck, FiClock, FiUser, FiActivity, FiPlay, FiUsers, FiFileText, FiEye, FiChevronDown } from 'react-icons/fi';
 import './Appointments.css';
 import { useNavigate } from 'react-router-dom';
 import { doctorAPI } from '../../services/api';
 import AppointmentsCalendar from './appointments/AppointmentsCalendar';
-import AppointmentsList from './appointments/AppointmentsList';
 
 const Appointments = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'list'
   const [appointments, setAppointments] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
 
@@ -162,46 +160,19 @@ const Appointments = () => {
             <div className="appointments-calendar__calendar-section">
               <div className="appointments-calendar__section-header">
               <h2>Appointment Views</h2>
-            <div className="view-toggle">
-              <button 
-                className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
-                onClick={() => setViewMode('calendar')}
-              >
-                    <FiCalendar size={16} />
-                    Calendar
-              </button>
-              <button 
-                className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-                onClick={() => setViewMode('list')}
-              >
-                    <FiList size={16} />
-                    List
-              </button>
-            </div>
+
           </div>
 
-          {viewMode === 'calendar' && (
-                <AppointmentsCalendar
-                  selectedDate={selectedDate}
-                  appointments={appointments}
-                  onDateClick={handleDateClick}
-                  onAppointmentClick={handleAppointmentClick}
-                  getAppointmentsForDate={getAppointmentsForDate}
-                  generateCalendarDays={generateCalendarDays}
-                  getMonthName={getMonthName}
-                  changeMonth={changeMonth}
-                />
-              )}
-
-      {viewMode === 'list' && (
-                <AppointmentsList
-                  appointments={appointments}
-                  getStatusColor={getStatusColor}
-                  getPriorityColor={getPriorityColor}
-                  formatTime={formatTime}
-                  onNewAppointment={() => navigate('/doctor/appointments/new')}
-                />
-              )}
+          <AppointmentsCalendar
+            selectedDate={selectedDate}
+            appointments={appointments}
+            onDateClick={handleDateClick}
+            onAppointmentClick={handleAppointmentClick}
+            getAppointmentsForDate={getAppointmentsForDate}
+            generateCalendarDays={generateCalendarDays}
+            getMonthName={getMonthName}
+            changeMonth={changeMonth}
+          />
             </div>
 
             <div className="appointments-calendar__requests-section">

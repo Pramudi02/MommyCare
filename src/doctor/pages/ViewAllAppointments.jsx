@@ -341,9 +341,6 @@ const ViewAllAppointments = () => {
                           <div className="duration-info">({appointment.duration} min)</div>
                         </div>
                         <div className="table-cell patient-cell">
-                          <div className="patient-avatar">
-                            <img src={appointment.image} alt={appointment.patient} />
-                          </div>
                           <div className="patient-details">
                             <div className="patient-name">
                               <FiUser size={14} />
@@ -443,7 +440,6 @@ const ViewAllAppointments = () => {
                 <div className="info-row">
                   <label>Patient:</label>
                   <div className="patient-info">
-                    <img src={selectedAppointment.image} alt={selectedAppointment.patient} />
                     <span>{selectedAppointment.patient}</span>
                   </div>
                 </div>

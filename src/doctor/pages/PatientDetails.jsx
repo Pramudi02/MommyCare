@@ -31,7 +31,7 @@ const PatientDetails = () => {
       const response = await doctorAPI.getPatientDetails(patientId);
       if (response.status === 'success') {
         setPatient(response.data);
-      } else {
+        } else {
         setError('Failed to fetch patient details');
       }
     } catch (error) {
@@ -373,32 +373,32 @@ const PatientDetails = () => {
                     </div>
                     <div className="info-item">
                       <strong>Trimester:</strong> {patient.currentPregnancy?.trimester || 'N/A'}
-                    </div>
+                        </div>
                     <div className="info-item">
                       <strong>Risk Level:</strong> 
                       <span style={{ color: getRiskLevelColor(patient.currentPregnancy?.isHighRisk) }}>
                         {getRiskLevelText(patient.currentPregnancy?.isHighRisk)}
                       </span>
-                    </div>
+                          </div>
                     <div className="info-item">
                       <strong>Risk Factors:</strong>
                       {patient.currentPregnancy?.riskFactors?.length > 0 ? 
                         patient.currentPregnancy.riskFactors.join(', ') : 'None'
                       }
-                    </div>
-                  </div>
+                          </div>
+                            </div>
 
                   <div className="info-card">
                     <h3><FiCalendar /> Important Dates</h3>
                     <div className="info-item">
                       <strong>Last Menstrual Period (LMP):</strong> {formatDate(patient.lmp)}
-                    </div>
+                        </div>
                     <div className="info-item">
                       <strong>Expected Due Date (EDD):</strong> {formatDate(patient.edd)}
-                    </div>
+                        </div>
                     <div className="info-item">
                       <strong>Next Clinic Date:</strong> {formatDate(patient.nextClinicDate)}
-                    </div>
+                      </div>
                   </div>
 
                   <div className="info-card">

@@ -105,9 +105,6 @@ const MedicalRecords = () => {
                 <div key={patient._id} className="medical-record-card">
                   <div className="record-header">
                     <div className="patient-info">
-                      <div className="patient-avatar">
-                        <img src={`/images/${(Math.floor(Math.random()*6)+1)}.png`} alt={patient.name} />
-                      </div>
                       <div className="patient-details">
                         <h3>{patient.name}</h3>
                         <p className="record-type">{patient.email}</p>

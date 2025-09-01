@@ -12,10 +12,10 @@ const Dashboard = () => {
   
   // Dynamic data states
   const [stats, setStats] = useState({
-    totalPatients: 0,
+    totalPatients: 12,
     totalAppointments: 0,
-    pendingReports: 0,
-    emergencyCases: 0
+    pendingReports: 5,
+    emergencyCases: 2
   });
   const [appointments, setAppointments] = useState([]);
   const [recentPatients, setRecentPatients] = useState([]);
@@ -455,38 +455,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="doctor-dashboard__section">
-                <h2>Monthly Overview</h2>
-                <div className="monthly-overview">
-                  <div className="monthly-stats">
-                    <div className="monthly-stat">
-                      <span className="stat-label">Total Appointments</span>
-                      <span className="stat-value">{stats.totalAppointments}</span>
-                  </div>
-                    <div className="monthly-stat">
-                      <span className="stat-label">New Patients</span>
-                      <span className="stat-value">{stats.totalPatients}</span>
-                        </div>
-                  </div>
-                  <div className="monthly-chart">
-                    <h4>Monthly Trend</h4>
-                    <div className="monthly-bars">
-                      {appointmentTrends.monthly.slice(-6).map((item, index) => (
-                        <div key={index} className="monthly-bar">
-                          <div className="bar-label">{item.month}</div>
-                          <div className="bar-container">
-                            <div 
-                              className="bar-fill monthly" 
-                              style={{ height: `${Math.max(item.count * 15, 20)}px` }}
-                            ></div>
-                          </div>
-                          <div className="bar-value">{item.count}</div>
-                      </div>
-                    ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>

@@ -177,9 +177,6 @@ const Patients = () => {
               {filteredPatients.map(patient => (
                 <div key={patient._id} className="doctor-patient-card">
                   <div className="doctor-patient-card__header">
-                    <div className="doctor-patient-card__avatar">
-                      <img src={`/images/${Math.floor(Math.random() * 6) + 1}.png`} alt={patient.name} />
-                    </div>
                     <div className="doctor-patient-card__status">
                       <span 
                         className="doctor-patient-status-badge"

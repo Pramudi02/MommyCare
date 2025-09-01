@@ -9,9 +9,7 @@ const menuItems = [
   { name: "Appointments", path: "/doctor/appointments" },
   { name: "Appointment Requests", path: "/doctor/appointment-requests" },
   { name: "Prescriptions", path: "/doctor/prescriptions" },
-  { name: "Medical Records", path: "/doctor/medical-records" },
-  { name: "Analytics", path: "/doctor/analytics" },
-  { name: "Chat", path: "/doctor/chat" }
+  { name: "Medical Records", path: "/doctor/medical-records" }
 ];
 
 const DoctorNavbar = () => {

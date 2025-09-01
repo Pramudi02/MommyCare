@@ -1,4 +1,6 @@
-.doctor-edit-profile-page {
+/* Doctor Profile Page Styles - Enhanced from Midwife Styles */
+
+.midwife-profile-page {
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background-color: #f9fafb;
@@ -6,14 +8,14 @@
   padding: 2rem;
 }
 
-.doctor-edit-profile-container-wrapper {
+.midwife-profile-container-wrapper {
   max-width: 80rem;
   margin: 0 auto;
   padding: 1rem;
 }
 
 /* Header Styles */
-.doctor-edit-profile-header {
+.midwife-profile-header {
   text-align: center;
   margin-bottom: 2rem;
   padding: 3rem 2rem;
@@ -24,8 +26,7 @@
   box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
 }
 
-/* Add subtle pattern overlay */
-.doctor-edit-profile-header::before {
+.midwife-profile-header::before {
   content: '';
   position: absolute;
   top: 0;
@@ -36,7 +37,7 @@
   pointer-events: none;
 }
 
-.doctor-edit-profile-header::after {
+.midwife-profile-header::after {
   content: '';
   position: absolute;
   top: 0;
@@ -47,12 +48,12 @@
   pointer-events: none;
 }
 
-.doctor-edit-profile-title {
+.midwife-profile-title {
   position: relative;
   z-index: 1;
 }
 
-.doctor-edit-profile-title h1 {
+.midwife-profile-title h1 {
   font-size: 2.25rem;
   font-weight: 700;
   color: #1e293b !important;
@@ -60,7 +61,7 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-edit-profile-title p {
+.midwife-profile-title p {
   color: #374151 !important;
   font-weight: 500;
   font-size: 1.1rem;
@@ -69,8 +70,7 @@
   line-height: 1.6;
 }
 
-/* Add an icon to the header */
-.doctor-edit-profile-header-icon {
+.midwife-profile-header-icon {
   display: inline-flex;
   width: 3rem;
   height: 3rem;
@@ -84,19 +84,17 @@
   backdrop-filter: blur(10px);
 }
 
-.doctor-edit-profile-header-icon svg {
+.midwife-profile-header-icon svg {
   width: 1.5rem;
   height: 1.5rem;
   color: #3b82f6;
 }
 
-.doctor-edit-profile-container {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 2rem;
+.midwife-profile-container {
+  width: 100%;
 }
 
-.doctor-edit-profile-main {
+.midwife-profile-main {
   background: white;
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -104,21 +102,21 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-.doctor-edit-profile-section {
+.midwife-profile-section {
   padding: 2rem;
   border-bottom: 1px solid #e5e7eb;
   transition: all 0.3s ease;
 }
 
-.doctor-edit-profile-section:hover {
+.midwife-profile-section:hover {
   background: #fafbfc;
 }
 
-.doctor-edit-profile-section:last-child {
+.midwife-profile-section:last-child {
   border-bottom: none;
 }
 
-.doctor-edit-profile-section h3 {
+.midwife-profile-section h3 {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
@@ -130,19 +128,19 @@
   border-bottom: 2px solid #e5e7eb;
 }
 
-.doctor-edit-profile-section h3 svg {
+.midwife-profile-section h3 svg {
   width: 1.5rem;
   height: 1.5rem;
   color: #3b82f6;
 }
 
-.doctor-edit-profile-info-grid {
+.midwife-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
-.doctor-info-item {
+.midwife-info-item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -153,95 +151,51 @@
   transition: all 0.3s ease;
 }
 
-.doctor-info-item:hover {
+.midwife-info-item:hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-info-item.full-width {
-  grid-column: 1 / -1;
-}
-
-.doctor-info-label {
+.midwife-info-label {
   font-size: 0.8rem;
   font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.doctor-info-value {
+.midwife-info-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #3b82f6;
+}
+
+.midwife-info-value {
   font-size: 0.95rem;
   color: #1f2937;
   font-weight: 600;
   line-height: 1.5;
 }
 
-.doctor-info-value.empty {
+.midwife-info-value.empty {
   color: #9ca3af;
   font-style: italic;
   font-weight: 400;
 }
 
-.doctor-edit-profile-edit-btn {
-  background: none;
-  border: none;
-  color: #3b82f6;
-  cursor: pointer;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-.doctor-edit-profile-edit-btn:hover {
-  background: #eff6ff;
-  color: #1e40af;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-}
-
-.doctor-edit-profile-edit-btn svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.doctor-edit-profile-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.doctor-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.doctor-form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.doctor-form-label {
-  font-weight: 600;
-  color: #374151;
+.midwife-info-description {
   font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.doctor-form-label.required::after {
-  content: ' *';
-  color: #ef4444;
-  font-weight: 700;
-}
-
-.doctor-form-input {
+.midwife-input {
   padding: 1rem 1.25rem;
   border: 2px solid #e5e7eb;
   border-radius: 0.75rem;
@@ -251,33 +205,41 @@
   font-weight: 500;
 }
 
-.doctor-form-input:focus {
+.midwife-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-  background: #f8fafc;
+  background: #f0f9ff;
   transform: translateY(-1px);
 }
 
-.doctor-form-input.error {
+.midwife-input.error {
   border-color: #ef4444;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
 }
 
-.doctor-form-textarea {
+.midwife-textarea {
   min-height: 120px;
   resize: vertical;
   line-height: 1.6;
-}
-
-.doctor-form-error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
   font-weight: 500;
 }
 
-.doctor-edit-profile-actions {
+.midwife-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.midwife-profile-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -287,7 +249,12 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.doctor-btn {
+.midwife-edit-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.midwife-btn {
   padding: 1rem 2rem;
   border-radius: 0.75rem;
   font-weight: 600;
@@ -302,378 +269,429 @@
   justify-content: center;
 }
 
-.doctor-btn-primary {
+.midwife-btn-primary {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
-.doctor-btn-primary:hover {
+.midwife-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
-.doctor-btn-primary:disabled {
+.midwife-btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.doctor-btn-secondary {
+.midwife-btn-secondary {
   background: #f3f4f6;
   color: #374151;
   border: 2px solid #e5e7eb;
 }
 
-.doctor-btn-secondary:hover {
+.midwife-btn-secondary:hover {
   background: #e5e7eb;
   color: #1f2937;
   border-color: #d1d5db;
   transform: translateY(-1px);
 }
 
-.doctor-btn svg {
+.midwife-btn svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.doctor-edit-profile-sidebar {
+/* Message Styles */
+.midwife-message {
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.midwife-message--success {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.midwife-message--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.midwife-message__icon {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Specialization Grid */
+.specialization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.checkbox-label:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3b82f6;
+}
+
+.specialization-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.specialization-tag {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Certifications Section */
+.certifications-section {
+  margin-top: 0.5rem;
+}
+
+.certifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.certification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.remove-certification-btn {
+  background: #fef2f2;
+  color: #dc2626;
+  border: none;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-certification-btn:hover {
+  background: #fecaca;
+}
+
+.add-certification {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.add-certification .midwife-input {
+  flex: 1;
+}
+
+.certifications-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.certification-tag {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .midwife-profile-page {
+    padding: 1.5rem;
+  }
+  
+  .midwife-profile-header {
+    padding: 2rem 1.5rem;
+  }
+  
+  .midwife-profile-title h1 {
+    font-size: 1.875rem;
+  }
+  
+  .midwife-profile-section {
+    padding: 1.5rem;
+  }
+  
+  .midwife-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .midwife-profile-actions {
+    flex-direction: column;
+    padding: 1.25rem;
+  }
+  
+  .midwife-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .specialization-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .add-certification {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .midwife-profile-page {
+    padding: 1rem;
+  }
+  
+  .midwife-profile-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .midwife-profile-title h1 {
+    font-size: 1.5rem;
+  }
+  
+  .midwife-profile-section {
+    padding: 1.25rem;
+  }
+  
+  .midwife-info-item {
+    padding: 0.875rem;
+  }
+}
+
+/* Permission Requests Styles */
+.permission-requests-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.doctor-sidebar-card {
+.permission-request-card {
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-}
-
-.doctor-sidebar-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.doctor-sidebar-card-header {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
-.doctor-sidebar-card-header h4 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1f2937;
+.permission-request-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.permission-request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.permission-request-title {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
+
+.permission-request-title h4 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.permission-request-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-badge--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge--info {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.permission-request-details {
+  margin-top: 1rem;
+}
+
+.permission-request-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.permission-request-item {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
-.doctor-sidebar-card-header h4 svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #3b82f6;
-}
-
-.doctor-sidebar-card-body {
-  padding: 1.5rem;
-}
-
-.doctor-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.doctor-stat-item {
-  text-align: center;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-.doctor-stat-item:hover {
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.doctor-stat-value {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.doctor-stat-label {
-  font-size: 0.8rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.permission-request-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  color: #374151;
+  margin: 0;
 }
 
-.doctor-specialties-list {
+.permission-request-value {
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 500;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.service-categories-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-.doctor-specialty-tag {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  color: #1e40af;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid #dbeafe;
-  transition: all 0.3s ease;
-}
-
-.doctor-specialty-tag:hover {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-}
-
-.doctor-certifications-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.doctor-certification-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-.doctor-certification-item:hover {
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.doctor-certification-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.service-category-tag {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-}
-
-.doctor-certification-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.doctor-certification-info {
-  flex: 1;
-}
-
-.doctor-certification-name {
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
-  font-size: 0.95rem;
-}
-
-.doctor-certification-date {
-  font-size: 0.8rem;
-  color: #64748b;
+  padding: 0.375rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
-.doctor-social-links {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
+.no-permission-requests {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  border: 2px dashed #d1d5db;
 }
 
-.doctor-social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+.no-permission-requests p {
+  margin: 0;
   color: #6b7280;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  border: 1px solid #e5e7eb;
 }
 
-.doctor-social-link:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+.no-permission-requests p:first-child {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
 }
 
-.doctor-social-link svg {
-  width: 1.25rem;
-  height: 1.25rem;
+.text-muted {
+  color: #9ca3af !important;
+  font-size: 0.875rem;
 }
 
-.doctor-success-message {
-  background: #dcfce7;
-  color: #166534;
-  padding: 1.25rem;
-  border-radius: 0.75rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border: 1px solid #bbf7d0;
-  font-weight: 500;
-}
-
-.doctor-success-message svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.doctor-error-message {
-  background: #fef2f2;
-  color: #991b1b;
-  padding: 1.25rem;
-  border-radius: 0.75rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border: 1px solid #fecaca;
-  font-weight: 500;
-}
-
-.doctor-error-message svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.doctor-loading {
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  border-top-color: transparent;
-  animation: doctor-spin 1s ease-in-out infinite;
-}
-
-@keyframes doctor-spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .doctor-edit-profile-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .doctor-edit-profile-sidebar {
-    order: -1;
-  }
-}
-
+/* Responsive styles for permission requests */
 @media (max-width: 768px) {
-  .doctor-edit-profile-page {
-    padding: 1.5rem;
-  }
-  
-  .doctor-edit-profile-header {
-    padding: 2rem 1.5rem;
-  }
-  
-  .doctor-edit-profile-title h1 {
-    font-size: 1.875rem;
-  }
-  
-  .doctor-edit-profile-section {
-    padding: 1.5rem;
-  }
-  
-  .doctor-edit-profile-info-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .doctor-edit-profile-form {
-    grid-template-columns: 1fr;
-  }
-  
-  .doctor-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .doctor-edit-profile-actions {
+  .permission-request-header {
     flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .permission-request-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .permission-request-card {
     padding: 1.25rem;
   }
   
-  .doctor-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .doctor-edit-profile-page {
-    padding: 1rem;
-  }
-  
-  .doctor-edit-profile-header {
-    padding: 1.5rem 1rem;
-  }
-  
-  .doctor-edit-profile-title h1 {
-    font-size: 1.5rem;
-  }
-  
-  .doctor-edit-profile-section {
-    padding: 1.25rem;
-  }
-  
-  .doctor-sidebar-card-body {
-    padding: 1.25rem;
-  }
-  
-  .doctor-specialties-list {
-    justify-content: center;
-  }
-  
-  .doctor-social-links {
-    justify-content: center;
-  }
-  
-  .doctor-info-item {
-    padding: 0.875rem;
-  }
-  
-  .doctor-stat-item {
-    padding: 1rem;
-  }
-  
-  .doctor-certification-item {
-    padding: 0.875rem;
+  .permission-request-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }

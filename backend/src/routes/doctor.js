@@ -6,6 +6,7 @@ const getUserModel = require('../models/User');
 const getAppointmentModel = require('../models/Appointment');
 const getAppointmentRequestModel = require('../models/AppointmentRequest');
 const getDoctorMedicalReportModel = require('../models/DoctorMedicalReport');
+const getDoctorProfileModel = require('../models/DoctorProfile');
 
 const router = express.Router();
 
@@ -688,6 +689,184 @@ router.delete('/medical-records/:reportId', authorize('doctor'), asyncHandler(as
     }
     await report.deleteOne();
     res.json({ status: 'success', message: 'Report deleted' });
+}));
+
+// Doctor Profile Routes
+// Get doctor profile
+router.get('/profile', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorProfile = getDoctorProfileModel();
+    const User = getUserModel();
+    
+    try {
+        // Get user data first
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'User not found' });
+        }
+        
+        // Get or create profile
+        let profile = await DoctorProfile.findOne({ user: req.user._id });
+        
+        if (!profile) {
+            // Create new profile with user data
+            try {
+                profile = await DoctorProfile.create({
+                    user: req.user._id,
+                    firstName: user.firstName || '',
+                    lastName: user.lastName || '',
+                    email: user.email || '',
+                    phone: user.phone || '',
+                    age: user.age || null,
+                    hospitalInformation: {},
+                    professionalInformation: {
+                        specialization: user.doctorProfile?.specialization || [],
+                        certifications: user.doctorProfile?.certifications || []
+                    },
+                    locationDetails: {
+                        country: user.address?.country || ''
+                    },
+                    businessStats: {
+                        yearsExperience: 0,
+                        patientsServed: 0
+                    }
+                });
+            } catch (createError) {
+                console.error('Error creating profile:', createError);
+                // If creation fails due to validation, return user data only
+                const responseData = {
+                    firstName: user.firstName || '',
+                    lastName: user.lastName || '',
+                    email: user.email || '',
+                    phone: user.phone || '',
+                    age: user.age || null,
+                    hospitalInformation: {},
+                    professionalInformation: {
+                        specialization: user.doctorProfile?.specialization || [],
+                        certifications: user.doctorProfile?.certifications || []
+                    },
+                    locationDetails: {
+                        country: user.address?.country || ''
+                    },
+                    businessStats: {
+                        yearsExperience: 0,
+                        patientsServed: 0
+                    }
+                };
+                return res.json({ status: 'success', data: responseData });
+            }
+        }
+        
+        // Return combined data: profile data + user data
+        const responseData = {
+            ...profile.toObject(),
+            // Override with user data for personal information
+            firstName: user.firstName || profile.firstName,
+            lastName: user.lastName || profile.lastName,
+            email: user.email || profile.email,
+            phone: user.phone || profile.phone,
+            age: user.age || profile.age
+        };
+        
+        res.json({ status: 'success', data: responseData });
+    } catch (error) {
+        console.error('Error fetching doctor profile:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch profile' });
+    }
+}));
+
+// Create or update doctor profile
+router.post('/profile', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorProfile = getDoctorProfileModel();
+    const User = getUserModel();
+    
+    try {
+        const existingProfile = await DoctorProfile.findOne({ user: req.user._id });
+        
+        let profile;
+        if (existingProfile) {
+            // Update existing profile
+            try {
+                Object.assign(existingProfile, req.body);
+                await existingProfile.save();
+                profile = existingProfile;
+            } catch (saveError) {
+                console.error('Error saving existing profile:', saveError);
+                return res.status(400).json({ status: 'error', message: 'Invalid profile data' });
+            }
+        } else {
+            // Create new profile
+            try {
+                const profileData = {
+                    user: req.user._id,
+                    ...req.body
+                };
+                profile = await DoctorProfile.create(profileData);
+            } catch (createError) {
+                console.error('Error creating new profile:', createError);
+                return res.status(400).json({ status: 'error', message: 'Invalid profile data' });
+            }
+        }
+        
+        // Get updated user data
+        const user = await User.findById(req.user._id);
+        
+        // Return combined data: profile data + user data
+        const responseData = {
+            ...profile.toObject(),
+            // Override with user data for personal information
+            firstName: user.firstName || profile.firstName,
+            lastName: user.lastName || profile.lastName,
+            email: user.email || profile.email,
+            phone: user.phone || profile.phone,
+            age: user.age || profile.age
+        };
+        
+        res.status(201).json({ status: 'success', data: responseData });
+    } catch (error) {
+        console.error('Error saving doctor profile:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to save profile' });
+    }
+}));
+
+// Update doctor profile
+router.put('/profile', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorProfile = getDoctorProfileModel();
+    const User = getUserModel();
+    
+    try {
+        const profile = await DoctorProfile.findOne({ user: req.user._id });
+        
+        if (!profile) {
+            return res.status(404).json({ status: 'error', message: 'Profile not found' });
+        }
+        
+        try {
+            Object.assign(profile, req.body);
+            await profile.save();
+        } catch (saveError) {
+            console.error('Error updating profile:', saveError);
+            return res.status(400).json({ status: 'error', message: 'Invalid profile data' });
+        }
+        
+        // Get updated user data
+        const user = await User.findById(req.user._id);
+        
+        // Return combined data: profile data + user data
+        const responseData = {
+            ...profile.toObject(),
+            // Override with user data for personal information
+            firstName: user.firstName || profile.firstName,
+            lastName: user.lastName || profile.lastName,
+            email: user.email || profile.email,
+            phone: user.phone || profile.phone,
+            age: user.age || profile.age
+        };
+        
+        res.json({ status: 'success', data: responseData });
+    } catch (error) {
+        console.error('Error updating doctor profile:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to update profile' });
+    }
 }));
 
 module.exports = router;
