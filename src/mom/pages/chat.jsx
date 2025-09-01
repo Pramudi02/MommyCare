@@ -44,6 +44,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   
   // State for healthcare providers and messages
   const [healthcareProviders, setHealthcareProviders] = useState([]);
+  const [assignedMidwife, setAssignedMidwife] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -229,6 +230,23 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
     getUserInfo();
   }, []);
 
+  // Fetch assigned midwife when current user changes
+  useEffect(() => {
+    if (currentUser?._id) {
+      console.log('👤 Current user changed, fetching assigned midwife for:', currentUser._id);
+      fetchAssignedMidwife().then(midwife => {
+        setAssignedMidwife(midwife);
+        console.log('✅ Assigned midwife set:', midwife);
+      }).catch(error => {
+        console.error('❌ Error fetching assigned midwife:', error);
+        setAssignedMidwife(null);
+      });
+    } else {
+      console.log('❌ No current user ID available');
+      setAssignedMidwife(null);
+    }
+  }, [currentUser]);
+
   // Fetch healthcare providers (doctors/midwives)
   const fetchHealthcareProviders = async () => {
     try {
@@ -281,6 +299,37 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
       setHealthcareProviders([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch assigned midwife from midwifemoms collection
+  const fetchAssignedMidwife = async () => {
+    try {
+      if (!currentUser?._id) return null;
+      
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!token) return null;
+      
+      console.log('👩‍⚕️ Fetching assigned midwife for mom:', currentUser._id);
+      
+      // Fetch from midwifemoms collection to get the assigned midwife
+      const response = await fetch(`http://localhost:5000/api/chat/assigned-midwife/${currentUser._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Assigned midwife data:', data);
+        return data.data;
+      } else {
+        console.log('❌ No assigned midwife found or error:', response.status);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching assigned midwife:', error);
+      return null;
     }
   };
 
@@ -358,8 +407,29 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   const filteredProviders = healthcareProviders.filter(provider => {
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          provider.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || provider.role === filterType;
-    return matchesSearch && matchesType;
+    
+    // Handle different filter types
+    if (filterType === 'all') {
+      return matchesSearch;
+    } else if (filterType === 'doctor') {
+      return matchesSearch && provider.role === 'doctor';
+    } else if (filterType === 'my-midwife') {
+      // For my-midwife, only show the assigned midwife
+      if (!assignedMidwife) {
+        console.log('❌ No assigned midwife found for my-midwife filter');
+        return false;
+      }
+      console.log('🔍 Filtering for assigned midwife:', {
+        providerId: provider.id,
+        assignedMidwifeId: assignedMidwife.midwifeId,
+        isMatch: provider.id === assignedMidwife.midwifeId,
+        providerRole: provider.role,
+        isMidwife: provider.role === 'midwife'
+      });
+      return matchesSearch && provider.role === 'midwife' && provider.id === assignedMidwife.midwifeId;
+    } else {
+      return matchesSearch && provider.role === filterType;
+    }
   });
 
   // Auto-scroll to bottom when new messages arrive
@@ -371,6 +441,12 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   useEffect(() => {
     console.log('🔄 activeConversationId changed:', activeConversationId);
   }, [activeConversationId]);
+
+  // Debug filter type and assigned midwife changes
+  useEffect(() => {
+    console.log('🔍 Filter type changed:', filterType);
+    console.log('👩‍⚕️ Assigned midwife state:', assignedMidwife);
+  }, [filterType, assignedMidwife]);
 
   // Close context menu when clicking outside
   useEffect(() => {
@@ -880,7 +956,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               <Search size={18} />
               <input
                 type="text"
-                placeholder="Search healthcare providers..."
+                placeholder="Search your assigned midwife and doctors..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="chat-search-input"
@@ -902,11 +978,11 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                 Doctors
               </button>
               <button
-                className={`chat-filter-tab ${filterType === 'midwife' ? 'active' : ''}`}
-                onClick={() => setFilterType('midwife')}
+                className={`chat-filter-tab ${filterType === 'my-midwife' ? 'active' : ''}`}
+                onClick={() => setFilterType('my-midwife')}
               >
                 <Baby size={14} />
-                Midwives
+                MY MIDWIFE
               </button>
             </div>
           </div>
@@ -915,7 +991,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
           <div className="chat-provider-list">
             {loading ? (
               <div className="chat-loading">
-                <p>Loading healthcare providers...</p>
+                <p>Loading healthcare providers and assigned midwife...</p>
               </div>
             ) : filteredProviders.length > 0 ? (
               filteredProviders.map(provider => (
@@ -985,10 +1061,21 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               ))
             ) : (
               <div className="chat-no-providers">
-                <p>No healthcare providers found</p>
-                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                  {healthcareProviders.length === 0 ? 'No providers loaded from database' : 'No providers match your search'}
-                </p>
+                {filterType === 'my-midwife' && !assignedMidwife ? (
+                  <>
+                    <p>No assigned midwife found</p>
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                      You don't have an assigned midwife yet. Please contact your healthcare provider.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>No healthcare providers found</p>
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                      {healthcareProviders.length === 0 ? 'No providers loaded from database' : 'No providers match your search'}
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -1260,7 +1347,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                   <MessageCircle size={80} />
                 </div>
                 <h2>Welcome to Healthcare Chat</h2>
-                <p>Connect with trusted doctors and midwives for personalized care and support</p>
+                <p>Connect with your assigned midwife and trusted doctors for personalized care and support</p>
                 <div className="chat-welcome-features">
                   <div className="chat-feature">
                     <Stethoscope size={24} />

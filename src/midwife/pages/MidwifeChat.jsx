@@ -645,23 +645,27 @@ const MidwifeChat = () => {
             </>
           ) : (
             <div className="midwife-chat-page-welcome">
-              <div className="midwife-chat-page-welcome-icon">
-                <MessageCircle size={64} />
-              </div>
-              <h2>Welcome to Midwife Communication Hub</h2>
-             
-              <div className="midwife-chat-page-welcome-features">
-                <div className="midwife-chat-page-feature">
-                  <Users size={24} />
-                  <span>Chat with doctors and moms</span>
+              <div className="midwife-chat-page-welcome-content">
+                <div className="midwife-chat-page-welcome-header">
+                  <div className="midwife-chat-page-welcome-icon">
+                    <MessageCircle size={48} />
+                  </div>
+                  <h2>Welcome to Midwife Communication Hub</h2>
                 </div>
-                <div className="midwife-chat-page-feature">
-                  <MessageCircle size={24} />
-                  <span>Real-time messaging</span>
-                </div>
-                <div className="midwife-chat-page-feature">
-                  <File size={24} />
-                  <span>Share files and documents</span>
+                
+                <div className="midwife-chat-page-welcome-features">
+                  <div className="midwife-chat-page-feature">
+                    <Users size={20} />
+                    <span>Chat with doctors and moms</span>
+                  </div>
+                  <div className="midwife-chat-page-feature">
+                    <MessageCircle size={20} />
+                    <span>Real-time messaging</span>
+                  </div>
+                  <div className="midwife-chat-page-feature">
+                    <FileText size={20} />
+                    <span>Share files and documents</span>
+                  </div>
                 </div>
               </div>
             </div>
