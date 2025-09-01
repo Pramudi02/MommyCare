@@ -1,9 +1,11 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
-const { protect, authorize } = require('../middleware/auth');
+const mongoose = require('mongoose');
+const { authorize } = require('../middleware/auth');
 const getUserModel = require('../models/User');
 const getAppointmentModel = require('../models/Appointment');
 const getAppointmentRequestModel = require('../models/AppointmentRequest');
+const getDoctorMedicalReportModel = require('../models/DoctorMedicalReport');
 
 const router = express.Router();
 
@@ -48,7 +50,7 @@ const router = express.Router();
  *       401:
  *         description: Not authorized
  */
-router.post('/permission-request', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.post('/permission-request', authorize('doctor'), asyncHandler(async (req, res) => {
   // TODO: Implement permission request logic
   // For now, just return success
   res.status(201).json({
@@ -58,7 +60,7 @@ router.post('/permission-request', protect, authorize('doctor'), asyncHandler(as
 }));
 
 // Get doctor dashboard data
-router.get('/dashboard', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.get('/dashboard', authorize('doctor'), asyncHandler(async (req, res) => {
     const Appointment = getAppointmentModel();
     const upcoming = await Appointment.find({
         doctor: req.user._id,
@@ -79,7 +81,7 @@ router.get('/dashboard', protect, authorize('doctor'), asyncHandler(async (req, 
 }));
 
 // Get patients (moms) with search
-router.get('/patients', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.get('/patients', authorize('doctor'), asyncHandler(async (req, res) => {
     const User = getUserModel();
     const { q } = req.query;
     
@@ -100,7 +102,7 @@ router.get('/patients', protect, authorize('doctor'), asyncHandler(async (req, r
 }));
 
 // Get doctor's appointments
-router.get('/appointments', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.get('/appointments', authorize('doctor'), asyncHandler(async (req, res) => {
     const Appointment = getAppointmentModel();
     const { start, end } = req.query;
     
@@ -120,7 +122,7 @@ router.get('/appointments', protect, authorize('doctor'), asyncHandler(async (re
 }));
 
 // Create a new appointment for the current doctor
-router.post('/appointments', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.post('/appointments', authorize('doctor'), asyncHandler(async (req, res) => {
     const Appointment = getAppointmentModel();
     const {
         patientId,
@@ -174,7 +176,7 @@ router.post('/appointments', protect, authorize('doctor'), asyncHandler(async (r
 }));
 
 // Update an appointment
-router.put('/appointments/:id', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.put('/appointments/:id', authorize('doctor'), asyncHandler(async (req, res) => {
     const Appointment = getAppointmentModel();
     const appointment = await Appointment.findById(req.params.id);
     
@@ -236,7 +238,7 @@ router.put('/appointments/:id', protect, authorize('doctor'), asyncHandler(async
 }));
 
 // Delete an appointment
-router.delete('/appointments/:id', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.delete('/appointments/:id', authorize('doctor'), asyncHandler(async (req, res) => {
     const Appointment = getAppointmentModel();
     const appointment = await Appointment.findById(req.params.id);
     
@@ -265,7 +267,7 @@ router.delete('/appointments/:id', protect, authorize('doctor'), asyncHandler(as
 }));
 
 // Get appointment requests for the doctor
-router.get('/appointment-requests', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.get('/appointment-requests', authorize('doctor'), asyncHandler(async (req, res) => {
     const AppointmentRequest = getAppointmentRequestModel();
     const { status } = req.query;
     
@@ -281,8 +283,25 @@ router.get('/appointment-requests', protect, authorize('doctor'), asyncHandler(a
     res.json({ status: 'success', data: requests });
 }));
 
+// Get all appointments for the doctor
+router.get('/appointments', authorize('doctor'), asyncHandler(async (req, res) => {
+    const Appointment = getAppointmentModel();
+    const { patientId, status, type } = req.query;
+    
+    let query = { doctor: req.user._id };
+    if (patientId) query.patient = patientId;
+    if (status && status !== 'all') query.status = status;
+    if (type) query.type = type;
+    
+    const appointments = await Appointment.find(query)
+        .populate('patient', 'firstName lastName email')
+        .sort({ startTime: -1 });
+    
+    res.json({ status: 'success', data: appointments });
+}));
+
 // Respond to an appointment request
-router.put('/appointment-requests/:id/respond', protect, authorize('doctor'), asyncHandler(async (req, res) => {
+router.put('/appointment-requests/:id/respond', authorize('doctor'), asyncHandler(async (req, res) => {
     const AppointmentRequest = getAppointmentRequestModel();
     const Appointment = getAppointmentModel();
     const { response, notes, suggestedDate, suggestedTime } = req.body;
@@ -337,6 +356,338 @@ router.put('/appointment-requests/:id/respond', protect, authorize('doctor'), as
     await request.save();
     
     res.json({ status: 'success', data: request });
+}));
+
+// Get doctor's patients with mom profiles and appointment counts
+router.get('/my-patients', authorize('doctor'), asyncHandler(async (req, res) => {
+    const Appointment = getAppointmentModel();
+    const getUserModel = require('../models/User');
+    const getMomProfileModel = require('../models/MomProfile');
+    const mongoose = require('mongoose');
+    
+    const User = getUserModel();
+    const MomProfile = getMomProfileModel();
+    
+    try {
+        // Get all appointments for this doctor
+        const appointments = await Appointment.find({ doctor: req.user._id })
+            .populate('patient', 'firstName lastName email _id');
+        
+        // Get unique patient IDs
+        const patientIds = [...new Set(appointments.map(apt => apt.patient._id.toString()))];
+        
+        // Get mom profiles for these patients
+        const momProfiles = await MomProfile.find({ 
+            user: { $in: patientIds.map(id => new mongoose.Types.ObjectId(id)) }
+        }).populate('user', 'firstName lastName email _id');
+        
+        // Get appointment counts for each patient
+        const patientAppointmentCounts = {};
+        appointments.forEach(apt => {
+            const patientId = apt.patient._id.toString();
+            patientAppointmentCounts[patientId] = (patientAppointmentCounts[patientId] || 0) + 1;
+        });
+        
+        // Combine data
+        const patients = momProfiles.map(profile => {
+            const user = profile.user;
+            const appointmentCount = patientAppointmentCounts[user._id.toString()] || 0;
+            
+            return {
+                _id: user._id,
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+                phone: profile.phone,
+                age: profile.age,
+                bloodGroup: profile.bloodGroup,
+                height: profile.height,
+                weight: profile.weight,
+                currentBMI: profile.currentBMI,
+                lmp: profile.lmp,
+                edd: profile.edd,
+                consultantObstetrician: profile.consultantObstetrician,
+                mohArea: profile.mohArea,
+                phmArea: profile.phmArea,
+                fieldClinic: profile.fieldClinic,
+                gramaNiladhariDivision: profile.gramaNiladhariDivision,
+                hospitalClinic: profile.hospitalClinic,
+                nextClinicDate: profile.nextClinicDate,
+                emergencyContact: profile.emergencyContact,
+                medicalHistory: profile.medicalHistory,
+                currentPregnancy: profile.currentPregnancy,
+                appointmentCount: appointmentCount,
+                lastAppointment: appointments
+                    .filter(apt => apt.patient._id.toString() === user._id.toString())
+                    .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))[0]?.startTime || null,
+                nextAppointment: appointments
+                    .filter(apt => apt.patient._id.toString() === user._id.toString())
+                    .filter(apt => new Date(apt.startTime) > new Date())
+                    .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))[0]?.startTime || null
+            };
+        });
+        
+        res.json({ status: 'success', data: patients });
+    } catch (error) {
+        console.error('Error fetching patients:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch patients' });
+    }
+}));
+
+// Get all available moms for doctor to assign as patients
+router.get('/available-moms', authorize('doctor'), asyncHandler(async (req, res) => {
+    const getUserModel = require('../models/User');
+    const getMomProfileModel = require('../models/MomProfile');
+    const Appointment = getAppointmentModel();
+    
+    const User = getUserModel();
+    const MomProfile = getMomProfileModel();
+    
+    try {
+        // Get all moms with profiles
+        const momProfiles = await MomProfile.find({ isActive: true })
+            .populate('user', 'firstName lastName email _id');
+        
+        // Get current doctor's patients
+        const currentPatients = await Appointment.find({ doctor: req.user._id })
+            .distinct('patient');
+        
+        // Filter out moms who are already patients of this doctor
+        const availableMoms = momProfiles.filter(profile => 
+            !currentPatients.includes(profile.user._id.toString())
+        );
+        
+        const moms = availableMoms.map(profile => ({
+            _id: profile.user._id,
+            name: `${profile.user.firstName} ${profile.user.lastName}`,
+            email: profile.user.email,
+            phone: profile.phone,
+            age: profile.age,
+            bloodGroup: profile.bloodGroup,
+            height: profile.height,
+            weight: profile.weight,
+            currentBMI: profile.currentBMI,
+            lmp: profile.lmp,
+            edd: profile.edd,
+            consultantObstetrician: profile.consultantObstetrician,
+            mohArea: profile.mohArea,
+            phmArea: profile.phmArea,
+            fieldClinic: profile.fieldClinic,
+            gramaNiladhariDivision: profile.gramaNiladhariDivision,
+            hospitalClinic: profile.hospitalClinic,
+            nextClinicDate: profile.nextClinicDate,
+            emergencyContact: profile.emergencyContact,
+            medicalHistory: profile.medicalHistory,
+            currentPregnancy: profile.currentPregnancy
+        }));
+        
+        res.json({ status: 'success', data: moms });
+    } catch (error) {
+        console.error('Error fetching available moms:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch available moms' });
+    }
+}));
+
+// Assign a mom as a patient to the doctor
+router.post('/assign-patient', authorize('doctor'), asyncHandler(async (req, res) => {
+    const { momId } = req.body;
+    
+    if (!momId) {
+        return res.status(400).json({ status: 'error', message: 'Mom ID is required' });
+    }
+    
+    try {
+        // Create a simple appointment to establish the doctor-patient relationship
+        const Appointment = getAppointmentModel();
+        const getUserModel = require('../models/User');
+        
+        const User = getUserModel();
+        const mom = await User.findById(momId);
+        
+        if (!mom || mom.role !== 'mom') {
+            return res.status(404).json({ status: 'error', message: 'Mom not found' });
+        }
+        
+        // Create an initial consultation appointment
+        const appointment = await Appointment.create({
+            title: 'Initial Consultation',
+            description: 'Initial patient assignment consultation',
+            patient: momId,
+            doctor: req.user._id,
+            startTime: new Date(),
+            endTime: new Date(Date.now() + 30 * 60000), // 30 minutes from now
+            duration: 30,
+            type: 'consultation',
+            status: 'scheduled',
+            notes: 'Patient assigned to doctor'
+        });
+        
+        res.json({ 
+            status: 'success', 
+            message: 'Patient assigned successfully',
+            data: appointment
+        });
+    } catch (error) {
+        console.error('Error assigning patient:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to assign patient' });
+    }
+}));
+
+// Get detailed patient information
+router.get('/patient/:patientId', authorize('doctor'), asyncHandler(async (req, res) => {
+    const { patientId } = req.params;
+    const getUserModel = require('../models/User');
+    const getMomProfileModel = require('../models/MomProfile');
+    const Appointment = getAppointmentModel();
+    
+    const User = getUserModel();
+    const MomProfile = getMomProfileModel();
+    
+    try {
+        // Verify this patient belongs to the doctor
+        const hasAppointment = await Appointment.findOne({ 
+            doctor: req.user._id, 
+            patient: patientId 
+        });
+        
+        if (!hasAppointment) {
+            return res.status(403).json({ status: 'error', message: 'Not authorized to view this patient' });
+        }
+        
+        // Get mom profile
+        const momProfile = await MomProfile.findOne({ user: patientId })
+            .populate('user', 'firstName lastName email _id');
+        
+        if (!momProfile) {
+            return res.status(404).json({ status: 'error', message: 'Patient profile not found' });
+        }
+        
+        // Get all appointments for this patient with this doctor
+        const appointments = await Appointment.find({ 
+            doctor: req.user._id, 
+            patient: patientId 
+        }).sort({ startTime: -1 });
+        
+        // Get appointment statistics
+        const totalAppointments = appointments.length;
+        const completedAppointments = appointments.filter(apt => apt.status === 'completed').length;
+        const upcomingAppointments = appointments.filter(apt => 
+            new Date(apt.startTime) > new Date() && apt.status === 'scheduled'
+        ).length;
+        
+        const patientData = {
+            _id: momProfile.user._id,
+            name: `${momProfile.user.firstName} ${momProfile.user.lastName}`,
+            email: momProfile.user.email,
+            phone: momProfile.phone,
+            age: momProfile.age,
+            bloodGroup: momProfile.bloodGroup,
+            height: momProfile.height,
+            weight: momProfile.weight,
+            currentBMI: momProfile.currentBMI,
+            lmp: momProfile.lmp,
+            edd: momProfile.edd,
+            consultantObstetrician: momProfile.consultantObstetrician,
+            mohArea: momProfile.mohArea,
+            phmArea: momProfile.phmArea,
+            fieldClinic: momProfile.fieldClinic,
+            gramaNiladhariDivision: momProfile.gramaNiladhariDivision,
+            hospitalClinic: momProfile.hospitalClinic,
+            nextClinicDate: momProfile.nextClinicDate,
+            emergencyContact: momProfile.emergencyContact,
+            medicalHistory: momProfile.medicalHistory,
+            currentPregnancy: momProfile.currentPregnancy,
+            appointments: {
+                total: totalAppointments,
+                completed: completedAppointments,
+                upcoming: upcomingAppointments,
+                history: appointments
+            }
+        };
+        
+        res.json({ status: 'success', data: patientData });
+    } catch (error) {
+        console.error('Error fetching patient details:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch patient details' });
+    }
+}));
+
+
+// Get patients assigned to the doctor with medical report counts
+router.get('/medical-records/patients', authorize('doctor'), asyncHandler(async (req, res) => {
+    const Appointment = getAppointmentModel();
+    const DoctorMedicalReport = getDoctorMedicalReportModel();
+    const User = getUserModel();
+
+    // Find patients by appointments with this doctor
+    const appointments = await Appointment.find({ doctor: req.user._id }).populate('patient', 'firstName lastName email');
+    const patientIds = [...new Set(appointments.map(a => a.patient?._id?.toString()).filter(Boolean))];
+
+    // Count reports per patient
+    const counts = await DoctorMedicalReport.aggregate([
+        { $match: { doctor: req.user._id, patient: { $in: patientIds.map(id => new mongoose.Types.ObjectId(id)) } } },
+        { $group: { _id: '$patient', count: { $sum: 1 } } }
+    ]);
+    const idToCount = Object.fromEntries(counts.map(c => [c._id.toString(), c.count]));
+
+    // Build response
+    const patients = await User.find({ _id: { $in: patientIds } }).select('firstName lastName email role');
+    const data = patients.map(u => ({
+        _id: u._id,
+        name: `${u.firstName} ${u.lastName}`.trim(),
+        email: u.email,
+        role: u.role,
+        reportCount: idToCount[u._id.toString()] || 0
+    }));
+
+    res.json({ status: 'success', data });
+}));
+
+// List doctor-created reports for a patient
+router.get('/medical-records/:patientId', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorMedicalReport = getDoctorMedicalReportModel();
+    const { patientId } = req.params;
+    const reports = await DoctorMedicalReport.find({ doctor: req.user._id, patient: patientId }).sort({ createdAt: -1 });
+    res.json({ status: 'success', data: reports });
+}));
+
+// Create a medical report for a patient
+router.post('/medical-records/:patientId', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorMedicalReport = getDoctorMedicalReportModel();
+    const { patientId } = req.params;
+    const payload = {
+        patient: patientId,
+        doctor: req.user._id,
+        ...req.body
+    };
+    const created = await DoctorMedicalReport.create(payload);
+    res.status(201).json({ status: 'success', data: created });
+}));
+
+// Update a doctor-created medical report
+router.put('/medical-records/:reportId', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorMedicalReport = getDoctorMedicalReportModel();
+    const { reportId } = req.params;
+    const report = await DoctorMedicalReport.findById(reportId);
+    if (!report) return res.status(404).json({ status: 'error', message: 'Report not found' });
+    if (report.doctor.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ status: 'error', message: 'Not authorized to edit this report' });
+    }
+    Object.assign(report, req.body);
+    await report.save();
+    res.json({ status: 'success', data: report });
+}));
+
+// Delete a doctor-created medical report
+router.delete('/medical-records/:reportId', authorize('doctor'), asyncHandler(async (req, res) => {
+    const DoctorMedicalReport = getDoctorMedicalReportModel();
+    const { reportId } = req.params;
+    const report = await DoctorMedicalReport.findById(reportId);
+    if (!report) return res.status(404).json({ status: 'error', message: 'Report not found' });
+    if (report.doctor.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ status: 'error', message: 'Not authorized to delete this report' });
+    }
+    await report.deleteOne();
+    res.json({ status: 'success', message: 'Report deleted' });
 }));
 
 module.exports = router;

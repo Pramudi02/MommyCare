@@ -206,11 +206,13 @@ app.use('/api/permission-requests', permissionRequestRoutes);
 app.use('/api/baby-growth', protect, babyGrowthRoutes);
 app.use('/api/baby-names', protect, babyNameRoutes);
 
+
 // Import chat socket handler
 const { setupChatSocket } = require('./socket/chatSocket');
 
 // Initialize chat socket functionality
 setupChatSocket(io);
+
 
 // Legacy socket handlers for backward compatibility
 io.on('connection', (socket) => {

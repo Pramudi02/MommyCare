@@ -1,138 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiMessageCircle } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiUser, FiCalendar, FiPhone, FiMapPin, FiEdit, FiEye, FiMessageCircle, FiX, FiCheck } from 'react-icons/fi';
+import { doctorAPI } from '../../services/api';
 import './Patients.css';
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddPatientModal, setShowAddPatientModal] = useState(false);
+  const [availableMoms, setAvailableMoms] = useState([]);
+  const [assigningPatient, setAssigningPatient] = useState(false);
 
   const navigate = useNavigate();
 
-  // Sample patient data
-  const patients = [
-    {
-      id: 1,
-      name: "Emma Wilson",
-      age: 28,
-      email: "emma.wilson@email.com",
-      phone: "+1 (555) 123-4567",
-      status: "Active",
-      lastVisit: "2024-12-15",
-      nextVisit: "2024-12-22",
-      condition: "Pregnancy - 24 weeks",
-      bloodType: "O+",
-      emergencyContact: "John Wilson (Husband) - +1 (555) 987-6543",
-      medicalHistory: ["Gestational diabetes", "Hypertension"],
-      allergies: ["Penicillin"],
-      image: "/images/1.png"
-    },
-    {
-      id: 2,
-      name: "Sophia Rodriguez",
-      age: 32,
-      email: "sophia.rodriguez@email.com",
-      phone: "+1 (555) 234-5678",
-      status: "Active",
-      lastVisit: "2024-12-10",
-      nextVisit: "2024-12-17",
-      condition: "Pregnancy - 18 weeks",
-      bloodType: "A+",
-      emergencyContact: "Carlos Rodriguez (Husband) - +1 (555) 876-5432",
-      medicalHistory: ["Previous C-section", "Asthma"],
-      allergies: ["None"],
-      image: "/images/2.png"
-    },
-    {
-      id: 3,
-      name: "Isabella Chen",
-      age: 25,
-      email: "isabella.chen@email.com",
-      phone: "+1 (555) 345-6789",
-      status: "Follow-up",
-      lastVisit: "2024-12-12",
-      nextVisit: "2024-12-19",
-      condition: "Postpartum - 6 weeks",
-      bloodType: "B+",
-      emergencyContact: "Michael Chen (Husband) - +1 (555) 765-4321",
-      medicalHistory: ["Vaginal delivery", "Postpartum depression"],
-      allergies: ["Sulfa drugs"],
-      image: "/images/3.png"
-    },
-    {
-      id: 4,
-      name: "Mia Johnson",
-      age: 30,
-      email: "mia.johnson@email.com",
-      phone: "+1 (555) 456-7890",
-      status: "Emergency",
-      lastVisit: "2024-12-14",
-      nextVisit: "2024-12-16",
-      condition: "Pregnancy - 32 weeks",
-      bloodType: "AB+",
-      emergencyContact: "David Johnson (Husband) - +1 (555) 654-3210",
-      medicalHistory: ["Preeclampsia", "Multiple pregnancies"],
-      allergies: ["Latex"],
-      image: "/images/4.png"
-    },
-    {
-      id: 5,
-      name: "Ava Thompson",
-      age: 27,
-      email: "ava.thompson@email.com",
-      phone: "+1 (555) 567-8901",
-      status: "Active",
-      lastVisit: "2024-12-08",
-      nextVisit: "2024-12-15",
-      condition: "Pregnancy - 20 weeks",
-      bloodType: "O-",
-      emergencyContact: "James Thompson (Husband) - +1 (555) 543-2109",
-      medicalHistory: ["Ectopic pregnancy", "Endometriosis"],
-      allergies: ["Ibuprofen"],
-      image: "/images/5.png"
-    },
-    {
-      id: 6,
-      name: "Charlotte Davis",
-      age: 29,
-      email: "charlotte.davis@email.com",
-      phone: "+1 (555) 678-9012",
-      status: "Active",
-      lastVisit: "2024-12-06",
-      nextVisit: "2024-12-13",
-      condition: "Pregnancy - 16 weeks",
-      bloodType: "A-",
-      emergencyContact: "Robert Davis (Husband) - +1 (555) 432-1098",
-      medicalHistory: ["Miscarriage", "PCOS"],
-      allergies: ["None"],
-      image: "/images/6.png"
+  // Fetch patients on component mount
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await doctorAPI.getMyPatients();
+      if (response.status === 'success') {
+        setPatients(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const fetchAvailableMoms = async () => {
+    try {
+      const response = await doctorAPI.getAvailableMoms();
+      if (response.status === 'success') {
+        setAvailableMoms(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching available moms:', error);
+    }
+  };
+
+  const handleAddPatientClick = async () => {
+    setShowAddPatientModal(true);
+    await fetchAvailableMoms();
+  };
+
+  const handleAssignPatient = async (momId) => {
+    try {
+      setAssigningPatient(true);
+      const response = await doctorAPI.assignPatient(momId);
+      if (response.status === 'success') {
+        // Refresh patients list
+        await fetchPatients();
+        setShowAddPatientModal(false);
+        // Remove the assigned mom from available moms
+        setAvailableMoms(prev => prev.filter(mom => mom._id !== momId));
+      }
+    } catch (error) {
+      console.error('Error assigning patient:', error);
+    } finally {
+      setAssigningPatient(false);
+    }
+  };
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.phone.includes(searchTerm);
-    const matchesStatus = filterStatus === 'all' || patient.status.toLowerCase() === filterStatus.toLowerCase();
+                         (patient.phone && patient.phone.includes(searchTerm));
+    const matchesStatus = filterStatus === 'all' || 
+                         (filterStatus === 'active' && patient.appointmentCount > 0) ||
+                         (filterStatus === 'follow-up' && patient.nextAppointment) ||
+                         (filterStatus === 'emergency' && patient.currentPregnancy?.isHighRisk);
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return '#10b981';
-      case 'follow-up':
-        return '#f59e0b';
-      case 'emergency':
-        return '#ef4444';
-      default:
-        return '#6b7280';
-    }
+  const getStatusColor = (patient) => {
+    if (patient.currentPregnancy?.isHighRisk) return '#ef4444'; // Emergency/High Risk
+    if (patient.nextAppointment) return '#f59e0b'; // Follow-up
+    if (patient.appointmentCount > 0) return '#10b981'; // Active
+    return '#6b7280'; // Default
+  };
+
+  const getStatusText = (patient) => {
+    if (patient.currentPregnancy?.isHighRisk) return 'High Risk';
+    if (patient.nextAppointment) return 'Follow-up';
+    if (patient.appointmentCount > 0) return 'Active';
+    return 'Inactive';
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
   };
 
   const handleViewPatient = (patientId) => {
-    navigate(`/doctor/patients/PatientDetails?id=${patientId}`);
+    navigate(`/doctor/patient-details/${patientId}`);
   };
+
+  if (loading) {
+    return (
+      <div className="doctor-patients-page">
+        <div className="doctor-patients-container">
+          <div className="doctor-patients">
+            <div className="doctor-patients__header">
+              <div className="doctor-patients__header-icon">
+                <FiUser className="w-6 h-6" />
+              </div>
+              <div className="doctor-patients__welcome">
+                <h1>Patient Management</h1>
+                <p>Loading patients...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="doctor-patients-page">
@@ -171,11 +159,14 @@ const Patients = () => {
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="follow-up">Follow-up</option>
-                <option value="emergency">Emergency</option>
+                <option value="emergency">High Risk</option>
               </select>
             </div>
 
-            <button className="doctor-add-patient-btn">
+            <button 
+              className="doctor-add-patient-btn"
+              onClick={handleAddPatientClick}
+            >
               <FiPlus size={16} />
               Add New Patient
             </button>
@@ -184,17 +175,17 @@ const Patients = () => {
           <div className="doctor-patients__content">
             <div className="doctor-patients-grid">
               {filteredPatients.map(patient => (
-                <div key={patient.id} className="doctor-patient-card">
+                <div key={patient._id} className="doctor-patient-card">
                   <div className="doctor-patient-card__header">
                     <div className="doctor-patient-card__avatar">
-                      <img src={patient.image} alt={patient.name} />
+                      <img src={`/images/${Math.floor(Math.random() * 6) + 1}.png`} alt={patient.name} />
                     </div>
                     <div className="doctor-patient-card__status">
                       <span 
                         className="doctor-patient-status-badge"
-                        style={{ backgroundColor: getStatusColor(patient.status) }}
+                        style={{ backgroundColor: getStatusColor(patient) }}
                       >
-                        {patient.status}
+                        {getStatusText(patient)}
                       </span>
                     </div>
                   </div>
@@ -204,19 +195,19 @@ const Patients = () => {
                     <div className="doctor-patient-card__info">
                       <div className="doctor-patient-info-item">
                         <FiUser size={14} />
-                        <span>{patient.age} years old</span>
+                        <span>{patient.age || 'N/A'} years old</span>
                       </div>
                       <div className="doctor-patient-info-item">
                         <FiCalendar size={14} />
-                        <span>Last visit: {patient.lastVisit}</span>
+                        <span>Appointments: {patient.appointmentCount || 0}</span>
                       </div>
                       <div className="doctor-patient-info-item">
                         <FiPhone size={14} />
-                        <span>{patient.phone}</span>
+                        <span>{patient.phone || 'N/A'}</span>
                       </div>
                       <div className="doctor-patient-info-item">
                         <FiMapPin size={14} />
-                        <span>{patient.condition}</span>
+                        <span>Pregnancy: {patient.currentPregnancy?.week || 'N/A'} weeks</span>
                       </div>
                     </div>
                   </div>
@@ -224,7 +215,7 @@ const Patients = () => {
                   <div className="doctor-patient-card__actions">
                     <button 
                       className="doctor-patient-action-btn doctor-patient-action-btn--view"
-                      onClick={() => handleViewPatient(patient.id)}
+                      onClick={() => handleViewPatient(patient._id)}
                     >
                       <FiEye size={14} />
                       View
@@ -254,6 +245,65 @@ const Patients = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Patient Modal */}
+      {showAddPatientModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Add New Patient</h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowAddPatientModal(false)}
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <p className="modal-description">
+                Select a mom from the database to assign as your patient:
+              </p>
+              
+              <div className="available-moms-list">
+                {availableMoms.length === 0 ? (
+                  <div className="no-moms-available">
+                    <p>No available moms found. All moms in the system are already assigned to doctors.</p>
+                  </div>
+                ) : (
+                  availableMoms.map(mom => (
+                    <div key={mom._id} className="mom-item">
+                      <div className="mom-info">
+                        <h4>{mom.name}</h4>
+                        <p>Age: {mom.age || 'N/A'} | Blood: {mom.bloodGroup || 'N/A'}</p>
+                        <p>Phone: {mom.phone || 'N/A'} | Email: {mom.email}</p>
+                        <p>Pregnancy: {mom.currentPregnancy?.week || 'N/A'} weeks | EDD: {formatDate(mom.edd)}</p>
+                      </div>
+                      <button
+                        className="assign-patient-btn"
+                        onClick={() => handleAssignPatient(mom._id)}
+                        disabled={assigningPatient}
+                      >
+                        {assigningPatient ? (
+                          <>
+                            <FiCheck size={16} />
+                            Assigning...
+                          </>
+                        ) : (
+                          <>
+                            <FiPlus size={16} />
+                            Assign
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

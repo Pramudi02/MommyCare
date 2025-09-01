@@ -154,8 +154,12 @@ export const fetchData = () => Promise.resolve('data');
 // Midwife Appointment API functions
 export const midwifeAppointmentAPI = {
   // Get appointments based on view mode (today, week, month, etc.)
-  getAppointments: async (viewMode = 'today') => {
-    return apiRequest(`/midwife/appointments?view=${viewMode}`);
+  getAppointments: async (viewMode = 'today', startDate = null, endDate = null) => {
+    const params = new URLSearchParams();
+    params.set('view', viewMode);
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+    return apiRequest(`/midwife/appointments?${params.toString()}`);
   },
 
   // Get all clinic visit requests
@@ -225,10 +229,129 @@ export const vaccinationAPI = {
   },
 };
 
+
+// Midwife Medical Records API (moms listing)
+export const midwifeAPI = {
+  getMomProfiles: async (search = '') => {
+    const params = new URLSearchParams();
+    if (search) params.set('q', search);
+    const qs = params.toString();
+    return apiRequest(`/midwife/moms${qs ? `?${qs}` : ''}`);
+  },
+  
+  // Search for moms to assign
+  searchMoms: async (query) => {
+    return apiRequest(`/midwife/moms/search?q=${encodeURIComponent(query)}`);
+  },
+  
+  // Assign mom to midwife
+  assignMom: async (momId, notes = '') => {
+    return apiRequest('/midwife/moms/assign', {
+      method: 'POST',
+      body: JSON.stringify({ momId, notes })
+    });
+  },
+  
+  // Get medical records for a mom
+  getMedicalRecords: async (momId) => {
+    return apiRequest(`/midwife/moms/${momId}/records`);
+  },
+  
+  // Update overview data
+  updateOverview: async (momId, data) => {
+    return apiRequest(`/midwife/moms/${momId}/overview`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  // Update pre-pregnancy data
+  updatePrePregnancy: async (momId, data) => {
+    return apiRequest(`/midwife/moms/${momId}/prepregnancy`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  // Get midwife profile
+  getProfile: async () => {
+    return apiRequest('/midwife/profile');
+  },
+  
+  // Update midwife profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/midwife/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(profileData)
+    });
+  }
+};
+
+// Immunization Schedule API functions
+export const immunizationScheduleAPI = {
+  // Get all immunization schedules for a baby
+  getAll: async () => {
+    return apiRequest('/immunization-schedule');
+  },
+
+  // Get immunization schedules by status
+  getByStatus: async (status) => {
+    return apiRequest(`/immunization-schedule/status/${status}`);
+  },
+
+  // Get immunization timeline
+  getTimeline: async () => {
+    return apiRequest('/immunization-schedule/timeline');
+  },
+
+  // Initialize immunization schedule for a baby
+  initialize: async (babyBirthDate) => {
+    return apiRequest('/immunization-schedule/initialize', {
+      method: 'POST',
+      body: JSON.stringify({ babyBirthDate }),
+    });
+  },
+
+  // Update immunization status
+  updateStatus: async (id, updateData) => {
+    return apiRequest(`/immunization-schedule/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  // Delete immunization schedule
+  delete: async (id) => {
+    return apiRequest(`/immunization-schedule/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+};
+
 // Doctor API
 export const doctorAPI = {
   getDashboard: async () => apiRequest('/doctor/dashboard'),
   searchPatients: async (q) => apiRequest(`/doctor/patients${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  getMyPatients: async () => apiRequest('/doctor/my-patients'),
+  getAvailableMoms: async () => apiRequest('/doctor/available-moms'),
+  assignPatient: async (momId) => apiRequest('/doctor/assign-patient', {
+    method: 'POST',
+    body: JSON.stringify({ momId })
+  }),
+  getPatientDetails: async (patientId) => apiRequest(`/doctor/patient/${patientId}`),
+  // Medical records
+  getMedicalRecordPatients: async () => apiRequest('/doctor/medical-records/patients'),
+  getMedicalRecordsByPatient: async (patientId) => apiRequest(`/doctor/medical-records/${patientId}`),
+  createMedicalRecord: async (patientId, payload) => apiRequest(`/doctor/medical-records/${patientId}`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  updateMedicalRecord: async (reportId, payload) => apiRequest(`/doctor/medical-records/${reportId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  deleteMedicalRecord: async (reportId) => apiRequest(`/doctor/medical-records/${reportId}`, { method: 'DELETE' }),
   getAppointments: async (params = {}) => {
     const query = new URLSearchParams();
     if (params.start) query.set('start', params.start);
@@ -251,6 +374,7 @@ export const doctorAPI = {
   respondToRequest: async (id, response) => apiRequest(`/doctor/appointment-requests/${id}/respond`, {
     method: 'PUT',
     body: JSON.stringify(response)
+
   })
 };
 
@@ -375,3 +499,4 @@ export const babyNamesAPI = {
     });
   },
 };
+

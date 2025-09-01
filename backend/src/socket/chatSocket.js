@@ -195,6 +195,68 @@ const setupChatSocket = (io) => {
       }
     });
 
+    // Handle sending messages
+    socket.on('send_message', async (data) => {
+      try {
+        const { recipientId, content, messageType, replyTo } = data;
+        
+        console.log(`📤 User ${userId} sending message to ${recipientId}:`, content);
+        
+        // Create new message
+        const newMessage = new Message({
+          senderId: userId,
+          recipientId: recipientId,
+          content: content,
+          messageType: messageType || 'text',
+          replyTo: replyTo,
+          timestamp: new Date()
+        });
+        
+        await newMessage.save();
+        
+        // Find or create conversation
+        let conversation = await Chat.findOne({
+          participants: { $all: [userId, recipientId] }
+        });
+        
+        if (!conversation) {
+          conversation = new Chat({
+            participants: [userId, recipientId],
+            lastMessage: content,
+            lastMessageTime: new Date()
+          });
+          await conversation.save();
+        } else {
+          conversation.lastMessage = content;
+          conversation.lastMessageTime = new Date();
+          await conversation.save();
+        }
+        
+        // Emit to recipient
+        emitToUser(recipientId, 'new_message', {
+          id: newMessage._id,
+          content: content,
+          senderId: userId,
+          senderName: data.senderName,
+          senderRole: data.senderRole,
+          timestamp: data.timestamp,
+          conversationId: conversation._id
+        });
+        
+        // Emit back to sender for confirmation
+        socket.emit('message_sent', {
+          id: newMessage._id,
+          conversationId: conversation._id,
+          status: 'sent'
+        });
+        
+        console.log(`✅ Message sent from ${userId} to ${recipientId}`);
+      } catch (error) {
+        console.error('❌ Error sending message:', error);
+        socket.emit('message_error', { error: 'Failed to send message' });
+      }
+    });
+
     // Handle user busy status
     socket.on('user_busy', (isBusy) => {
       User().findByIdAndUpdate(userId, { 

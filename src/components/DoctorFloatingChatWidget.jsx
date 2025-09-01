@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './FloatingChatWidget.css';
 
 const DoctorFloatingChatWidget = () => {
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Check if user is logged in and is a doctor
   useEffect(() => {
@@ -15,7 +16,9 @@ const DoctorFloatingChatWidget = () => {
         // Check if user is a doctor
         const userRole = localStorage.getItem('userRole');
         if (userRole === 'doctor') {
-          setIsVisible(true);
+          // Hide the floating chat when already in the doctor chatbox
+          const isInDoctorChat = location.pathname.includes('/doctor/chat');
+          setIsVisible(!isInDoctorChat);
         }
       } else {
         setIsVisible(false);
@@ -37,7 +40,7 @@ const DoctorFloatingChatWidget = () => {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [location.pathname]);
 
   const handleToggleChat = () => {
     // Navigate to the doctor chat page

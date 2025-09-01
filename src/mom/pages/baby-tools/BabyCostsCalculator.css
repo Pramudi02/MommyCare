@@ -268,6 +268,195 @@ body {
   color: #1f2937;
 }
 
+/* Quantity and Price Inputs */
+.quantity-price-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-group label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.quantity-input,
+.price-input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+  background-color: #f3f4f6;
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 0.85rem;
+}
+
+.quantity-input:focus,
+.price-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.item-total {
+  font-size: 0.8rem;
+  color: #059669;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Custom Items Section */
+.babycosts-card.custom {
+  border: 2px dashed #d1d5db;
+  background: #fafafa;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.add-custom-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.add-custom-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.custom-item-form {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.custom-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.add-item-btn {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-item-btn:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.add-item-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.custom-item {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.quantity-price-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.remove-item-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-item-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.no-custom-items {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.no-custom-items p {
+  margin-bottom: 5px;
+}
+
+.no-custom-items p:last-child {
+  margin-bottom: 0;
+}
+
 .babycosts-summary-panel {
   background: #fbc4c4;
   border-radius: 0 0 20px 0; /* Only bottom right */
@@ -452,5 +641,55 @@ body {
   .trending-icon {
     width: 18px;
     height: 18px;
+  }
+  
+  /* Mobile responsive for new elements */
+  .quantity-price-inputs {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .quantity-input,
+  .price-input {
+    width: 50px;
+    font-size: 0.8rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .custom-input {
+    width: 100%;
+  }
+  
+  .add-custom-btn {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .cost-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .item-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .quantity-price-display {
+    flex-direction: row;
+    gap: 10px;
   }
 }
