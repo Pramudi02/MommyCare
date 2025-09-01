@@ -21,8 +21,8 @@ const MainNavbar = () => {
     if (isAuthenticated && user?.token) {
       // Only fetch profile if we don't already have meaningful user data
       if (!hasUserData()) {
-        console.log('📱 Fetching user profile...');
-        fetchUserProfile();
+      console.log('📱 Fetching user profile...');
+      fetchUserProfile();
       } else {
         console.log('📱 Already have user data, skipping profile fetch');
         setLoading(false);
@@ -81,7 +81,7 @@ const MainNavbar = () => {
   const handleProfileClick = () => {
     // Only allow profile dropdown to open if we have meaningful user data
     if (hasUserData()) {
-      setProfileDropdown(!profileDropdown);
+    setProfileDropdown(!profileDropdown);
     } else {
       console.log('📱 Cannot open profile dropdown - no meaningful user data');
     }
@@ -208,7 +208,7 @@ const MainNavbar = () => {
             {(isAuthenticated && hasUserData() && !loading) ? (
               // Profile Dropdown
               <div className="relative">
-                                <button 
+                <button
                   onClick={handleProfileClick}
                   disabled={!hasUserData()}
                   className={`flex items-center space-x-3 p-2 rounded-full transition-colors duration-200 ${
@@ -242,7 +242,7 @@ const MainNavbar = () => {
                   
                   {/* Dropdown Arrow - Only show when we have meaningful user data */}
                   {hasUserData() && (
-                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileDropdown ? 'rotate-180' : ''}`} />
                   )}
                 </button>
 
@@ -289,25 +289,25 @@ const MainNavbar = () => {
 
                     {/* Menu Items - Only show when we have meaningful user data */}
                     {hasUserData() && (
-                      <div className="py-1">
-                        <button
-                          onClick={handleEditProfile}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
-                        >
-                          <Settings className="w-4 h-4 text-gray-500" />
-                          <span>Edit Profile</span>
-                        </button>
-                        
-                        <div className="border-t border-gray-100 my-1"></div>
-                        
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors duration-150"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Logout</span>
-                        </button>
-                      </div>
+                    <div className="py-1">
+                      <button
+                        onClick={handleEditProfile}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
+                      >
+                        <Settings className="w-4 h-4 text-gray-500" />
+                        <span>Edit Profile</span>
+                      </button>
+                      
+                      <div className="border-t border-gray-100 my-1"></div>
+                      
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors duration-150"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
                     )}
                   </div>
                 )}

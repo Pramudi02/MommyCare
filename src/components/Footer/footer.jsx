@@ -66,7 +66,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mommycare-footer-bottom">
           <p className="mommycare-footer-copyright">
-            © 2025 MommyCare. All rights reserved. Made with ❤️ for mothers everywhere.
+            © 2025 MommyCare. All rights reserved. Made with love for mothers everywhere.
           </p>
         </div>
       </div>
