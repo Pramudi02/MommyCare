@@ -10,12 +10,19 @@ const getAuthToken = () => {
 const apiRequest = async (endpoint, options = {}) => {
   const token = getAuthToken();
   
+  // Don't set Content-Type for FormData - let the browser set it with boundary
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers,
+  };
+  
+  // Only set Content-Type to application/json if body is not FormData
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+  
   const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
+    headers,
     ...options,
   };
 
@@ -274,6 +281,112 @@ export const momProfileAPI = {
     return apiRequest('/mom/profile', {
       method: 'PUT',
       body: JSON.stringify(profileData),
+    });
+  },
+};
+
+// Service Provider Profile API functions
+export const serviceProviderProfileAPI = {
+  // Get service provider profile
+  getProfile: async () => {
+    return apiRequest('/service-provider/profile');
+  },
+
+  // Create service provider profile
+  createProfile: async (profileData) => {
+    return apiRequest('/service-provider/profile', {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Update service provider profile
+  updateProfile: async (profileData) => {
+    return apiRequest('/service-provider/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Upload profile image
+  uploadProfileImage: async (imageFile) => {
+    const formData = new FormData();
+    formData.append('profileImage', imageFile);
+    
+    return apiRequest('/service-provider/profile/image', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+
+  // Get profile statistics
+  getProfileStats: async () => {
+    return apiRequest('/service-provider/profile/stats');
+  },
+
+  // Update profile statistics
+  updateProfileStats: async (statsData) => {
+    return apiRequest('/service-provider/profile/stats', {
+      method: 'PUT',
+      body: JSON.stringify(statsData),
+    });
+  },
+};
+
+// Product API functions
+export const productAPI = {
+  // Get all products for service provider
+  getServiceProviderProducts: async () => {
+    return apiRequest('/service-provider/products');
+  },
+
+  // Get product by ID
+  getProductById: async (id) => {
+    return apiRequest(`/service-provider/products/${id}`);
+  },
+
+  // Create new product
+  createProduct: async (productData) => {
+    return apiRequest('/service-provider/products', {
+      method: 'POST',
+      body: productData, // FormData for file upload
+    });
+  },
+
+  // Update product
+  updateProduct: async (id, productData) => {
+    return apiRequest(`/service-provider/products/${id}`, {
+      method: 'PUT',
+      body: productData, // FormData for file upload
+    });
+  },
+
+  // Delete product
+  deleteProduct: async (id) => {
+    return apiRequest(`/service-provider/products/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Get product statistics
+  getProductStats: async () => {
+    return apiRequest('/service-provider/products/stats');
+  },
+
+  // Get all public products (for moms)
+  getAllProducts: async () => {
+    return apiRequest('/products');
+  },
+
+  // Get product categories
+  getCategories: async () => {
+    return apiRequest('/products/categories');
+  },
+
+  // Track product click
+  trackClick: async (id) => {
+    return apiRequest(`/products/${id}/click`, {
+      method: 'POST',
     });
   },
 };

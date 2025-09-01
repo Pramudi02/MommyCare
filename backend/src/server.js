@@ -19,6 +19,8 @@ const momRoutes = require('./routes/mom');
 const doctorRoutes = require('./routes/doctor');
 const midwifeRoutes = require('./routes/midwife');
 const serviceProviderRoutes = require('./routes/serviceProvider');
+const serviceProviderProfileRoutes = require('./routes/serviceProviderProfile');
+const productRoutes = require('./routes/products');
 const appointmentRoutes = require('./routes/appointments');
 const messageRoutes = require('./routes/messages');
 const chatRoutes = require('./routes/chat');
@@ -196,6 +198,8 @@ app.use('/api/mom', protect, momRoutes);
 app.use('/api/doctor', protect, doctorRoutes);
 app.use('/api/midwife', protect, midwifeRoutes);
 app.use('/api/service-provider', protect, serviceProviderRoutes);
+app.use('/api/service-provider/profile', serviceProviderProfileRoutes);
+app.use('/api/products', productRoutes); // Public product routes
 app.use('/api/appointments', protect, appointmentRoutes);
 app.use('/api/messages', protect, messageRoutes);
 app.use('/api/chat', protect, chatRoutes);

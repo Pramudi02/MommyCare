@@ -44,7 +44,6 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
   
   // State for healthcare providers and messages
   const [healthcareProviders, setHealthcareProviders] = useState([]);
-  const [assignedMidwife, setAssignedMidwife] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -230,22 +229,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
     getUserInfo();
   }, []);
 
-  // Fetch assigned midwife when current user changes
-  useEffect(() => {
-    if (currentUser?._id) {
-      console.log('👤 Current user changed, fetching assigned midwife for:', currentUser._id);
-      fetchAssignedMidwife().then(midwife => {
-        setAssignedMidwife(midwife);
-        console.log('✅ Assigned midwife set:', midwife);
-      }).catch(error => {
-        console.error('❌ Error fetching assigned midwife:', error);
-        setAssignedMidwife(null);
-      });
-    } else {
-      console.log('❌ No current user ID available');
-      setAssignedMidwife(null);
-    }
-  }, [currentUser]);
+  // Note: Assigned midwife is now fetched directly from the backend in getAllHealthcareProviders
 
   // Fetch healthcare providers (doctors/midwives)
   const fetchHealthcareProviders = async () => {
@@ -302,36 +286,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
     }
   };
 
-  // Fetch assigned midwife from midwifemoms collection
-  const fetchAssignedMidwife = async () => {
-    try {
-      if (!currentUser?._id) return null;
-      
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      if (!token) return null;
-      
-      console.log('👩‍⚕️ Fetching assigned midwife for mom:', currentUser._id);
-      
-      // Fetch from midwifemoms collection to get the assigned midwife
-      const response = await fetch(`http://localhost:5000/api/chat/assigned-midwife/${currentUser._id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Assigned midwife data:', data);
-        return data.data;
-      } else {
-        console.log('❌ No assigned midwife found or error:', response.status);
-        return null;
-      }
-    } catch (error) {
-      console.error('Error fetching assigned midwife:', error);
-      return null;
-    }
-  };
+
 
   // Fetch user conversations
   const fetchConversations = async () => {
@@ -414,19 +369,8 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
     } else if (filterType === 'doctor') {
       return matchesSearch && provider.role === 'doctor';
     } else if (filterType === 'my-midwife') {
-      // For my-midwife, only show the assigned midwife
-      if (!assignedMidwife) {
-        console.log('❌ No assigned midwife found for my-midwife filter');
-        return false;
-      }
-      console.log('🔍 Filtering for assigned midwife:', {
-        providerId: provider.id,
-        assignedMidwifeId: assignedMidwife.midwifeId,
-        isMatch: provider.id === assignedMidwife.midwifeId,
-        providerRole: provider.role,
-        isMidwife: provider.role === 'midwife'
-      });
-      return matchesSearch && provider.role === 'midwife' && provider.id === assignedMidwife.midwifeId;
+      // For my-midwife, only show assigned midwives (from backend)
+      return matchesSearch && provider.role === 'midwife' && provider.isAssigned;
     } else {
       return matchesSearch && provider.role === filterType;
     }
@@ -442,11 +386,20 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
     console.log('🔄 activeConversationId changed:', activeConversationId);
   }, [activeConversationId]);
 
-  // Debug filter type and assigned midwife changes
+  // Debug filter type changes
   useEffect(() => {
     console.log('🔍 Filter type changed:', filterType);
-    console.log('👩‍⚕️ Assigned midwife state:', assignedMidwife);
-  }, [filterType, assignedMidwife]);
+  }, [filterType]);
+
+  // Debug chatMessages changes
+  useEffect(() => {
+    console.log('💬 chatMessages changed:', {
+      length: chatMessages?.length || 0,
+      messages: chatMessages,
+      selectedChat,
+      activeConversationId
+    });
+  }, [chatMessages, selectedChat, activeConversationId]);
 
   // Close context menu when clicking outside
   useEffect(() => {
@@ -551,6 +504,21 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               ? { ...msg, status: 'sent', id: data.data.id }
               : msg
           ));
+
+          // Send message via socket for real-time delivery
+          if (socket && isConnected) {
+            console.log('🔌 Emitting send_message via socket');
+            socket.emit('send_message', {
+              recipientId: selectedChat,
+              content: messageToSend,
+              messageType: 'text',
+              senderId: currentUser._id,
+              senderName: currentUser.name,
+              senderRole: currentUser.role,
+              conversationId: data.data.conversationId || activeConversationId,
+              timestamp: new Date().toISOString()
+            });
+          }
 
           // Clear reply state after sending
           setReplyingTo(null);
@@ -676,6 +644,22 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               ? { ...msg, status: 'sent', id: data.data.id }
               : msg
           ));
+
+          // Send file message via socket for real-time delivery
+          if (socket && isConnected) {
+            console.log('🔌 Emitting file message via socket');
+            socket.emit('send_message', {
+              recipientId: selectedChat,
+              content: file.name,
+              messageType: 'file',
+              senderId: currentUser._id,
+              senderName: currentUser.name,
+              senderRole: currentUser.role,
+              conversationId: data.data.conversationId || activeConversationId,
+              fileUrl: data.data.fileUrl,
+              timestamp: new Date().toISOString()
+            });
+          }
         }
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -735,6 +719,22 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               ? { ...msg, status: 'sent', id: data.data.id }
               : msg
           ));
+
+          // Send image message via socket for real-time delivery
+          if (socket && isConnected) {
+            console.log('🔌 Emitting image message via socket');
+            socket.emit('send_message', {
+              recipientId: selectedChat,
+              content: 'Image',
+              messageType: 'image',
+              senderId: currentUser._id,
+              senderName: currentUser.name,
+              senderRole: currentUser.role,
+              conversationId: data.data.conversationId || activeConversationId,
+              fileUrl: data.data.fileUrl,
+              timestamp: new Date().toISOString()
+            });
+          }
         }
       } catch (error) {
         console.error('Error uploading image:', error);
@@ -1038,7 +1038,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
                   </div>
                   
                   <div className="chat-provider-meta">
-                    <p className="chat-last-message">{provider.lastMessage || 'No messages yet'}</p>
+                    <p className="chat-last-message">{provider.lastMessage || ''}</p>
                     <div className="chat-message-meta">
                       <span className="chat-time">{provider.lastMessageTime || 'New'}</span>
                       {provider.unreadCount > 0 && (
@@ -1057,7 +1057,7 @@ const ChatBox = ({ isOpen, onClose, selectedProvider = null, isFloating = false 
               ))
             ) : (
               <div className="chat-no-providers">
-                {filterType === 'my-midwife' && !assignedMidwife ? (
+                {filterType === 'my-midwife' && !healthcareProviders.some(p => p.role === 'midwife' && p.isAssigned) ? (
                   <>
                     <p>No assigned midwife found</p>
                     <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>

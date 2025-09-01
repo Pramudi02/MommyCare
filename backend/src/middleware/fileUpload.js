@@ -10,9 +10,10 @@ const imageUploadsDir = path.join(chatUploadsDir, 'images');
 const fileUploadsDir = path.join(chatUploadsDir, 'files');
 const audioUploadsDir = path.join(chatUploadsDir, 'audio');
 const videoUploadsDir = path.join(chatUploadsDir, 'videos');
+const productUploadsDir = path.join(uploadsDir, 'products');
 
 // Create directories if they don't exist
-[uploadsDir, chatUploadsDir, imageUploadsDir, fileUploadsDir, audioUploadsDir, videoUploadsDir].forEach(dir => {
+[uploadsDir, chatUploadsDir, imageUploadsDir, fileUploadsDir, audioUploadsDir, videoUploadsDir, productUploadsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -80,6 +81,33 @@ const chatFileFilter = (req, file, cb) => {
   }
 };
 
+// Configure storage for product images
+const productStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, productUploadsDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp and random string
+    const uniqueSuffix = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext);
+    
+    // Sanitize filename
+    const sanitizedName = baseName.replace(/[^a-zA-Z0-9]/g, '_');
+    
+    cb(null, `product-${sanitizedName}-${uniqueSuffix}${ext}`);
+  }
+});
+
+// File filter for product images (only images allowed)
+const productFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed for products'), false);
+  }
+};
+
 // Configure multer for chat file uploads
 const chatUpload = multer({
   storage: chatStorage,
@@ -90,11 +118,24 @@ const chatUpload = multer({
   }
 });
 
+// Configure multer for product image uploads
+const productUpload = multer({
+  storage: productStorage,
+  fileFilter: productFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for product images
+    files: 1 // Only one image per product
+  }
+});
+
 // Middleware for single file upload
 const uploadChatFile = chatUpload.single('file');
 
 // Middleware for multiple file uploads
 const uploadMultipleChatFiles = chatUpload.array('files', 5);
+
+// Middleware for product image upload
+const uploadProductImage = productUpload.single('image');
 
 // Error handling middleware for file upload errors
 const handleFileUploadError = (error, req, res, next) => {
@@ -284,6 +325,8 @@ const isDocumentFile = (mimetype) => {
 module.exports = {
   uploadChatFile,
   uploadMultipleChatFiles,
+  uploadProductImage,
+  upload: productUpload, // Default export for product uploads
   handleFileUploadError,
   getFileInfo,
   getMultipleFilesInfo,
@@ -301,5 +344,6 @@ module.exports = {
   imageUploadsDir,
   fileUploadsDir,
   audioUploadsDir,
-  videoUploadsDir
+  videoUploadsDir,
+  productUploadsDir
 };

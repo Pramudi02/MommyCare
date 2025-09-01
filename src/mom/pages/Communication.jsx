@@ -12,7 +12,7 @@ const Communication = () => {
   const doctors = [
     {
       id: 1,
-      name: 'Dr. Sarah Johnson',
+      name: 'Dr. Pramudi Samarawickrama',
       specialty: 'Cardiology',
       date: 'Nov 12, 2024',
       time: '2:30 PM',
@@ -21,13 +21,13 @@ const Communication = () => {
       rating: 4.9,
       experience: '15+ years',
       location: 'Downtown Medical Center',
-      phone: '+1 (555) 123-4567',
-      email: 'sarah.johnson@mommycare.com',
+      phone: '+94 (11) 123-4567',
+      email: 'pramudi.samarawickrama@mommycare.com',
       image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 2,
-      name: 'Dr. Michael Chen',
+      name: 'Dr. Smith',
       specialty: 'Pediatrics',
       date: 'Nov 12, 2024',
       time: '11:00 AM',
@@ -36,13 +36,13 @@ const Communication = () => {
       rating: 4.8,
       experience: '12+ years',
       location: 'Children\'s Hospital',
-      phone: '+1 (555) 234-5678',
-      email: 'michael.chen@mommycare.com',
+      phone: '+94 (11) 234-5678',
+      email: 'smith@mommycare.com',
       image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 3,
-      name: 'Dr. Emily Rodriguez',
+      name: 'Dr. Doc2 Samarawickrama',
       specialty: 'Obstetrics',
       date: 'Nov 14, 2024',
       time: '4:00 PM',
@@ -51,13 +51,13 @@ const Communication = () => {
       rating: 4.9,
       experience: '18+ years',
       location: 'Women\'s Health Clinic',
-      phone: '+1 (555) 345-6789',
-      email: 'emily.rodriguez@mommycare.com',
+      phone: '+94 (11) 345-6789',
+      email: 'doc2.samarawickrama@mommycare.com',
       image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 4,
-      name: 'Dr. David Kim',
+      name: 'Dr. Dinusha Herath',
       specialty: 'Cardiology',
       date: 'Nov 15, 2024',
       time: '10:00 AM',
@@ -66,13 +66,13 @@ const Communication = () => {
       rating: 4.7,
       experience: '20+ years',
       location: 'Cardiac Care Institute',
-      phone: '+1 (555) 456-7890',
-      email: 'david.kim@mommycare.com',
+      phone: '+94 (11) 456-7890',
+      email: 'dinusha.herath@mommycare.com',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 5,
-      name: 'Dr. Lisa Thompson',
+      name: 'Dr. Sandali Doctor',
       specialty: 'Pediatrics',
       date: 'Nov 16, 2024',
       time: '3:00 PM',
@@ -81,13 +81,13 @@ const Communication = () => {
       rating: 4.8,
       experience: '14+ years',
       location: 'Family Care Center',
-      phone: '+1 (555) 567-8901',
-      email: 'lisa.thompson@mommycare.com',
+      phone: '+94 (11) 567-8901',
+      email: 'sandali.doctor@mommycare.com',
       image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 6,
-      name: 'Dr. James Wilson',
+      name: 'Dr. Jithmi Docter',
       specialty: 'Obstetrics',
       date: 'Nov 17, 2024',
       time: '1:30 PM',
@@ -96,13 +96,13 @@ const Communication = () => {
       rating: 4.9,
       experience: '16+ years',
       location: 'Maternity Care Center',
-      phone: '+1 (555) 678-9012',
-      email: 'james.wilson@mommycare.com',
+      phone: '+94 (11) 678-9012',
+      email: 'jithmi.docter@mommycare.com',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 7,
-      name: 'Dr. Maria Garcia',
+      name: 'Dr. Pramudi Samarawickrama',
       specialty: 'Gynecology',
       date: 'Nov 18, 2024',
       time: '2:00 PM',
@@ -111,13 +111,13 @@ const Communication = () => {
       rating: 4.8,
       experience: '13+ years',
       location: 'Women\'s Wellness Center',
-      phone: '+1 (555) 789-0123',
-      email: 'maria.garcia@mommycare.com',
+      phone: '+94 (11) 789-0123',
+      email: 'pramudi.samarawickrama@mommycare.com',
       image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 8,
-      name: 'Dr. Robert Brown',
+      name: 'Dr. Dinusha Herath',
       specialty: 'Radiology',
       date: 'Nov 19, 2024',
       time: '9:00 AM',
@@ -126,13 +126,13 @@ const Communication = () => {
       rating: 4.7,
       experience: '17+ years',
       location: 'Imaging Center',
-      phone: '+1 (555) 890-1234',
-      email: 'robert.brown@mommycare.com',
+      phone: '+94 (11) 890-1234',
+      email: 'dinusha.herath@mommycare.com',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
     {
       id: 9,
-      name: 'Dr. Jennifer Lee',
+      name: 'Dr. Sandali Doctor',
       specialty: 'Dental Health',
       date: 'Nov 20, 2024',
       time: '11:30 AM',
@@ -141,8 +141,8 @@ const Communication = () => {
       rating: 4.8,
       experience: '11+ years',
       location: 'Family Dental Care',
-      phone: '+1 (555) 901-2345',
-      email: 'jennifer.lee@mommycare.com',
+      phone: '+94 (11) 901-2345',
+      email: 'sandali.doctor@mommycare.com',
       image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face'
     }
   ];

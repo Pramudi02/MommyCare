@@ -545,6 +545,29 @@
   animation: sp-spin 1s ease-in-out infinite;
 }
 
+.sp-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.sp-loading-container .sp-loading {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #667eea;
+  border-top-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.sp-loading-container p {
+  color: #6b7280;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
 @keyframes sp-spin {
   to { transform: rotate(360deg); }
 }

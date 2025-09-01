@@ -37,22 +37,6 @@ const Dashboard = () => {
       color: 'sp-stat-card--blue'
     },
     {
-      title: 'Product Views',
-      value: '1,247',
-      change: '+15.2%',
-      changeType: 'positive',
-      icon: <Eye className="sp-stat-card__icon" />,
-      color: 'sp-stat-card--green'
-    },
-    {
-      title: 'External Clicks',
-      value: '89',
-      change: '+8.7%',
-      changeType: 'positive',
-      icon: <ExternalLink className="sp-stat-card__icon" />,
-      color: 'sp-stat-card--purple'
-    },
-    {
       title: 'Active Products',
       value: '22',
       change: '+2',

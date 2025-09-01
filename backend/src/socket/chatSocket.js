@@ -234,13 +234,16 @@ const setupChatSocket = (io) => {
         
         // Emit to recipient
         emitToUser(recipientId, 'new_message', {
-          id: newMessage._id,
-          content: content,
-          senderId: userId,
-          senderName: data.senderName,
-          senderRole: data.senderRole,
-          timestamp: data.timestamp,
-          conversationId: conversation._id
+          conversationId: conversation._id,
+          message: {
+            id: newMessage._id,
+            content: content,
+            senderId: userId,
+            senderName: data.senderName,
+            senderRole: data.senderRole,
+            messageType: messageType || 'text',
+            timestamp: data.timestamp || new Date().toISOString()
+          }
         });
         
         // Emit back to sender for confirmation

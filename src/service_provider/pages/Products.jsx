@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Filter, 
@@ -15,8 +15,10 @@ import {
   Globe,
   Calendar,
   Tag,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
+import { productAPI } from '../../services/api';
 import './Products.css';
 
 const Products = () => {
@@ -25,119 +27,77 @@ const Products = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['All Categories']);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const categories = ['All Categories', 'Feeding', 'Comfort', 'Travel', 'Clothing', 'Safety', 'Toys', 'Health'];
+  // Load products and categories on component mount
+  useEffect(() => {
+    loadProducts();
+    loadCategories();
+  }, []);
 
-  const products = [
-    {
-      id: 1,
-      name: 'Premium Baby Carrier',
-      category: 'Travel',
-      price: 89.99,
-      status: 'active',
-      rating: 4.8,
-      views: 156,
-      clicks: 23,
-      clickRate: '14.7%',
-      image: '/images/baby-carrier.jpg',
-      description: 'Ergonomic baby carrier with multiple carrying positions and adjustable straps for maximum comfort.',
-      externalLink: 'https://example-store.com/baby-carrier',
-      tags: ['Ergonomic', 'Adjustable', 'Comfortable'],
-      createdAt: '2024-01-15',
-      lastUpdated: '2024-01-20'
-    },
-    {
-      id: 2,
-      name: 'Organic Cotton Diaper Bag',
-      category: 'Travel',
-      price: 45.50,
-      status: 'active',
-      rating: 4.6,
-      views: 89,
-      clicks: 12,
-      clickRate: '13.5%',
-      image: '/images/diaper-bag.jpg',
-      description: 'Spacious diaper bag made from organic cotton with multiple compartments and changing pad.',
-      externalLink: 'https://example-store.com/diaper-bag',
-      tags: ['Organic', 'Spacious', 'Eco-friendly'],
-      createdAt: '2024-01-10',
-      lastUpdated: '2024-01-18'
-    },
-    {
-      id: 3,
-      name: 'Electric Breast Pump',
-      category: 'Feeding',
-      price: 129.99,
-      status: 'active',
-      rating: 4.9,
-      views: 67,
-      clicks: 8,
-      clickRate: '11.9%',
-      image: '/images/breast-pump.jpg',
-      description: 'Double electric breast pump with adjustable suction levels and comfortable breast shields.',
-      externalLink: 'https://example-store.com/breast-pump',
-      tags: ['Electric', 'Adjustable', 'Comfortable'],
-      createdAt: '2024-01-05',
-      lastUpdated: '2024-01-22'
-    },
-    {
-      id: 4,
-      name: 'Lightweight Baby Stroller',
-      category: 'Travel',
-      price: 299.99,
-      status: 'pending',
-      rating: 4.7,
-      views: 34,
-      clicks: 5,
-      clickRate: '14.7%',
-      image: '/images/baby-stroller.jpg',
-      description: 'Ultra-lightweight stroller with one-hand fold mechanism and all-terrain wheels.',
-      externalLink: 'https://example-store.com/baby-stroller',
-      tags: ['Lightweight', 'Compact', 'Durable'],
-      createdAt: '2024-01-12',
-      lastUpdated: '2024-01-19'
-    },
-    {
-      id: 5,
-      name: 'Baby Sleep Sack',
-      category: 'Comfort',
-      price: 29.99,
-      status: 'active',
-      rating: 4.5,
-      views: 45,
-      clicks: 6,
-      clickRate: '13.3%',
-      image: '/images/sleep-sack.jpg',
-      description: 'Soft and breathable sleep sack for safe and comfortable sleep.',
-      externalLink: 'https://example-store.com/sleep-sack',
-      tags: ['Soft', 'Breathable', 'Safe'],
-      createdAt: '2024-01-08',
-      lastUpdated: '2024-01-16'
-    },
-    {
-      id: 6,
-      name: 'Baby Monitor Camera',
-      category: 'Safety',
-      price: 79.99,
-      status: 'active',
-      rating: 4.4,
-      views: 78,
-      clicks: 15,
-      clickRate: '19.2%',
-      image: '/images/baby-monitor.jpg',
-      description: 'HD baby monitor with night vision and two-way audio communication.',
-      externalLink: 'https://example-store.com/baby-monitor',
-      tags: ['HD', 'Night Vision', 'Two-way Audio'],
-      createdAt: '2024-01-03',
-      lastUpdated: '2024-01-21'
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await productAPI.getServiceProviderProducts();
+      console.log('Products API response:', response); // Debug log
+      
+      // Handle the correct response structure from backend
+      let productsData = [];
+      if (response && response.success && response.data && response.data.products) {
+        productsData = response.data.products;
+      } else if (Array.isArray(response)) {
+        productsData = response;
+      } else if (response && response.data && Array.isArray(response.data)) {
+        productsData = response.data;
+      }
+      
+      console.log('Products data to set:', productsData); // Debug log
+      setProducts(Array.isArray(productsData) ? productsData : []);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      setError('Failed to load products. Please try again.');
+      setProducts([]); // Set empty array on error
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  const loadCategories = async () => {
+    try {
+      const response = await productAPI.getCategories();
+      console.log('Categories API response:', response); // Debug log
+      
+      // Handle the correct response structure from backend
+      let categoriesData = [];
+      if (response && response.success && response.data) {
+        categoriesData = response.data;
+      } else if (Array.isArray(response)) {
+        categoriesData = response;
+      } else if (response && response.data && Array.isArray(response.data)) {
+        categoriesData = response.data;
+      }
+      
+      console.log('Categories data to set:', categoriesData); // Debug log
+      const categoryList = ['All Categories', ...(Array.isArray(categoriesData) ? categoriesData : [])];
+      setCategories(categoryList);
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+      // Keep default categories if API fails
+      setCategories(['All Categories', 'Feeding', 'Comfort', 'Travel', 'Clothing', 'Safety', 'Toys', 'Health']);
+    }
+  };
+
+
+
+  const filteredProducts = (Array.isArray(products) ? products : []).filter(product => {
+    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     const matchesStatus = selectedStatus === 'all' || product.status === selectedStatus;
     
@@ -151,16 +111,44 @@ const Products = () => {
 
   const handleEditProduct = (product) => {
     // Navigate to edit page
-    window.location.href = `/service-provider/products/edit/${product.id}`;
+    window.location.href = `/service-provider/products/edit/${product._id}`;
   };
 
-  const handleDeleteProduct = (productId) => {
-    // Handle delete logic here
-    console.log('Delete product:', productId);
+  const handleDeleteProduct = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await productAPI.deleteProduct(productId);
+        // Remove product from local state
+        setProducts((Array.isArray(products) ? products : []).filter(p => p._id !== productId));
+        // Close modal if viewing the deleted product
+        if (selectedProduct && selectedProduct._id === productId) {
+          setShowViewModal(false);
+          setSelectedProduct(null);
+        }
+      } catch (err) {
+        console.error('Failed to delete product:', err);
+        alert('Failed to delete product. Please try again.');
+      }
+    }
   };
 
-  const handleExternalLink = (link) => {
-    window.open(link, '_blank');
+  const handleExternalLink = async (product) => {
+    try {
+      // Track the click
+      await productAPI.trackClick(product._id);
+      // Open external link
+      window.open(product.externalLink, '_blank');
+      // Update local state to reflect the click
+      setProducts((Array.isArray(products) ? products : []).map(p => 
+        p._id === product._id 
+          ? { ...p, clicks: (p.clicks || 0) + 1 }
+          : p
+      ));
+    } catch (err) {
+      console.error('Failed to track click:', err);
+      // Still open the link even if tracking fails
+      window.open(product.externalLink, '_blank');
+    }
   };
 
   const getStatusColor = (status) => {
@@ -176,6 +164,24 @@ const Products = () => {
     }
   };
 
+  const getProductImage = (product) => {
+    // Map specific products to their baby product images
+    if (product.name === 'bag') {
+      return 'https://i.pinimg.com/1200x/be/0d/82/be0d828f021230cf1b4a6b2ffda76bf2.jpg';
+    } else if (product.name === 'shirt') {
+      return 'https://i.pinimg.com/1200x/a5/5c/24/a55c24a8437079e58ffbe708cb7b32a1.jpg';
+    } else if (product.name === 'qqq') {
+      return 'https://i.pinimg.com/1200x/a9/7d/a8/a97da8e25aae77c610de6c02171a378b.jpg';
+    }
+    
+    // For other products, use the original logic
+    if (product.image) {
+      return product.image.startsWith('http') ? product.image : `http://localhost:5000/uploads/${product.image}`;
+    }
+    
+    return '/images/placeholder-product.jpg';
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'active':
@@ -189,19 +195,47 @@ const Products = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="sp-products-page">
+        <div className="sp-products-container-wrapper">
+          <div className="sp-loading-container">
+            <Loader2 className="sp-loading-spinner" />
+            <p>Loading products...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="sp-products-page">
       <div className="sp-products-container-wrapper">
 
       <div className="sp-products-header">
-        <div className="sp-products-header-icon">
-          <Package />
+        <div className="sp-products-header-content">
+          <div className="sp-products-header-icon">
+            <Package />
           </div>
-        <div className="sp-products-title">
-          <h1>Product Listings</h1>
-          <p>Manage your product listings with external links</p>
+          <div className="sp-products-title">
+            <h1>Product Listings</h1>
+            <p>Manage your product listings with external links</p>
+          </div>
         </div>
       </div>
+
+      {error && (
+        <div className="sp-error-message">
+          <AlertCircle className="sp-error-icon" />
+          <span>{error}</span>
+          <button 
+            className="sp-btn sp-btn-outline sp-btn-sm"
+            onClick={loadProducts}
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* Enhanced Search and Filters */}
       <div className="sp-search-filters-section">
@@ -261,10 +295,10 @@ const Products = () => {
       {/* Products Grid */}
       <div className="sp-products-grid">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="sp-product-card">
+          <div key={product._id} className="sp-product-card">
             <div className="sp-product-image-container">
               <img 
-                src={product.image} 
+                src={getProductImage(product)} 
                 alt={product.name}
                 className="sp-product-image"
                 onError={(e) => {
@@ -294,32 +328,32 @@ const Products = () => {
                 </div>
                 <div className="sp-rating">
                   <Star className="sp-star-icon" />
-                  <span>{product.rating}</span>
+                  <span>4.5</span>
                 </div>
               </div>
               
               <div className="sp-product-stats">
                 <div className="sp-stat">
                   <Eye className="sp-stat-icon" />
-                  <span>{product.views}</span>
+                  <span>{product.views || 0}</span>
                 </div>
                 <div className="sp-stat">
                   <ExternalLink className="sp-stat-icon" />
-                  <span>{product.clicks}</span>
+                  <span>{product.clicks || 0}</span>
                 </div>
                 <div className="sp-stat">
                   <TrendingUp className="sp-stat-icon" />
-                  <span>{product.clickRate}</span>
+                  <span>{product.views && product.clicks ? ((product.clicks / product.views) * 100).toFixed(1) + '%' : '0%'}</span>
                 </div>
               </div>
               
               <div className="sp-product-tags">
-                {product.tags.slice(0, 3).map((tag, index) => (
+                {product.tags?.slice(0, 3).map((tag, index) => (
                   <span key={index} className="sp-tag">
                     {tag}
                   </span>
                 ))}
-                {product.tags.length > 3 && (
+                {product.tags?.length > 3 && (
                   <span className="sp-tag sp-tag-more">
                     +{product.tags.length - 3}
                   </span>
@@ -337,7 +371,7 @@ const Products = () => {
               </button>
               <button 
                 className="sp-btn sp-btn-primary sp-btn-visit"
-                onClick={() => handleExternalLink(product.externalLink)}
+                onClick={() => handleExternalLink(product)}
               >
                 <ExternalLink className="sp-btn-icon" />
                 Visit Store
@@ -351,7 +385,7 @@ const Products = () => {
               </button>
               <button 
                 className="sp-btn sp-btn-danger sp-btn-delete"
-                onClick={() => handleDeleteProduct(product.id)}
+                onClick={() => handleDeleteProduct(product._id)}
               >
                 <Trash2 className="sp-btn-icon" />
                 Delete
@@ -362,7 +396,7 @@ const Products = () => {
       </div>
 
       {/* Empty State */}
-      {filteredProducts.length === 0 && (
+      {filteredProducts.length === 0 && !loading && (
         <div className="sp-empty-state">
           <Package className="sp-empty-icon" />
           <h3>No products found</h3>
@@ -387,7 +421,7 @@ const Products = () => {
               <div className="sp-product-detail">
                 <div className="sp-product-detail-header">
                   <img 
-                    src={selectedProduct.image} 
+                    src={getProductImage(selectedProduct)} 
                     alt={selectedProduct.name}
                     className="sp-product-detail-image"
                     onError={(e) => {
@@ -402,7 +436,7 @@ const Products = () => {
                       <span className="sp-price">${selectedProduct.price}</span>
                       <div className="sp-rating">
                         <Star className="sp-star-icon" />
-                      <span>{selectedProduct.rating}</span>
+                      <span>4.5</span>
                     </div>
                   </div>
                 </div>
@@ -411,26 +445,26 @@ const Products = () => {
                 <div className="sp-product-detail-stats">
                   <h4>Performance Metrics</h4>
                   <div className="sp-stats-grid">
-                    <div className="sp-stat-item">
+                                        <div className="sp-stat-item">
                       <Eye className="sp-stat-icon" />
                       <div>
-                        <span className="sp-stat-value">{selectedProduct.views}</span>
+                        <span className="sp-stat-value">{selectedProduct.views || 0}</span>
                         <span className="sp-stat-label">Views</span>
                       </div>
                     </div>
                     <div className="sp-stat-item">
                       <ExternalLink className="sp-stat-icon" />
                       <div>
-                        <span className="sp-stat-value">{selectedProduct.clicks}</span>
+                        <span className="sp-stat-value">{selectedProduct.clicks || 0}</span>
                         <span className="sp-stat-label">Clicks</span>
                       </div>
                   </div>
                     <div className="sp-stat-item">
                       <TrendingUp className="sp-stat-icon" />
                       <div>
-                        <span className="sp-stat-value">{selectedProduct.clickRate}</span>
+                        <span className="sp-stat-value">{selectedProduct.views && selectedProduct.clicks ? ((selectedProduct.clicks / selectedProduct.views) * 100).toFixed(1) + '%' : '0%'}</span>
                         <span className="sp-stat-label">Click Rate</span>
-                  </div>
+                    </div>
                   </div>
                   </div>
                 </div>
@@ -443,7 +477,7 @@ const Products = () => {
                 <div className="sp-product-detail-tags">
                   <h4>Tags</h4>
                   <div className="sp-tags-list">
-                    {selectedProduct.tags.map((tag, index) => (
+                    {selectedProduct.tags?.map((tag, index) => (
                       <span key={index} className="sp-tag">
                         {tag}
                       </span>
@@ -461,7 +495,7 @@ const Products = () => {
               </button>
               <button 
                 className="sp-btn sp-btn-primary"
-                onClick={() => handleExternalLink(selectedProduct.externalLink)}
+                onClick={() => handleExternalLink(selectedProduct)}
               >
                 <ExternalLink className="sp-btn-icon" />
                 Visit Store

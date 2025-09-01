@@ -46,6 +46,7 @@ const MidwifeChat = () => {
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   
   // State for message context menu
   const [contextMenu, setContextMenu] = useState({
@@ -125,69 +126,82 @@ const MidwifeChat = () => {
         });
 
         newSocket.on('new_message', (data) => {
-          console.log('📨 New message received:', data);
-          console.log('🔍 Current user ID:', currentUser.id);
-          console.log('🔍 Message sender ID:', data.senderId);
-          console.log('🔍 Active conversation ID:', activeConversationId);
+          const msg = data.message || {};
+          const conversationId = data.conversationId;
           
-          // Only add message if it's for the current conversation
-          if (data.senderId !== currentUser.id) {
-            const msg = data.message || {};
-            const conversationId = data.conversationId;
+          console.log('🔔 New message received:', {
+            conversationId,
+            activeConversationId,
+            messageContent: msg.content,
+            senderId: msg.senderId,
+            currentUserId: currentUser?.id
+          });
+          
+          // Only append messages for the currently active conversation
+          if (activeConversationId && conversationId === activeConversationId) {
+            console.log('✅ Message belongs to active conversation - adding to chat');
+            const inferredType = msg.messageType || msg.type;
+            const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
+            const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
+            const newMessage = {
+              id: msg.id,
+              // Determine sender based on current user vs message sender
+              sender: msg.senderId === currentUser?.id ? 'midwife' : 'provider',
+              message: inferredType === 'text' ? (msg.content || '') : inferredName,
+              timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
+              type: inferredType || 'text',
+              status: msg.status || 'delivered',
+              replyTo: msg.replyTo ? {
+                sender: msg.replyTo.sender,
+                message: msg.replyTo.content
+              } : null,
+              fileUrl: inferredUrl || undefined
+            };
             
-            console.log('🔔 New message received:', {
-              conversationId,
-              activeConversationId,
-              messageContent: msg.content,
-              senderId: msg.senderId,
-              currentUserId: currentUser?.id
-            });
-            
-            // Only append messages for the currently active conversation
-            console.log('🔍 Comparing conversation IDs:', conversationId, '===', activeConversationId);
-            if (activeConversationId && conversationId === activeConversationId) {
-              console.log('✅ Message belongs to active conversation - adding to chat');
-              const inferredType = msg.messageType || msg.type;
-              const inferredUrl = msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl || null;
-              const inferredName = msg.fileName || msg.filename || msg.name || msg.content || (inferredType === 'image' ? 'Image' : 'File');
-              const newMessage = {
-                id: msg.id,
-                // Determine sender based on current user vs message sender
-                sender: msg.senderId === currentUser?.id ? 'midwife' : 'provider',
-                message: inferredType === 'text' ? (msg.content || '') : inferredName,
-                timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-                type: inferredType || 'text',
-                status: msg.status || 'delivered',
-                replyTo: msg.replyTo ? {
-                  sender: msg.replyTo.sender === 'user' ? 'midwife' : 'provider',
-                  message: msg.replyTo.content
-                } : null,
-                fileUrl: inferredUrl || undefined
-              };
-              
-              // Add new message and sort by timestamp to maintain correct order
-              setChatMessages(prev => {
-                const updatedMessages = [...prev, newMessage];
-                return updatedMessages.sort((a, b) => {
-                  const timeA = a.originalTimestamp || new Date(a.timestamp);
-                  const timeB = b.originalTimestamp || new Date(b.timestamp);
-                  return timeA - timeB; // Oldest first
-                });
+            // Add new message and sort by timestamp to maintain correct order
+            setChatMessages(prev => {
+              const updatedMessages = [...prev, newMessage];
+              return updatedMessages.sort((a, b) => {
+                const timeA = a.originalTimestamp || new Date(a.timestamp);
+                const timeB = b.originalTimestamp || new Date(b.timestamp);
+                return timeA - timeB; // Oldest first
               });
-            } else {
-              console.log('❌ Message does not belong to active conversation - ignoring');
-            }
+            });
+          } else {
+            console.log('❌ Message does not belong to active conversation - ignoring');
           }
         });
 
-        newSocket.on('typing', (data) => {
-          // Handle typing indicators
+        newSocket.on('typing_indicator', (data) => {
+          const { conversationId, userId, isTyping: typing } = data || {};
+          // Only show typing for the currently active conversation
+          if (activeConversationId && conversationId === activeConversationId && userId !== currentUser?.id) {
+            setIsTyping(!!typing);
+          } else {
+            setIsTyping(false);
+          }
+        });
+
+        newSocket.on('message_status_update', (data) => {
+          setChatMessages(prev => prev.map(msg => 
+            msg.id === data.messageId 
+              ? { ...msg, status: data.status }
+              : msg
+          ));
+        });
+
+        newSocket.on('conversation_joined', (data) => {
+          console.log('✅ Midwife joined conversation:', data.conversationId);
         });
 
         setSocket(newSocket);
 
         return () => {
+          newSocket.off('new_message');
+          newSocket.off('typing_indicator');
+          newSocket.off('message_status_update');
+          newSocket.off('conversation_joined');
           newSocket.close();
         };
       }
@@ -347,6 +361,31 @@ const MidwifeChat = () => {
           }
 
           console.log('✅ Message saved to database and sent via socket');
+          
+          // Ensure we know the conversationId by refetching conversations
+          try {
+            console.log('🔄 Refreshing conversations after sending message...');
+            const convRes = await fetch('http://localhost:5000/api/chat/conversations', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (convRes.ok) {
+              const convData = await convRes.json();
+              setConversations(convData.data);
+              const conversation = convData.data.find(c => c.participants.some(p => p.id === selectedChat.id));
+              if (conversation) {
+                console.log('✅ Found conversation after sending:', conversation.id);
+                setActiveConversationId(conversation.id);
+                if (socket) {
+                  console.log('🔌 Joining conversation after sending:', conversation.id);
+                  socket.emit('join_conversation', conversation.id);
+                }
+              } else {
+                console.log('❌ No conversation found after sending message');
+              }
+            }
+          } catch (e) {
+            console.error('Error refreshing conversations:', e);
+          }
         } else {
           console.error('❌ Failed to save message to database');
           // Update message status to error
@@ -387,6 +426,7 @@ const MidwifeChat = () => {
 
   const fetchChatMessages = async (recipientId) => {
     try {
+      setLoadingMessages(true);
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
       // First, get the conversation between current user and recipient
@@ -402,10 +442,12 @@ const MidwifeChat = () => {
         console.log('🔍 Looking for conversation with recipient:', recipientId);
         console.log('🔍 Available conversations:', conversationData.data);
         
+        // Look for conversation that includes both current user and recipient
         const conversation = conversationData.data?.find(conv => {
           const hasRecipient = conv.participants.some(p => p._id.toString() === recipientId.toString());
-          console.log('🔍 Checking conversation:', conv._id, 'participants:', conv.participants, 'hasRecipient:', hasRecipient);
-          return hasRecipient;
+          const hasCurrentUser = conv.participants.some(p => p._id.toString() === currentUser.id.toString());
+          console.log('🔍 Checking conversation:', conv._id, 'participants:', conv.participants, 'hasRecipient:', hasRecipient, 'hasCurrentUser:', hasCurrentUser);
+          return hasRecipient && hasCurrentUser;
         });
         
         if (conversation) {
@@ -426,16 +468,16 @@ const MidwifeChat = () => {
             // Transform API messages to match frontend structure like mom chatbox
             const messages = messagesData.data
               .map(msg => ({
-                id: msg.id,
-                // Map sender correctly: 'user' means current user (midwife), 'provider' means other person
-                sender: msg.sender === 'user' ? 'midwife' : 'provider',
+                id: msg.id || msg._id,
+                // Map sender correctly: 'user' means mom/doctor, 'provider' means midwife
+                sender: msg.sender === 'provider' ? 'midwife' : 'provider',
                 message: (msg.messageType === 'text') ? msg.content : (msg.fileName || msg.filename || msg.name || msg.content || (msg.messageType === 'image' ? 'Image' : 'File')),
                 timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 originalTimestamp: new Date(msg.timestamp), // Keep original timestamp for sorting
-                type: msg.messageType,
+                type: msg.messageType || 'text',
                 status: msg.read ? 'read' : 'delivered',
                 replyTo: msg.replyTo ? {
-                  sender: msg.replyTo.sender === 'user' ? 'midwife' : 'provider',
+                  sender: msg.replyTo.sender === 'provider' ? 'midwife' : 'provider',
                   message: msg.replyTo.content
                 } : null,
                 fileUrl: msg.fileUrl || msg.url || msg.attachmentUrl || msg.mediaUrl
@@ -460,6 +502,8 @@ const MidwifeChat = () => {
     } catch (error) {
       console.error('Error fetching messages:', error);
       setChatMessages([]);
+    } finally {
+      setLoadingMessages(false);
     }
   };
 
@@ -610,28 +654,54 @@ const MidwifeChat = () => {
 
               {/* Chat Messages */}
               <div className="midwife-chat-page-messages">
-                {chatMessages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`midwife-chat-page-message ${
-                      msg.sender === 'midwife' ? 'outgoing' : 'incoming'
-                    }`}
-                    onMouseEnter={() => setHoveredMessage(msg.id)}
-                    onMouseLeave={() => setHoveredMessage(null)}
-                  >
-                    <div className="midwife-chat-page-message-content">
-                      {msg.replyTo && (
-                        <div className="midwife-chat-page-message-reply">
-                          <span>Replying to: {msg.replyTo.message}</span>
+                {loadingMessages ? (
+                  <div className="midwife-chat-page-no-messages">
+                    <div className="midwife-chat-loading-spinner"></div>
+                    <p>Loading messages...</p>
+                  </div>
+                ) : chatMessages.length === 0 ? (
+                  <div className="midwife-chat-page-no-messages">
+                    <MessageCircle size={48} />
+                    <h3>No messages yet</h3>
+                    <p>Start the conversation by sending a message!</p>
+                  </div>
+                ) : (
+                  chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`midwife-chat-page-message ${
+                        msg.sender === 'midwife' ? 'outgoing' : 'incoming'
+                      }`}
+                      onMouseEnter={() => setHoveredMessage(msg.id)}
+                      onMouseLeave={() => setHoveredMessage(null)}
+                    >
+                      <div className="midwife-chat-page-message-content">
+                        {msg.replyTo && (
+                          <div className="midwife-chat-page-message-reply">
+                            <span>Replying to: {msg.replyTo.message}</span>
+                          </div>
+                        )}
+                        <div className="midwife-chat-page-message-text">{msg.message}</div>
+                        <div className="midwife-chat-page-message-time">
+                          <span>{msg.timestamp}</span>
+                          {msg.sender === 'midwife' && (
+                            <div className="midwife-chat-page-message-status">
+                              {msg.status === 'sent' ? (
+                                <Check size={12} className="check" />
+                              ) : msg.status === 'sending' ? (
+                                <div className="midwife-chat-page-typing-dots">
+                                  <span></span><span></span><span></span>
+                                </div>
+                              ) : (
+                                <Check size={12} className="check" />
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div className="midwife-chat-page-message-text">{msg.message}</div>
-                      <div className="midwife-chat-page-message-time">
-                        {msg.timestamp}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
                 <div ref={messagesEndRef} />
               </div>
 

@@ -14,7 +14,9 @@
 
 /* Header Styles */
 .sp-products-header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 2rem;
   padding: 3rem 2rem;
   background: linear-gradient(135deg, #edd4ed 0%, #bcd9eb 50%, #a5b4fc 100%);
@@ -22,6 +24,13 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+}
+
+.sp-products-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
 }
 
 /* Add subtle pattern overlay */
@@ -55,10 +64,10 @@
   border-radius: 50%;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem auto;
   position: relative;
   z-index: 1;
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .sp-products-header-icon svg {
@@ -87,6 +96,85 @@
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+/* Refresh Button */
+.sp-refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.sp-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.sp-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sp-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Loading Container */
+.sp-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.sp-loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.sp-loading-container p {
+  color: #6b7280;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* Error Message */
+.sp-error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  color: #dc2626;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.sp-error-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.sp-error-message .sp-btn {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
 /* Enhanced Search and Filters */
@@ -304,6 +392,7 @@
   margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -643,6 +732,70 @@
   gap: 0.5rem;
 }
 
+/* Product Meta Information */
+.sp-product-detail-meta {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sp-product-detail-meta h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.sp-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.sp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.sp-meta-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.sp-meta-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.sp-meta-value {
+  display: block;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.sp-external-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.sp-external-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .sp-products-page {
@@ -651,6 +804,17 @@
   
   .sp-products-header {
     padding: 2rem 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sp-products-header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .sp-refresh-btn {
+    align-self: center;
   }
   
   .sp-products-title h1 {

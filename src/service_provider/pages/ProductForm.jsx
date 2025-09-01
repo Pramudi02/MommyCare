@@ -16,11 +16,14 @@ import {
   Trash2,
   Camera
 } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
+import { productAPI } from '../../services/api';
 import './ProductForm.css';
 
 const ProductForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isEditing = !!id;
   const fileInputRef = useRef(null);
 
@@ -40,6 +43,7 @@ const ProductForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newTag, setNewTag] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const categories = [
     'Feeding',
@@ -61,23 +65,36 @@ const ProductForm = () => {
   ];
 
   useEffect(() => {
-    if (isEditing) {
-      // Load product data for editing
-      // This would typically come from an API
-      const mockProduct = {
-        name: 'Premium Baby Carrier',
-        category: 'Travel',
-        price: '89.99',
-        description: 'Ergonomic baby carrier with multiple carrying positions and adjustable straps for maximum comfort.',
-        externalLink: 'https://example-store.com/baby-carrier',
-        tags: ['Ergonomic', 'Adjustable', 'Comfortable'],
-        status: 'active',
-        image: null,
-        imagePreview: null
-      };
-      setFormData(mockProduct);
+    if (isEditing && id) {
+      loadProductData();
     }
-  }, [isEditing]);
+  }, [isEditing, id]);
+
+  const loadProductData = async () => {
+    try {
+      setLoading(true);
+      const response = await productAPI.getProductById(id);
+      if (response.success) {
+        const product = response.data;
+        setFormData({
+          name: product.name || '',
+          category: product.category || '',
+          price: product.price?.toString() || '',
+          description: product.description || '',
+          externalLink: product.externalLink || '',
+          tags: product.tags || [],
+          status: product.status || 'pending',
+          image: product.image || null,
+          imagePreview: product.image?.url || null
+        });
+      }
+    } catch (error) {
+      console.error('Error loading product:', error);
+      setErrors({ general: 'Failed to load product data' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -242,13 +259,36 @@ const ProductForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('externalLink', formData.externalLink);
+      formDataToSend.append('tags', formData.tags.join(','));
       
-      // Handle success
-      navigate('/service-provider/products');
+      if (formData.image) {
+        formDataToSend.append('image', formData.image);
+      }
+
+      let response;
+      if (isEditing) {
+        response = await productAPI.updateProduct(id, formDataToSend);
+      } else {
+        response = await productAPI.createProduct(formDataToSend);
+      }
+
+      if (response.success) {
+        // Handle success
+        navigate('/service-provider/products');
+      }
     } catch (error) {
       console.error('Error saving product:', error);
+      if (error.response?.data?.message) {
+        setErrors({ general: error.response.data.message });
+      } else {
+        setErrors({ general: 'Failed to save product. Please try again.' });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -271,7 +311,20 @@ const ProductForm = () => {
         </div>
       </div>
       <div className="sp-product-form-container">
-        <form onSubmit={handleSubmit} className="sp-form">
+        {errors.general && (
+          <div className="sp-error-message">
+            <AlertCircle />
+            {errors.general}
+          </div>
+        )}
+        
+        {loading ? (
+          <div className="sp-loading-container">
+            <div className="sp-loading"></div>
+            <p>Loading product data...</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="sp-form">
           {/* Basic Information */}
           <div className="sp-form-section">
             <h3>
@@ -535,6 +588,7 @@ const ProductForm = () => {
             </button>
           </div>
         </form>
+        )}
       </div>
       </div>
      

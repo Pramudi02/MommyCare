@@ -537,109 +537,311 @@ const removeMessageReaction = async (req, res) => {
   }
 };
 
-// Get all healthcare providers (doctors and midwives)
+// Get all healthcare providers (doctors and assigned midwife for mom)
 const getAllHealthcareProviders = async (req, res) => {
   try {
     const { role } = req.query;
     const userId = req.user.id;
+    const userRole = req.user.role;
 
-    let searchCriteria = {
-      role: { $in: ['doctor', 'midwife'] }
-    };
+    let providers = [];
 
-    // If specific role is requested, filter by that role
-    if (role && (role === 'doctor' || role === 'midwife')) {
-      searchCriteria.role = role;
+    if (userRole === 'mom') {
+      // For moms: get doctors + their assigned midwife
+      
+      console.log('🔍 Looking for assigned midwife for mom userId:', userId);
+      
+      // Get assigned midwife directly from MidwifeMom collection using userId
+      const MidwifeMom = require('../models/MidwifeMom');
+      const assignedMidwife = await MidwifeMom.findOne({ 
+        mom: userId, // Use userId directly, not momProfile._id
+        status: 'active' 
+      }).populate('midwife');
+
+      console.log('🔍 MidwifeMom lookup result:', {
+        found: !!assignedMidwife,
+        assignment: assignedMidwife ? {
+          id: assignedMidwife._id,
+          mom: assignedMidwife.mom,
+          midwife: assignedMidwife.midwife ? {
+            id: assignedMidwife.midwife._id,
+            name: `${assignedMidwife.midwife.firstName} ${assignedMidwife.midwife.lastName}`
+          } : null,
+          status: assignedMidwife.status
+        } : null
+      });
+
+      // Get all doctors - ensure User model is available
+      const UserModel = User();
+      if (!UserModel) {
+        throw new Error('User model not available - database connection issue');
+      }
+      
+      const doctors = await UserModel.find({
+        role: 'doctor',
+        _id: { $ne: userId },
+        isActive: true
+      }).select('firstName lastName role email isActive specialty experience');
+
+      console.log('🔍 Found doctors:', doctors.length);
+
+      // Combine assigned midwife and doctors
+      if (assignedMidwife && assignedMidwife.midwife) {
+        const midwifeUser = assignedMidwife.midwife;
+        providers.push({
+          id: midwifeUser._id,
+          name: `${midwifeUser.firstName} ${midwifeUser.lastName}`,
+          role: 'midwife',
+          email: midwifeUser.email,
+          isActive: midwifeUser.isActive,
+          avatar: `https://ui-avatars.com/api/?name=${midwifeUser.firstName}&background=ff6b6b&color=fff`,
+          specialty: midwifeUser.specialty || 'Midwifery',
+          status: 'online',
+          lastMessage: '',
+          lastMessageTime: '',
+          unreadCount: 0,
+          rating: 4.8,
+          experience: midwifeUser.experience || '5+ years',
+          location: 'Medical Center',
+          isTyping: false,
+          availability: 'Available now',
+          nextAppointment: 'TBD',
+          isAssigned: true,
+          isMyMidwife: true
+        });
+        console.log('✅ Added assigned midwife to providers:', midwifeUser.firstName, midwifeUser.lastName);
+      } else {
+        console.log('❌ No assigned midwife found for mom');
+      }
+
+      // Add doctors with better specialty detection
+      doctors.forEach(doctor => {
+        providers.push({
+          id: doctor._id,
+          name: `${doctor.firstName} ${doctor.lastName}`,
+          role: 'doctor',
+          email: doctor.email,
+          isActive: doctor.isActive,
+          avatar: `https://ui-avatars.com/api/?name=${doctor.firstName}&background=667eea&color=fff`,
+          specialty: doctor.specialty || 'General Medicine',
+          status: 'online',
+          lastMessage: '',
+          lastMessageTime: '',
+          unreadCount: 0,
+          rating: 4.8,
+          experience: doctor.experience || '5+ years',
+          location: 'Medical Center',
+          isTyping: false,
+          availability: 'Available now',
+          nextAppointment: 'TBD',
+          isAssigned: false,
+          isMyMidwife: false
+        });
+      });
+
+    } else {
+      // For other users: get all healthcare providers
+      let searchCriteria = {
+        role: { $in: ['doctor', 'midwife'] }
+      };
+
+      if (role && (role === 'doctor' || role === 'midwife')) {
+        searchCriteria.role = role;
+      }
+
+      searchCriteria._id = { $ne: userId };
+      searchCriteria.isActive = true;
+
+      // Ensure User model is available
+      const UserModel = User();
+      if (!UserModel) {
+        throw new Error('User model not available - database connection issue');
+      }
+
+      const allProviders = await UserModel.find(searchCriteria)
+        .select('firstName lastName role email isActive specialty experience')
+        .sort({ firstName: 1, lastName: 1 });
+    
+      providers = allProviders.map(provider => ({
+        id: provider._id,
+        name: `${provider.firstName} ${provider.lastName}`,
+        role: provider.role,
+        email: provider.email,
+        isActive: provider.isActive,
+        avatar: `https://ui-avatars.com/api/?name=${provider.firstName}&background=${provider.role === 'doctor' ? '667eea' : 'ff6b6b'}&color=fff`,
+        specialty: provider.specialty || (provider.role === 'doctor' ? 'General Medicine' : 'Midwifery'),
+        status: 'online',
+        lastMessage: '',
+        lastMessageTime: '',
+        unreadCount: 0,
+        rating: 4.8,
+        experience: provider.experience || '5+ years',
+        location: 'Medical Center',
+        isTyping: false,
+        availability: 'Available now',
+        nextAppointment: 'TBD',
+        isAssigned: false,
+        isMyMidwife: false
+      }));
     }
-
-    // Exclude current user
-    searchCriteria._id = { $ne: userId };
-
-    // Get all healthcare providers
-    const providers = await User().find(searchCriteria)
-      .select('firstName lastName role email isActive')
-      .sort({ firstName: 1, lastName: 1 });
     
     console.log('Found providers:', providers.length);
     console.log('Sample provider:', providers[0]);
-    
-    // Format providers for frontend
-    const formattedProviders = providers.map(provider => ({
-      id: provider._id,
-      name: `${provider.firstName} ${provider.lastName}`,
-      role: provider.role,
-      email: provider.email,
-      isActive: provider.isActive,
-      avatar: `https://ui-avatars.com/api/?name=${provider.firstName}&background=${provider.role === 'doctor' ? '667eea' : 'ff6b6b'}&color=fff`,
-      specialty: provider.role === 'doctor' ? 'General Medicine' : 'Midwifery',
-      status: 'online', // Default status
-      lastMessage: '',
-      lastMessageTime: '',
-      unreadCount: 0,
-      rating: 4.8, // Default rating
-      experience: '5+ years', // Default experience
-      location: 'Medical Center', // Default location
-      isTyping: false,
-      availability: 'Available now',
-      nextAppointment: 'TBD'
-    }));
 
     res.json({
       success: true,
-      data: formattedProviders,
-      total: formattedProviders.length
+      data: providers,
+      total: providers.length
     });
   } catch (error) {
     console.error('Error getting healthcare providers:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    
+    // Provide more specific error messages
+    if (error.message.includes('User model not available')) {
+      return res.status(503).json({ 
+        success: false, 
+        message: 'Database connection not ready. Please try again.' 
+      });
+    }
+    
+    if (error.message.includes('Mom profile not found')) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Your profile is not set up yet. Please complete your profile first.' 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
-// Get users for midwife chat (doctors and moms)
+// Get users for midwife chat (doctors and assigned moms)
 const getMidwifeChatUsers = async (req, res) => {
   try {
     const userId = req.user.id;
+    const userRole = req.user.role;
 
-    // Get both doctors and moms from database
-    const users = await User().find({
-      role: { $in: ['doctor', 'mom'] },
-      _id: { $ne: userId } // Exclude current user
-    })
-    .select('firstName lastName role email isActive')
-    .sort({ firstName: 1, lastName: 1 });
+    if (userRole !== 'midwife') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only midwives can access this endpoint'
+      });
+    }
+
+    let users = [];
+
+    // Get all doctors - ensure User model is available
+    const UserModel = User();
+    if (!UserModel) {
+      throw new Error('User model not available - database connection issue');
+    }
+    
+    const doctors = await UserModel.find({
+      role: 'doctor',
+      _id: { $ne: userId },
+      isActive: true
+    }).select('firstName lastName role email isActive');
+
+    // Get assigned moms for this midwife
+    const MidwifeMom = require('../models/MidwifeMom');
+    const assignedMoms = await MidwifeMom.find({
+      midwife: userId,
+      status: 'active'
+    }).populate('mom');
+
+    console.log('🔍 Looking for assigned moms for midwife userId:', userId);
+    console.log('🔍 Found assigned moms:', assignedMoms.length);
+    assignedMoms.forEach((assignment, index) => {
+      console.log(`🔍 Assignment ${index + 1}:`, {
+        id: assignment._id,
+        midwife: assignment.midwife,
+        mom: assignment.mom ? {
+          id: assignment.mom._id,
+          name: `${assignment.mom.firstName} ${assignment.mom.lastName}`,
+          email: assignment.mom.email
+        } : null,
+        status: assignment.status
+      });
+    });
+
+    // Format doctors
+    doctors.forEach(doctor => {
+      users.push({
+        id: doctor._id,
+        name: `${doctor.firstName} ${doctor.lastName}`,
+        role: 'doctor',
+        email: doctor.email,
+        isActive: doctor.isActive,
+        avatar: `https://ui-avatars.com/api/?name=${doctor.firstName}&background=667eea&color=fff`,
+        specialty: 'General Medicine',
+        status: 'online',
+        lastMessage: '',
+        lastMessageTime: '',
+        unreadCount: 0,
+        rating: 4.8,
+        experience: '5+ years',
+        location: 'Medical Center',
+        isTyping: false,
+        availability: 'Available now',
+        nextAppointment: 'TBD'
+      });
+    });
+
+    // Format assigned moms
+    assignedMoms.forEach(assignment => {
+      if (assignment.mom) {
+        const momUser = assignment.mom; // This is the User model, not MomProfile
+        users.push({
+          id: momUser._id,
+          name: `${momUser.firstName} ${momUser.lastName}`,
+          role: 'mom',
+          email: momUser.email, // Use email from User model
+          isActive: momUser.isActive || true,
+          avatar: `https://ui-avatars.com/api/?name=${momUser.firstName}&background=ff6b6b&color=fff`,
+          specialty: 'Pregnancy Care',
+          status: 'online',
+          lastMessage: '',
+          lastMessageTime: '',
+          unreadCount: 0,
+          rating: 4.8,
+          experience: 'First-time mom',
+          location: 'Medical Center', // Default location since we don't have MomProfile data
+          isTyping: false,
+          availability: 'Available now',
+          nextAppointment: 'TBD',
+          isAssigned: true
+        });
+      }
+    });
     
     console.log('Found users for midwife chat:', users.length);
     console.log('Sample user:', users[0]);
-    
-    // Format users for frontend
-    const formattedUsers = users.map(user => ({
-      id: user._id,
-      name: `${user.firstName} ${user.lastName}`,
-      role: user.role,
-      email: user.email,
-      isActive: user.isActive,
-      avatar: `https://ui-avatars.com/api/?name=${user.firstName}&background=${user.role === 'doctor' ? '667eea' : 'ff6b6b'}&color=fff`,
-      specialty: user.role === 'doctor' ? 'General Medicine' : 'Pregnancy Care',
-      status: 'online', // Default status
-      lastMessage: '',
-      lastMessageTime: '',
-      unreadCount: 0,
-      rating: 4.8, // Default rating
-      experience: user.role === 'doctor' ? '5+ years' : 'First-time mom',
-      location: 'Medical Center',
-      isTyping: false,
-      availability: 'Available now',
-      nextAppointment: 'TBD'
-    }));
 
     res.json({
       success: true,
-      data: formattedUsers,
-      total: formattedUsers.length
+      data: users,
+      total: users.length
     });
   } catch (error) {
     console.error('Error getting midwife chat users:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    
+    // Provide more specific error messages
+    if (error.message.includes('User model not available')) {
+      return res.status(503).json({ 
+        success: false, 
+        message: 'Database connection not ready. Please try again.' 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
