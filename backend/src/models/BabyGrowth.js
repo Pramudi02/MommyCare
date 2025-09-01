@@ -22,30 +22,30 @@ const babyGrowthSchema = new mongoose.Schema({
   },
   measurements: [{
     date: {
-      type: Date,
-      required: true
-    },
-    weight: {
-      type: Number,
-      required: true,
+    type: Date,
+    required: true
+  },
+  weight: {
+    type: Number,
+    required: true,
       min: 0.1,
       max: 100
-    },
-    height: {
-      type: Number,
-      required: true,
+  },
+  height: {
+    type: Number,
+    required: true,
       min: 0.1,
       max: 100
-    },
-    headCircumference: {
-      type: Number,
+  },
+  headCircumference: {
+    type: Number,
       min: 0.1,
       max: 100
-    },
-    notes: {
-      type: String,
-      trim: true,
-      maxlength: 500
+  },
+  notes: {
+    type: String,
+    trim: true,
+    maxlength: 500
     }
   }],
   createdAt: {

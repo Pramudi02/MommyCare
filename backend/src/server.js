@@ -25,6 +25,7 @@ const chatRoutes = require('./routes/chat');
 const aiRoutes = require('./routes/ai');
 const permissionRequestRoutes = require('./routes/permissionRequests');
 const babyGrowthRoutes = require('./routes/babyGrowth');
+const babyNameRoutes = require('./routes/babyNames');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -203,6 +204,7 @@ app.use('/api/chat', protect, chatRoutes);
 app.use('/api/ai', protect, aiRoutes);
 app.use('/api/permission-requests', permissionRequestRoutes);
 app.use('/api/baby-growth', protect, babyGrowthRoutes);
+app.use('/api/baby-names', protect, babyNameRoutes);
 
 // Import chat socket handler
 const { setupChatSocket } = require('./socket/chatSocket');

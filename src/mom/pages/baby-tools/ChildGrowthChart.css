@@ -21,6 +21,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  width: 100%;
 }
 
 .header-growthchart p {
@@ -210,12 +212,46 @@
   border-radius: 15px;
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
 }
 
 .chart-container h3 {
   margin: 0 0 20px 0;
   color: #333;
   font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Chart specific styling */
+.chart-container .recharts-wrapper {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.chart-container .recharts-cartesian-grid-horizontal line,
+.chart-container .recharts-cartesian-grid-vertical line {
+  stroke: #e0e0e0 !important;
+  stroke-opacity: 0.8;
+}
+
+.chart-container .recharts-xAxis .recharts-cartesian-axis-line {
+  stroke: #ccc !important;
+}
+
+.chart-container .recharts-yAxis .recharts-cartesian-axis-line {
+  stroke: #ccc !important;
+}
+
+.chart-container .recharts-xAxis .recharts-cartesian-axis-tick-value {
+  fill: #666 !important;
+  font-size: 12px;
+}
+
+.chart-container .recharts-yAxis .recharts-cartesian-axis-tick-value {
+  fill: #666 !important;
+  font-size: 12px;
 }
 
 /* Growth Analysis Section */
@@ -318,7 +354,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
+    display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -441,8 +477,8 @@
 /* Loading States */
 .loading-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+        flex-direction: column;
+        align-items: center;
   justify-content: center;
   padding: 60px 20px;
   color: #6c757d;
@@ -499,7 +535,7 @@
 
 .error-message button:hover {
   background: rgba(114, 28, 36, 0.1);
-  border-radius: 4px;
+    border-radius: 4px;
 }
 
 /* Responsive Design */
@@ -540,5 +576,5 @@
   
   .modal-actions button {
     width: 100%;
-  }
+    }
 }

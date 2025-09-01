@@ -349,3 +349,29 @@ export const babyGrowthAPI = {
     return apiRequest(`/baby-growth/${babyId}/growth-rate?days=${days}`);
   },
 };
+
+// Baby Names API functions
+export const babyNamesAPI = {
+  // Get all baby names with optional filtering
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/baby-names${queryString ? `?${queryString}` : ''}`);
+  },
+
+  // Get popular baby names
+  getPopular: async (limit = 10) => {
+    return apiRequest(`/baby-names/popular?limit=${limit}`);
+  },
+
+  // Get baby names by gender
+  getByGender: async (gender, limit = 50) => {
+    return apiRequest(`/baby-names/gender/${gender}?limit=${limit}`);
+  },
+
+  // Like a baby name
+  like: async (id) => {
+    return apiRequest(`/baby-names/${id}/like`, {
+      method: 'POST',
+    });
+  },
+};

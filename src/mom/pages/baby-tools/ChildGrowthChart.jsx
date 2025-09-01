@@ -115,8 +115,8 @@ const ChildGrowthChart = () => {
       // Reset form
       setMeasurementForm({
         date: new Date().toISOString().split('T')[0],
-        weight: '',
-        height: '',
+    weight: '',
+    height: '',
         headCircumference: '',
         notes: ''
       });
@@ -150,7 +150,12 @@ const ChildGrowthChart = () => {
   const formatChartData = () => {
     if (!measurements || measurements.length === 0) return [];
     
-    return measurements.map((measurement, index) => ({
+    // Sort measurements by date (earliest to latest) for left-to-right chart flow
+    const sortedMeasurements = [...measurements].sort((a, b) => 
+      new Date(a.date) - new Date(b.date)
+    );
+    
+    return sortedMeasurements.map((measurement, index) => ({
       date: formatDate(measurement.date),
       weight: measurement.weight,
       height: measurement.height,
@@ -197,8 +202,8 @@ const ChildGrowthChart = () => {
                 <div className="baby-info">
                   <h4>{baby.babyName}</h4>
                   <p>{baby.gender === 'male' ? 'Boy' : 'Girl'} • {calculateAge(baby.birthDate)} months</p>
-                </div>
-              </div>
+          </div>
+        </div>
             ))}
             
             <button
@@ -231,7 +236,7 @@ const ChildGrowthChart = () => {
               
               <div className="form-group">
                 <label>Gender</label>
-                <select
+                <select 
                   value={profileForm.gender}
                   onChange={(e) => setProfileForm({...profileForm, gender: e.target.value})}
                 >
@@ -239,17 +244,17 @@ const ChildGrowthChart = () => {
                   <option value="female">Female</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label>Birth Date</label>
-                <input
+                <input 
                   type="date"
                   value={profileForm.birthDate}
                   onChange={(e) => setProfileForm({...profileForm, birthDate: e.target.value})}
                   required
                 />
               </div>
-              
+
               <div className="modal-actions">
                 <button type="button" onClick={() => setShowAddProfile(false)}>
                   Cancel
@@ -259,8 +264,8 @@ const ChildGrowthChart = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+              </div>
+              </div>
       )}
 
       {/* Main Content */}
@@ -270,7 +275,7 @@ const ChildGrowthChart = () => {
           <div className="measurement-form-section">
             <div className="section-header">
               <h3>Daily Growth Measurement</h3>
-              <button
+              <button 
                 className="add-measurement-btn"
                 onClick={() => setShowAddMeasurement(true)}
               >
@@ -278,7 +283,7 @@ const ChildGrowthChart = () => {
                 Add Today's Measurement
               </button>
             </div>
-            
+
             <div className="current-stats">
               <div className="stat-card">
                 <Weight className="stat-icon" />
@@ -307,33 +312,33 @@ const ChildGrowthChart = () => {
                   <span className="stat-value">{measurements.length}</span>
                 </div>
               </div>
-            </div>
           </div>
+        </div>
 
           {/* Growth Charts */}
           <div className="charts-section">
-            <div className="chart-container">
+          <div className="chart-container">
               <h3>Weight Growth Over Time</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
-                  <XAxis 
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
+                <XAxis 
                     dataKey="date" 
-                    stroke="rgba(255,255,255,0.8)"
-                    tick={{ fill: 'rgba(255,255,255,0.8)' }}
-                  />
-                  <YAxis 
-                    stroke="rgba(255,255,255,0.8)"
-                    tick={{ fill: 'rgba(255,255,255,0.8)' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: 'rgba(0,0,0,0.8)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: '8px',
-                      color: 'white'
-                    }}
-                  />
+                  stroke="rgba(255,255,255,0.8)"
+                  tick={{ fill: 'rgba(255,255,255,0.8)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.8)"
+                  tick={{ fill: 'rgba(255,255,255,0.8)' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '8px',
+                    color: 'white'
+                  }}
+                />
                   <Line 
                     type="monotone" 
                     dataKey="weight" 
@@ -341,8 +346,8 @@ const ChildGrowthChart = () => {
                     strokeWidth={3}
                     dot={{ fill: '#4caf50', strokeWidth: 2, r: 4 }}
                   />
-                </LineChart>
-              </ResponsiveContainer>
+              </LineChart>
+            </ResponsiveContainer>
             </div>
 
             <div className="chart-container">
@@ -376,8 +381,8 @@ const ChildGrowthChart = () => {
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
-          </div>
+        </div>
+      </div>
 
           {/* Growth Rate Analysis */}
           {growthRate && (
@@ -396,8 +401,8 @@ const ChildGrowthChart = () => {
                   <span className="growth-rate">{growthRate.heightGainPerDay.toFixed(3)} inches/day</span>
                 </div>
               </div>
-            </div>
-          )}
+                </div>
+              )}
 
           {/* Recent Measurements Table */}
           <div className="measurements-table-section">
@@ -425,8 +430,8 @@ const ChildGrowthChart = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
       ) : (
         <div className="no-baby-selected">

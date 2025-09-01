@@ -21,7 +21,6 @@ const Profile = () => {
     edd: '',
     consultantObstetrician: '',
     mohArea: '',
-    phmArea: '',
     fieldClinic: '',
     gramaNiladhariDivision: '',
     hospitalClinic: '',
@@ -109,7 +108,7 @@ const Profile = () => {
         'name', 'phone', 'age', 'bloodGroup', 
         'height.value', 'weight.value', 'currentBMI',
         'lmp', 'edd', 'consultantObstetrician',
-        'mohArea', 'phmArea', 'fieldClinic',
+        'mohArea', 'fieldClinic',
         'gramaNiladhariDivision', 'hospitalClinic', 'nextClinicDate'
       ];
 
@@ -378,18 +377,6 @@ const Profile = () => {
                 value={profile.mohArea}
                 onChange={(e) => handleInputChange('mohArea', e.target.value)}
                 placeholder="Enter MOH area"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="phmArea">PHM Area *</label>
-              <input
-                type="text"
-                id="phmArea"
-                value={profile.phmArea}
-                onChange={(e) => handleInputChange('phmArea', e.target.value)}
-                placeholder="Enter PHM area"
                 required
               />
             </div>
