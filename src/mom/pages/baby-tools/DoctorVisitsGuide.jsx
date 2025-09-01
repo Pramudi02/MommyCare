@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, AlertCircle, Heart, Droplet, Eye, Scale, Stethoscope } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './DoctorVisitsGuide.css';
 
 export default function DoctorVisitsGuide() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('vaccinations');
 
   const upcomingAppointments = [
@@ -86,6 +88,14 @@ export default function DoctorVisitsGuide() {
     }
   ];
 
+  const handleVaccinationScheduleClick = () => {
+    navigate('/mom/vaccinations');
+  };
+
+  const handleAppointmentRequestClick = () => {
+    navigate('/mom/appointments');
+  };
+
   return (
     <div className="doctor-visits-guide">
       <div className="glass-container">
@@ -120,7 +130,7 @@ export default function DoctorVisitsGuide() {
             <div className="vaccination-hero-card glass-hero-card">
               <h2>Ready to Track Your Baby's Vaccination Schedule?</h2>
               <p>Never miss an important vaccination date with our smart reminder system</p>
-              <button className="glass-button-doctorvisits">
+              <button className="glass-button-doctorvisits" onClick={handleVaccinationScheduleClick}>
                 View Vaccination Schedule
               </button>
             </div>
@@ -133,7 +143,7 @@ export default function DoctorVisitsGuide() {
             <div className="checkup-hero-card glass-hero-card">
               <h2>Time for your little one's check-up!</h2>
               <p>Regular visits help track your baby's growth and development. Ready to schedule?</p>
-              <button className="glass-button-doctorvisits">
+              <button className="glass-button-doctorvisits" onClick={handleAppointmentRequestClick}>
                 Request new appointment
               </button>
             </div>
