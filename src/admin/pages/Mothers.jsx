@@ -214,24 +214,7 @@ const Mothers = () => {
             <p className="mothers-stat-value">{stats.active}</p>
           </div>
         </div>
-        <div className="mothers-stat-card">
-          <div className="mothers-stat-icon-container red">
-            <AlertCircle className="mothers-stat-icon" />
-          </div>
-          <div className="mothers-stat-content">
-            <p className="mothers-stat-label">High Risk</p>
-            <p className="mothers-stat-value">{stats.highRisk}</p>
-          </div>
-        </div>
-        <div className="mothers-stat-card">
-          <div className="mothers-stat-icon-container blue">
-            <Calendar className="mothers-stat-icon" />
-          </div>
-          <div className="mothers-stat-content">
-            <p className="mothers-stat-label">Due This Month</p>
-            <p className="mothers-stat-value">{stats.dueThisMonth}</p>
-          </div>
-        </div>
+      
       </div>
 
       {/* Filters and Search */}

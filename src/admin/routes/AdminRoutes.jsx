@@ -9,6 +9,7 @@ import Mothers from '../pages/Mothers';
 import HealthcareProviders from '../pages/HealthcareProviders';
 import RoleAccessManagement from '../pages/RoleAccessManagement';
 import Settings from '../pages/Settings';
+import PermissionManagement from '../pages/PermissionManagement';
 
 export default (
   <>
@@ -27,6 +28,7 @@ export default (
       <Route path="users/mothers" element={<Mothers />} />
       <Route path="users/providers" element={<HealthcareProviders />} />
       <Route path="users/roles" element={<RoleAccessManagement />} />
+      <Route path="permission-requests" element={<PermissionManagement />} />
       <Route path="settings" element={<Settings />} />
     </Route>
   </>
