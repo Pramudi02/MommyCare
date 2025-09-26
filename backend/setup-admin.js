@@ -1,12 +1,19 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// Import database configuration
+const { connectDB } = require('./src/config/database');
+
 // Import the AdminUser model
 const getAdminUserModel = require('./src/models/AdminUser');
 
 async function setupAdmin() {
   try {
     console.log('Setting up default admin user...');
+    
+    // Connect to database
+    await connectDB();
+    console.log('✅ Database connected successfully');
     
     // Get the AdminUser model
     const AdminUser = getAdminUserModel();
@@ -56,6 +63,12 @@ async function setupAdmin() {
       console.log('Validation error:', error.message);
     } else {
       console.log('Database connection or other error');
+    }
+  } finally {
+    // Close the mongoose connection
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.close();
+      console.log('Database connection closed');
     }
   }
 }
