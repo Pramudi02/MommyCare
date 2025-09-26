@@ -154,14 +154,32 @@ const GetPermissionDoctor = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/doctor/permission-request`, {
+      // Prepare the request data
+      const requestData = {
+        userRole: 'doctor',
+        hospitalName: formData.hospitalName,
+        hospitalAddress: formData.hospitalAddress,
+        hospitalPhone: formData.hospitalPhone,
+        hospitalEmail: formData.hospitalEmail,
+        doctorSpecialization: formData.doctorSpecialization,
+        registrationNumber: formData.registrationNumber,
+        licenseNumber: formData.licenseNumber,
+        yearsOfExperience: formData.yearsOfExperience,
+        location: formData.location,
+        documents: {
+          license: formData.documents.license ? formData.documents.license.name : null,
+          certificate: formData.documents.certificate ? formData.documents.certificate.name : null,
+          idProof: formData.documents.idProof ? formData.documents.idProof.name : null
+        }
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/permission-requests`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(requestData)
       });
 
       const data = await response.json();
@@ -169,7 +187,7 @@ const GetPermissionDoctor = () => {
       if (response.ok) {
         setIsSubmitted(true);
         setTimeout(() => {
-          navigate('/doctor');
+          navigate('/login');
         }, 3000);
       } else {
         setErrors({ general: data.message || 'Submission failed' });
@@ -188,7 +206,7 @@ const GetPermissionDoctor = () => {
           <CheckCircle className="success-icon" />
           <h2>Request Submitted Successfully!</h2>
           <p>Your permission request has been submitted for admin review. You will be notified once your account is approved.</p>
-          <p>Redirecting to dashboard...</p>
+          <p>Redirecting to login page...</p>
         </div>
       </div>
     );

@@ -179,14 +179,35 @@ const GetPermissionMidWife = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:5000/api/midwife/permission-request', {
+      // Prepare the request data
+      const requestData = {
+        userRole: 'midwife',
+        clinicName: formData.clinicName,
+        clinicAddress: formData.clinicAddress,
+        clinicPhone: formData.clinicPhone,
+        clinicEmail: formData.clinicEmail,
+        midwifeLicenseNumber: formData.licenseNumber,
+        midwifeExperience: formData.yearsOfExperience,
+        phmArea: formData.phmArea,
+        mohArea: formData.mohArea,
+        midwifeCertifications: formData.certifications,
+        midwifePhone: formData.phone,
+        midwifeAddress: formData.address,
+        location: formData.location,
+        documents: {
+          license: formData.documents.license ? formData.documents.license.name : null,
+          certificate: formData.documents.certificate ? formData.documents.certificate.name : null,
+          idProof: formData.documents.idProof ? formData.documents.idProof.name : null
+        }
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/permission-requests`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(requestData)
       });
 
       const data = await response.json();
