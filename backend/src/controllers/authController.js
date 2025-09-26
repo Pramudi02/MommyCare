@@ -12,7 +12,8 @@ const signTokenResponse = (user) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
-			role: user.role
+			role: user.role,
+			hasPermission: user.hasPermission
 		}
 	};
 };
@@ -58,7 +59,17 @@ const register = async (req, res) => {
 		console.log('Creating new user...');
 		let user;
 		try {
-			user = await User.create({ firstName, lastName, email, password, role });
+			// Set hasPermission based on role
+			const hasPermission = role === 'mom' ? true : false; // Moms get permission automatically
+			
+			user = await User.create({ 
+				firstName, 
+				lastName, 
+				email, 
+				password, 
+				role,
+				hasPermission
+			});
 			console.log('User created successfully:', user._id);
 			
 			// If user is a midwife, create a midwife profile

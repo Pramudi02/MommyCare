@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
     enum: ['mom', 'doctor', 'midwife', 'service_provider'],
     required: [true, 'Role is required']
   },
+  hasPermission: {
+    type: Boolean,
+    default: false
+  },
   isActive: {
     type: Boolean,
     default: true
