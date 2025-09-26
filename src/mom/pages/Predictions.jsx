@@ -698,24 +698,24 @@ const Predictions = () => {
                 <Stethoscope size={28} className="text-blue-400" />
                 <h2 className="card-title-Ai">Gestational Diabetes Risk Assessment</h2>
               </div>
-                             <form onSubmit={handleDiabetesSubmit} className="prediction-form">
-                 <div className="input-group">
-                   <input 
-                     type="number" 
-                     name="age"
-                     className="form-input-Ai" 
-                     placeholder=" " 
-                     required 
+              <form onSubmit={handleDiabetesSubmit} className="prediction-form">
+                <div className="input-group">
+                  <input 
+                    type="number" 
+                    name="age"
+                    className="form-input-Ai" 
+                    placeholder=" " 
+                    required 
                      value={diabetesFormData.age}
                      onChange={(e) => setDiabetesFormData(prev => ({ ...prev, age: e.target.value }))}
-                     disabled={isLoading}
-                   />
-                   <label className="floating-label">Age (years)</label>
-                 </div>
-                 
-                 <div className="input-group">
-                   <input 
-                     type="number" 
+                    disabled={isLoading}
+                  />
+                  <label className="floating-label">Age (years)</label>
+                </div>
+                
+                <div className="input-group">
+                  <input 
+                    type="number" 
                      name="pregnancy_no"
                      className="form-input-Ai" 
                      placeholder=" " 
@@ -731,10 +731,10 @@ const Predictions = () => {
                    <input 
                      type="number" 
                      name="weight"
-                     className="form-input-Ai" 
-                     placeholder=" " 
-                     step="0.1" 
-                     required 
+                    className="form-input-Ai" 
+                    placeholder=" " 
+                    step="0.1" 
+                    required 
                      value={diabetesFormData.weight}
                      onChange={(e) => {
                        const newWeight = e.target.value;
@@ -745,19 +745,19 @@ const Predictions = () => {
                          bmi: newBMI
                        }));
                      }}
-                     disabled={isLoading}
-                   />
+                    disabled={isLoading}
+                  />
                                         <label className="floating-label">Weight (kg)</label>
-                 </div>
-                 
-                 <div className="input-group">
-                   <input 
-                     type="number" 
+                </div>
+                
+                <div className="input-group">
+                  <input 
+                    type="number" 
                      name="height"
-                     className="form-input-Ai" 
-                     placeholder=" " 
-                     step="0.1" 
-                     required 
+                    className="form-input-Ai" 
+                    placeholder=" " 
+                    step="0.1" 
+                    required 
                      value={diabetesFormData.height}
                      onChange={(e) => {
                        const newHeight = e.target.value;
@@ -768,23 +768,23 @@ const Predictions = () => {
                          bmi: newBMI
                        }));
                      }}
-                     disabled={isLoading}
-                   />
+                    disabled={isLoading}
+                  />
                    <label className="floating-label">Height (cm)</label>
-                 </div>
-                 
-                 <div className="input-group">
-                   <input 
-                     type="number" 
+                </div>
+                
+                <div className="input-group">
+                  <input 
+                    type="number" 
                      name="bmi"
-                     className="form-input-Ai" 
-                     placeholder=" " 
-                     step="0.1" 
-                     required 
+                    className="form-input-Ai" 
+                    placeholder=" " 
+                    step="0.1" 
+                    required 
                      value={diabetesFormData.bmi}
                      onChange={(e) => setDiabetesFormData(prev => ({ ...prev, bmi: e.target.value }))}
-                     disabled={isLoading}
-                   />
+                    disabled={isLoading}
+                  />
                    <label className="floating-label">BMI (kg/m²)</label>
                  </div>
                  
@@ -801,7 +801,7 @@ const Predictions = () => {
                      <option value="1">Yes, family history</option>
                    </select>
                    <label className="floating-label">Family History of Diabetes</label>
-                 </div>
+                </div>
                 
                 <button type="submit" className="predict-btn" disabled={isLoading}>
                   {isLoading ? <Loader2 className="animate-spin inline mr-2" size={18} /> : <BarChart3 className="inline mr-2" size={18} />} Assess Diabetes Risk

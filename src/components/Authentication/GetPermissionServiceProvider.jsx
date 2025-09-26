@@ -210,14 +210,31 @@ const GetPermissionServiceProvider = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:5000/api/service-provider/permission-request', {
+      // Prepare the request data
+      const requestData = {
+        userRole: 'service_provider',
+        businessName: formData.businessName,
+        businessType: formData.businessType,
+        businessAddress: formData.businessAddress,
+        businessPhone: formData.businessPhone,
+        businessEmail: formData.businessEmail,
+        businessLicense: formData.registrationNumber,
+        serviceCategories: [...formData.services, ...formData.products],
+        location: formData.location,
+        documents: {
+          businessLicense: formData.documents.businessLicense ? formData.documents.businessLicense.name : null,
+          certificate: formData.documents.taxCertificate ? formData.documents.taxCertificate.name : null,
+          idProof: formData.documents.idProof ? formData.documents.idProof.name : null
+        }
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/permission-requests`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(requestData)
       });
 
       const data = await response.json();
