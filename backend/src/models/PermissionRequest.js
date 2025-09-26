@@ -1,126 +1,150 @@
 const mongoose = require('mongoose');
 
 const permissionRequestSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: [true, 'User ID is required']
-  },
-  userEmail: {
-    type: String,
-    required: [true, 'User email is required'],
-    lowercase: true
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
   userRole: {
     type: String,
     enum: ['doctor', 'midwife', 'service_provider'],
-    required: [true, 'User role is required']
-  },
-  requestType: {
-    type: String,
-    enum: ['permission_request', 'verification_request', 'access_request'],
-    default: 'permission_request'
+    required: true
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected', 'under_review'],
+    enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
-  documents: [{
-    name: String,
-    url: String,
-    type: String,
-    uploadedAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  requestDetails: {
-    specialization: String, // for doctors
-    licenseNumber: String, // for doctors
-    hospital: String, // for doctors
-    experience: Number, // for doctors and midwives
-    education: [String], // for doctors
-    certifications: [String], // for doctors and midwives
-    
-    // Midwife specific
-    certificationNumber: String, // for midwives
-    clinic: String, // for midwives
-    services: [String], // for midwives
-    
-    // Service provider specific
-    businessName: String, // for service providers
-    businessType: String, // for service providers
-    registrationNumber: String, // for service providers
-    businessServices: [String], // for service providers
-    
-    // General
-    additionalInfo: String,
-    reason: String
+  submittedAt: {
+    type: Date,
+    default: Date.now
   },
-  adminNotes: [{
-    adminId: String,
-    adminUsername: String,
-    note: String,
-    timestamp: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  reviewedAt: {
+    type: Date
+  },
   reviewedBy: {
-    adminId: String,
-    adminUsername: String,
-    reviewedAt: Date
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
-  reviewDate: Date,
-  rejectionReason: String,
-  priority: {
-    type: String,
-    enum: ['low', 'medium', 'high', 'urgent'],
-    default: 'medium'
+  adminNotes: {
+    type: String
   },
-  isUrgent: {
-    type: Boolean,
-    default: false
+  
+  // Doctor specific fields
+  hospitalName: String,
+  hospitalAddress: String,
+  hospitalPhone: String,
+  hospitalEmail: String,
+  doctorSpecialization: String,
+  registrationNumber: String,
+  licenseNumber: String,
+  yearsOfExperience: String,
+  
+  // Midwife specific fields
+  midwifeLicenseNumber: String,
+  midwifeExperience: String,
+  phmArea: String,
+  mohArea: String,
+  midwifeCertifications: String,
+  midwifePhone: String,
+  midwifeAddress: String,
+  
+  // Service Provider specific fields
+  businessName: String,
+  businessType: String,
+  businessAddress: String,
+  businessPhone: String,
+  businessEmail: String,
+  businessLicense: String,
+  serviceCategories: [String],
+  
+  // Common location fields
+  location: {
+    city: String,
+    state: String,
+    country: String,
+    zipCode: String
+  },
+  
+  // Document references (file paths)
+  documents: {
+    license: String,
+    certificate: String,
+    idProof: String,
+    businessLicense: String,
+    additionalDocuments: [String]
   }
 }, {
   timestamps: true
 });
 
-// Indexes for efficient querying
-permissionRequestSchema.index({ userId: 1 });
-permissionRequestSchema.index({ userRole: 1 });
-permissionRequestSchema.index({ status: 1 });
-permissionRequestSchema.index({ createdAt: -1 });
-permissionRequestSchema.index({ priority: 1 });
+// Index for efficient queries
+permissionRequestSchema.index({ user: 1, status: 1 });
+permissionRequestSchema.index({ userRole: 1, status: 1 });
+permissionRequestSchema.index({ submittedAt: -1 });
 
-// Virtual for request age
-permissionRequestSchema.virtual('requestAge').get(function() {
-  return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24)); // days
+// Virtual for checking if request is pending
+permissionRequestSchema.virtual('isPending').get(function() {
+  return this.status === 'pending';
 });
 
-// Pre-save middleware to update review date when status changes
-permissionRequestSchema.pre('save', function(next) {
-  if (this.isModified('status') && this.status !== 'pending') {
-    this.reviewDate = new Date();
-  }
-  next();
+// Virtual for checking if request is approved
+permissionRequestSchema.virtual('isApproved').get(function() {
+  return this.status === 'approved';
 });
 
-// Static method to get requests by status
-permissionRequestSchema.statics.getByStatus = function(status) {
-  return this.find({ status }).sort({ createdAt: -1 });
+// Virtual for checking if request is rejected
+permissionRequestSchema.virtual('isRejected').get(function() {
+  return this.status === 'rejected';
+});
+
+// Method to approve request
+permissionRequestSchema.methods.approve = function(adminId, notes = '') {
+  this.status = 'approved';
+  this.reviewedAt = new Date();
+  this.reviewedBy = adminId;
+  this.adminNotes = notes;
+  return this.save();
+};
+
+// Method to reject request
+permissionRequestSchema.methods.reject = function(adminId, notes = '') {
+  this.status = 'rejected';
+  this.reviewedAt = new Date();
+  this.reviewedBy = adminId;
+  this.adminNotes = notes;
+  return this.save();
+};
+
+// Static method to get pending requests
+permissionRequestSchema.statics.getPendingRequests = function() {
+  return this.find({ status: 'pending' })
+    .populate('user', 'firstName lastName email role')
+    .sort({ submittedAt: -1 });
 };
 
 // Static method to get requests by role
-permissionRequestSchema.statics.getByRole = function(role) {
-  return this.find({ userRole: role }).sort({ createdAt: -1 });
+permissionRequestSchema.statics.getRequestsByRole = function(role) {
+  return this.find({ userRole: role })
+    .populate('user', 'firstName lastName email role')
+    .populate('reviewedBy', 'firstName lastName')
+    .sort({ submittedAt: -1 });
 };
 
-// Static method to get urgent requests
-permissionRequestSchema.statics.getUrgentRequests = function() {
-  return this.find({ 
-    $or: [{ priority: 'urgent' }, { isUrgent: true }] 
-  }).sort({ createdAt: -1 });
+// Static method to get requests by user
+permissionRequestSchema.statics.getRequestsByUser = function(userId) {
+  return this.find({ user: userId })
+    .populate('user', 'firstName lastName email role')
+    .populate('reviewedBy', 'firstName lastName')
+    .sort({ submittedAt: -1 });
+};
+
+// Static method to get request by user and role
+permissionRequestSchema.statics.getRequestByUserAndRole = function(userId, role) {
+  return this.findOne({ user: userId, userRole: role })
+    .populate('user', 'firstName lastName email role')
+    .populate('reviewedBy', 'firstName lastName');
 };
 
 // Function to get the PermissionRequest model with the correct database connection
@@ -128,14 +152,14 @@ let PermissionRequest = null;
 
 const getPermissionRequestModel = () => {
   if (!PermissionRequest) {
-    const { getAdminConnection } = require('../config/database');
-    const adminConnection = getAdminConnection();
+    const { getAuthConnection } = require('../config/database');
+    const authConnection = getAuthConnection();
     
-    if (!adminConnection) {
-      throw new Error('Admin database connection not available');
+    if (!authConnection) {
+      throw new Error('Auth database connection not available');
     }
     
-    PermissionRequest = adminConnection.model('PermissionRequest', permissionRequestSchema);
+    PermissionRequest = authConnection.model('PermissionRequest', permissionRequestSchema);
   }
   return PermissionRequest;
 };

@@ -2,27 +2,28 @@ const getPermissionRequestModel = require('../models/PermissionRequest');
 const getUserModel = require('../models/User');
 
 // @desc    Submit permission request
-// @route   POST /api/:role/permission-request
+// @route   POST /api/permission-requests
 // @access  Private
 const submitPermissionRequest = async (req, res) => {
   try {
-    const { role } = req.params;
-    const userId = req.user.id;
+    const { userRole, ...requestData } = req.body;
+    const userId = req.user._id;
     
-    // Validate role
-    if (!['doctor', 'midwife', 'service_provider'].includes(role)) {
+    // Validate user role
+    if (!['doctor', 'midwife', 'service_provider'].includes(userRole)) {
       return res.status(400).json({ 
         status: 'error', 
-        message: 'Invalid role. Must be doctor, midwife, or service_provider' 
+        message: 'Invalid user role for permission request'
       });
     }
     
-    // Check if user already has a pending request
     const PermissionRequest = getPermissionRequestModel();
+
+    // Check if user already has a pending request for this role
     const existingRequest = await PermissionRequest.findOne({
-      userId,
-      userRole: role,
-      status: { $in: ['pending', 'under_review'] }
+      user: userId,
+      userRole: userRole,
+      status: 'pending'
     });
     
     if (existingRequest) {
@@ -32,124 +33,91 @@ const submitPermissionRequest = async (req, res) => {
       });
     }
     
-    // Extract request details based on role
-    const requestDetails = {};
-    
-    if (role === 'doctor') {
-      requestDetails.specialization = req.body.specialization;
-      requestDetails.licenseNumber = req.body.licenseNumber;
-      requestDetails.hospital = req.body.hospital;
-      requestDetails.experience = req.body.experience;
-      requestDetails.education = req.body.education || [];
-      requestDetails.certifications = req.body.certifications || [];
-    } else if (role === 'midwife') {
-      requestDetails.certificationNumber = req.body.certificationNumber;
-      requestDetails.clinic = req.body.clinic;
-      requestDetails.experience = req.body.experience;
-      requestDetails.services = req.body.services || [];
-    } else if (role === 'service_provider') {
-      requestDetails.businessName = req.body.businessName;
-      requestDetails.businessType = req.body.businessType;
-      requestDetails.registrationNumber = req.body.registrationNumber;
-      requestDetails.businessServices = req.body.businessServices || [];
-    }
-    
-    // Common fields
-    requestDetails.additionalInfo = req.body.additionalInfo;
-    requestDetails.reason = req.body.reason;
-    
     // Create permission request
     const permissionRequest = await PermissionRequest.create({
-      userId,
-      userEmail: req.user.email,
-      userRole: role,
-      requestType: 'permission_request',
-      status: 'pending',
-      documents: req.body.documents || [],
-      requestDetails,
-      priority: req.body.priority || 'medium',
-      isUrgent: req.body.isUrgent || false
+      user: userId,
+      userRole: userRole,
+      ...requestData
     });
-    
-    console.log(`Permission request created for ${role}:`, permissionRequest._id);
+
+    // Populate user details for response
+    await permissionRequest.populate('user', 'firstName lastName email role');
     
     res.status(201).json({
       status: 'success',
       message: 'Permission request submitted successfully',
-      data: {
-        requestId: permissionRequest._id,
-        status: permissionRequest.status,
-        submittedAt: permissionRequest.createdAt
-      }
+      data: permissionRequest
     });
-    
   } catch (error) {
-    console.error('Submit permission request error:', error);
+    console.error('Error submitting permission request:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Server error while submitting permission request' 
+      message: 'Failed to submit permission request',
+      error: error.message
     });
   }
 };
 
-// @desc    Get user's permission requests
-// @route   GET /api/:role/permission-requests
-// @access  Private
-const getUserPermissionRequests = async (req, res) => {
+// @desc    Get permission requests (for admin)
+// @route   GET /api/permission-requests
+// @access  Private (Admin)
+const getPermissionRequests = async (req, res) => {
   try {
-    const { role } = req.params;
-    const userId = req.user.id;
-    
-    // Validate role
-    if (!['doctor', 'midwife', 'service_provider'].includes(role)) {
-      return res.status(400).json({ 
-        status: 'error', 
-        message: 'Invalid role' 
-      });
-    }
+    const { status, role, page = 1, limit = 10 } = req.query;
     
     const PermissionRequest = getPermissionRequestModel();
-    const requests = await PermissionRequest.find({
-      userId,
-      userRole: role
-    }).sort({ createdAt: -1 });
     
-    res.status(200).json({
+    // Build query
+    const query = {};
+    if (status) query.status = status;
+    if (role) query.userRole = role;
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+    
+    // Get requests with pagination and populate user data
+    const requests = await PermissionRequest.find(query)
+      .populate('user', 'firstName lastName email role')
+      .sort({ submittedAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Get total count
+    const total = await PermissionRequest.countDocuments(query);
+
+    res.json({
       status: 'success',
-      data: requests
+      data: {
+        requests,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      }
     });
-    
   } catch (error) {
-    console.error('Get user permission requests error:', error);
+    console.error('Error getting permission requests:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Server error while fetching permission requests' 
+      message: 'Failed to get permission requests',
+      error: error.message
     });
   }
 };
 
 // @desc    Get permission request by ID
-// @route   GET /api/:role/permission-request/:requestId
-// @access  Private
+// @route   GET /api/permission-requests/:id
+// @access  Private (Admin)
 const getPermissionRequestById = async (req, res) => {
   try {
-    const { role, requestId } = req.params;
-    const userId = req.user.id;
-    
-    // Validate role
-    if (!['doctor', 'midwife', 'service_provider'].includes(role)) {
-      return res.status(400).json({ 
-        status: 'error', 
-        message: 'Invalid role' 
-      });
-    }
+    const { id } = req.params;
     
     const PermissionRequest = getPermissionRequestModel();
-    const request = await PermissionRequest.findOne({
-      _id: requestId,
-      userId,
-      userRole: role
-    });
+
+    const request = await PermissionRequest.findById(id)
+      .populate('user', 'firstName lastName email role');
     
     if (!request) {
       return res.status(404).json({ 
@@ -158,172 +126,200 @@ const getPermissionRequestById = async (req, res) => {
       });
     }
     
-    res.status(200).json({
+    res.json({
       status: 'success',
       data: request
     });
-    
   } catch (error) {
-    console.error('Get permission request by ID error:', error);
+    console.error('Error getting permission request:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Server error while fetching permission request' 
+      message: 'Failed to get permission request',
+      error: error.message
     });
   }
 };
 
-// @desc    Update permission request
-// @route   PUT /api/:role/permission-request/:requestId
-// @access  Private
-const updatePermissionRequest = async (req, res) => {
+// @desc    Approve permission request
+// @route   PUT /api/permission-requests/:id/approve
+// @access  Private (Admin)
+const approvePermissionRequest = async (req, res) => {
   try {
-    const { role, requestId } = req.params;
-    const userId = req.user.id;
-    
-    // Validate role
-    if (!['doctor', 'midwife', 'service_provider'].includes(role)) {
-      return res.status(400).json({ 
-        status: 'error', 
-        message: 'Invalid role' 
-      });
-    }
+    const { id } = req.params;
+    const { notes } = req.body;
+    const adminId = req.adminUser._id;
     
     const PermissionRequest = getPermissionRequestModel();
-    
-    // Check if request exists and belongs to user
-    const existingRequest = await PermissionRequest.findOne({
-      _id: requestId,
-      userId,
-      userRole: role
-    });
-    
-    if (!existingRequest) {
+    const request = await PermissionRequest.findById(id);
+    if (!request) {
       return res.status(404).json({ 
         status: 'error', 
         message: 'Permission request not found' 
       });
     }
     
-    // Only allow updates if request is pending
-    if (existingRequest.status !== 'pending') {
+    if (request.status !== 'pending') {
       return res.status(400).json({ 
         status: 'error', 
-        message: 'Cannot update request that is not pending' 
+        message: 'Request has already been processed'
       });
     }
-    
-    // Extract updateable fields based on role
-    const updateData = {};
-    
-    if (role === 'doctor') {
-      if (req.body.specialization) updateData['requestDetails.specialization'] = req.body.specialization;
-      if (req.body.licenseNumber) updateData['requestDetails.licenseNumber'] = req.body.licenseNumber;
-      if (req.body.hospital) updateData['requestDetails.hospital'] = req.body.hospital;
-      if (req.body.experience) updateData['requestDetails.experience'] = req.body.experience;
-      if (req.body.education) updateData['requestDetails.education'] = req.body.education;
-      if (req.body.certifications) updateData['requestDetails.certifications'] = req.body.certifications;
-    } else if (role === 'midwife') {
-      if (req.body.certificationNumber) updateData['requestDetails.certificationNumber'] = req.body.certificationNumber;
-      if (req.body.clinic) updateData['requestDetails.clinic'] = req.body.clinic;
-      if (req.body.experience) updateData['requestDetails.experience'] = req.body.experience;
-      if (req.body.services) updateData['requestDetails.services'] = req.body.services;
-    } else if (role === 'service_provider') {
-      if (req.body.businessName) updateData['requestDetails.businessName'] = req.body.businessName;
-      if (req.body.businessType) updateData['requestDetails.businessType'] = req.body.businessType;
-      if (req.body.registrationNumber) updateData['requestDetails.registrationNumber'] = req.body.registrationNumber;
-      if (req.body.businessServices) updateData['requestDetails.businessServices'] = req.body.businessServices;
-    }
-    
-    // Common fields
-    if (req.body.additionalInfo) updateData['requestDetails.additionalInfo'] = req.body.additionalInfo;
-    if (req.body.reason) updateData['requestDetails.reason'] = req.body.reason;
-    if (req.body.documents) updateData.documents = req.body.documents;
-    if (req.body.priority) updateData.priority = req.body.priority;
-    if (req.body.isUrgent !== undefined) updateData.isUrgent = req.body.isUrgent;
-    
-    // Update the request
-    const updatedRequest = await PermissionRequest.findByIdAndUpdate(
-      requestId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    );
-    
-    res.status(200).json({
-      status: 'success',
-      message: 'Permission request updated successfully',
-      data: updatedRequest
+
+    // Approve the request
+    await request.approve(adminId, notes);
+
+    // Update user's hasPermission field
+    const User = getUserModel();
+    await User.findByIdAndUpdate(request.user, {
+      hasPermission: true
     });
-    
+
+    // Note: User data will be handled separately if needed
+
+    res.json({
+      status: 'success',
+      message: 'Permission request approved successfully',
+      data: request
+    });
   } catch (error) {
-    console.error('Update permission request error:', error);
+    console.error('Error approving permission request:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Server error while updating permission request' 
+      message: 'Failed to approve permission request',
+      error: error.message
     });
   }
 };
 
-// @desc    Cancel permission request
-// @route   DELETE /api/:role/permission-request/:requestId
-// @access  Private
-const cancelPermissionRequest = async (req, res) => {
+// @desc    Reject permission request
+// @route   PUT /api/permission-requests/:id/reject
+// @access  Private (Admin)
+const rejectPermissionRequest = async (req, res) => {
   try {
-    const { role, requestId } = req.params;
-    const userId = req.user.id;
-    
-    // Validate role
-    if (!['doctor', 'midwife', 'service_provider'].includes(role)) {
-      return res.status(400).json({ 
-        status: 'error', 
-        message: 'Invalid role' 
-      });
-    }
+    const { id } = req.params;
+    const { notes } = req.body;
+    const adminId = req.adminUser._id;
     
     const PermissionRequest = getPermissionRequestModel();
-    
-    // Check if request exists and belongs to user
-    const existingRequest = await PermissionRequest.findOne({
-      _id: requestId,
-      userId,
-      userRole: role
-    });
-    
-    if (!existingRequest) {
+    const request = await PermissionRequest.findById(id);
+    if (!request) {
       return res.status(404).json({ 
         status: 'error', 
         message: 'Permission request not found' 
       });
     }
     
-    // Only allow cancellation if request is pending
-    if (existingRequest.status !== 'pending') {
+    if (request.status !== 'pending') {
       return res.status(400).json({ 
         status: 'error', 
-        message: 'Cannot cancel request that is not pending' 
+        message: 'Request has already been processed'
       });
     }
-    
-    // Delete the request
-    await PermissionRequest.findByIdAndDelete(requestId);
-    
-    res.status(200).json({
+
+    // Reject the request
+    await request.reject(adminId, notes);
+
+    // Note: User data will be handled separately if needed
+
+    res.json({
       status: 'success',
-      message: 'Permission request cancelled successfully'
+      message: 'Permission request rejected successfully',
+      data: request
     });
-    
   } catch (error) {
-    console.error('Cancel permission request error:', error);
+    console.error('Error rejecting permission request:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to reject permission request',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get user's permission requests
+// @route   GET /api/permission-requests/user/me
+// @access  Private
+const getUserPermissionRequests = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const PermissionRequest = getPermissionRequestModel();
+
+    const requests = await PermissionRequest.find({ user: userId })
+      .populate('user', 'firstName lastName email role')
+      .sort({ submittedAt: -1 });
+
+    res.json({
+      status: 'success',
+      data: requests
+    });
+  } catch (error) {
+    console.error('Error getting user permission requests:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get user permission requests',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get permission request statistics
+// @route   GET /api/permission-requests/stats
+// @access  Private (Admin)
+const getPermissionRequestStats = async (req, res) => {
+  try {
+    const PermissionRequest = getPermissionRequestModel();
+
+    const stats = await PermissionRequest.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const roleStats = await PermissionRequest.aggregate([
+      {
+        $group: {
+          _id: { status: '$status', role: '$userRole' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const totalRequests = await PermissionRequest.countDocuments();
+    const pendingRequests = await PermissionRequest.countDocuments({ status: 'pending' });
+    const approvedRequests = await PermissionRequest.countDocuments({ status: 'approved' });
+    const rejectedRequests = await PermissionRequest.countDocuments({ status: 'rejected' });
+
+    res.json({
+      status: 'success',
+      data: {
+        total: totalRequests,
+        pending: pendingRequests,
+        approved: approvedRequests,
+        rejected: rejectedRequests,
+        statusBreakdown: stats,
+        roleBreakdown: roleStats
+      }
+    });
+  } catch (error) {
+    console.error('Error getting permission request stats:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Server error while cancelling permission request' 
+      message: 'Failed to get permission request statistics',
+      error: error.message
     });
   }
 };
 
 module.exports = {
   submitPermissionRequest,
-  getUserPermissionRequests,
+  getPermissionRequests,
   getPermissionRequestById,
-  updatePermissionRequest,
-  cancelPermissionRequest
+  approvePermissionRequest,
+  rejectPermissionRequest,
+  getUserPermissionRequests,
+  getPermissionRequestStats
 };
