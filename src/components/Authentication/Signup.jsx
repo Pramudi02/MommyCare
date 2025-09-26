@@ -127,22 +127,40 @@ const Signup = () => {
         // Use AuthContext login function
         login(payload);
         
-        // Navigate directly to role-specific dashboard (no admin approval needed)
-        switch (formData.role) {
-          case 'mom':
-            navigate('/mom');
-            break;
-          case 'doctor':
-            navigate('/doctor');
-            break;
-          case 'midwife':
-            navigate('/midwife');
-            break;
-          case 'service_provider':
-            navigate('/service-provider');
-            break;
-          default:
-            navigate('/');
+        // Check if user needs permission (all roles except mom)
+        if (formData.role !== 'mom' && !payload.user.hasPermission) {
+          // Redirect to appropriate permission page
+          switch (formData.role) {
+            case 'doctor':
+              navigate('/get-permission-doctor');
+              break;
+            case 'midwife':
+              navigate('/get-permission-midWife');
+              break;
+            case 'service_provider':
+              navigate('/get-permission-serviceProvider');
+              break;
+            default:
+              navigate('/');
+          }
+        } else {
+          // Navigate directly to role-specific dashboard (moms or users with permission)
+          switch (formData.role) {
+            case 'mom':
+              navigate('/mom');
+              break;
+            case 'doctor':
+              navigate('/doctor');
+              break;
+            case 'midwife':
+              navigate('/midwife');
+              break;
+            case 'service_provider':
+              navigate('/service-provider');
+              break;
+            default:
+              navigate('/');
+          }
         }
       } else if (response.status === 503) {
         // Database temporarily unavailable
