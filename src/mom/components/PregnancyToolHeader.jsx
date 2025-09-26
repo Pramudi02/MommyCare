@@ -30,18 +30,6 @@ const PregnancyToolHeader = () => {
       title: 'Birth Plan Worksheet', 
       path: '/mom/pregnancy-tracker/birth-plan-worksheet',
       icon:'/images/9.png'
-    },
-    { 
-      id: 'chinese-gender-predictor',
-      title: 'Chinese Gender Predictor', 
-      path: '/mom/pregnancy-tracker/chinese-gender-predictor',
-      icon: '/images/10.png'
-    },
-    { 
-      id: 'registry',
-      title: 'Registry', 
-      path: '/mom/pregnancy-tracker/registry',
-      icon: '/images/11.png'
     }
   ];
 
