@@ -51,6 +51,7 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
             { name: 'All Users', icon: Users, path: '/admin/users', active: location.pathname === '/admin/users', badge: '456' },
             { name: 'Mothers', icon: Heart, path: '/admin/users/mothers', active: location.pathname === '/admin/users/mothers', badge: '350' },
             { name: 'Healthcare Providers', icon: Stethoscope, path: '/admin/users/providers', active: location.pathname === '/admin/users/providers', badge: '106' },
+            { name: 'Permission Requests', icon: CheckCircle, path: '/admin/permission-requests', active: location.pathname === '/admin/permission-requests', badge: '23' },
             { name: 'Roles & Access', icon: Shield, path: '/admin/users/roles', active: location.pathname === '/admin/users/roles' }
           ]
         },
@@ -112,7 +113,7 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
       <div className="sidebar-header">
         {sidebarOpen && (
           <div className="sidebar-header-content">
-            <h1 className="sidebar-title">MaternityCare+</h1>
+            <h1 className="sidebar-title">MommyCare</h1>
             <p className="sidebar-subtitle">Admin Dashboard</p>
           </div>
         )}
@@ -160,20 +161,8 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
         </nav>
       </div>
 
-      {/* User Info */}
-      <div className="sidebar-user">
-        <div className="user-info">
-          <div className="user-avatar">
-            <span>AD</span>
-          </div>
-          {sidebarOpen && (
-            <div className="user-details">
-              <p className="user-name">Admin User</p>
-              <p className="user-role">MOH Officer</p>
-            </div>
-          )}
-        </div>
-      </div>
+      
+     
     </div>
   );
 };

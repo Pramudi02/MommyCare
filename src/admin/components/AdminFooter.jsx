@@ -3,7 +3,7 @@ import './AdminFooter.css';
 
 const AdminFooter = () => (
   <footer className="admin-footer">
-    <p className="footer-text">© 2025 MaternityCare+. All rights reserved.</p>
+    <p className="footer-text">© 2025 MommyCare. All rights reserved.</p>
   </footer>
 );
 
